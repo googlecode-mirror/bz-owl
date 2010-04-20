@@ -1,0 +1,23 @@
+/* @override http://192.168.1.10/~ts/BZFlag/Ligen/GU/leaguesite/news.css */
+
+p.article {
+	border-top: #cccccc solid thin;
+	border-left-style: none;
+}
+
+div.article
+{
+	padding-bottom: 1em;
+}
+
+div.timestamp
+{
+	text-align: left;
+	float: left;
+}
+
+
+div.author
+{
+	text-align: right;
+}

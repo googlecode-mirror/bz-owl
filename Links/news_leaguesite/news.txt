@@ -1,0 +1,21 @@
+		<table align=center width=95% border=0 cellspacing=0 cellpadding=4><tr class=roweven><td width=25%><a href="http://bzflag.org" target="_blank">BZflag homepage</a></td>
+			<td>Official Game homepage. Game downloads an updates. All main platforms. BZflag is an opensource project :)</td></tr><tr class=rowodd><td width=25%><a href="http://my.bzflag.org/bb/" target="_blank">BZflag Official Forum (global registration)</a></td>
+			<td>The official forum of BZflag. All tricks, servers, admins, ect. are here. Also, you must register your callsign here to have your name "globally registered" so no one else can use it anywhere.</td></tr><tr class=roweven><td width=25%><a href="http://my.bzflag.org/bb/viewforum.php?f=103" target="_blank">GU BZflag League Forum</a></td>
+			<td>The New Official GamesUnited BZflag League forum.<br />
+
+Please use this forum to discuss GU league matters, GU servers, to set up matches, challenges, report incidents, etc.</td></tr><tr class=rowodd><td width=25%><a href="http://www.gamesunited.de/ib/index.php?showforum=18" target="_blank">GU Forum Archives</a></td>
+			<td>The old GamesUnited BZflag League forum.<br />
+Previous discussions on matters concerning the GU League community.</td></tr><tr class=roweven><td width=25%><a href="http://league.bzflag.net/" target="_blank">Ducati BZflag League</a></td>
+			<td>The official web site for the famous Ducati CTF BZflag league: Two teams, random map, two shots, ricochet, no jumping, no super-flags. Fun!!</td></tr><tr class=rowodd><td width=25%><a href="http://openleague.net/index.php?link=home" target="_blank">Open BZflag League</a></td>
+			<td>The Open League is a league that allows official matches on a variety of different maps with different settings. It's alot of fun! And if you don't have enough time for a thirty minute match, you can play a shorter one! For more details, visit the league today!</td></tr><tr class=roweven><td width=25%><a href="http://1vs1.bzleague.com/" target="_blank">1 vs 1 League</a></td>
+
+			<td>This is Zongo's popular 1vs1 league. There are no teams, no bases. You are just on your own, in 1vs1 duels: random map, two shots, ricochet, no jumping, no flags.</td></tr><tr class=rowodd><td width=25%><a href="http://pillbox.bzleague.com/" target="_blank">Pillbox BZflag League</a></td>
+			<td>The official web site for the Pillbox CTF BZflag league: Pillbox CTF map, two teams, three shots, no jumping, no ricochet, no super-flags. Fun!!</td></tr><tr class=roweven><td width=25%><a href="http://guc.phago.de/" target="_blank">GU League checker</a></td>
+			<td>A little stats-site that queries server-information from the match-server's of the big leagues. Easy-to-use tool to find teammates or other teams.</td></tr><tr class=rowodd><td width=25%><a href="http://gu.bzleague.com/miscimg/GuFunMatch.jpg" target="_blank">Fun Match</a></td>
+			<td>You don't always have to play official matches.  Here's a screencap from a LITTLE friendly fun-match on Jan 15, 2006.</td></tr><tr class=roweven><td width=25%><a href="http://bzflag.saturos.de/" target="_blank">German BZflag-fanpage</a></td>
+			<td>Biggest German BZflag-fanpage with a board for German-speaking players and information about the [phagozytose]-clan</td></tr><tr class=rowodd><td width=25%><a href="http://www.bzflag.at" target="_blank">Austrian BZflag Fan Site</a></td>
+
+			<td>The official Austrian BZflag fan page; with news an information, forum, screenshots, maps and more!</td></tr><tr class=roweven><td width=25%><a href="http://bzstats.strayer.de/leagues/gu/" target="_blank">strayer's BZstats</a></td>
+			<td>Great website for finding online GU league members as well as useful information about servers and players.</td></tr><tr class=rowodd><td width=25%><a href="http://www.rikercup.org" target="_blank">Official RikerCup Webpage</a></td>
+			<td>The Riker Cup is a friendly competition between the two major continents where most BZFlag players originate; North America and Europe. It's a "Best of 3" 10vs10 GU-League style funmatch where the best from each region battle for the most valued prize of all: honor. Two captains from each team(one from the administrative team, and one regular player) will decide who plays in each of the matches. Other than a few minor details, the rules are exactly the same.</td></tr></table><BR>
+	</td></tr></table>

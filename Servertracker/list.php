@@ -1,0 +1,308 @@
+<?php
+include('bzfquery.php');
+require_once '../CMS/siteinfo.php';
+
+$langs = array();
+
+if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+    // break up string into pieces (languages and q factors)
+    preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+
+    if (count($lang_parse[1])) {
+        // create a list like "en" => 0.8
+        $langs = array_combine($lang_parse[1], $lang_parse[4]);
+    	
+        // set default to 1 for any without q factor
+        foreach ($langs as $lang => $val) {
+            if ($val === '') $langs[$lang] = 1;
+        }
+
+        // sort list based on value	
+        arsort($langs, SORT_NUMERIC);
+    }
+}
+
+$treffer = 0;
+if (isset($_GET['lang']))
+{
+    setzeSprache($_GET['lang']);
+    $treffer = 1;
+}
+
+if ($treffer == 0)
+{
+    // look through sorted list and use first one that matches our languages
+    foreach ($langs as $lang => $val) {
+        if ((strpos($lang, 'de') === 0))
+        {
+            // show German site
+            setzeSprache('de');
+            $treffer = 1;
+            break;
+        } else if (strpos($lang, 'en') === 0) {
+            // show English site
+            setzeSprache('en');
+            $treffer = 1;
+            break;
+        }
+    }
+}
+
+if ($treffer == 0)
+{
+    setzeSprache('en');
+}
+
+// show default site or prompt for language
+function setzeSprache($sprache)
+{
+    if ($sprache=='de')
+    {
+        define ('KEINESPIELER', 'Keine Spieler gefunden.');
+        define ('KEINEVERBINDUNG', 'Keine Verbindung zum Server m&ouml;glich.');
+        define ('GEMELDETERFEHLER', 'Der zugrunde liegende Prozess meldete einen Fehler: ');
+        define ('ZAEHLER', 'Z&auml;hler l&auml;uft: ');
+        define ('VON', ' von ');
+        define ('RESTZEIT', ' Minuten verbleibend.');
+    } else
+    {
+        define ('KEINESPIELER', 'No players found.');
+        define ('KEINEVERBINDUNG', 'Could not establish a connection to the server.');
+        define ('GEMELDETERFEHLER', 'The underlying process reported an error: ');
+        define ('ZAEHLER', 'Countdown is running: ');
+        define ('VON', ' of ');
+        define ('RESTZEIT', ' minutes remain to be played.');
+    }
+}
+
+function cmp($a, $b)
+{
+    // Zuschauer
+    if (($a['team'] == 5) and ($b['team'] == 5))
+    {
+        return (strnatcasecmp($a['sign'], $b['sign']));
+    } else
+    {
+        if ($a['team'] == 5)
+        {
+            return 1;
+        }
+        
+        if ($b['team'] == 5)
+        {
+            return -1;
+        }
+    }
+    
+    // Normale Spieler
+    $scoreA = ($a['won'] - $a['lost']);
+    $scoreB = ($b['won'] - $b['lost']);
+    if ($scoreA == $scoreB)
+    {
+        return 0;
+    }
+    return ($scoreA > $scoreB) ? -1 : 1;
+}
+
+function marke($markierung, $name)
+{
+    echo '<' . $markierung . ' class=' . "\x22" . $name . "\x22" . '>';
+}
+
+function formatbzfquery($server, $connection)
+{
+	formatbzfquery_last($server, $connection);
+	echo '<hr>' . "\n";
+}
+
+function formatbzfquery_last($server, $connection)
+{
+	$objekt = new siteinfo();
+    //$connection = $objekt->loudless_pconnect_to_db();
+    if ($connection)
+    {
+        // Datenbank auswaehlen
+        if (@!mysql_select_db("playerlist", $connection))
+		{
+			@mysql_close($connection);
+			unset($connection);
+		};
+    }
+
+    if (isset($_GET['server']))
+    {
+        echo '<p>' . $server . '</p>' . "\n";
+    } else
+    {
+        echo '<p><a href=' . "\x22" . '?server=' . urlencode($server) ."\x22" . '>' . $server . '</a></p>' . "\n";
+        //echo '<p><a href=' . "\x22" . urlencode($server) . '>' . $server '</a></p>' . "\n";
+    }
+    // Query the server
+	if (!function_exists('pcntl_fork'))
+	{
+		ob_start();
+	}
+	$data = bzfquery($server);
+    $ausgabe = '';
+	if (!function_exists('pcntl_fork'))
+	{
+		$ausgabe .= ob_get_contents();
+		ob_end_clean();
+	}
+    
+    //echo '<pre>';
+    //print_r($data);
+    //echo '</pre>';
+    //bzfdump($data);
+    
+    if (! isset($data['player']))
+    { 
+        if (! isset($data['protocol']))
+    {
+        echo '<p>' . KEINEVERBINDUNG . ' ';
+        if (! strcmp($ausgabe, '') == 0)
+        {
+            echo GEMELDETERFEHLER . $ausgabe . '.';
+        }
+        echo '</p>' . "\n";
+    } else
+        echo '<p>' . KEINESPIELER . '</p>' . "\n";
+    } else
+    {
+        $zaehler = $data['maxTime'] - $data['timeElapsed'];
+        if ($zaehler > 0)
+        {
+            echo '<p class=' . "\x22" . 'zaehler' . "\x22" . '>' . ZAEHLER
+              . '<span class=' . "\x22" . 'zaehler' . "\x22" . '>'
+              . round(($zaehler / 60), 2) . VON . round((($data['maxTime']) /60), 2)
+              . '</span>' . RESTZEIT . '</p>' . "\n";
+        }
+        echo '<table class="punkte">' . "\n";
+        echo '  <tbody>' . "\n";
+        
+        usort ($data['player'], "cmp");
+        
+        // Display the server info
+        $teamName = array(0=>"schurke", 1=>"rot", 2=>"gruen", 3=>"blau", 4=>"violett", 5=>"zuschauer", 6=>"hase");
+        $teamColour = array(0=>"yellow", 1=>"red", 2=>"green", 3=>"blue", 4=>"purple", 5=>"gray", 6=>"orange");
+        while (list($key, $val) = each($data['team']))
+        {
+            if ($data['team'][$key]['size'] > 0)
+            {
+                echo '    ';
+                // Mannschaftsfarbe
+                marke('tr',$teamName[$key]);
+                // Punktzahl
+                echo '<td>';
+                echo ($data['team'][$key]['won'] - $data['team'][$key]['lost']);
+                echo '</td>';
+                // Gewonnen
+                echo '<td>';
+                echo '(' . $data['team'][$key]['won'] . ' - ';
+                // Verloren
+                echo $data['team'][$key]['lost'] . ')';
+                echo '</td>';
+                // #Spieler
+                echo '<td>';
+                echo $data['team'][$key]['size'];
+                echo '</td>';
+                // Ende Mannschaftsfarbe
+                echo '</tr>' . "\n";
+            }
+        }
+        echo '  </tbody>' . "\n" .'</table>' . "\n";
+        reset($data);
+        
+        echo "\n\n" . '<table class="spieler" border="0">' . "\n";
+        echo '  <tbody>' . "\n";
+
+        while (list($key, $val) = each($data['player']))
+        {
+            echo '    <tr>';
+            // Zuschauer spielen nicht -> keine Punktzahl
+            if (! strcmp($teamName[$data['player'][$key]['team']], 'zuschauer') == 0)
+            {
+                echo '<td>';
+                echo ($data['player'][$key]['won'] - $data['player'][$key]['lost']);
+                echo '</td>';
+                echo  '<td>('
+                  . $data['player'][$key]['won'] . '-'
+                  . $data['player'][$key]['lost'] . ')</td><td>['
+                  . $data['player'][$key]['tks'] . ']</td>';
+            } else
+            {
+                echo '<td></td><td></td><td></td>';
+            }
+            // Mannschaftsfarbe
+            marke('td',$teamName[$data['player'][$key]['team']]);
+			$playername = $data['player'][$key]['sign'];
+			// Spielernamen eventuell kuerzen
+			if ($objekt->mobile_version())
+			{
+				// Name ziemlich lang
+				if (strlen($playername) > 13)
+				{
+					$playername = (str_split($playername,10));
+					echo htmlentities($playername[0]) . "...";
+				} else // Name kurz genug
+				{
+					echo htmlentities($playername) . '</td>';
+				}
+			} else // Vollversion, massig Platz auf Bildschirm vorhanden
+			{
+				echo htmlentities($playername) . '</td>';
+			}
+            // Mehl
+            marke('td','mehl');
+            if (! strcmp($data['player'][$key]['email'], '') == 0)
+            {
+				$email = $data['player'][$key]['email'];
+				// Email ziemlich lang
+				if (strlen($email) > 17)
+				{
+					$email = (str_split($email,14));
+					$email = $email[0]  . "...";
+				}
+				echo '('
+                  . $email
+                  . ')';
+            }
+            echo '</td>';
+            
+            // Existiert Datenbankverbindung?
+            if ($connection)
+            {
+                // team herausfinden
+                marke('td', 'team');
+                $callsign = $data['player'][$key]['sign'];
+                $query = 'SELECT * from players WHERE name=' . "\x22". $callsign . "\x22";
+                $result = mysql_query($query, $connection);
+                if (!$result)
+                {
+                    print mysql_error();
+                    die("<br>\nQuery $query ist ung&uuml;ltiges SQL.");
+                }
+                $resultarray = mysql_fetch_array($result);
+                $teamid = $resultarray['teamid'];
+                if ($teamid > 0)
+                {
+                    $query = 'SELECT * from teams WHERE teamid=' . $teamid;
+                    $result = mysql_query($query, $connection);
+                    if (!$result)
+                    {
+                        print mysql_error();
+                        die("<br>\nQuery $query ist ung&uuml;ltiges SQL.");
+                    }
+                    $resultarray = mysql_fetch_array($result);
+                    mysql_free_result($result);
+                    echo $resultarray['name'];
+                }
+            }
+            echo '</tr>' . "\n";
+        }
+        echo '  </tbody>' . "\n" . '</table>' . "\n";
+    }
+}
+	
+//print_r($data['player']);
+?>

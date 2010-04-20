@@ -1,0 +1,64 @@
+/* @override http://my.bzflag.org/~ts/styles/black.css */
+
+body {
+	background: #ffffff;
+}
+
+
+ul.navigation 
+{
+text-align          : center;
+	list-style: none;
+	color: black;
+	font-size: 2em;
+	background: #66ccff;
+}
+
+ul.navigation li
+{	list-style: none;	display: inline;
+	color: #000000;}
+
+ul.navigation a
+{
+	color : #008040;	text-decoration : underline;
+}
+
+div.content
+{
+	width: auto;
+	padding-left: 5em;
+	color: black;
+	padding-top: 2.5em;
+}
+
+span.logo
+{
+	background: url(logo.png) no-repeat;
+	float: right;
+	width: 239px; 
+	height: 75px;
+	margin-bottom: 0.5em;
+	text-align: right;
+}
+
+
+div.createdby
+{
+	text-align: right;
+	float: right;
+	clear: both;
+}
+
+img {
+	float: right;
+	clear: both;
+}
+
+a:link
+{	color : #408000;	text-decoration : underline;}
+
+a:visited
+{	color : #408000;	text-decoration : underline;}
+
+a:active
+{	color : #000088;	text-decoration : underline;}

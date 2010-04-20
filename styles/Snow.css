@@ -1,0 +1,421 @@
+/* @override http://192.168.1.10/~ts/BZFlag/Ligen/GU/leaguesite/styles/Snow */
+
+body
+{
+	background: #fafafa url(snow.png) repeat scroll;
+	color: black;
+}
+
+body:after
+{
+	position: relative;
+	content: "This theme uses copyrighted (2010) artwork. Not to be re-used without permission.";
+	float: none;
+	display: block;
+	text-align: center;
+	opacity: 0.41;
+}
+
+p
+{
+	position: relative;
+	margin-top: 0;
+}
+
+/* I want fancy tables */
+table caption
+{
+	background: rgba(210,211,235,0.54);
+	margin-bottom: 0.5em;
+}
+
+/* even table rows */
+tr:nth-child(even)
+{
+	background: rgba(210,211,235,0.54);
+}
+
+/* uneven (odd) table rows */
+tr:nth-child(odd)
+{
+	/*no special styling in THIS theme */
+	/* background: #fafafa */
+}
+
+/* navigation */
+ul.navigation
+{
+	text-align: left;
+	list-style: none;
+	font-size: 1.5em;
+	float: left;
+	background: rgba(210,211,235,0.54);
+	margin-top: 0em;
+	padding-top: 0.1em;
+	padding-bottom: 0.3em;
+	padding-left: 1.4em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+ul.navigation li
+{
+	margin-left: -0.8em;
+	padding-right: 0.4em;
+}
+
+ul.navigation a
+{
+	color : #1f1f1f;
+	text-decoration : none;
+	font-weight: bold;
+	font-variant: normal;
+}
+
+ul.navigation a:active
+{
+	color : #000088;
+	text-decoration : underline;
+}
+
+div.content
+{
+	color: black;
+	text-align: left;
+	margin-left: 9em;
+	width: auto;
+	min-height: 25em;
+	clear: none;
+}
+
+div.userbuttons
+{
+	text-align: right;
+}
+
+div.online_user
+{
+	text-align: center;
+}
+
+/* private messages */
+span.unread_messages
+{
+	color: #dd4718;
+}
+
+a.msg_overview_unread:link
+{
+	color: #dd4718;
+	font-weight: bold;
+}
+
+/* this  is only a theoretical case but handle it because a new message
+ might get an id previousyl used by a deleted message */
+a.msg_overview_unread:visited
+{
+	color: #dd4718;
+	font-weight: bold;
+}
+
+div.folder_selection
+{
+	margin-bottom: 2em;
+}
+
+div.msg_area
+{
+	display: inline-block;
+	overflow: visible;
+	min-width: 25em;
+	margin-bottom: 1em;
+}
+
+div.msg_view_full
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.msg_header_full
+{
+	text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+}
+
+span.msg_subject
+{
+	font-weight: bold;
+	color: black;
+}
+
+span.msg_author
+{
+	font-style: normal;
+	padding-left: 1em;
+	font-weight: normal;
+	color: black;
+}
+
+span.msg_timestamp
+{
+	font-style: italic;
+	color: black;
+	padding-left: 1em;
+}
+
+div.msg_contents
+{
+	margin-top: 0.2em;
+}
+
+/*team profile*/
+div.team_area
+{
+	display: inline-block;
+	overflow: visible;
+	min-width: 25em;
+	margin-bottom: 1em;
+}
+
+div.team_header
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.team_name
+{
+    text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+}
+
+span.team_score
+{
+    display:block;
+}
+
+span.team_member_count
+{
+    display:block;
+}
+
+div.team_profile_box
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.team_profile_header_text
+{
+	content: "ewwewewe";
+	text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+
+}
+
+div.team_description
+{
+	margin-top: 0.2em;
+	overflow: auto;
+	text-align: left;
+}
+
+table.table_team_members
+{
+	visibility: visible;
+}
+
+table.table_team_members caption
+{
+	visibility: visible;
+	text-align: center;
+}
+
+/* user profile */
+div.user_area
+{
+	display: inline-block;
+	overflow: visible;
+	min-width: 25em;
+	margin-bottom: 1em;
+}
+
+div.user_header
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+span.user_profile_name
+{
+    font-weight: bold;
+}
+
+div.user_description
+{
+    text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+}
+
+span.user_comment
+{
+    display:block;
+}
+
+span.no_user_comment
+{
+    color: #4f4f4f;
+}
+
+div.user_admin_comments_area
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.user_admin_comments_header_text
+{
+	content: "ewwewewe";
+	text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+
+}
+
+div.user_admin_comments
+{
+	margin-top: 0.2em;
+	overflow: auto;
+	text-align: left;
+}
+
+
+/* common buttons */
+
+span.onlineUsers
+{
+	color: #240500;
+	text-shadow: silver 1px 1px 2px;
+}
+
+span.logout
+{
+	color: #240500;
+	text-shadow: silver 1px 1px 2px;
+}
+
+form.msg_buttons
+{
+	margin-top: 1em;
+	text-align: center;
+}
+
+/* no need for a br tag after the form*/
+form
+{
+	margin-bottom: 1em;
+}
+
+/* some links should be displayed as butttons */
+a.button:before
+{
+    content: "[";
+}
+
+a.button:after
+{
+    content: "]";
+}
+
+a:visited
+{
+	color : #004080;
+	text-decoration : underline;
+}
+
+a:active
+{
+	color : #000088;
+	text-decoration : underline;
+}

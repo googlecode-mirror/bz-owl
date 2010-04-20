@@ -1,0 +1,100 @@
+/* @override http://192.168.1.10/~ts/BZFlag/Ligen/GU/leaguesite/Messages/addstrict.css */
+
+label, input[type="text"], textarea
+{
+   display: block;
+   float: left;
+   margin: 5px 5px 0 0;
+   width: 25em;
+}
+
+/** html label, * html input, * html textarea
+{
+   margin: 5px 5px 0 6px;
+}*/
+
+textarea
+{
+   height: 10em;
+   overflow: auto;
+}
+
+input[type=submit]
+{
+	text-align: center;
+	margin: 5px 5px 0 0;
+	margin-bottom: 2em;
+}
+
+input[type=submit]#msg_add_recipient
+{
+	text-align: center;
+	position: relative;
+	clear: left;
+	margin: 7px 0 0 0;
+}
+
+div.recipient_readonly:before
+{
+	 /* somehow content is needded so put something hidden */ 
+	content:"\2022";
+	visibility: hidden;
+	width: 12.5em;
+	float: left;
+}
+
+input[type=text][readonly]
+{
+	background-color: #f0f0f0;
+	position: relative;
+	bottom: 1.5em;
+}
+
+label
+{
+	font: 1em "Lucida Grande", Lucida, Verdana, sans-serif;
+	text-align: right;
+	width: 12em;
+	padding: 2px 5px 0 0;
+}
+
+label#msg_sendmsgto:after
+{
+	clear: right;
+	content:"\2022";
+	visibility: hidden;
+	float: left;
+	margin-bottom: 0.3em;
+}
+
+input[type="text"], textarea
+{
+   background-color: #FFF;
+   border: 1px solid #0A3485;
+   padding: 1px 2px;
+   color: #000;
+   font: 1em "Lucida Grande", Lucida, Verdana, sans-serif;
+}
+
+input[type="text"]:focus, textarea:focus
+{
+   background-color: #e8e8e8;
+   border: 1px ridge #aaa;
+}
+
+form p
+{
+	display: inline;
+}
+
+form div
+{
+	clear: left;
+}
+
+input[type=hidden]
+{
+   border: 0;
+   padding: 0;
+   display: none;
+}
