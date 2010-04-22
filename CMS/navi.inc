@@ -74,16 +74,16 @@
 	// public_html auf FreeBSD oder Sites auf Mac OS X
 	$ganzOben = (strcmp($name, 'public_html') == 0) || (strcmp($name, 'Sites') == 0) || (strcmp($name, 'leaguesite') == 0);;
 	
-//	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
-//	{
-//		if (strcmp($name, 'Login') == 0)
-//		{
-//			echo '<li>Login</li>' . "\n";
-//		} else
-//		{
-//			schreibeVerweis('Login', 'Login');
-//		}
-//	}
+	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
+	{
+		if (strcmp($name, 'Login') == 0)
+		{
+			echo '<li>Login</li>' . "\n";
+		} else
+		{
+			schreibeVerweis('Login', 'Login');
+		}
+	}
 	
 	if ($ganzOben)
 	{
@@ -93,113 +93,113 @@
 		echo "<li><a href=\x22" . BASISPFAD . "\x22>Home</a></li>\n";
 	}
 	
-//	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
-//	{
-//		if (strcmp($name, 'Messages') == 0)
-//		{
-//			echo '<li>Bz mail</li>' . "\n";
-//		} else
-//		{
-//			if ($unread_messages)
-//			{
-//				schreibeVerweis('Messages', '<span class="unread_messages">Bz mail</span>');
-//			} else
-//			{
-//				echo schreibeVerweis('Messages', 'Bz mail');
-//			}
-//		}
-//	}
-//	
-//	if (strcmp($name, 'News') == 0)
-//	{
-//		echo '<li>News</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('News', 'News');
-//	}
-//	
-//	if (strcmp($name, 'Matches') == 0)
-//	{
-//		echo '<li>Matches</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Matches', 'Matches');
-//	}
-//	
-//	if (strcmp($name, 'Teams') == 0)
-//	{
-//		echo '<li>Teams</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Teams', 'Teams');
-//	}
-//	
-//	if (strcmp($name, 'Players') == 0)
-//	{
-//		echo '<li>Players</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Players', 'Players');
-//	}
-//	
-//	if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
-//	{
-//		if (strcmp($name, 'Visits') == 0)
-//		{
-//			echo '<li>Visits log</li>' . "\n";
-//		} else
-//		{
-//			echo schreibeVerweis('Visits', 'Visits log');
-//		}
-//	}
-//	
-//	if (strcmp($name, 'Rules') == 0)
-//	{
-//		echo '<li>Rules</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Rules', 'Rules');
-//	}
-//	
-//	if (strcmp($name, 'FAQ') == 0)
-//	{
-//		echo '<li>FAQ</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('FAQ', 'FAQ');
-//	}
-//	
-//	if (strcmp($name, 'Links') == 0)
-//	{
-//		echo '<li>Links</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Links', 'Links');
-//	}
-//	
-//	if (strcmp($name, 'Contact') == 0)
-//	{
-//		echo '<li>Contact</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Contact', 'Contact');
-//	}
-//	
-//	if (strcmp($name, 'Bans') == 0)
-//	{
-//		echo '<li>Bans</li>' . "\n";
-//	} else
-//	{
-//		schreibeVerweis('Bans', 'Bans');
-//	}
-    
-   	if (strcmp($name, 'Server') == 0)
+	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
+	{
+		if (strcmp($name, 'Messages') == 0)
+		{
+			echo '<li>Bz mail</li>' . "\n";
+		} else
+		{
+			if ($unread_messages)
+			{
+				schreibeVerweis('Messages', '<span class="unread_messages">Bz mail</span>');
+			} else
+			{
+				echo schreibeVerweis('Messages', 'Bz mail');
+			}
+		}
+	}
+	
+	if (strcmp($name, 'News') == 0)
+	{
+		echo '<li>News</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('News', 'News');
+	}
+	
+	if (strcmp($name, 'Matches') == 0)
+	{
+		echo '<li>Matches</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('Matches', 'Matches');
+	}
+	
+	if (strcmp($name, 'Teams') == 0)
+	{
+		echo '<li>Teams</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('Teams', 'Teams');
+	}
+	
+	if (strcmp($name, 'Players') == 0)
+	{
+		echo '<li>Players</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('Players', 'Players');
+	}
+	
+	if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
+	{
+		if (strcmp($name, 'Visits') == 0)
+		{
+			echo '<li>Visits log</li>' . "\n";
+		} else
+		{
+			echo schreibeVerweis('Visits', 'Visits log');
+		}
+	}
+	
+	if (strcmp($name, 'Rules') == 0)
+	{
+		echo '<li>Rules</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('Rules', 'Rules');
+	}
+	
+	if (strcmp($name, 'FAQ') == 0)
+	{
+		echo '<li>FAQ</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('FAQ', 'FAQ');
+	}
+	
+	if (strcmp($name, 'Links') == 0)
+	{
+		echo '<li>Links</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('Links', 'Links');
+	}
+	
+	if (strcmp($name, 'Contact') == 0)
+	{
+		echo '<li>Contact</li>' . "\n";
+	} else
+	{
+		schreibeVerweis('Contact', 'Contact');
+	}
+	
+	if (strcmp($name, 'Bans') == 0)
 	{
 		echo '<li>Bans</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Servertracker', 'Server');
+		schreibeVerweis('Bans', 'Bans');
 	}
+    
+//   	if (strcmp($name, 'Server') == 0)
+//	{
+//		echo '<li>Bans</li>' . "\n";
+//	} else
+//	{
+//		schreibeVerweis('Servertracker', 'Server');
+//	}
 
 	
 	if (strcmp($name, 'Config') == 0)
@@ -215,19 +215,19 @@
 <div class="content">
 
 <?php
-//	echo '<div class="userbuttons">' . "\n";
-//	if (!(strcmp($name, 'Online') == 0))
-//	{
-//		echo '<span class="onlineUsers">';
-//		echo '<a href="' . baseaddress() . 'Online/' . '">online users</a>';
-//		echo '</span>' . "\n";
-//	}
-//	
-//	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
-//	{
-//		echo '<span class="logout">';
-//		echo '<a href="' . baseaddress() . 'Logout/' . '">Logout</a>';
-//		echo '</span>' . "\n";
-//	}
-//	echo '</div>' . "\n\n" ;
+	echo '<div class="userbuttons">' . "\n";
+	if (!(strcmp($name, 'Online') == 0))
+	{
+		echo '<span class="onlineUsers">';
+		echo '<a href="' . baseaddress() . 'Online/' . '">online users</a>';
+		echo '</span>' . "\n";
+	}
+	
+	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
+	{
+		echo '<span class="logout">';
+		echo '<a href="' . baseaddress() . 'Logout/' . '">Logout</a>';
+		echo '</span>' . "\n";
+	}
+	echo '</div>' . "\n\n" ;
 ?>
