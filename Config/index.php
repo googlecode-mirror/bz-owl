@@ -14,7 +14,7 @@
 	if (strlen($stylesheet) > 0)
 	{
 		$cookies = false;
-		// if script called again, one can test if cookies are activated
+		// if script is called again (content in $stylesheet), one can test if cookies are activated
 		foreach ($_COOKIE as $key => $value)
 		{
 			if (strcasecmp($key, 'cookies') == 0)
