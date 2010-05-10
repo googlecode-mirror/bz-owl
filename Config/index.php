@@ -1,6 +1,6 @@
 <?php
-	// Keks setzen zum Pruefen, ob Kekse auf Klientseite erlaubt
-	$ausgabe = '';
+	// set a cookie to test if client accepts cookies
+	$output_buffer = '';
 	ob_start();
 	require realpath('../CMS/siteinfo.php');
 	@setcookie('cookies', "allowed", 0, basepath() . 'Config/', domain(), 0);
@@ -13,21 +13,20 @@
 	
 	if (strlen($stylesheet) > 0)
 	{
-		$kekse = false;
-		// Beim erneuten Aufruf (Eingabe) kann man pruefen
+		$cookies = false;
+		// if script called again, one can test if cookies are activated
 		foreach ($_COOKIE as $key => $value)
 		{
 			if (strcasecmp($key, 'cookies') == 0)
 			{
-				// Kekse sind aktiviert
-				$kekse = true;
+				// cookies are activated
+				$cookies = true;
 			}
 		}
-		if ($kekse == false)
+		if ($cookies == false)
 		{
-			// Kekse sind nicht erlaubt -> SIDs mit GET benutzen
-			// SIDs werden sonst nur fuer die Zugriffsverwaltung
-			// benutzt
+			// cookies are not allowed -> use SIDs with GET
+			// SIDs are used elsewhere only for permission system
 			ini_set ('session.use_trans_sid', 1);
 			$_SESSION['stylesheet'] = $stylesheet;
 		} else
@@ -40,10 +39,10 @@
 	ini_set ('session.name', 'SID');
 	session_start();
 	
-	$ausgabe .= ob_get_contents();
+	$output_buffer .= ob_get_contents();
 	ob_end_clean();
-	// Ausgabenpuffer kann jetzt geschrieben werden
-	echo $ausgabe;
+	// write output buffer
+	echo $output_buffer;
 	
 	echo "<!DOCTYPE HTML PUBLIC \x22-//W3C//DTD HTML 4.01//EN\x22 \x22http://www.w3.org/TR/html4/strict.dtd\x22>\n";
 	echo "<html>\n<head>\n";
