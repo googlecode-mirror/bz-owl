@@ -1,25 +1,27 @@
 <?php
-	// Keine SID an URL anhaengen, sonst eventuell Sicherheitsproblem
-	// bei Weitergabe einer URL -> Kekse nutzen
+	// do not attach SID to URL as this can cause security problems
+    // especially when a user shares an URL that includes a SID
+	// use cookies as workaround
 	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
 	@session_start();
 	
 	require_once 'Modulliste.php';
 	$module = aktive_Anmeldungsmodule();
-	$ausgabe = '';
+	$output = '';
 	
 	// load description presented to user
 	require_once 'index.inc';
 	
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
-		// Module zur Pruefung laden und Ausgaben puffern
+		// load modules to check input and buffer output
+        // the buffer is neccessary because the modules might need to set cookies for instance
 		if (isset($module['bzbb']) && ($module['bzbb']))
 		{
 			ob_start();
 			include_once 'bzbb_login/index.php';
-			$ausgabe .= ob_get_contents();
+			$output .= ob_get_contents();
 			ob_end_clean();
 		}
 		
@@ -27,19 +29,19 @@
 		{
 			ob_start();
 			include_once 'local_login/index.php';
-			$ausgabe .= ob_get_contents();
+			$output .= ob_get_contents();
 			ob_end_clean();
 		}		
 	}
 	
 	
-	if (!(strcmp($ausgabe, '') == 0))
+	if (!(strcmp($output, '') == 0))
 	{
-		// Ausgabenpuffer kann jetzt geschrieben werden
-		echo $ausgabe;
+		// buffer can now be written
+		echo $output;
 	}
 	
-	if ((strcmp($ausgabe, '') == 0) && (isset($_SESSION['user_logged_in'])) && $_SESSION['user_logged_in'])
+	if ((strcmp($output, '') == 0) && (isset($_SESSION['user_logged_in'])) && $_SESSION['user_logged_in'])
 	{
 		require_once '../CMS/navi.inc';	
 		echo '<p>Login was already successful.</p>' . "\n";

@@ -72,7 +72,7 @@
 	}
 	
 	// set up a class for less frequently used functions
-    require_once('leaguesite_passwords.php');
+    require_once('../leaguesite_passwords.php');
 	class siteinfo
 	{
 		var $siteinfo_use_mysql_news = false;

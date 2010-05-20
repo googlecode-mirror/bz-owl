@@ -1,3 +1,8 @@
+// this is only a sample password file
+
+// copy it to the path specified within siteinfo.php and
+// edit the return values appropriately to get the site running
+
 <?php
 	class pw_secret
 	{
