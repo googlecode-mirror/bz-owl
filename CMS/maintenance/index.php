@@ -4,10 +4,10 @@
 	
 	// find out if maintenance is needed (compare old date in plain text file)
 	$today = date("d.m.y");
-	$file = '../CMS/maintenance/maintenance.txt';
+	$file = (dirname(__FILE__)) . '/maintenance.txt';
 	
 	// siteinfo class used all the time
-	require_once ('../CMS/siteinfo.php');
+	require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
 	$site = new siteinfo();
 	
 	if (is_writable($file))

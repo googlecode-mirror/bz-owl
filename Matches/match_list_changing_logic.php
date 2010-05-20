@@ -917,8 +917,8 @@
 				
 				// first find out which team won the match before editing the table
 				$query = '';
-				if (isset($_GET['edit']))
-				{
+//				if (isset($_GET['edit']))
+//				{
 					// find out the appropriate team id list for the edited match
 					$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
 					$query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
@@ -1022,7 +1022,7 @@
 					{
 						update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
 					}
-				}
+//				}
 				
 				if (isset($_GET['delete']))
 				{
@@ -1365,7 +1365,7 @@
 			
 			// difference of score between before and after changing match list is always positive (absolute value)
 			// &plusmn; displays a +- symbol
-			echo 'diff is &plusmn;' . htmlentities($diff);
+			echo 'diff is &plusmn; ' . htmlentities($diff);
 			
 			
 			// do maintenance after a match has been entered
