@@ -7,6 +7,11 @@
 	
 	function update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection)
 	{
+        if ($site->debug_sql())
+        {
+            echo '<p>Updating win, draw, loose count of teams (one or more teams did not play in edited version).</p>' . "\n";
+        }
+        
 		// team 1 did originally win
 		if ($team1_points_before > $team2_points_before)
 		{
@@ -42,7 +47,7 @@
 		}
 		
 		// team 1 did originally tie
-		if ($team1_points_before < $team2_points_before)
+		if ($team1_points_before === $team2_points_before)
 		{
 			// remove a draw from team 1 and decrease total match count of team 1 by one
 			$query = 'UPDATE `teams_profile` SET ';
@@ -61,6 +66,11 @@
 	
 	function update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection)
 	{
+        if ($site->debug_sql())
+        {
+            echo '<p>Updating win, draw, loose count of teams.</p>' . "\n";
+        }
+        
 		// originally team 1 won
 		if ($team1_points_before > $team2_points_before)
 		{
