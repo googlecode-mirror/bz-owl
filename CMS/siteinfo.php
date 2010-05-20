@@ -72,7 +72,8 @@
 	}
 	
 	// set up a class for less frequently used functions
-    require_once('../../leaguesite_passwords.php');
+    // __FILE__ is a PHP 5 constant that points to the current file (in this case siteinfo.php)
+    require_once(realpath(dirname(dirname(dirname(__FILE__))) . '/leaguesite_passwords.php'));
 	class siteinfo
 	{
 		var $siteinfo_use_mysql_news = false;
