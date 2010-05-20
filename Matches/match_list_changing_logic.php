@@ -980,7 +980,7 @@
 						unset($team_point_before_swap);
 					}
 					
-					// team 1 played in the edited match but in the original version
+					// team 1 played in the edited match but not in the original version
 					if (!($team1_checkid === $team_id1) && !($team1_checkid === $team_id2))
 					{
 						update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);

@@ -5,7 +5,7 @@
 		die("This file is meant to be only included by other files!");
 	}
 	
-	function update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $site, $connection)
+	function update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection)
 	{
 		// team 1 did originally win
 		if ($team1_points_before > $team2_points_before)
@@ -17,7 +17,7 @@
 			$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 			// only one team needs to be updated
 			$query .= ' LIMIT 1';
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+            if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
