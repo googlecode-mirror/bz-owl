@@ -5,351 +5,442 @@
 		die("This file is meant to be only included by other files!");
 	}
 	
-	function update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection)
+   
+    // backend functions
+    function increase_total_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_played`=`num_matches_played`+' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }
+    
+    function increase_won_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_won`=`num_matches_won`+' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }    
+    
+    function increase_lost_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_lost`=`num_matches_lost`+' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }
+    
+    function increase_draw_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_draw`=`num_matches_draw`+' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }
+    
+    function decrease_total_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }
+    
+    function decrease_won_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }    
+    
+    function decrease_lost_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }
+    
+    function decrease_draw_match_count($teamid, $site, $connection)
+    {
+        $query = 'UPDATE `teams_profile` SET ';
+        $query .= '`num_matches_draw`=`num_matches_draw`-' . sqlSafeStringQuotes('1');
+        $query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
+        // only one team needs to be updated
+        $query .= ' LIMIT 1';
+        if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+        {
+            unlock_tables($site, $connection);
+            $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+        }        
+    }
+    
+    function cmp_did_team_participated_at_all($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
+    {
+        // check if old team1 is still active in the new match version
+        
+        if (($team_id1_before !== $team_id1) && ($team_id1_before !== $team_id2))
+        {
+            // old team1 did participate in the older match version but not in the new version
+            decrease_total_match_count($team_id1_before, $site, $connection);
+            // new team1 played a match not counted yet
+            increase_total_match_count($team_id1, $site, $connection);
+            
+            // update old team1 data
+            if ($team1_points_before > $team2_points_before)
+            {
+                // old team1 won in the older version
+                decrease_won_match_count($team_id1_before, $site, $connection);
+            } else
+            {
+                if ($team1_points_before < $team2_points_before)
+                {
+                    // old team1 lost in the older version
+                    decrease_lost_match_count($team_id1_before, $site, $connection);
+                } else
+                {
+                    // old team1 tied in the older version
+                    decrease_draw_match_count($team_id1_before, $site, $connection);
+                }
+            }
+            
+            // update new team1 data
+            if ($team1_points > $team2_points)
+            {
+                // new team1 won
+                increase_won_match_count($team_id1, $site, $connection);
+            } else
+            {
+                if ($team1_points < $team2_points)
+                {
+                    // new team1 lost
+                    increase_lost_match_count($team_id1, $site, $connection);
+                } else
+                {
+                    // new team1 tied
+                    increase_lost_match_count($team_id1, $site, $connection);
+                }
+            }
+        }
+    }
+    
+    function cmp_team_participated_change($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
+    {        
+        // map old team id to new team id
+        if ($team_id1_before === $team_id1)
+        {
+            if ($site->debug_sql())
+            {
+                echo '<br><p>teamid ' . htmlentities($team_id1) . ' mapped</p>';
+                
+                echo '<hr>' . "\n";
+                echo '<p>Function cmp_team_participated_change called.</p>' . "\n";
+                echo '<p>$team_id1_before: ' . htmlentities($team_id1_before) . '</p>' . "\n";
+                echo '<p>$team_id1: ' . htmlentities($team_id1) . '</p>' . "\n";
+                
+                echo '<p>$team1_points_before: ' . htmlentities($team1_points_before) . '</p>' . "\n";
+                echo '<p>$team2_points_before: ' . htmlentities($team2_points_before) . '</p>' . "\n";
+                echo '<p>$team1_points: ' . htmlentities($team1_points) . '</p>' . "\n";
+                echo '<p>$team2_points: ' . htmlentities($team2_points) . '</p>' . "\n";            
+                echo '<hr>' . "\n";
+                
+            }
+            if ($team1_points_before > $team2_points_before)
+            {
+                // team1 won in the older version
+                if ($team1_points > $team2_points)
+                {
+                    // team1 won also in the newer version -> nothing to do for team1
+                    
+                    // team1 winning the newer match has team2 loosing the newer match as consequence
+                    if (!($team_id2_before === $team_id2))
+                    {
+                        // team2 did not participate in older version
+                        increase_total_match_count($team_id2, $site, $connection);
+                        increase_lost_match_count($team_id2, $site, $connection);
+                        
+                        // following case already handled by function cmp_team_participated_at_all
+                        // old team2 lost in older version but is not involved in newer version
+                        // decrease_total_match_count($team_id2_before, $site, $connection);
+                        // decrease_lost_match_count($team_id2_before, $site, $connection);
+                    }
+                } else
+                {
+                    if ($team1_points < $team2_points)
+                    {
+                        // team1 lost in the newer version but won in the older version
+                        decrease_won_match_count($team_id1, $site, $connection);
+                        increase_lost_match_count($team_id1, $site, $connection);
+                        
+                        if ($team_id2_before === $team_id2)
+                        {
+                            // team2 also participated in the older version 
+                            
+                            // team2 lost in the older version but won in the newer version
+                            decrease_lost_match_count($team_id2, $site, $connection);
+                            increase_won_match_count($team_id2, $site, $connection);
+                        } else
+                        {
+                            // team2 did not participate in older version
+                            increase_total_match_count($team_id2, $site, $connection);
+                            increase_won_match_count($team_id2, $site, $connection);
+                            
+                            // following case already handled by function cmp_team_participated_at_all
+                            // old team2 won in older version but is not involved in newer version
+                            // decrease_total_match_count($team_id2_before, $site, $connection);
+                            // decrease_won_match_count($team_id2_before, $site, $connection);
+                        }
+                    } else
+                    {
+                        // team1 tied in the newer version but won in the older version
+                        decrease_draw_match_count($team_id1, $site, $connection);
+                        increase_won_match_count($team_id1, $site, $connection);
+                        
+                        if ($team_id2_before === $team_id2)
+                        {
+                            // team2 also participated in the older version 
+                            
+                            // team2 lost in the older version but tied in the newer version
+                            decrease_lost_match_count($team_id2, $site, $connection);
+                            increase_draw_match_count($team_id2, $site, $connection);
+                        } else
+                        {
+                            // team2 did not participate in older version
+                            increase_total_match_count($team_id2, $site, $connection);
+                            increase_draw_match_count($team_id2, $site, $connection);
+                            
+                            // following case already handled by function cmp_team_participated_at_all
+                            // old team2 lost in older version but is not involved in newer version
+                            // decrease_total_match_count($team_id2_before, $site, $connection);
+                            // decrease_lost_match_count($team_id2_before, $site, $connection);                            
+                        }
+                    }
+                }
+            } else
+            {
+                if ($team1_points_before < $team2_points_before)
+                {
+                    // team1 lost in the older match version
+                    if ($team1_points > $team2_points)
+                    {
+                        // team1 won in the newer version
+                        decrease_lost_match_count($team_id1, $site, $connection);
+                        increase_won_match_count($team_id1, $site, $connection);
+                        
+                        // team1 loosing the newer match has team2 winning the newer match as consequence
+                        if (!($team_id2_before === $team_id2))
+                        {
+                            // team2 did not participate in older version
+                            increase_total_match_count($team_id2, $site, $connection);
+                            increase_won_match_count($team_id2, $site, $connection);
+                            
+                            // following case already handled by function cmp_team_participated_at_all
+                            // old team2 lost in older version but is not involved in newer version
+                            // decrease_total_match_count($team_id2_before, $site, $connection);
+                            // decrease_lost_match_count($team_id2_before, $site, $connection);
+                        }
+                    } else
+                    {
+                        if ($team1_points < $team2_points)
+                        {
+                            // team1 lost in the older version and in the newer version
+                            
+                            if (!($team_id2_before === $team_id2))
+                            {
+                                // team2 did not participate in older version
+                                increase_total_match_count($team_id2, $site, $connection);
+                                increase_won_match_count($team_id2, $site, $connection);
+                            }
+                        } else
+                        {
+                            // team1 lost in the older version but tied in the newer version
+                            decrease_lost_match_count($team_id1, $site, $connection);
+                            increase_draw_match_count($team_id1, $site, $connection);
+                            
+                            if (!($team_id2_before === $team_id2))
+                            {
+                                // team2 did not participate in older version
+                                increase_total_match_count($team_id2, $site, $connection);
+                                increase_draw_match_count($team_id2, $site, $connection);
+                                
+                                // following case already handled by function cmp_team_participated_at_all
+                                // old team2 won in older version but is not involved in newer version
+                                // decrease_total_match_count($team_id2_before, $site, $connection);
+                                // decrease_won_match_count($team_id2_before, $site, $connection);                                
+                            }
+                        }
+                    }
+                } else
+                {
+                    // team1 tied in the older match version
+                    
+                    if ($team1_points > $team2_points)
+                    {
+                        // team1 won in the newer version
+                        decrease_draw_match_count($team_id1, $site, $connection);
+                        increase_won_match_count($team_id1, $site, $connection);
+                        
+                        // team1 drawing the newer match has team2 drawing the newer match as consequence
+                        if (!($team_id2_before === $team_id2))
+                        {
+                            // team2 did not participate in older version
+                            increase_total_match_count($team_id2, $site, $connection);
+                            increase_draw_match_count($team_id2, $site, $connection);
+                            
+                            // following case already handled by function cmp_team_participated_at_all
+                            // old team2 lost in older version but is not involved in newer version
+                            // decrease_total_match_count($team_id2_before, $site, $connection);
+                            // decrease_draw_match_count($team_id2_before, $site, $connection);
+                        }
+                    } else
+                    {
+                        if ($team1_points < $team2_points)
+                        {
+                            // team1 tied in the older version and lost in the newer version
+                            
+                            if (!($team_id2_before === $team_id2))
+                            {
+                                // team2 did not participate in older version
+                                increase_total_match_count($team_id2, $site, $connection);
+                                increase_won_match_count($team_id2, $site, $connection);
+                            }
+                        } else
+                        {
+                            // team1 tied in the older version and also tied in the newer version -> nothing to do
+                            
+                            if (!($team_id2_before === $team_id2))
+                            {
+                                // team2 did not participate in older version
+                                increase_total_match_count($team_id2, $site, $connection);
+                                increase_draw_match_count($team_id2, $site, $connection);
+                                
+                                // following case already handled by function cmp_team_participated_at_all
+                                // old team2 won in older version but is not involved in newer version
+                                // decrease_total_match_count($team_id2_before, $site, $connection);
+                                // decrease_draw_match_count($team_id2_before, $site, $connection);                                
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+        
+    function update_team_match_edit($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
 	{
         if ($site->debug_sql())
         {
-            echo '<p>Updating win, draw, loose count of teams (one or more teams did not play in edited version).</p>' . "\n";
+            echo '<hr>' . "\n";
+            echo '<p>Updating win, draw, loose count of teams (edit case).</p>' . "\n";
+            echo '<p>$team1_points_before: ' . htmlentities($team1_points_before) . '</p>' . "\n";
+            echo '<p>$team2_points_before: ' . htmlentities($team2_points_before) . '</p>' . "\n";
+            echo '<p>$team1_points: ' . htmlentities($team1_points) . '</p>' . "\n";
+            echo '<p>$team2_points: ' . htmlentities($team2_points) . '</p>' . "\n";
+            echo '<p>$team_id1_before: ' . htmlentities($team_id1_before) . '</p>' . "\n";
+            echo '<p>$team_id2_before: ' . htmlentities($team_id2_before) . '</p>' . "\n";
+            echo '<p>$team_id1: ' . htmlentities($team_id1) . '</p>' . "\n";
+            echo '<p>$team_id2: ' . htmlentities($team_id2) . '</p>' . "\n";
+            echo '<hr>' . "\n";
         }
         
-		// team 1 did originally win
-		if ($team1_points_before > $team2_points_before)
-		{
-			// remove a win from team 1 and decrease total match count of team 1 by one
-			$query = 'UPDATE `teams_profile` SET ';
-			$query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
-			$query .= ', `num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
-			$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-			// only one team needs to be updated
-			$query .= ' LIMIT 1';
-            if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-			{
-				unlock_tables($site, $connection);
-				$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-			}
-		}
-		
-		// team 1 did originally loose
-		if ($team1_points_before < $team2_points_before)
-		{
-			// remove a loose from team 1 and decrease total match count of team 1 by one
-			$query = 'UPDATE `teams_profile` SET ';
-			$query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
-			$query .= ', `num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
-			$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-			// only one team needs to be updated
-			$query .= ' LIMIT 1';
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-			{
-				unlock_tables($site, $connection);
-				$site->dieAndEndPage('Could not update lose/play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-			}
-		}
-		
-		// team 1 did originally tie
-		if ($team1_points_before === $team2_points_before)
-		{
-			// remove a draw from team 1 and decrease total match count of team 1 by one
-			$query = 'UPDATE `teams_profile` SET ';
-			$query .= '`num_matches_draw`=`num_matches_draw`-' . sqlSafeStringQuotes('1');
-			$query .= ', `num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
-			$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-			// only one team needs to be updated
-			$query .= ' LIMIT 1';
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-			{
-				unlock_tables($site, $connection);
-				$site->dieAndEndPage('Could not update draw/play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-			}
-		}
-	}
-	
-	function update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection)
-	{
-        if ($site->debug_sql())
+        // check if old team1 is still active in the new match version
+        cmp_did_team_participated_at_all($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection);
+        // swap the team orders to apply the same algorithm to old team2
+        cmp_did_team_participated_at_all($team2_points_before, $team1_points_before, $team2_points, $team1_points, $team_id2_before, $team_id1_before, $team_id1, $team_id2, $site, $connection);
+        
+        // update match stats for team1 in case old team1 = new team1
+        
+        $number_teams_mapped = (int) 0;
+        echo "call1";
+        if (cmp_team_participated_change($team1_points_before, $team2_points_before,
+                                         $team1_points, $team2_points,
+                                         $team_id1_before, $team_id2_before,
+                                         $team_id1, $team_id2,
+                                         $site, $connection))
         {
-            echo '<p>Updating win, draw, loose count of teams.</p>' . "\n";
+            $number_teams_mapped = $number_teams_mapped + 1;
         }
         
-		// originally team 1 won
-		if ($team1_points_before > $team2_points_before)
-		{
-			// if team 1 also won in the edited version
-			// no changes needed it wins/draws/losts/total stats
-			
-			// if team 1 lost in the edited version
-			// team 1 has one less won match and one more lost match
-			if ($team1_points < $team2_points)
-			{
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
-				$query .= ', `num_matches_lost`=`num_matches_lost`+' . sqlSafeStringQuotes('1');
-				$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/lose count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-			}
-			
-			// if team 1 tied in the edited version
-			// team 1 has one less won match and one more draw
-			if ($team1_points === $team2_points)
-			{
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
-				$query .= ', `num_matches_draw`=`num_matches_draw`+' . sqlSafeStringQuotes('1');
-				$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-			}
-		}
-		
-		// originally team 1 lost
-		if ($team1_points_before < $team2_points_before)
-		{
-			// if team 1 won in the edited version
-			// team 1 has one less lost match and one more won match
-			if ($team1_points < $team2_points)
-			{
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
-				$query .= ', `num_matches_won`=`num_matches_won`+' . sqlSafeStringQuotes('1');
-				$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update lose/win count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-			}						
-			
-			// if team 1 also lost in the edited version
-			// no changes needed it wins/draws/losts/total stats
-			
-			// if team 1 tied in the edited version
-			// team 1 has one less lost match and one more draw
-			if ($team1_points === $team2_points)
-			{
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
-				$query .= ', `num_matches_draw`=`num_matches_draw`+' . sqlSafeStringQuotes('1');
-				$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update lose/draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-			}
-		}
-	}
-	
-	function cmp_team1_won()
-	{
-		if ($team1_points > $team2_points)
-		{
-			// originally team 1 lost
-			if ($team1_points_before < $team2_points_before)
-			{
-				// update team 1 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_lost`=`num_matches_lost`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/lose count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-				
-				// update team 2 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_lost`=`num_matches_lost`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/lose count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-				}
-			}
-			
-			// originally the match ended in a draw
-			if ($team1_points_before === $team2_points_before)
-			{
-				// update team 1 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_draw`=`num_matches_draw`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-				
-				// update team 2 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_lost`=`num_matches_lost`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_draw`=`num_matches_draw`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update lose/draw count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-				}
-			}
-		}
-	}
-	
-	function cmp_team2_won()
-	{
-		if ($team1_points < $team2_points)
-		{
-			// originally team 2 lost
-			if ($team1_points_before > $team2_points_before)
-			{
-				// update team 1 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_lost`=`num_matches_lost`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/lose count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-				
-				// update team 2 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_lost`=`num_matches_lost`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/lose count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-				}
-			}
-			
-			// originally the match ended in a draw
-			if ($team1_points_before === $team2_points_before)
-			{
-				// update team 1 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_lost`=`num_matches_lost`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_draw`=`num_matches_draw`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update lose/draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-				
-				// update team 2 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_draw`=`num_matches_draw`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/draw count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-				}
-			}
-		}
-	}
-	
-	function cmp_teams_tied()
-	{
-		if ($team1_points === $team2_points)
-		{
-			// originally team 1 lost
-			if ($team1_points_before < $team2_points_before)
-			{
-				// update team 1 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_draw`=`num_matches_draw`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_lost`=`num_matches_lost`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update draw/lose count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-				
-				// update team 2 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_draw`=`num_matches_draw`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_won`=`num_matches_won`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update draw/win count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-				}
-			}
-			
-			// originally team 2 lost
-			if ($team1_points_before > $team2_points_before)
-			{
-				// update team 1 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_won`=`num_matches_won`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_draw`=`num_matches_draw`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update win/draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
-				}
-				
-				// update team 2 data
-				$query = 'UPDATE `teams_profile` SET ';
-				$query .= '`num_matches_lost`=`num_matches_lost`-' . "'" . sqlSafeString('1') . "'";
-				$query .= ', `num_matches_draw`=`num_matches_draw`+' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
-				// only one team needs to be updated
-				$query .= ' LIMIT 1';
-				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
-				{
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Could not update lose/draw count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-				}
-			}
-		}
-		
-	}
+        echo "call2";
+        if (cmp_team_participated_change($team2_points_before, $team1_points_before,
+                                         $team1_points, $team2_points,
+                                         $team_id2_before, $team_id1_before,
+                                         $team_id1, $team_id2,
+                                         $site, $connection))
+        {
+            $number_teams_mapped = $number_teams_mapped + 1;
+        }
+        
+        if (!($number_teams_mapped > 2))
+        {
+            echo "call3";
+            if (cmp_team_participated_change($team1_points_before, $team2_points_before,
+                                             $team1_points, $team2_points,
+                                             $team_id1_before, $team_id2_before,
+                                             $team_id1, $team_id2,
+                                             $site, $connection))
+            {
+                $number_teams_mapped = $number_teams_mapped + 1;
+            }
+            if (!($number_teams_mapped > 2))
+            {
+                echo "call4";
+                if (cmp_team_participated_change($team1_points_before, $team2_points_before,
+                                                 $team2_points, $team1_points,
+                                                 $team_id1_before, $team_id2_before,
+                                                 $team_id2, $team_id1,
+                                                 $site, $connection))
+                {
+                    $number_teams_mapped = $number_teams_mapped + 1;
+                }
+            }
+        }
+        unset($number_teams_mapped);
+    }
 ?>
