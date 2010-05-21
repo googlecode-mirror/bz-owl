@@ -245,7 +245,7 @@
                             // team2 also participated in the older version 
                             
                             // team2 lost in the older version but tied in the newer version
-                            decrease_lost_match_count($team_id2, $site, $connection);
+                            0($team_id2, $site, $connection);
                             increase_draw_match_count($team_id2, $site, $connection);
                         } else
                         {
@@ -390,9 +390,17 @@
         }
         
         // check if old team1 is still active in the new match version
-        cmp_did_team_participated_at_all($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection);
+        cmp_did_team_participated_at_all($team1_points_before, $team2_points_before,
+                                         $team1_points, $team2_points,
+                                         $team_id1_before, $team_id2_before,
+                                         $team_id1, $team_id2,
+                                         $site, $connection);
         // swap the team orders to apply the same algorithm to old team2
-        cmp_did_team_participated_at_all($team2_points_before, $team1_points_before, $team2_points, $team1_points, $team_id2_before, $team_id1_before, $team_id1, $team_id2, $site, $connection);
+        cmp_did_team_participated_at_all($team2_points_before, $team1_points_before,
+                                         $team2_points, $team1_points,
+                                         $team_id2_before, $team_id1_before,
+                                         $team_id1, $team_id2,
+                                         $site, $connection);
         
         // update match stats for team1 in case old team1 = new team1
         
