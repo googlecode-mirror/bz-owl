@@ -171,6 +171,7 @@
                                        $team1_points, $team2_points,
                                        $team_id1_before, $team_id2_before,
                                        $team_id1, $team_id2,
+                                       $team1_increased, $team2_increased,
                                        $site, $connection)
     {
         if ($site->debug_sql())
@@ -185,11 +186,19 @@
             echo '<p>$team_id2_before: ' . htmlentities($team_id2_before) . '</p>' . "\n";
             echo '<p>$team_id1: ' . htmlentities($team_id1) . '</p>' . "\n";
             echo '<p>$team_id2: ' . htmlentities($team_id2) . '</p>' . "\n";
+            echo '<p>$team1_increased: ' . htmlentities($team1_increased) . '</p>' . "\n";
+            echo '<p>$team2_increased: ' . htmlentities($team2_increased) . '</p>' . "\n";
             echo '<hr>' . "\n";
         }
         
-        if (($team_id1 !== $team_id1_before) && ($team_id1 !== $team_id2_before))
+        // we need a lock here to avoid increasing match stats for the same team twice
+        // this may happen for both team1 and team2
+        $team_increased = (int) 0;
+        
+        if (($team_id1 !== $team_id1_before) && ($team_id1 !== $team_id2_before)
+            && ($team_id1 !== $team1_increased) && ($team_id1 !== $team2_increased))
         {
+            $team_increased = $team_id1;
             // new team1 played a match not counted yet
             increase_total_match_count($team_id1, $site, $connection);
             
@@ -211,7 +220,7 @@
                 }
             }
         }
-        
+        return $team_increased;
     }
     
     function cmp_team_participated_change($team1_points_before, $team2_points_before,
@@ -459,27 +468,57 @@
                                          $site, $connection);
         
         // check for new teams, to give them credit for new match
-        cmp_new_team_participated($team1_points_before, $team2_points_before,
-                                  $team1_points, $team2_points,
-                                  $team_id1_before, $team_id2_before,
-                                  $team_id1, $team_id2,
-                                  $site, $connection);
-        cmp_new_team_participated($team2_points_before, $team1_points_before,
-                                  $team1_points, $team2_points,
-                                  $team_id2_before, $team_id1_before,
-                                  $team_id1, $team_id2,
-                                  $site, $connection);
-        cmp_new_team_participated($team1_points_before, $team2_points_before,
-                                  $team2_points, $team1_points,
-                                  $team_id1_before, $team_id2_before,
-                                  $team_id2, $team_id1,
-                                  $site, $connection);
-        cmp_new_team_participated($team2_points_before, $team1_points_before,
-                                  $team2_points, $team1_points,
-                                  $team_id2_before, $team_id1_before,
-                                  $team_id2, $team_id1,
-                                  $site, $connection);        
+        // initialise locking variables
+        $team1_added = (int) 0;
+        $team2_added = (int) 0;
         
+        $team1_added = cmp_new_team_participated($team1_points_before, $team2_points_before,
+                                                 $team1_points, $team2_points,
+                                                 $team_id1_before, $team_id2_before,
+                                                 $team_id1, $team_id2,
+                                                 $team1_added, $team2_added,
+                                                 $site, $connection);
+        $team2_added = cmp_new_team_participated($team2_points_before, $team1_points_before,
+                                                 $team1_points, $team2_points,
+                                                 $team_id2_before, $team_id1_before,
+                                                 $team_id1, $team_id2,
+                                                 $team1_added, $team2_added,
+                                                 $site, $connection);
+        if (!(($team1_added !== 0) && ($team2_added !== 0)))
+        {
+            if ($team1_added !== 0)
+            {
+                $team3_swap = (int) $team1_added;
+                $team1_added = $team2_added;
+                $team2_added = $team3_swap;
+                unset($team3_swap);
+            }
+            $team1_added = cmp_new_team_participated($team1_points_before, $team2_points_before,
+                                                     $team2_points, $team1_points,
+                                                     $team_id1_before, $team_id2_before,
+                                                     $team_id2, $team_id1,
+                                                     $team1_added, $team2_added,
+                                                     $site, $connection);
+            if (!(($team1_added !== 0) && ($team2_added !== 0)))
+            {
+                if ($team1_added !== 0)
+                {
+                    $team3_swap = (int) $team1_added;
+                    $team1_added = $team2_added;
+                    $team2_added = $team3_swap;
+                    unset($team3_swap);
+                }
+                
+                cmp_new_team_participated($team2_points_before, $team1_points_before,
+                                          $team2_points, $team1_points,
+                                          $team_id2_before, $team_id1_before,
+                                          $team_id2, $team_id1,
+                                          $team1_added, $team2_added,
+                                          $site, $connection);
+            }
+        }
+        unset($team1_added);
+        unset($team2_added);
         // update match stats for team1 in case old team1 = new team1
         
         $number_teams_mapped = (int) 0;
