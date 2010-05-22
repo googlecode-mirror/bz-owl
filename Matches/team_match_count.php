@@ -380,7 +380,11 @@
         return false;
     }
         
-    function update_team_match_edit($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
+    function update_team_match_edit($team1_points_before, $team2_points_before,
+                                    $team1_points, $team2_points,
+                                    $team_id1_before, $team_id2_before,
+                                    $team_id1, $team_id2,
+                                    $site, $connection)
 	{
         if ($site->debug_sql())
         {
