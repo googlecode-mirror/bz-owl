@@ -119,7 +119,11 @@
         }
     }
     
-    function cmp_did_team_participated_at_all($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
+    function cmp_did_team_participated_at_all($team1_points_before, $team2_points_before,
+					      $team1_points, $team2_points,
+					      $team_id1_before, $team_id2_before,
+					      $team_id1, $team_id2,
+				              $site, $connection)
     {
         // check if old team1 is still active in the new match version
         
@@ -168,7 +172,11 @@
         }
     }
     
-    function cmp_team_participated_change($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
+    function cmp_team_participated_change($team1_points_before, $team2_points_before,
+					  $team1_points, $team2_points,
+					  $team_id1_before, $team_id2_before,
+					  $team_id1, $team_id2,
+					  $site, $connection)
     {        
         // map old team id to new team id
         if ($team_id1_before === $team_id1)
