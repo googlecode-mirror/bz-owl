@@ -18,7 +18,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }
     
     function increase_won_match_count($teamid, $site, $connection)
@@ -32,7 +32,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }    
     
     function increase_lost_match_count($teamid, $site, $connection)
@@ -46,7 +46,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }
     
     function increase_draw_match_count($teamid, $site, $connection)
@@ -60,7 +60,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }
     
     function decrease_total_match_count($teamid, $site, $connection)
@@ -74,7 +74,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }
     
     function decrease_won_match_count($teamid, $site, $connection)
@@ -88,8 +88,8 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
-    }    
+        }
+    }
     
     function decrease_lost_match_count($teamid, $site, $connection)
     {
@@ -102,7 +102,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }
     
     function decrease_draw_match_count($teamid, $site, $connection)
@@ -116,7 +116,7 @@
         {
             unlock_tables($site, $connection);
             $site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
-        }        
+        }
     }
     
     function cmp_did_team_participated_at_all($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team_id1_before, $team_id2_before, $team_id1, $team_id2, $site, $connection)
