@@ -146,46 +146,46 @@
         {
             // old team1 did participate in the older match version but not in the new version
             decrease_total_match_count($team_id1_before, $site, $connection);
-        }
-        
-        if (($team_id1 !== $team_id1_before) && ($team_id1 !== $team_id2_before))
-        {
-            // new team1 played a match not counted yet
-            increase_total_match_count($team_id1, $site, $connection);
             
-            // update old team1 data
-            if ($team1_points_before > $team2_points_before)
+            if (($team_id1 !== $team_id1_before) && ($team_id1 !== $team_id2_before))
             {
-                // old team1 won in the older version
-                decrease_won_match_count($team_id1_before, $site, $connection);
-            } else
-            {
-                if ($team1_points_before < $team2_points_before)
+                // new team1 played a match not counted yet
+                increase_total_match_count($team_id1, $site, $connection);
+                
+                // update old team1 data
+                if ($team1_points_before > $team2_points_before)
                 {
-                    // old team1 lost in the older version
-                    decrease_lost_match_count($team_id1_before, $site, $connection);
+                    // old team1 won in the older version
+                    decrease_won_match_count($team_id1_before, $site, $connection);
                 } else
                 {
-                    // old team1 tied in the older version
-                    decrease_draw_match_count($team_id1_before, $site, $connection);
+                    if ($team1_points_before < $team2_points_before)
+                    {
+                        // old team1 lost in the older version
+                        decrease_lost_match_count($team_id1_before, $site, $connection);
+                    } else
+                    {
+                        // old team1 tied in the older version
+                        decrease_draw_match_count($team_id1_before, $site, $connection);
+                    }
                 }
-            }
-            
-            // update new team1 data
-            if ($team1_points > $team2_points)
-            {
-                // new team1 won
-                increase_won_match_count($team_id1, $site, $connection);
-            } else
-            {
-                if ($team1_points < $team2_points)
+                
+                // update new team1 data
+                if ($team1_points > $team2_points)
                 {
-                    // new team1 lost
-                    increase_lost_match_count($team_id1, $site, $connection);
+                    // new team1 won
+                    increase_won_match_count($team_id1, $site, $connection);
                 } else
                 {
-                    // new team1 tied
-                    increase_draw_match_count($team_id1, $site, $connection);
+                    if ($team1_points < $team2_points)
+                    {
+                        // new team1 lost
+                        increase_lost_match_count($team_id1, $site, $connection);
+                    } else
+                    {
+                        // new team1 tied
+                        increase_draw_match_count($team_id1, $site, $connection);
+                    }
                 }
             }
         }
