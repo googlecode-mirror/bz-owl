@@ -1266,7 +1266,7 @@
 		}
 		mysql_free_result($result);
 		
-		compute_scores($team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff);
+		compute_scores($team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $site);
 		
 		if (isset($_GET['enter'])  && ($confirmed > 1))
 		{
