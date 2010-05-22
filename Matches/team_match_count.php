@@ -166,7 +166,7 @@
                 } else
                 {
                     // new team1 tied
-                    increase_lost_match_count($team_id1, $site, $connection);
+                    increase_draw_match_count($team_id1, $site, $connection);
                 }
             }
         }
