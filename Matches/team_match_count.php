@@ -279,47 +279,47 @@
                         decrease_lost_match_count($team_id1, $site, $connection);
                         increase_won_match_count($team_id1, $site, $connection);
                         
-                        // team1 loosing the newer match has team2 winning the newer match as consequence
-                        if (!($team_id2_before === $team_id2))
-                        {
-                            // team2 did not participate in older version
-                            increase_total_match_count($team_id2, $site, $connection);
-                            increase_won_match_count($team_id2, $site, $connection);
-                            
-                            // following case already handled by function cmp_team_participated_at_all
-                            // old team2 lost in older version but is not involved in newer version
-                            // decrease_total_match_count($team_id2_before, $site, $connection);
-                            // decrease_lost_match_count($team_id2_before, $site, $connection);
-                        }
+//                        // team1 loosing the newer match has team2 winning the newer match as consequence
+//                        if (!($team_id2_before === $team_id2))
+//                        {
+//                            // team2 did not participate in older version
+//                            increase_total_match_count($team_id2, $site, $connection);
+//                            increase_won_match_count($team_id2, $site, $connection);
+//                            
+//                            // following case already handled by function cmp_team_participated_at_all
+//                            // old team2 lost in older version but is not involved in newer version
+//                            // decrease_total_match_count($team_id2_before, $site, $connection);
+//                            // decrease_lost_match_count($team_id2_before, $site, $connection);
+//                        }
                     } else
                     {
                         if ($team1_points < $team2_points)
                         {
                             // team1 lost in the older version and in the newer version
                             
-                            if (!($team_id2_before === $team_id2))
-                            {
-                                // team2 did not participate in older version
-                                increase_total_match_count($team_id2, $site, $connection);
-                                increase_won_match_count($team_id2, $site, $connection);
-                            }
+//                            if (!($team_id2_before === $team_id2))
+//                            {
+//                                // team2 did not participate in older version
+//                                increase_total_match_count($team_id2, $site, $connection);
+//                                increase_won_match_count($team_id2, $site, $connection);
+//                            }
                         } else
                         {
                             // team1 lost in the older version but tied in the newer version
                             decrease_lost_match_count($team_id1, $site, $connection);
                             increase_draw_match_count($team_id1, $site, $connection);
                             
-                            if (!($team_id2_before === $team_id2))
-                            {
-                                // team2 did not participate in older version
-                                increase_total_match_count($team_id2, $site, $connection);
-                                increase_draw_match_count($team_id2, $site, $connection);
-                                
-                                // following case already handled by function cmp_team_participated_at_all
-                                // old team2 won in older version but is not involved in newer version
-                                // decrease_total_match_count($team_id2_before, $site, $connection);
-                                // decrease_won_match_count($team_id2_before, $site, $connection);                                
-                            }
+//                            if (!($team_id2_before === $team_id2))
+//                            {
+//                                // team2 did not participate in older version
+//                                increase_total_match_count($team_id2, $site, $connection);
+//                                increase_draw_match_count($team_id2, $site, $connection);
+//                                
+//                                // following case already handled by function cmp_team_participated_at_all
+//                                // old team2 won in older version but is not involved in newer version
+//                                // decrease_total_match_count($team_id2_before, $site, $connection);
+//                                // decrease_won_match_count($team_id2_before, $site, $connection);                                
+//                            }
                         }
                     }
                 } else
@@ -332,45 +332,47 @@
                         decrease_draw_match_count($team_id1, $site, $connection);
                         increase_won_match_count($team_id1, $site, $connection);
                         
-                        // team1 drawing the newer match has team2 drawing the newer match as consequence
-                        if (!($team_id2_before === $team_id2))
-                        {
-                            // team2 did not participate in older version
-                            increase_total_match_count($team_id2, $site, $connection);
-                            increase_draw_match_count($team_id2, $site, $connection);
-                            
-                            // following case already handled by function cmp_team_participated_at_all
-                            // old team2 lost in older version but is not involved in newer version
-                            // decrease_total_match_count($team_id2_before, $site, $connection);
-                            // decrease_draw_match_count($team_id2_before, $site, $connection);
-                        }
+//                        // team1 drawing the newer match has team2 drawing the newer match as consequence
+//                        if (!($team_id2_before === $team_id2))
+//                        {
+//                            // team2 did not participate in older version
+//                            increase_total_match_count($team_id2, $site, $connection);
+//                            increase_draw_match_count($team_id2, $site, $connection);
+//                            
+//                            // following case already handled by function cmp_team_participated_at_all
+//                            // old team2 lost in older version but is not involved in newer version
+//                            // decrease_total_match_count($team_id2_before, $site, $connection);
+//                            // decrease_draw_match_count($team_id2_before, $site, $connection);
+//                        }
                     } else
                     {
                         if ($team1_points < $team2_points)
                         {
                             // team1 tied in the older version and lost in the newer version
+                            decrease_draw_match_count($team_id1, $site, $connection);
+                            increase_lost_match_count($team_id1, $site, $connection);
                             
-                            if (!($team_id2_before === $team_id2))
-                            {
-                                // team2 did not participate in older version
-                                increase_total_match_count($team_id2, $site, $connection);
-                                increase_won_match_count($team_id2, $site, $connection);
-                            }
+//                            if (!($team_id2_before === $team_id2))
+//                            {
+//                                // team2 did not participate in older version
+//                                increase_total_match_count($team_id2, $site, $connection);
+//                                increase_won_match_count($team_id2, $site, $connection);
+//                            }
                         } else
                         {
                             // team1 tied in the older version and also tied in the newer version -> nothing to do
                             
-                            if (!($team_id2_before === $team_id2))
-                            {
-                                // team2 did not participate in older version
-                                increase_total_match_count($team_id2, $site, $connection);
-                                increase_draw_match_count($team_id2, $site, $connection);
-                                
-                                // following case already handled by function cmp_team_participated_at_all
-                                // old team2 won in older version but is not involved in newer version
-                                // decrease_total_match_count($team_id2_before, $site, $connection);
-                                // decrease_draw_match_count($team_id2_before, $site, $connection);                                
-                            }
+//                            if (!($team_id2_before === $team_id2))
+//                            {
+//                                // team2 did not participate in older version
+//                                increase_total_match_count($team_id2, $site, $connection);
+//                                increase_draw_match_count($team_id2, $site, $connection);
+//                                
+//                                // following case already handled by function cmp_team_participated_at_all
+//                                // old team2 won in older version but is not involved in newer version
+//                                // decrease_total_match_count($team_id2_before, $site, $connection);
+//                                // decrease_draw_match_count($team_id2_before, $site, $connection);                                
+//                            }
                         }
                     }
                 }
