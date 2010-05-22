@@ -411,7 +411,7 @@
         cmp_did_team_participated_at_all($team2_points_before, $team1_points_before,
                                          $team2_points, $team1_points,
                                          $team_id2_before, $team_id1_before,
-                                         $team_id1, $team_id2,
+                                         $team_id2, $team_id1,
                                          $site, $connection);
         
         // update match stats for team1 in case old team1 = new team1
