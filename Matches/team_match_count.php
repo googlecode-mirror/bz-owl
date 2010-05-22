@@ -125,6 +125,21 @@
                                               $team_id1, $team_id2,
                                               $site, $connection)
     {
+        if ($site->debug_sql())
+        {
+            echo '<hr>' . "\n";
+            echo '<p>cmp_did_team_participated_at_all</p>' . "\n";
+            echo '<p>$team1_points_before: ' . htmlentities($team1_points_before) . '</p>' . "\n";
+            echo '<p>$team2_points_before: ' . htmlentities($team2_points_before) . '</p>' . "\n";
+            echo '<p>$team1_points: ' . htmlentities($team1_points) . '</p>' . "\n";
+            echo '<p>$team2_points: ' . htmlentities($team2_points) . '</p>' . "\n";
+            echo '<p>$team_id1_before: ' . htmlentities($team_id1_before) . '</p>' . "\n";
+            echo '<p>$team_id2_before: ' . htmlentities($team_id2_before) . '</p>' . "\n";
+            echo '<p>$team_id1: ' . htmlentities($team_id1) . '</p>' . "\n";
+            echo '<p>$team_id2: ' . htmlentities($team_id2) . '</p>' . "\n";
+            echo '<hr>' . "\n";
+        }        
+        
         // check if old team1 is still active in the new match version
         
         if (($team_id1_before !== $team_id1) && ($team_id1_before !== $team_id2))
