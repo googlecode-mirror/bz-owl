@@ -119,7 +119,7 @@
         }
     }
     
-    function cmp_did_team_participated_at_all($team1_points_before, $team2_points_before,
+    function cmp_did_team_participate_at_all($team1_points_before, $team2_points_before,
                                               $team1_points, $team2_points,
                                               $team_id1_before, $team_id2_before,
                                               $team_id1, $team_id2,
@@ -128,7 +128,7 @@
         if ($site->debug_sql())
         {
             echo '<hr>' . "\n";
-            echo '<p>cmp_did_team_participated_at_all</p>' . "\n";
+            echo '<p>cmp_did_team_participate_at_all</p>' . "\n";
             echo '<p>$team1_points_before: ' . htmlentities($team1_points_before) . '</p>' . "\n";
             echo '<p>$team2_points_before: ' . htmlentities($team2_points_before) . '</p>' . "\n";
             echo '<p>$team1_points: ' . htmlentities($team1_points) . '</p>' . "\n";
@@ -164,31 +164,39 @@
                     decrease_draw_match_count($team_id1_before, $site, $connection);
                 }
             }
+        }
+    }
+    
+    function cmp_new_team_participated($team1_points_before, $team2_points_before,
+                                       $team1_points, $team2_points,
+                                       $team_id1_before, $team_id2_before,
+                                       $team_id1, $team_id2,
+                                       $site, $connection)
+    {
+        if (($team_id1 !== $team_id1_before) && ($team_id1 !== $team_id2_before))
+        {
+            // new team1 played a match not counted yet
+            increase_total_match_count($team_id1, $site, $connection);
             
-            if ($team_id1 !== $team_id2_before))
+            // update new team1 data
+            if ($team1_points > $team2_points)
             {
-                // new team1 played a match not counted yet
-                increase_total_match_count($team_id1, $site, $connection);
-                
-                // update new team1 data
-                if ($team1_points > $team2_points)
+                // new team1 won
+                increase_won_match_count($team_id1, $site, $connection);
+            } else
+            {
+                if ($team1_points < $team2_points)
                 {
-                    // new team1 won
-                    increase_won_match_count($team_id1, $site, $connection);
+                    // new team1 lost
+                    increase_lost_match_count($team_id1, $site, $connection);
                 } else
                 {
-                    if ($team1_points < $team2_points)
-                    {
-                        // new team1 lost
-                        increase_lost_match_count($team_id1, $site, $connection);
-                    } else
-                    {
-                        // new team1 tied
-                        increase_draw_match_count($team_id1, $site, $connection);
-                    }
+                    // new team1 tied
+                    increase_draw_match_count($team_id1, $site, $connection);
                 }
             }
         }
+        
     }
     
     function cmp_team_participated_change($team1_points_before, $team2_points_before,
@@ -423,17 +431,39 @@
         }
         
         // check if old team1 is still active in the new match version
-        cmp_did_team_participated_at_all($team1_points_before, $team2_points_before,
+        cmp_did_team_participate_at_all($team1_points_before, $team2_points_before,
                                          $team1_points, $team2_points,
                                          $team_id1_before, $team_id2_before,
                                          $team_id1, $team_id2,
                                          $site, $connection);
         // swap the team orders to apply the same algorithm to old team2
-        cmp_did_team_participated_at_all($team2_points_before, $team1_points_before,
+        cmp_did_team_participate_at_all($team2_points_before, $team1_points_before,
                                          $team2_points, $team1_points,
                                          $team_id2_before, $team_id1_before,
                                          $team_id2, $team_id1,
                                          $site, $connection);
+        
+        // check for new teams, to give them credit for new match
+        cmp_new_team_participated($team1_points_before, $team2_points_before,
+                                  $team1_points, $team2_points,
+                                  $team_id1_before, $team_id2_before,
+                                  $team_id1, $team_id2,
+                                  $site, $connection);
+        cmp_new_team_participated($team2_points_before, $team1_points_before,
+                                  $team1_points, $team2_points,
+                                  $team_id2_before, $team_id1_before,
+                                  $team_id1, $team_id2,
+                                  $site, $connection);
+        cmp_new_team_participated($team1_points_before, $team2_points_before,
+                                  $team2_points, $team1_points,
+                                  $team_id1_before, $team_id2_before,
+                                  $team_id2, $team_id1,
+                                  $site, $connection);
+        cmp_new_team_participated($team2_points_before, $team1_points_before,
+                                  $team2_points, $team1_points,
+                                  $team_id2_before, $team_id1_before,
+                                  $team_id2, $team_id1,
+                                  $site, $connection);        
         
         // update match stats for team1 in case old team1 = new team1
         
