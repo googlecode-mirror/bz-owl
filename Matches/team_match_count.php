@@ -451,9 +451,9 @@
             if (!($number_teams_mapped >= 2))
             {
                 echo "call4";
-                if (cmp_team_participated_change($team1_points_before, $team2_points_before,
+                if (cmp_team_participated_change($team2_points_before, $team1_points_before,
                                                  $team2_points, $team1_points,
-                                                 $team_id1_before, $team_id2_before,
+                                                 $team_id2_before, $team_id1_before,
                                                  $team_id2, $team_id1,
                                                  $site, $connection))
                 {
