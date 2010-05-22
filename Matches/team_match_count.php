@@ -418,6 +418,7 @@
         
         $number_teams_mapped = (int) 0;
         echo "call1";
+        // new team and old teams in old order
         if (cmp_team_participated_change($team1_points_before, $team2_points_before,
                                          $team1_points, $team2_points,
                                          $team_id1_before, $team_id2_before,
@@ -428,6 +429,7 @@
         }
         
         echo "call2";
+        // swap old teams, leave new teams in old order
         if (cmp_team_participated_change($team2_points_before, $team1_points_before,
                                          $team1_points, $team2_points,
                                          $team_id2_before, $team_id1_before,
@@ -440,6 +442,7 @@
         if (!($number_teams_mapped >= 2))
         {
             echo "call3";
+            // old teams in old order, swap new teams
             if (cmp_team_participated_change($team1_points_before, $team2_points_before,
                                              $team2_points, $team1_points,
                                              $team_id1_before, $team_id2_before,
@@ -451,6 +454,7 @@
             if (!($number_teams_mapped >= 2))
             {
                 echo "call4";
+                // swap old and new teams
                 if (cmp_team_participated_change($team2_points_before, $team1_points_before,
                                                  $team2_points, $team1_points,
                                                  $team_id2_before, $team_id1_before,
