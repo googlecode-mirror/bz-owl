@@ -131,6 +131,10 @@
         {
             // old team1 did participate in the older match version but not in the new version
             decrease_total_match_count($team_id1_before, $site, $connection);
+        }
+        
+        if (($team_id1 !== team_id1_before) && ($team_id1 !== team_id2_before))
+        {
             // new team1 played a match not counted yet
             increase_total_match_count($team_id1, $site, $connection);
             
