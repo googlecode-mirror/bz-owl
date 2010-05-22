@@ -253,7 +253,7 @@
                             // team2 also participated in the older version 
                             
                             // team2 lost in the older version but tied in the newer version
-                            0($team_id2, $site, $connection);
+                            decrease_lost_match_count($team_id2, $site, $connection);
                             increase_draw_match_count($team_id2, $site, $connection);
                         } else
                         {
@@ -437,7 +437,7 @@
             $number_teams_mapped = $number_teams_mapped + 1;
         }
         
-        if (!($number_teams_mapped > 2))
+        if (!($number_teams_mapped >= 2))
         {
             echo "call3";
             if (cmp_team_participated_change($team1_points_before, $team2_points_before,
@@ -448,7 +448,7 @@
             {
                 $number_teams_mapped = $number_teams_mapped + 1;
             }
-            if (!($number_teams_mapped > 2))
+            if (!($number_teams_mapped >= 2))
             {
                 echo "call4";
                 if (cmp_team_participated_change($team1_points_before, $team2_points_before,
