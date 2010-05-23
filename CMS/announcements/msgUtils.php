@@ -9,12 +9,7 @@
 			return '<a href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text) . '</a>';
 		}
 	}
-	
-	function linebreaks($text, $site)
-	{
-		echo nl2br($text, ($site->use_xtml()));
-	}
-	
+		
 	function displayMessage($id, $site, $connection, $folder)
 	{
 		// display a single message (either in inbox or outbox) in all its glory
@@ -40,7 +35,7 @@
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
 			echo '	<div class="msg_contents">';
-			echo linebreaks(htmlentities($row["message"]), $site);
+			echo $site->linebreaks(htmlentities($row["message"]), $site);
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
 		}
