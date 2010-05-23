@@ -215,7 +215,10 @@
 	// user is able to add new entries
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (!isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
-		echo '<a class="button" href="./?add">new entry</a><br><br>' . "\n";
+		echo '<a class="button" href="./?add">new entry</a>';
+        $site->write_self_closing_tag('br');
+        $site->write_self_closing_tag('br');
+        echo "\n";
 	}
 	
 	// handle adding new item

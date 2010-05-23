@@ -24,20 +24,12 @@
 		return ("'" . sqlSafeString($param) . "'");
 	}	
 	
-	function domain()
-	{
-		// return 'my.bzflag.org';
-		return '192.168.1.10';
-	}
-	
-	function basepath()
-	{
-		return '/~spiele/league_svn/ts/';
-	}
+    // check siteoptions_path_example.php and follow the instructions there
+	require_once('siteoptions_path.php');
 	
 	function baseaddress()
 	{
-		$www_required = false;
+		$www_required = www_required();
 		if ($www_required)
 		{
 			$www = 'www.';
@@ -72,12 +64,11 @@
 	}
 	
 	// set up a class for less frequently used functions
-    // __FILE__ is a PHP 5 constant that points to the current file (in this case siteinfo.php)
-    require_once(realpath(dirname(dirname(dirname(__FILE__))) . '/leaguesite_passwords.php'));
 	class siteinfo
 	{
 		var $siteinfo_use_mysql_news = false;
-		var $xhtml_on = false;
+        // not allowed syntax..but keep this in mind, it's defined in the siteoptions.php file
+		//var $xhtml_on = xhtml_on();
         
 		function use_mysql_news()
 		{
@@ -228,7 +219,7 @@
 			// do we use xtml (->true) or html (->false)
             if (phpversion() >= ('5.3'))
             {
-                return $this->xhtml_on;
+                return xhtml_on();
             } else
             {
                 // nl2br needs php newer or equal to 5.3

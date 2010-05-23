@@ -96,7 +96,7 @@
 	} else
     $buffer = readNews();
 	
-	echo '<form action="./" method="post">' . "\n";
+	echo '<form action="./" method="post" accept-charset="ISO-8859-1">' . "\n";
 	if (($previewSeen==1) && ($previewSeen!=2)){
 		echo '<p>Preview:</p>' . "\n";
 		echo $content;
