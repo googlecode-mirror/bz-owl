@@ -25,12 +25,12 @@
 	{
 		function mysqlpw_secret()
 		{
-			return 'MYSQL_PW19,43';
+			return 'insert mysql user password here';
 		}
 		
 		function mysqluser_secret()
 		{
-			return 'root';
+			return 'insert mysql user name here';
 		}
     }
 ?>
