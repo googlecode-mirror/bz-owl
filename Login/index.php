@@ -135,7 +135,7 @@
 				$query = 'INSERT INTO `players_profile` (`playerid`, `joined`, `location`) VALUES (';
 				$query .= "'" . sqlSafeString(getUserID()) . "'" . ', ' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
 				$query .= ', ' . "'" . sqlSafeString('here be dragons') . "'" . ')';
-				if (!(@$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
 					// FIXME: report automatically
 					echo '<p>Unfortunately there seems to be a database problem and thus creating your profile page failed. ';

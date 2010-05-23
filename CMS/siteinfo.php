@@ -1,5 +1,5 @@
 <?php
-	// register_globals turned on is a security nightmare
+    // register_globals turned on is a security nightmare
 	if ((int) (ini_get('register_globals')) === 1)
 	{
 		die('WTF! Tell the hoster to set up a sane environment This message was presented to you by siteinfo configurator.');
@@ -226,7 +226,15 @@
 		function use_xtml()
 		{
 			// do we use xtml (->true) or html (->false)
-			return $this->xhtml_on;
+            if (phpversion() >= ('5.3'))
+            {
+                return $this->xhtml_on;
+            } else
+            {
+                // nl2br needs php newer or equal to 5.3
+                // see http://www.php.net/manual/en/function.nl2br.php
+                return false;
+            }
 		}
 		
 		function write_self_closing_tag($tag)
@@ -265,7 +273,13 @@
 		// add linebreaks to input, thus enable usage of multiple lines
 		function linebreaks($text)
 		{
-			echo nl2br($text, ($this->use_xtml()));
+            if (phpversion() >= ('5.3'))
+            {
+                echo nl2br($text, ($this->use_xtml()));
+            } else
+            {
+                echo nl2br($text);
+            }
 		}
 	}
 ?>

@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.46)
 # Database: ts-CMS
-# Generation Time: 2010-05-23 11:39:12 +0200
+# Generation Time: 2010-05-23 12:46:07 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -142,7 +142,7 @@ CREATE TABLE `online_users` (
   `username` varchar(50) NOT NULL,
   `last_activity` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=166 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=MyISAM AUTO_INCREMENT=168 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -192,6 +192,7 @@ CREATE TABLE `players_profile` (
   `admin_comments` varchar(1000) NOT NULL DEFAULT '',
   `last_visit` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `logo_url` varchar(200) DEFAULT NULL,
+  `joined` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COMMENT='the players profile data';
 
@@ -207,7 +208,7 @@ CREATE TABLE `teams` (
   `name` varchar(30) NOT NULL DEFAULT 'think of a good name',
   `leader_playerid` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=167 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=168 DEFAULT CHARSET=utf8;
 
 
 
@@ -224,7 +225,7 @@ CREATE TABLE `teams_overview` (
   `any_teamless_player_can_join` tinyint(1) NOT NULL DEFAULT '1',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='deleted: 0 new; 1 active; 2 deleted; 3 re-activated';
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='deleted: 0 new; 1 active; 2 deleted; 3 re-activated';
 
 
 
@@ -238,7 +239,7 @@ CREATE TABLE `teams_permissions` (
   `teamid` int(11) NOT NULL DEFAULT '0',
   `locked_by_admin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 
 
@@ -257,7 +258,7 @@ CREATE TABLE `teams_profile` (
   `description` varchar(3000) NOT NULL DEFAULT 'Think of a good description',
   `logo_url` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
 
@@ -273,7 +274,7 @@ CREATE TABLE `visits` (
   `host` varchar(100) DEFAULT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
 
 
 
