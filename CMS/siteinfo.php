@@ -111,12 +111,12 @@
 		
 		function db_used_name()
 		{
-			return 'ts-CMS';
+			return db_used_custom_name();
 		}
 		
 		function debug_sql()
 		{
-			return true;
+			return debug_sql_custom();
 		}
 		
 		function execute_silent_query($db, $table, $query, $connection)
