@@ -9,7 +9,47 @@
 			return '<a href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text) . '</a>';
 		}
 	}
-		
+    
+    function find_recipient_player(&$item, $key, $connection)
+    {
+        // $item is passed by reference and therefore changes to $item will be passed back to the caller function
+        
+        // find out player name by the specified player id in the variable named $item
+        $query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($item) . "'" . ' LIMIT 1';
+        $result = @mysql_query($query, $connection);
+        
+        // initialise the variable with an error message
+        // if the query is successfull the variable will be overwritten with the player name
+        $item = 'Unknown player!';
+        
+        // read each entry, row by row
+		while($row = mysql_fetch_array($result))
+		{
+            $item = htmlentities($row['name']);
+        }
+        mysql_free_result($result);
+    }
+    
+    function find_recipient_team(&$item, $key, $connection)
+    {
+        // $item is passed by reference and therefore changes to $item will be passed back to the caller function
+        
+        // find out team name by the specified team id in the variable named $item        
+        $query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($item) . "'" . ' LIMIT 1';
+        $result = @mysql_query($query, $connection);
+        
+        // initialise the variable with an error message
+        // if the query is successfull the variable will be overwritten with the player name
+        $item = 'Unknown team!';
+        
+        // read each entry, row by row
+		while($row = mysql_fetch_array($result))
+		{
+            $item = htmlentities($row['name']);
+        }
+        mysql_free_result($result);        
+    }
+    
 	function displayMessage($id, $site, $connection, $folder)
 	{
 		// display a single message (either in inbox or outbox) in all its glory
@@ -31,11 +71,11 @@
 			echo '	<div class="msg_header_full">' . "\n";
 			echo '		<span class="msg_subject">' .  htmlentities($row["subject"]) . '</span>' . "\n";
 			echo '		<span class="msg_author"> by ' .  htmlentities($row["author"]) . '</span>' . "\n";
-			echo '		<span class="msg_timestamp"> at ' .  htmlentities($row["timestamp"]) . '</span>' . "\n";
+			echo '		<span class="msg_timestamp"> at ' .  htmlentities($row['timestamp']) . '</span>' . "\n";
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
 			echo '	<div class="msg_contents">';
-			echo $site->linebreaks(htmlentities($row["message"]), $site);
+			echo $site->linebreaks(htmlentities($row['message']), $site);
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
 		}
@@ -101,7 +141,28 @@
 			// TODO: implement class in stylesheets
 			echo '	<td class="msg_overview_author">' . (formatOverviewText($row["timestamp"], $currentId, $folder, $unread)) . '</td>' . "\n";
 			
-			echo '</tr>' . "\n\n";
+            echo '	<td class="msg_overview_recipients">';
+            if (!(strcmp($folder, 'inbox') == 0))
+            {
+                // save the recipients as an array
+                $recipients = explode(' ', $row['recipients']);
+                
+                //print_r($recipients);
+                // TODO: implement class msg_overview_recipients in stylesheets
+                if (strcmp('0', $row['from_team']) == 0)
+                {
+                    // message has one or more players as recipient(s)
+                    array_walk($recipients, 'find_recipient_player', $connection);
+                } else
+                {
+                    // message has one or more teams as recipient(s)
+                    array_walk($recipients, 'find_recipient_team', $connection);
+                }
+                echo (implode('<span class="msg_recipient_seperator">, </span>', $recipients));
+                echo '</td>' . "\n";
+            }
+            echo '</tr>' . "\n\n";
+                
 		}
 		// query results are no longer needed
 		mysql_free_result($result);
@@ -202,6 +263,11 @@
 					echo '	<th>Author</th>' . "\n";
 					echo '	<th>Subject</th>' . "\n";
 					echo '	<th>Date</th>' . "\n";
+                    if (!(strcmp($folder, 'inbox') === 0))
+                    {
+                        // user is not looking not at inbox
+                        echo '	<th>Receipient(s)</th>' . "\n";
+                    }
 					echo '</tr>' . "\n\n";
 					
 					// walk through the array values

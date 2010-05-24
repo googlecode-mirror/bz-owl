@@ -169,6 +169,11 @@ span.msg_timestamp
 	padding-left: 1em;
 }
 
+span.msg_recipient_seperator
+{
+    color: #808080;
+}
+
 div.msg_contents
 {
 	margin-top: 0.2em;
