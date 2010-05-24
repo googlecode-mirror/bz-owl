@@ -9,7 +9,7 @@
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 <?php
 	require '../stylesheet.inc';
-	?>
+?>
 <link href="../news.css" rel="stylesheet" type="text/css">
 <?php
 	$pfad = (pathinfo(realpath('../')));

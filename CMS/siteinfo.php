@@ -93,7 +93,10 @@
 			if (!$link)
 			{
 				echo '<p>Could not connect to database.</p>' . "\n";
-				echo 'error: ' . mysql_error();
+                if ($this->debug_sql())
+                {
+                    echo 'Raw error: ' . mysql_error();
+                }
 			}
 			return $link;
 		}
@@ -131,7 +134,8 @@
 			if (!$result)
 			{
 				echo('<p>Query is probably not valid SQL. ');
-				echo 'Updating: An error occurred while executing the query (' . htmlentities($query) . ') , ' . htmlentities($table) . ' may be now completly broken.</p>' . "\n";
+				echo 'Updating: An error occurred while executing the query (' . htmlentities($query) . ') , ';
+                echo htmlentities($table) . ' may be now completly broken.</p>' . "\n";
 				// print out the error in debug mode
 				if ($this->debug_sql())
 				{
@@ -158,11 +162,12 @@
 			$result = mysql_query($query, $connection);
 			if (!$result)
 			{
-				echo('<p>Query is probably not valid SQL. ');
-				echo 'Updating: An error occurred while executing the query, ' . htmlentities($table) . ' may be now completly broken.</p>' . "\n";
-				// print out the error in debug mode
-				if ($this->debug_sql())
-				{
+                if ($this->debug_sql())
+                {
+                    echo('<p>Query ' . htmlentities($query) . ' is probably not valid SQL. ');
+                    echo 'Updating: An error occurred while executing the query, ' . htmlentities($table);
+                    echo ' may be now completly broken.</p>' . "\n";
+                    // print out the raw error in debug mode
 					echo mysql_error();
 				}
 			}

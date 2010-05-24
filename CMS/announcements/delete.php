@@ -110,8 +110,8 @@
 			echo '<input type="hidden" name="preview" value="' . '1' . '">' . "\n";
 			
 			// random key
-			echo "<input type=\x22hidden\x22 name=\x22" . $randomkey_name . "\x22 value=\x22";
-			echo urlencode(($_SESSION[$randomkey_name])) . "\x22>\n";
+			echo '<input type="hidden" name="' . $randomkey_name . '" value="';
+			echo urlencode(($_SESSION[$randomkey_name])) . '">' . "\n";
 			
 			echo '</form>' . "\n";
 			if ($message_mode)

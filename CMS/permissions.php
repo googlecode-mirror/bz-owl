@@ -16,6 +16,9 @@
 		$_SESSION['allow_add_news'] = false;
 		$_SESSION['allow_edit_news'] = false;
 		$_SESSION['allow_delete_news'] = false;
+        
+        // permissions for all static pages
+        $_SESSION['allow_edit_static_pages'] = false;
 		
 		// permissions for bans page
 		$_SESSION['allow_set_different_bans_author'] = false;
@@ -45,6 +48,7 @@
 		
 		// match permissions
 		$_SESSION['allow_any_match_action'] = false;
+        
 	}
 	
 	function allow_set_different_news_author()
@@ -76,6 +80,14 @@
 		if (!($_SESSION['allow_delete_news']))
 		{
 			$_SESSION['allow_delete_news'] = true;
+		}
+	}
+    
+    function allow_edit_static_pages()
+	{
+		if (!($_SESSION['allow_edit_static_pages']))
+		{
+			$_SESSION['allow_edit_static_pages'] = true;
 		}
 	}
 	

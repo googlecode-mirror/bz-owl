@@ -1,4 +1,4 @@
-<?php	
+<?php
 	// find out which folder should be displayed
 	$folder = '';
 	if (isset($_GET['folder']))

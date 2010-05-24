@@ -1,4 +1,4 @@
-Where is the old site?
+<pre>Where is the old site?
 It has been removed.
 
 I used to show some statistics based on the old site. What can I do now?
@@ -14,7 +14,7 @@ I want to delete my account.
 There is no possibility to do that. However the visibility of inactive users will be changed during maintenance.
 
 I'm team leader and I can't leave my team.
-You must first set up a new team leader before you can leave.
+You must first set up a new team leader before you can leave.</pre>
 
 
 <TABLE width=100% cellpadding=0 cellspacing=0>
