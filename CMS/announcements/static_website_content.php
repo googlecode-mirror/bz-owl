@@ -8,16 +8,16 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 <?php
-    require '../stylesheet.inc';
+    require (dirname(dirname(dirname(__FILE__))) . '/stylesheet.inc');
 ?>
   <link href="../news.css" rel="stylesheet" type="text/css">
  <title>Page content editor</title></head>
 <body>
 <?php
-    require_once ('../CMS/siteinfo.php');
+    require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
     $site = new siteinfo();
     
-    require '../CMS/navi.inc';
+    require (dirname(dirname(__FILE__)) . '/navi.inc');
     
     $site = new siteinfo();
     
@@ -178,7 +178,7 @@
             echo $content;
             echo '</div>' . "\n";
             echo '<div>';
-            $site->write_self_closing_tag('input type="hidden" name="News" value="' . $content . '"');
+            $site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlentities($content) . '"');
             echo '</div>' . "\n";
             echo '<div>';
             $site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
