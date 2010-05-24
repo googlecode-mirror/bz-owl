@@ -43,7 +43,7 @@
 	
 	// update activity data
 	if (getUserID() > 0)
-	{		
+	{
 		// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
 		$query = 'UPDATE LOW_PRIORITY `online_users` SET `last_activity`=' . "'";
 		$query .= sqlSafeString(date('Y-m-d H:i:s')) . "'" . ' WHERE `playerid`=' . "'" . sqlSafeString(getUserID()) . "'";
@@ -192,8 +192,8 @@
 	{
 		schreibeVerweis('Bans', 'Bans');
 	}
-    
-//   	if (strcmp($name, 'Server') == 0)
+	
+//	if (strcmp($name, 'Server') == 0)
 //	{
 //		echo '<li>Bans</li>' . "\n";
 //	} else

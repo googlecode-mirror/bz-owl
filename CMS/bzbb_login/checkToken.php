@@ -11,7 +11,7 @@
 		
 		//Trim the last 6 characters, which are "%0D%0A", off of the last group
 		$group_list=substr($group_list, 0, strlen($group_list)-6);
-        // $reply=file_get_contents(''.$list_server.'?action=CHECKTOKENS&checktokens='.urlencode($callsign).'%3D'.$token.''.$group_list.'');
+		// $reply=file_get_contents(''.$list_server.'?action=CHECKTOKENS&checktokens='.urlencode($callsign).'%3D'.$token.''.$group_list.'');
 		$ch = curl_init();
 		
 		// set URL and other appropriate options

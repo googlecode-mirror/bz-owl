@@ -12,7 +12,7 @@
 	
 	$pfad = (pathinfo(realpath('./')));
 	$name = $pfad['basename'];
-	print '  <title>' . $name . '</title>' . "\n";
+	print '	 <title>' . $name . '</title>' . "\n";
 ?>
 </head>
 <body>

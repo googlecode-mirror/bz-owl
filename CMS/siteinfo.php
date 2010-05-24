@@ -1,5 +1,5 @@
 <?php
-    // register_globals turned on is a security nightmare
+	// register_globals turned on is a security nightmare
 	if ((int) (ini_get('register_globals')) === 1)
 	{
 		die('WTF! Tell the hoster to set up a sane environment This message was presented to you by siteinfo configurator.');
@@ -24,7 +24,7 @@
 		return ("'" . sqlSafeString($param) . "'");
 	}	
 	
-    // check siteoptions_path_example.php and follow the instructions there
+	// check siteoptions_path_example.php and follow the instructions there
 	require_once('siteoptions_path.php');
 	
 	function baseaddress()
@@ -67,9 +67,9 @@
 	class siteinfo
 	{
 		var $siteinfo_use_mysql_news = false;
-        // not allowed syntax..but keep this in mind, it's defined in the siteoptions.php file
+		// not allowed syntax..but keep this in mind, it's defined in the siteoptions.php file
 		//var $xhtml_on = xhtml_on();
-        
+		
 		function use_mysql_news()
 		{
 			return $this->siteinfo_use_mysql_news;
@@ -77,13 +77,13 @@
 		
 		function mysqlpw()
 		{
-            $pw = new pw_secret();
+			$pw = new pw_secret();
 			return $pw->mysqlpw_secret();
 		}
 		
 		function mysqluser()
 		{
-            $pw = new pw_secret();
+			$pw = new pw_secret();
 			return $pw->mysqluser_secret();
 		}
 		
@@ -93,10 +93,10 @@
 			if (!$link)
 			{
 				echo '<p>Could not connect to database.</p>' . "\n";
-                if ($this->debug_sql())
-                {
-                    echo 'Raw error: ' . mysql_error();
-                }
+				if ($this->debug_sql())
+				{
+					echo 'Raw error: ' . mysql_error();
+				}
 			}
 			return $link;
 		}
@@ -135,7 +135,7 @@
 			{
 				echo('<p>Query is probably not valid SQL. ');
 				echo 'Updating: An error occurred while executing the query (' . htmlentities($query) . ') , ';
-                echo htmlentities($table) . ' may be now completly broken.</p>' . "\n";
+				echo htmlentities($table) . ' may be now completly broken.</p>' . "\n";
 				// print out the error in debug mode
 				if ($this->debug_sql())
 				{
@@ -162,12 +162,12 @@
 			$result = mysql_query($query, $connection);
 			if (!$result)
 			{
-                if ($this->debug_sql())
-                {
-                    echo('<p>Query ' . htmlentities($query) . ' is probably not valid SQL. ');
-                    echo 'Updating: An error occurred while executing the query, ' . htmlentities($table);
-                    echo ' may be now completly broken.</p>' . "\n";
-                    // print out the raw error in debug mode
+				if ($this->debug_sql())
+				{
+					echo('<p>Query ' . htmlentities($query) . ' is probably not valid SQL. ');
+					echo 'Updating: An error occurred while executing the query, ' . htmlentities($table);
+					echo ' may be now completly broken.</p>' . "\n";
+					// print out the raw error in debug mode
 					echo mysql_error();
 				}
 			}
@@ -222,15 +222,15 @@
 		function use_xtml()
 		{
 			// do we use xtml (->true) or html (->false)
-            if (phpversion() >= ('5.3'))
-            {
-                return xhtml_on();
-            } else
-            {
-                // nl2br needs php newer or equal to 5.3
-                // see http://www.php.net/manual/en/function.nl2br.php
-                return false;
-            }
+			if (phpversion() >= ('5.3'))
+			{
+				return xhtml_on();
+			} else
+			{
+				// nl2br needs php newer or equal to 5.3
+				// see http://www.php.net/manual/en/function.nl2br.php
+				return false;
+			}
 		}
 		
 		function write_self_closing_tag($tag)
@@ -269,13 +269,13 @@
 		// add linebreaks to input, thus enable usage of multiple lines
 		function linebreaks($text)
 		{
-            if (phpversion() >= ('5.3'))
-            {
-                echo nl2br($text, ($this->use_xtml()));
-            } else
-            {
-                echo nl2br($text);
-            }
+			if (phpversion() >= ('5.3'))
+			{
+				echo nl2br($text, ($this->use_xtml()));
+			} else
+			{
+				echo nl2br($text);
+			}
 		}
 	}
 ?>

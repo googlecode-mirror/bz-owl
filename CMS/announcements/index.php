@@ -11,11 +11,11 @@
 	include('../stylesheet.inc');
 	require_once ('../CMS/siteinfo.php');
 	
-	echo '  <link href="http://' . domain() . basepath() . 'news.css" rel="stylesheet" type="text/css">' . "\n";
+	echo '	<link href="http://' . domain() . basepath() . 'news.css" rel="stylesheet" type="text/css">' . "\n";
 	
 	$pfad = (pathinfo(realpath('./')));
 	$name = $pfad['basename'];
-	print '  <title>' . $name . '</title>' . "\n";
+	print '	 <title>' . $name . '</title>' . "\n";
 ?>
 </head>
 <body>
@@ -86,7 +86,7 @@
 				$query = $query . '`author` varchar(255) default NULL,' . "\n";
 				$query = $query . '`announcement` varchar(1000) default NULL,' . "\n";
 				$query = $query . '`from_team` bit(1) default NULL,' . "\n";
-				$query = $query . 'PRIMARY KEY  (`id`)' . "\n";
+				$query = $query . 'PRIMARY KEY	(`id`)' . "\n";
 				$query = $query . ') ENGINE=MyISAM DEFAULT CHARSET=utf8';
 				if (@$site->execute_query($site->db_used_name(), $table_name, $query, $connection))
 				{
@@ -116,15 +116,15 @@
 				//									   `playerid` int(11) unsigned NOT NULL,
 				//									   `in_inbox` bit(1) NOT NULL,
 				//									   `in_outbox` bit(1) NOT NULL,
-				//									   PRIMARY KEY  (`id`)
-				//									   ) ENGINE=MyISAM DEFAULT CHARSET=utf8	
+				//									   PRIMARY KEY	(`id`)
+				//									   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 
 				$query = 'CREATE TABLE `' . $table_name_msg_user_connection . '` (' . "\n";
 				$query = $query . '`id` int(11) unsigned NOT NULL auto_increment,' . "\n";
 				$query = $query . '`msgid` int(11) unsigned NOT NULL,' . "\n";
 				$query = $query . '`playerid` int(11) unsigned NOT NULL,' . "\n";
 				$query = $query . '`in_inbox` bit(1) NOT NULL,' . "\n";
 				$query = $query . '`in_outbox` bit(1) NOT NULL,' . "\n";
-				$query = $query . 'PRIMARY KEY  (`id`)' . "\n";
+				$query = $query . 'PRIMARY KEY	(`id`)' . "\n";
 				$query = $query . ') ENGINE=MyISAM DEFAULT CHARSET=utf8';
 				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 				{
@@ -156,14 +156,14 @@
 				//										`timestamp` varchar(20) default NULL,
 				//										`author` varchar(255) default NULL,
 				//										`announcement` text,
-				//										PRIMARY KEY  (`id`)
+				//										PRIMARY KEY	 (`id`)
 				//										) ENGINE=MyISAM DEFAULT CHARSET=utf8			
 				$query = 'CREATE TABLE `' . $table_name . '` (' . "\n";
 				$query = $query . '`id` int(11) unsigned NOT NULL auto_increment,' . "\n";
 				$query = $query . '`timestamp` varchar(20) default NULL,' . "\n";
 				$query = $query . '`author` varchar(255) default NULL,' . "\n";
 				$query = $query . '`announcement` text,' . "\n";
-				$query = $query . 'PRIMARY KEY  (`id`)' . "\n";
+				$query = $query . 'PRIMARY KEY	(`id`)' . "\n";
 				$query = $query . ') ENGINE=MyISAM DEFAULT CHARSET=utf8';
 				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 				{
@@ -216,9 +216,9 @@
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (!isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
 		echo '<a class="button" href="./?add">new entry</a>';
-        $site->write_self_closing_tag('br');
-        $site->write_self_closing_tag('br');
-        echo "\n";
+		$site->write_self_closing_tag('br');
+		$site->write_self_closing_tag('br');
+		echo "\n";
 	}
 	
 	// handle adding new item

@@ -172,8 +172,8 @@
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage('');
-				}				
-			}			
+				}
+			}
 		}
 		function do_maintenance($site, $connection)
 		{

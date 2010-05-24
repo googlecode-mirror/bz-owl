@@ -16,9 +16,9 @@
 		$_SESSION['allow_add_news'] = false;
 		$_SESSION['allow_edit_news'] = false;
 		$_SESSION['allow_delete_news'] = false;
-        
-        // permissions for all static pages
-        $_SESSION['allow_edit_static_pages'] = false;
+		
+		// permissions for all static pages
+		$_SESSION['allow_edit_static_pages'] = false;
 		
 		// permissions for bans page
 		$_SESSION['allow_set_different_bans_author'] = false;
@@ -28,7 +28,7 @@
 		
 		// permissions for private messages
 		$_SESSION['allow_add_messages'] = false;
-		// private messages are never supposed to be edited at all
+		// private messages are never supposed to be edited at all by a 3rd person
 		$_SESSION['allow_edit_messages'] = true;
 		$_SESSION['allow_delete_messages'] = true;
 		
@@ -48,7 +48,7 @@
 		
 		// match permissions
 		$_SESSION['allow_any_match_action'] = false;
-        
+		
 	}
 	
 	function allow_set_different_news_author()
@@ -82,8 +82,8 @@
 			$_SESSION['allow_delete_news'] = true;
 		}
 	}
-    
-    function allow_edit_static_pages()
+	
+	function allow_edit_static_pages()
 	{
 		if (!($_SESSION['allow_edit_static_pages']))
 		{

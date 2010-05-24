@@ -1,7 +1,7 @@
 <?php
 if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 {
-    require '../CMS/bzbb_login/checkToken.php';
+	require '../CMS/bzbb_login/checkToken.php';
 	require_once '../CMS/permissions.php';
 	
 	// initialise permissions
@@ -10,9 +10,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	// groups used for permissions
 	// each group can use the fine grained permission system
 	$groups = Array ('VERIFIED','GU-LEAGUE.ADMINS', 'TS.ADMIN');
-    $args = explode (',', urldecode($_GET['bzbbauth']));
+	$args = explode (',', urldecode($_GET['bzbbauth']));
 	// $args[0] is token, $args[1] is callsign
-    $info = validate_token ($args[0], $args[1], $groups);
+	$info = validate_token ($args[0], $args[1], $groups);
 	// print_r($info);
 	// $info set -> list server was reached
 	
@@ -79,9 +79,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_add_news();
 		allow_edit_news();
 		allow_delete_news();
-        
-        // permissions for all static pages
-        allow_edit_static_pages();
+		
+		// permissions for all static pages
+		allow_edit_static_pages();
 		
 		// permissions for bans page
 		allow_set_different_bans_author();

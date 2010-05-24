@@ -262,10 +262,10 @@
 			$diff = abs(round($diff));
 		}
 		
-        if ($site->debug_sql())
-        {
-            echo ' values after ' . $score_a . ', ' .  $score_b . ', ' . $caps_a . ', ' . $caps_b . ', ' . $diff . '';
-        }
+		if ($site->debug_sql())
+		{
+			echo ' values after ' . $score_a . ', ' .  $score_b . ', ' . $caps_a . ', ' . $caps_b . ', ' . $diff . '';
+		}
 	}
 	
 	function unlock_tables($site, $connection)
@@ -842,142 +842,142 @@
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be entered due to a sql problem!');
 				}
 				
-                require_once('update_match_stats.php');
+				require_once('update_match_stats.php');
 				update_match_stats_entered($team_id1, $team_id2, $team1_points, $team2_points, $site, $connection);
 				
 				// done with the entering of that one match
 				echo '<p>The match was entered successfully.</p>' . "\n";
 			}
 			
-            // update match draw, won and lost count (match edited case)
-            
-            // first find out which team won the match before editing the table
-            $query = '';
-            // find out the appropriate team id list for the edited match
-            $query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
-            $query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
-            if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
-            {
-                unlock_tables($site, $connection);
-                $site->dieAndEndPage('Could not find out id for team 1 given match id ' . sqlSafeString($match_id) . ' due to a sql problem!');
-            }
-            
-            if (isset($_GET['edit']))
+			// update match draw, won and lost count (match edited case)
+			
+			// first find out which team won the match before editing the table
+			$query = '';
+			// find out the appropriate team id list for the edited match
+			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
+			$query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
+			if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-                require_once('team_match_count.php');
-                
-                // initialise variables
-                $team1_checkid = 0;
-                $team2_checkid = 0;
-                $team1_points_before = 0;
-                $team2_points_before = 0;
-                
-                while($row = mysql_fetch_array($result))
-                {
-                    $team1_checkid = (int) $row['team1_teamid']; // team id 1 before
-                    $team2_checkid = (int) $row['team2_teamid']; // team id 2 before
-                    $team1_points_before = (int) $row['team1_points'];
-                    $team2_points_before = (int) $row['team2_points'];
-                }
-                mysql_free_result($result);
-                
-                update_team_match_edit($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team1_checkid, $team2_checkid, $team_id1, $team_id2, $site, $connection);
-                
-//                // team 1 participated in the original match
-//                if ($team1_checkid === $team_id1)
-//                {
-//                    update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
-//                }
-//                
-//                // team 1 participated in the original match
-//                if ($team2_checkid === $team_id1)
-//                {
-//                    // swap the variables so the previous algorithm can be applied again
-//                    $team_point_swap = 0;
-//                    $team_point_swap = $team1_points;
-//                    $team1_points = $team2_points;
-//                    $team2_points = $team_point_swap;
-//                    
-//                    $team_point_before_swap = 0;
-//                    $team_point_before_swap = $team1_points_before;
-//                    $team1_points_before = $team2_points_before;
-//                    $team2_points_before = $team_point_before_swap;
-//                    
-//                    // apply the same algorithm
-//                    update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
-//                    
-//                    // swap variables back
-//                    $team_point_swap = 0;
-//                    $team_point_swap = $team1_points;
-//                    $team1_points = $team2_points;
-//                    $team2_points = $team_point_swap;
-//                    unset($team_point_swap);
-//                    
-//                    $team_point_before_swap = 0;
-//                    $team_point_before_swap = $team1_points_before;
-//                    $team1_points_before = $team2_points_before;
-//                    $team2_points_before = $team_point_before_swap;
-//                    unset($team_point_before_swap);
-//                }
-//                
-//                // team 1 played in the edited match but not in the original version
-//                if (!($team1_checkid === $team_id1) && !($team1_checkid === $team_id2))
-//                {
-//                    update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
-//                }
-//                
-//                // team 2 participated in the original match
-//                if ($team1_checkid === $team_id2)
-//                {
-//                    // swap variables to be able to re-use the previous algorithm
-//                    $team_id_swap = 0;
-//                    $team_id_swap = $team_id1;
-//                    $team_id1 = $team_id2;
-//                    $team_id2 = $team_id_swap;
-//                    
-//                    $team_point_swap = 0;
-//                    $team_point_swap = $team1_points;
-//                    $team1_points = $team2_points;
-//                    $team2_points = $team_point_swap;
-//                    
-//                    // apply the same algorithm
-//                    update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
-//                    
-//                    // swap variables back
-//                    $team_id_swap = 0;
-//                    $team_id_swap = $team_id1;
-//                    $team_id1 = $team_id2;
-//                    $team_id2 = $team_id_swap;
-//                    unset($team_id_swap);
-//                    
-//                    $team_point_swap = 0;
-//                    $team_point_swap = $team1_points;
-//                    $team1_points = $team2_points;
-//                    $team2_points = $team_point_swap;
-//                    unset($team_point_swap);						
-//                }
-//                
-//                // team 2 participated in the original match
-//                if ($team2_checkid === $team_id2)
-//                {
-//                    update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
-//                }
-            }
-            
-            if (isset($_GET['delete']))
-            {
-                // initialise variables
-                $team1_points_before = 0;
-                $team2_points_before = 0;
-                
-                // fill variables with values from query
-                while($row = mysql_fetch_array($result))
-                {
-                    $team1_points_before = (int) $row['team1_points'];
-                    $team2_points_before = (int) $row['team2_points'];
-                }
-                mysql_free_result($result);
-            }
+				unlock_tables($site, $connection);
+				$site->dieAndEndPage('Could not find out id for team 1 given match id ' . sqlSafeString($match_id) . ' due to a sql problem!');
+			}
+			
+			if (isset($_GET['edit']))
+			{
+				require_once('team_match_count.php');
+				
+				// initialise variables
+				$team1_checkid = 0;
+				$team2_checkid = 0;
+				$team1_points_before = 0;
+				$team2_points_before = 0;
+				
+				while($row = mysql_fetch_array($result))
+				{
+					$team1_checkid = (int) $row['team1_teamid']; // team id 1 before
+					$team2_checkid = (int) $row['team2_teamid']; // team id 2 before
+					$team1_points_before = (int) $row['team1_points'];
+					$team2_points_before = (int) $row['team2_points'];
+				}
+				mysql_free_result($result);
+				
+				update_team_match_edit($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team1_checkid, $team2_checkid, $team_id1, $team_id2, $site, $connection);
+				
+//				  // team 1 participated in the original match
+//				  if ($team1_checkid === $team_id1)
+//				  {
+//					  update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
+//				  }
+//				  
+//				  // team 1 participated in the original match
+//				  if ($team2_checkid === $team_id1)
+//				  {
+//					  // swap the variables so the previous algorithm can be applied again
+//					  $team_point_swap = 0;
+//					  $team_point_swap = $team1_points;
+//					  $team1_points = $team2_points;
+//					  $team2_points = $team_point_swap;
+//					  
+//					  $team_point_before_swap = 0;
+//					  $team_point_before_swap = $team1_points_before;
+//					  $team1_points_before = $team2_points_before;
+//					  $team2_points_before = $team_point_before_swap;
+//					  
+//					  // apply the same algorithm
+//					  update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
+//					  
+//					  // swap variables back
+//					  $team_point_swap = 0;
+//					  $team_point_swap = $team1_points;
+//					  $team1_points = $team2_points;
+//					  $team2_points = $team_point_swap;
+//					  unset($team_point_swap);
+//					  
+//					  $team_point_before_swap = 0;
+//					  $team_point_before_swap = $team1_points_before;
+//					  $team1_points_before = $team2_points_before;
+//					  $team2_points_before = $team_point_before_swap;
+//					  unset($team_point_before_swap);
+//				  }
+//				  
+//				  // team 1 played in the edited match but not in the original version
+//				  if (!($team1_checkid === $team_id1) && !($team1_checkid === $team_id2))
+//				  {
+//					  update_team_did_not_play_in_edited_version($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
+//				  }
+//				  
+//				  // team 2 participated in the original match
+//				  if ($team1_checkid === $team_id2)
+//				  {
+//					  // swap variables to be able to re-use the previous algorithm
+//					  $team_id_swap = 0;
+//					  $team_id_swap = $team_id1;
+//					  $team_id1 = $team_id2;
+//					  $team_id2 = $team_id_swap;
+//					  
+//					  $team_point_swap = 0;
+//					  $team_point_swap = $team1_points;
+//					  $team1_points = $team2_points;
+//					  $team2_points = $team_point_swap;
+//					  
+//					  // apply the same algorithm
+//					  update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
+//					  
+//					  // swap variables back
+//					  $team_id_swap = 0;
+//					  $team_id_swap = $team_id1;
+//					  $team_id1 = $team_id2;
+//					  $team_id2 = $team_id_swap;
+//					  unset($team_id_swap);
+//					  
+//					  $team_point_swap = 0;
+//					  $team_point_swap = $team1_points;
+//					  $team1_points = $team2_points;
+//					  $team2_points = $team_point_swap;
+//					  unset($team_point_swap);						
+//				  }
+//				  
+//				  // team 2 participated in the original match
+//				  if ($team2_checkid === $team_id2)
+//				  {
+//					  update_team_match_counts($team1_points_before, $team2_points_before, $team_id1, $team1_points, $team2_points, $site, $connection);
+//				  }
+			}
+			
+			if (isset($_GET['delete']))
+			{
+				// initialise variables
+				$team1_points_before = 0;
+				$team2_points_before = 0;
+				
+				// fill variables with values from query
+				while($row = mysql_fetch_array($result))
+				{
+					$team1_points_before = (int) $row['team1_points'];
+					$team2_points_before = (int) $row['team2_points'];
+				}
+				mysql_free_result($result);
+			}
 			
 			// editing means the entry in question should be updated with the data provided by request
 			if (isset($_GET['edit']))
@@ -1296,9 +1296,9 @@
 				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' was entered but the team score of team with id ' . sqlSafeString($team_id2). ' could not be updated!');
 			}
 			
-            require_once('update_match_stats.php');
-            update_match_stats_entered($team_id1, $team_id2, $team1_points, $team2_points, $site, $connection);
-            
+			require_once('update_match_stats.php');
+			update_match_stats_entered($team_id1, $team_id2, $team1_points, $team2_points, $site, $connection);
+			
 			// done with altering match table
 			echo '<p>The match was entered successfully.</p>' . "\n";
 			

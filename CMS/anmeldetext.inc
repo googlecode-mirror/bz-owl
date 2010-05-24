@@ -1,8 +1,8 @@
 <?php
-if ($_SESSION['isAdmin'])
-{
-    die();
-}
+	if ($_SESSION['isAdmin'])
+	{
+		die();
+	}
 ?>
 
 <div class="content">
@@ -12,18 +12,18 @@ if ($_SESSION['isAdmin'])
 <ul>
 
 <?php
-require_once 'Modulliste.php';
-$module = aktive_Anmeldungsmodule();
-
-if (isset($module['bzbb']) && ($module['bzbb']))
-{
-    include 'bzbb_login/anmeldetext.inc';
-}
-
-if (isset($module['bzbb']) && ($module['bzbb']))
-{
-    include 'local_login/anmeldetext.inc';
-}
-
-echo "</ul>\n";
+	require_once 'Modulliste.php';
+	$module = aktive_Anmeldungsmodule();
+	
+	if (isset($module['bzbb']) && ($module['bzbb']))
+	{
+		include 'bzbb_login/anmeldetext.inc';
+	}
+	
+	if (isset($module['bzbb']) && ($module['bzbb']))
+	{
+		include 'local_login/anmeldetext.inc';
+	}
+	
+	echo "</ul>\n";
 ?>

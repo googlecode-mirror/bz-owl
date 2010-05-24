@@ -442,12 +442,12 @@
 					if (isset ($recipients))
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"  .')';
+						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
 						
 					} else
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"  .')';
+						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
 					}
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
@@ -479,7 +479,7 @@
 					echo '	<div class="msg_header_full">' . "\n";
 					echo '		<span class="msg_subject">' .  htmlentities($subject) . '</span>' . "\n";
 					echo '		<span class="msg_author"> by ' .  htmlentities($author) . '</span>' . "\n";
-					echo '		<span class="msg_timestamp"> at ' .  htmlentities($timestamp) . '</span>' . "\n";
+					echo '		<span class="msg_timestamp"> at ' .	 htmlentities($timestamp) . '</span>' . "\n";
 					echo '	</div>' . "\n";
 					// appending to string with . broken here, need to use seperate echo lines
 					echo '	<div class="msg_contents">';
@@ -677,7 +677,7 @@
 			}
 			if ($previewSeen===1)
 			{
-				echo '</div>' . "\n\n";	
+				echo '</div>' . "\n\n"; 
 			}
 		}
 	}

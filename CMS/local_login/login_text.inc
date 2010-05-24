@@ -6,7 +6,7 @@
 		echo 'already logged in';
 		die();
 	}
-		
+	
 	echo '<p><strong>Never enter any login information from a different website at the following form!</strong>';
 	echo ' The following form is only there to use your local registration and does only serve local registration purposes.</p>';
 	echo '<p><strong>It is strongly discouraged to enter any global login information below.</strong></p>';
