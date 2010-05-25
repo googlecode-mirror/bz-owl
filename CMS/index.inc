@@ -2,10 +2,21 @@
         "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
 <?php
-require realpath('../stylesheet.inc');
+	require (dirname(dirname(__FILE__)) . '/stylesheet.inc');
+	echo '  <title>';
+	// display the title specified in $page_title
+	// the latter is defined in the script that includes this file
+	if (!(strcmp($display_page_title, '') === 0))
+	{
+		echo $display_page_title;
+	} else
+	{
+		echo 'No page title set';
+	}
+	echo '</title>' . "\n";
+
 ?>
-  <title>ts CMS</title>
 </head>
 <body>

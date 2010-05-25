@@ -1,6 +1,7 @@
-<?php	
+<?php
 	// the current page to be edited
 	$page_title = 'Contact/';
+	$display_page_title = 'Contact';
 	
 	$randomkey_name = ('randomkey_static_pages_' . $page_title);
 	

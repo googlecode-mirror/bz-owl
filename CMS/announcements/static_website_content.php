@@ -1,21 +1,22 @@
 <?php
-	ini_set ('session.use_trans_sid', 1);
+	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
 	session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<?php
-	require (dirname(dirname(dirname(__FILE__))) . '/stylesheet.inc');
-?>
-<link href="../news.css" rel="stylesheet" type="text/css">
-<title>Page content editor</title></head>
-<body>
-<?php
+	
+	
 	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
+	
+	if (strcmp($page_title, '') === 0)
+	{
+		$site->dieAndEndPage('Error: No page title specified!');;
+	}
+	
+	if (isset($_GET['edit']))
+	{
+		$display_page_title = 'Page content editor: ' . $page_title;
+	}
+	require_once (dirname(dirname(__FILE__)) . '/index.inc');
 	
 	require (dirname(dirname(__FILE__)) . '/navi.inc');
 	
@@ -69,18 +70,17 @@
 		}
 	}
 	
-	
-	
-	if ($previewSeen > 0)
+	// prevent links letting people modify the page unintentionally
+	if (isset($_GET['edit']) && ($previewSeen > 0))
 	{
 		$new_randomkey_name = '';
 		if (isset($_POST['key_name']))
 		{
 			$new_randomkey_name = html_entity_decode($_POST['key_name']);
 		}
-		$randomkeysmatch = $site->compare_keys($randomkey_name, $new_randomkey_name);
+		$randomkeysmatch = $site->compare_keys(urldecode($randomkey_name), $new_randomkey_name);
 		
-		if (!$randomkeysmatch && $previewSeen > 1)
+		if (!$randomkeysmatch)
 		{
 			// automatically back to main view
 			echo '<p>The magic key does not match, it looks like you came from somewhere else or your session expired.';
@@ -93,7 +93,7 @@
 	function readContent($page_title, $site, $connection, &$author, &$last_modified)
 	{
 		// initialise return variable so any returned value will be always in a defined state
-		$content = 'No content available yet.';
+		$content = '<p>No content available yet.</p>';
 		
 		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . "'" . sqlSafeString($page_title) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
@@ -141,8 +141,8 @@
 			// either 1 or more entries found, just assume there is only one
 			$query = 'UPDATE `static_pages` SET `author`=' . "'" . sqlSafeString(getUserID()) . "'";
 			$query .= ', `content`=' . "'" . sqlSafeString($content) . "'";
-			$query .= ', `content`=' . "'" . sqlSafeString($content) . "'";
-			$query .= ' WHERE `last_modified`=' . "'" . sqlSafeString($date_format) . "'";
+			$query .= ', `last_modified`=' . "'" . sqlSafeString($date_format) . "'";
+			$query .= ' WHERE `page_name`=' . "'" . sqlSafeString($page_title) . "'";
 			$query .= ' LIMIT 1';
 		}
 		
@@ -167,10 +167,19 @@
 		$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
 	}
 	
-	//\x22 == "
-	echo '<form action="./?edit" method="post">' . "\n";
 	if (isset($_GET['edit']))
 	{
+		echo '<form action="./?edit" method="post">' . "\n";
+		$new_randomkey_name = $randomkey_name . microtime();
+		$new_randomkey = $site->set_key($new_randomkey_name);
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
+		echo '</div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="' . htmlentities($randomkey_name) . '" value="'
+									  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+		echo '</div>' . "\n";
+		
 		if (($previewSeen==1) && ($previewSeen!==2))
 		{
 			echo '<p>Preview:</p>' . "\n";
@@ -183,15 +192,6 @@
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
 			echo '</div>' . "\n";
-			$new_randomkey_name = $randomkey_name . microtime();
-			$new_randomkey = $site->set_key($new_randomkey_name);
-			echo '<div>';
-			$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
-			echo '</div>' . "\n";
-			echo '<div>';
-			$site->write_self_closing_tag('input type="hidden" name="' . sqlSafeString($randomkey_name) . '" value="'
-										  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
-			echo '</div>' . "\n";
 			
 			echo '<p>';
 			$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
@@ -200,7 +200,7 @@
 		{
 			echo '<p>Put the articles in p-tags and headlines into h1-tags to get their style being applied.</p>' . "\n";
 			echo '<div>Keep in mind the home page currently uses HTML, not XHTML.</div>' . "\n";
-			echo '<div><textarea cols="75" rows="20" name="News">' . $buffer . '</textarea></div>' . "\n";
+			echo '<div><textarea cols="75" rows="20" name="News">' . htmlentities($buffer) . '</textarea></div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="1"');
 			echo '</div>' . "\n";

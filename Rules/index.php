@@ -1,6 +1,7 @@
-<?php	
+<?php
 	// the current page to be edited
 	$page_title = 'Rules/';
+	$display_page_title = 'Rules';
 	
 	$randomkey_name = ('randomkey_static_pages_' . $page_title);
 	

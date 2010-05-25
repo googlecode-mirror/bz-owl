@@ -190,7 +190,7 @@
 			
 			if ((isset($_POST[$key])) && (isset($_SESSION[$used_key2])))
 			{
-				$randomkeysmatch = strcmp(html_entity_decode((urldecode($_POST[$key]))), ($_SESSION[$used_key2]) === 0);
+				$randomkeysmatch = (strcmp(html_entity_decode((urldecode($_POST[$key]))), ($_SESSION[$used_key2])) === 0);
 				
 				// invalidate key to prevent allowing sending stuff more than once
 				if (!(strcmp($key2, '') === 0))

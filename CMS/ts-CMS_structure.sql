@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.46)
 # Database: ts-CMS
-# Generation Time: 2010-05-24 19:48:07 +0200
+# Generation Time: 2010-05-25 15:52:09 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -142,7 +142,7 @@ CREATE TABLE `online_users` (
   `username` varchar(50) NOT NULL,
   `last_activity` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=172 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=MyISAM AUTO_INCREMENT=173 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -207,10 +207,10 @@ CREATE TABLE `static_pages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `author` varchar(255) DEFAULT NULL,
   `page_name` tinytext,
-  `content` varchar(10000) NOT NULL DEFAULT '',
+  `content` mediumtext NOT NULL,
   `last_modified` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 
 
@@ -290,7 +290,7 @@ CREATE TABLE `visits` (
   `host` varchar(100) DEFAULT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=72 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=73 DEFAULT CHARSET=utf8;
 
 
 
