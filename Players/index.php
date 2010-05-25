@@ -806,7 +806,7 @@
 			
 			if (strcmp ($row['user_comment'], '') === 0)
 			{
-				echo '<span class="no_user_comment">The user has not set any profile text yet.</span>';
+				echo '<span class="no_user_comment">The user has not set up any profile text yet.</span>';
 			} else
 			{
 				$site->linebreaks(bbcode($row['user_comment']));

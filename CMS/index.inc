@@ -8,7 +8,7 @@
 	echo '  <title>';
 	// display the title specified in $page_title
 	// the latter is defined in the script that includes this file
-	if (!(strcmp($display_page_title, '') === 0))
+	if ((!isset($display_page_title)) || (!(strcmp($display_page_title, '') === 0)))
 	{
 		echo $display_page_title;
 	} else

@@ -11,7 +11,7 @@
 	$output = '';
 	
 	// load description presented to user
-	$page_title = 'ts-CMS'
+	$page_title = 'ts-CMS';
 	require_once 'index.inc';
 	
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
