@@ -477,6 +477,23 @@
 					}
 				}
 			}
+
+			if (isset($_POST['logo_url']))
+			{
+				$allowedExtensions = array('.png', '.bmp', '.jpg', '.gif', 'jpeg');
+				$logo_url = sqlSafeString($_POST['logo_url']);
+				if ((in_array(substr($logo_url, -4), $allowedExtensions)) && (substr($logo_url, 0, 7) == 'http://'))
+				{
+					// image url exists and has a valid file extension
+					$query = "UPDATE `players_profile` SET `logo_url` = '$logo_url'";
+					$query .= " WHERE `playerid` = $profile";
+					if (!($result = $site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPage('');
+					}
+				}
+			}
 			
 			if (isset($_POST['admin_comments']))
 			{
@@ -507,7 +524,7 @@
 		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
 		
-		$query = 'SELECT `user_comment`,`admin_comments` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
+		$query = 'SELECT `user_comment`,`admin_comments`,`logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 		{
@@ -521,6 +538,7 @@
 		{
 			$user_comment = $row['user_comment'];
 			$admin_comments = $row['admin_comments'];
+			$logo_url = $row['logo_url'];
 		}
 		mysql_free_result($result);
 		
@@ -536,6 +554,10 @@
 		echo '<span><textarea id="edit_user_comment" rows="10" cols="50" name="user_comment">';
 		echo bbcode($user_comment);
 		echo '</textarea></span></p>';
+
+		// logo/avatar url
+		echo '<p><label for="edit_avatar_url">Avatar URL: </label>';
+		echo '<input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'" /></p>';
 		
 		// admin comments, these should only be set by an admin
 		if ($allow_add_admin_comments_to_user_profile === true)
