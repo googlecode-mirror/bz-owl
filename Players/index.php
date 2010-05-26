@@ -492,7 +492,11 @@
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPage('');
 					}
+				} else
+				{
+					echo '<p>Error: Skipping logo setting: Not allowed URL or extension.</p>';
 				}
+
 			}
 			
 			if (isset($_POST['admin_comments']))
