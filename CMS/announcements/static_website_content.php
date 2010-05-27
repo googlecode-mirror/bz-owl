@@ -169,7 +169,7 @@
 	
 	if (isset($_GET['edit']))
 	{
-		echo '<form action="./?edit" method="post">' . "\n";
+		echo '<form action="./?edit" method="post" accept-charset="utf-8">' . "\n";
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
 		echo '<div>';
@@ -187,7 +187,7 @@
 			echo $content;
 			echo '</div>' . "\n";
 			echo '<div>';
-			$site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlentities($content) . '"');
+			$site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlentities($content, ENT_COMPAT, 'UTF-8') . '"');
 			echo '</div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
@@ -200,7 +200,7 @@
 		{
 			echo '<p>Put the articles in p-tags and headlines into h1-tags to get their style being applied.</p>' . "\n";
 			echo '<div>Keep in mind the home page currently uses HTML, not XHTML.</div>' . "\n";
-			echo '<div><textarea cols="75" rows="20" name="News">' . htmlentities($buffer) . '</textarea></div>' . "\n";
+			echo '<div><textarea cols="75" rows="20" name="News">' . htmlentities($buffer, ENT_COMPAT, 'UTF-8') . '</textarea></div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="1"');
 			echo '</div>' . "\n";
