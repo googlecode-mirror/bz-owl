@@ -354,7 +354,7 @@
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
 							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString($subject) . "'" . ', ';
-							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($announcement) . "'" . ', 1, ' . "'" . sqlSafeString(implode(' ', ($utils->getRecipientsIDs()))) . "'" . ')';
+							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($announcement) . "'" . ', 1, ' . "'" . sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
 						} else
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
