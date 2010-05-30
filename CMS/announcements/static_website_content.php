@@ -93,7 +93,7 @@
 	function readContent($page_title, $site, $connection, &$author, &$last_modified)
 	{
 		// initialise return variable so any returned value will be always in a defined state
-		$content = '<p>No content available yet.</p>';
+		$content = '<p class="first_p">No content available yet.</p>';
 		
 		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . "'" . sqlSafeString($page_title) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
