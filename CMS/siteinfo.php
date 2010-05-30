@@ -60,7 +60,7 @@
 	{
 		// TODO: Parse bbcode!
 		// TODO: strip_tags maybe useful for sanity check at the end
-		return htmlentities($string);
+		return htmlentities($string, ENT_COMPAT, 'UTF-8');
 	}
 	
 	// set up a class for less frequently used functions

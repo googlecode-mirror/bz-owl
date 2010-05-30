@@ -2,29 +2,27 @@
 	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
 	session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<?php
-	include('../stylesheet.inc');
-	require_once ('../CMS/siteinfo.php');
 	
-	echo '	<link href="http://' . domain() . basepath() . 'news.css" rel="stylesheet" type="text/css">' . "\n";
-	
-	$pfad = (pathinfo(realpath('./')));
-	$name = $pfad['basename'];
-	print '	 <title>' . $name . '</title>' . "\n";
-?>
-</head>
-<body>
-<?php
-	require realpath('../CMS/navi.inc');
-	
+	$path = (pathinfo(realpath('./')));
+	$page_title = $path['basename'];
+
+	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
 	
-	$connection = $site->connect_to_db();
+	if (strcmp($page_title, '') === 0)
+	{
+		$site->dieAndEndPage('Error: No page title specified!');;
+	}
+	
+	if (isset($_GET['edit']))
+	{
+		$display_page_title = 'Page content editor: ' . $page_title;
+	}
+	require_once (dirname(dirname(__FILE__)) . '/index.inc');
+	
+	
+	// next line also sets $connection = $site->connect_to_db();
+	require (dirname(dirname(__FILE__)) . '/navi.inc');
 	
 	// check if user did login
 	$logged_in = false;
@@ -311,10 +309,10 @@
 				printf("%s", htmlentities($row["timestamp"]));
 				echo '</div>' . "\n";
 				echo '<div class="author">';
-				printf("By: %s", htmlentities($row["author"]));
+				printf("By: %s", htmlentities($row["author"], ENT_COMPAT, 'UTF-8'));
 				echo '</div>' . "\n";
 				echo '<hr>';
-				printf("<p>%s</p>\n", htmlentities($row["announcement"]));
+				printf("<p>%s</p>\n", htmlentities($row["announcement"], ENT_COMPAT, 'UTF-8'));
 				echo "</div>\n\n";
 			}
 			// done

@@ -2,7 +2,7 @@
 	// this file handles editing new entries in table $table_name of database
 	
 	// check again for editing entry permission, just in case
-	if ($_SESSION[$entry_edit_permission])
+	if (isset($_SESSION[$entry_edit_permission]) && ($_SESSION[$entry_edit_permission]))
 	{
 		if (isset($_GET['edit']))
 		{
@@ -15,9 +15,9 @@
 			}
 			
 			
-			$announcement = (html_entity_decode(urldecode($_POST['announcement'])));
-			$timestamp = (html_entity_decode(urldecode($_POST['timestamp'])));
-			$author = (html_entity_decode(urldecode($_POST['author'])));
+			$announcement = (html_entity_decode(urldecode($_POST['announcement']), ENT_COMPAT, 'UTF-8'));
+			$timestamp = (html_entity_decode(urldecode($_POST['timestamp']), ENT_COMPAT, 'UTF-8'));
+			$author = (html_entity_decode(urldecode($_POST['author']), ENT_COMPAT, 'UTF-8'));
 			
 			// handle shown author of entry
 			if ($_SESSION[$author_change_allowed])
@@ -76,22 +76,30 @@
 				// FIXME: Do bb code instead of raw html
 				// FIXME: This is a lower priority problem because only a minority can edit messages
 				echo '<div class="article">' . "\n";
-				echo '<div class="timestamp">' . "\n";
+				echo '<div class="timestamp">';
 				echo htmlentities($timestamp);
 				echo '</div>' . "\n";
 				echo '<div class="author"> By: ';
-				echo htmlentities($author);
+				echo htmlentities($author, ENT_COMPAT, 'UTF-8');
 				echo '</div>' . "\n";
 				echo '<hr>';
-				echo htmlentities($announcement);
+				echo htmlentities($announcement, ENT_COMPAT, 'UTF-8');
 				echo "</div>\n\n";
 				
 				// keep the information in case user confirms by using invisible form items
-				echo "<input type=\x22hidden\x22 name=\x22announcement\x22 value=\x22" . urlencode(htmlentities($announcement)) . "\x22><br>\n";
+				echo '<input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('br');
+				echo "\n";
 				echo "<input type=\x22hidden\x22 name=\x22preview\x22 value=\x22" . '2' . "\x22><br>\n";
-				echo "<input type=\x22hidden\x22 name=\x22timestamp\x22 value=\x22" . urlencode(htmlentities(($timestamp))) . "\x22><br>\n";
-				echo "<input type=\x22hidden\x22 name=\x22author\x22 value=\x22" . urlencode(htmlentities($author)) . "\x22><br>\n";
-				echo "<input type=\x22hidden\x22 name=\x22announcement\x22 value=\x22" . urlencode(htmlentities($announcement)) . "\x22><br>\n";
+				echo '<input type="hidden" name="timestamp" value="' . urlencode(htmlentities($timestamp, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('br');
+				echo "\n";
+				echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('br');
+				echo "\n";
+				echo '<input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('br');
+				echo "\n";
 				
 				echo "<input type=\x22hidden\x22 name=\x22" . $randomkey_name . "\x22 value=\x22";
 				echo urlencode(($_SESSION[$randomkey_name])) . "\x22><br>\n";
@@ -134,18 +142,18 @@
 						
 						// announcement
 						echo "<tr><td style=\x22vertical-align: top;\x22>announcement:</td><td style=\x22vertical-align: top;\x22>";
-						echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlentities(urldecode($announcement));
+						echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlentities(urldecode($announcement), ENT_COMPAT, 'UTF-8');
 						echo '</textarea></td></tr>' . "\n";
 						
 						// author
 						if ($_SESSION[$author_change_allowed])
 						{
 							echo '<tr><td style="vertical-align: top;">Author:</td><td style="vertical-align: top;">';
-							echo '<input name="author" value="' . htmlentities(urldecode($author)) . '"></input>' . "\n";
+							echo '<input name="author" value="' . htmlentities(urldecode($author), ENT_COMPAT, 'UTF-8') . '"></input>' . "\n";
 							echo '</td></tr>' . "\n";
 						} else
 						{
-							echo '<input type="hidden" name="author" value="' . htmlentities(urldecode($author)) . '"><br>' . "\n";
+							echo '<input type="hidden" name="author" value="' . htmlentities(urldecode($author), ENT_COMPAT, 'UTF-8') . '"><br>' . "\n";
 						}
 						
 						echo '<input type="hidden" name="preview" value="' . '1' . '"><br>' . "\n";

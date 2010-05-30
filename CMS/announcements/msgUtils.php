@@ -25,7 +25,7 @@
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = htmlentities($row['name']);
+			$item = htmlentities($row['name'], ENT_COMPAT, 'UTF-8');
 		}
 		mysql_free_result($result);
 	}
@@ -45,7 +45,7 @@
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = htmlentities($row['name']);
+			$item = htmlentities($row['name'], ENT_COMPAT, 'UTF-8');
 		}
 		mysql_free_result($result);		   
 	}
@@ -69,13 +69,13 @@
 			echo '<div class="msg_view_full">' . "\n";
 			
 			echo '	<div class="msg_header_full">' . "\n";
-			echo '		<span class="msg_subject">' .  htmlentities($row["subject"]) . '</span>' . "\n";
-			echo '		<span class="msg_author"> by ' .  htmlentities($row["author"]) . '</span>' . "\n";
+			echo '		<span class="msg_subject">' .  htmlentities($row["subject"], ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
+			echo '		<span class="msg_author"> by ' .  htmlentities($row["author"], ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
 			echo '		<span class="msg_timestamp"> at ' .	 htmlentities($row['timestamp']) . '</span>' . "\n";
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
 			echo '	<div class="msg_contents">';
-			echo $site->linebreaks(htmlentities($row['message']), $site);
+			echo $site->linebreaks(htmlentities($row['message'], ENT_COMPAT, 'UTF-8'), $site);
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
 		}

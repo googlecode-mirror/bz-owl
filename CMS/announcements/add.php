@@ -153,7 +153,7 @@
 	}
 	
 	// check again for adding entry permission, just in case
-	if ($_SESSION[$entry_add_permission])
+	if (isset($_SESSION[$entry_add_permission]) && $_SESSION[$entry_add_permission])
 	{
 		$known_recipients = Array ();
 		
@@ -236,7 +236,7 @@
 			$announcement = '';
 			if (isset($_POST['announcement']))
 			{
-				$announcement = (html_entity_decode(urldecode($_POST['announcement'])));
+				$announcement = (html_entity_decode(urldecode($_POST['announcement']), ENT_COMPAT, 'UTF-8'));
 			}
 			if ($message_mode)
 			{
@@ -477,9 +477,9 @@
 					echo '<div class="msg_view_full">' . "\n";
 					
 					echo '	<div class="msg_header_full">' . "\n";
-					echo '		<span class="msg_subject">' .  htmlentities($subject) . '</span>' . "\n";
-					echo '		<span class="msg_author"> by ' .  htmlentities($author) . '</span>' . "\n";
-					echo '		<span class="msg_timestamp"> at ' .	 htmlentities($timestamp) . '</span>' . "\n";
+					echo '		<span class="msg_subject">' .  htmlentities($subject, ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
+					echo '		<span class="msg_author"> by ' .  htmlentities($author, ENT_COMPAT, 'UTF-8'). '</span>' . "\n";
+					echo '		<span class="msg_timestamp"> at ' .	 htmlentities($timestamp, ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
 					echo '	</div>' . "\n";
 					// appending to string with . broken here, need to use seperate echo lines
 					echo '	<div class="msg_contents">';
@@ -492,9 +492,9 @@
 					if ($message_mode)
 					{
 						echo '<div class="to">' . "\n";
-						echo htmlentities(($recipients));
+						echo htmlentities($recipients, ENT_COMPAT, 'UTF-8');
 					}
-					echo '<div class="timestamp">' . "\n";
+					echo '<div class="timestamp">';
 					if ($message_mode)
 					{
 						// timestamp automatically generated and not set by any user
@@ -505,16 +505,16 @@
 					}
 					echo '</div>' . "\n";
 					echo '<div class="author"> By: ';
-					echo htmlentities($author);
+					echo htmlentities($author, ENT_COMPAT, 'UTF-8');
 					echo '</div>' . "\n";
 					echo '<hr>';
 					echo bbcode($announcement);
-					echo "</div>\n\n";
+					echo '</div>' . "\n\n";
 				}
 				if ($message_mode)
 				{
 					echo '<form class="msg_buttons" action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
-					echo '<p><input type="hidden" name="subject" value="' . (htmlentities($subject)) . '"></p>' ."\n";
+					echo '<p><input type="hidden" name="subject" value="' . (htmlentities($subject, ENT_COMPAT, 'UTF-8')) . '"></p>' ."\n";
 				} else
 				{
 					echo '<form action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
@@ -537,18 +537,18 @@
 					}
 				} else
 				{
-					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlentities(($timestamp))) . '"></p>' . "\n";
+					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlentities($timestamp, ENT_COMPAT, 'UTF-8')) . '"></p>' . "\n";
 				}
 				
 				// keep the information in case user confirms by using invisible form items
-				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement)) . '"></p>' ."\n";
+				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '"></p>' ."\n";
 				echo '<p><input type="hidden" name="preview" value="' . '2' . '"></p>' ."\n";
 								
 				if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 				{
-					echo '<p><input type="hidden" name="author" value="' . urlencode(htmlentities($author)) . '"></p>' . "\n";
+					echo '<p><input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"></p>' . "\n";
 				}
-				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement)) . '"></p>' . "\n";
+				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '"></p>' . "\n";
 				
 				
 				$new_randomkey_name = $randomkey_name . microtime();
@@ -622,7 +622,7 @@
 								}
 								
 								mysql_free_result($team_name_result);
-								echo '<input name="to0" disabled="disabled" size="82" maxlength="255" accept-charset="UTF-8" value="' . htmlentities($team_name) . '">' . "\n";
+								echo '<input name="to0" disabled="disabled" size="82" maxlength="255" accept-charset="UTF-8" value="' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '">' . "\n";
 							} else
 							{
 								echo '<input name="to0" size="82" maxlength="255" accept-charset="UTF-8">' . "\n";
@@ -637,7 +637,7 @@
 						
 						// new form begins
 						echo '<tr><td style="vertical-align: top;">Subject:</td><td style="vertical-align: top;">';
-						echo '<input name="subject" size="82" maxlength="1000" value="' . (htmlentities($subject));
+						echo '<input name="subject" size="82" maxlength="1000" value="' . (htmlentities($subject, ENT_COMPAT, 'UTF-8'));
 						echo '" accept-charset="UTF-8"></td></tr>' . "\n";
 					}
 					
@@ -651,11 +651,11 @@
 					// author
 					if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 					{
-						echo 'Author: <textarea cols="71" rows="1" name="author" accept-charset="UTF-8">' . urlencode(htmlentities($_SESSION['username'])) . "</textarea><br>\n";
+						echo 'Author: <textarea cols="71" rows="1" name="author" accept-charset="UTF-8">' . urlencode(htmlentities($_SESSION['username'], ENT_COMPAT, 'UTF-8')) . "</textarea><br>\n";
 					} else
 					{
 						// FIXME: better idea to compute just at the moment the action in form has been finally confirmed by user
-						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author)) . '"><br>' . "\n";
+						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"><br>' . "\n";
 					}
 					
 					if (isset($_GET['teamid']))
