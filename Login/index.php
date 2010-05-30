@@ -96,7 +96,7 @@
 		{
 			if ($rows_num_accounts === 0)
 			{
-				echo '<p>Adding user to database</p>' . "\n";
+				echo '<p class="first_p">Adding user to database…</p>' . "\n";
 				// example query: INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES('1194', '0', 'ts')
 				$query = 'INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES(';
 				$query .= "'" . sqlSafeString($_SESSION['external_id']) . "'" . ', ' . "'" . '0' . "'" . ', ' . "'" . sqlSafeString($_SESSION['username']) . "'" .')';
