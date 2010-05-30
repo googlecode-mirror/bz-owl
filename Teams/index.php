@@ -278,10 +278,11 @@
 		$new_randomkey = $site->set_key($new_randomkey_name);
 		echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
 		echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
+		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
 		
 		// team name
 		echo '<p><label for="edit_team_name">Team name: </label>' . "\n";
-		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlentities('enter team name here') . '" id="edit_team_name"></p>' . "\n";
+		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlentities('enter team name here', ENT_COMPAT, 'UTF-8') . '" id="edit_team_name"></p>' . "\n";
 		
 		// team leader is automatically the creator of the team
 		
@@ -417,7 +418,7 @@
 					$site->dieAndEndPage('There was a problem updating member count for the team with id ' . htmlentities($join_team_id));
 				}
 				
-				echo '<p>You successfully joined the the team ' . htmlentities($team_name) . '!</p>';
+				echo '<p>You successfully joined the the team ' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '!</p>';
 				
 				// check if a invite was used to join
 				if ($invite_available)
@@ -467,7 +468,7 @@
 		echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
 		echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
-		echo '<p style="display:inline">Do you really want to join the team ' . htmlentities($team_name) . '?</p>' . "\n";
+		echo '<p style="display:inline">Do you really want to join the team ' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '?</p>' . "\n";
 		echo '<div style="display:inline"><input type="submit" name="join_team" value="Join the team" id="send"></div>' . "\n";
 		echo '</form>' . "\n";
 		$site->dieAndEndPage('');
@@ -861,7 +862,7 @@
 		
 		// team name
 		echo '<p><label for="edit_team_name">Change team name: </label>' . "\n";
-		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlentities($team_name) . '" id="edit_team_name"></p>' . "\n";
+		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '" id="edit_team_name"></p>' . "\n";
 		
 		// team leader
 		$query = 'SELECT `id`, `name` FROM `players` WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
@@ -1023,7 +1024,7 @@
 			echo '<div style="display:inline"><input type="submit" name="kick_user_from_team" value="Leave the team" id="send"></div>' . "\n";
 		} else
 		{
-			echo '<p style="display:inline">Do you really want to kick ' . htmlentities($playername) . ' from the team?</p>' . "\n";
+			echo '<p style="display:inline">Do you really want to kick ' . htmlentities($playername, ENT_COMPAT, 'UTF-8') . ' from the team?</p>' . "\n";
 			echo '<div style="display:inline"><input type="submit" name="kick_user_from_team" value="Kick the user" id="send"></div>' . "\n";
 		}
 		echo '</form>' . "\n";
@@ -1079,7 +1080,7 @@
 			{
 				$team_name = '(unnamed team)';
 			}
-			echo '		<div class="team_name">' . htmlentities($team_name) . '</div>' . "\n";
+			echo '		<div class="team_name">' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '</div>' . "\n";
 			echo '		<span class="team_score">Rating: ' . htmlentities($row['score']) . '</span>' . "\n";
 			$number_team_members = (int) $row['member_count'];
 			if ((int) $number_team_members === 1)
@@ -1138,7 +1139,7 @@
 		}
 				
 		echo "\n" . '<table class="table_team_members">' . "\n";
-		echo '<caption>Members of team ' . htmlentities($team_name) . '</caption>' . "\n";
+		echo '<caption>Members of team ' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
 		echo '	<th>Location</th>' . "\n";
@@ -1154,9 +1155,9 @@
 			echo '<td>';
 			echo '<a href="../Players?profile=';
 			$currentId = (int) $row['id'];
-			echo $currentId . '">' . htmlentities($row['name']) . '</a>';
+			echo $currentId . '">' . htmlentities($row['name'], ENT_COMPAT, 'UTF-8') . '</a>';
 			echo '</td>' . "\n" . '<td>';
-			echo htmlentities($row['location']);
+			echo htmlentities($row['location'], ENT_COMPAT, 'UTF-8');
 			echo '</td>' . "\n" . '<td>';
 			if (($team_leader_id > 0) && $team_leader_id === (int) $row['id'])
 			{
@@ -1251,7 +1252,7 @@
 					{
 						$invited_player_name = $row['name'];
 					}
-					echo '<li>' . htmlentities($invited_player_name) . ' (expires ' . htmlentities($expirationDate) . ')</li>' . "\n";
+					echo '<li>' . htmlentities($invited_player_name, ENT_COMPAT, 'UTF-8') . ' (expires ' . htmlentities($expirationDate) . ')</li>' . "\n";
 				}
 				echo '</ul>' . "\n";
 			}
@@ -1335,7 +1336,7 @@
 					echo htmlentities('(unnamed team)');
 				} else
 				{
-					echo htmlentities($row['name']) . '</a></td>' . "\n";
+					echo htmlentities($row['name'], ENT_COMPAT, 'UTF-8') . '</a></td>' . "\n";
 				}
 				echo '	<td>' . htmlentities($row['score']) . '</td>' . "\n";
 				echo '	<td>' . htmlentities($row['member_count']) . '</td>' . "\n";
