@@ -16,7 +16,7 @@ body:after
 	opacity: 0.41;
 }
 
-p
+p.first_p
 {
 	position: relative;
 	margin-top: 0;
@@ -390,10 +390,19 @@ span.logout
 	text-shadow: silver 1px 1px 2px;
 }
 
+div.msg_view_button_list
+{
+	position: relative;
+	opacity: 1;
+	text-align: center;
+}
+
 form.msg_buttons
 {
 	margin-top: 1em;
 	text-align: center;
+	display: inline-block;
+	padding-right: 0.25em;
 }
 
 /* no need for a br tag after the form*/

@@ -213,11 +213,24 @@
 					// display the message chosen by user
 					displayMessage($id, $site, $connection, $folder);
 					
+					echo '<div class="msg_view_button_list">' . "\n";
+					// if the message is in inbox the user might want to reply to the message
+					if (strcmp($folder, 'inbox') === 0)
+					{
+						// FIXME
+						echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;=';
+						echo '" method="post">' . "\n";
+						echo '<p><input type="submit" value="Reply"></p>' . "\n";
+						echo '</form>' . "\n";
+					}
+					
 					// the user might want to delete the message
 					echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?delete=' . ((int) $id) . '&amp;folder=';
 					echo $folder . '" method="post">' . "\n";
 					echo '<p><input type="submit" value="Delete this message"></p>' . "\n";
 					echo '</form>' . "\n";
+					echo '</div>' . "\n";
+					
 					echo '</div>' . "\n";
 				} else
 				{
@@ -232,13 +245,38 @@
 				$query .= "'" . $user_id . "'" . ' AND `' . $box_name  .'`=' . "'" . '1' . "'" . ' ORDER BY id ';
 				// newest messages first please
 				$query .= 'DESC ';
+				// limit the output to the requested rows to speed up displaying
+				$query .= 'LIMIT ';
 				// the "LIMIT 0,200" part of query means only the first 200 entries are received
-				// TODO: list different entries when requested
-				$query .= 'LIMIT 0,200';
+				// the range of shown messages is set by the GET variable i
+				$view_range = (int) 0;
+				if (isset($_GET['i']))
+				{
+					if (((int) $_GET['i']) > 0)
+					{
+						$view_range = (int) $_GET['i'];
+						$query .=  $view_range . ',';
+					} else
+					{
+						// force write 0 for value 0 (speed)
+						// and 0 for negative values (security: DBMS error handling prevention)
+						$query .= '0,';
+					}
+				} else
+				{
+					// no special value set -> write 0 for value 0 (speed)
+					$query .= '0,';
+				}
+				$query .= ((int) $view_range)+201;
 				
 				$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 				
-				$rows = mysql_num_rows($result);
+				$rows = (int) mysql_num_rows($result);
+				$show_next_messages_button = false;
+				if ($rows > 200)
+				{
+					$show_next_messages_button = true;
+				}
 				if ($rows < 1)
 				{
 					echo '<div class="msg_overview">No messages in ' . $folder . '.</div>';
@@ -254,6 +292,14 @@
 					}
 					// query results are no longer needed
 					mysql_free_result($result);
+					
+					// are more than 200 rows in the result?
+					if ($show_next_messages_button)
+					{
+						// only show 200 messages, not 201
+						// NOTE: array_pop would not work on a resource (e.g. $result)
+						array_pop($msgid_list);
+					}
 					
 					// table of messages
 					// FIXME: Implement class in stylesheet
@@ -274,6 +320,31 @@
 					array_walk($msgid_list, 'displayMessageSummary', $connection);
 					
 					echo '</table>' . "\n";
+					// look up if next and previous buttons are needed to look at all messages in overview
+					if ($show_next_messages_button || ($view_range !== (int) 0))
+					{
+						// browse previous and next entries, if possible
+						echo "\n" . '<p>'  . "\n";
+						
+						if ($view_range !== (int) 0)
+						{
+							echo '	<a href="./?folder=';
+							echo $folder;
+							echo '&i=';
+							echo ((int) $view_range)-200;
+							echo '">Previous messages</a>' . "\n";
+						}
+						if ($show_next_messages_button)
+						{
+							
+							echo '	<a href="./?folder=';
+							echo $folder;
+							echo '&i=';
+							echo ((int) $view_range)+200;
+							echo '">Next messages</a>' . "\n";
+						}
+						echo '</p>' . "\n";
+					}
 				}
 			}
 		}

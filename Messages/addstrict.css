@@ -2,10 +2,9 @@
 
 label, input[type="text"], textarea
 {
-   display: block;
-   float: left;
-   margin: 5px 5px 0 0;
-   width: 25em;
+	float: left;
+	margin: 5px 5px 0 0;
+	width: 25em;
 }
 
 /** html label, * html input, * html textarea
@@ -15,18 +14,17 @@ label, input[type="text"], textarea
 
 textarea
 {
-   height: 10em;
-   overflow: auto;
+	height: 10em;
+	overflow: auto;
 }
 
 input[type=submit]
 {
 	text-align: center;
-	margin: 5px 5px 0 0;
-	margin-bottom: 2em;
+	margin: 5px 5px 2em 0;
 }
 
-input[type=submit]#msg_add_recipient
+input[type=submit]#msg_send_add_recipient
 {
 	text-align: center;
 	position: relative;
@@ -34,7 +32,7 @@ input[type=submit]#msg_add_recipient
 	margin: 7px 0 0 0;
 }
 
-div.recipient_readonly:before
+div.msg_send_recipient_readonly:before
 {
 	 /* somehow content is needded so put something hidden */ 
 	content:"\2022";
@@ -47,54 +45,49 @@ input[type=text][readonly]
 {
 	background-color: #f0f0f0;
 	position: relative;
-	bottom: 1.5em;
+	bottom: 2.3em;
 }
 
 label
 {
-	font: 1em "Lucida Grande", Lucida, Verdana, sans-serif;
 	text-align: right;
 	width: 12em;
 	padding: 2px 5px 0 0;
-}
-
-label#msg_sendmsgto:after
-{
-	clear: right;
-	content:"\2022";
-	visibility: hidden;
-	float: left;
-	margin-bottom: 0.3em;
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 
 input[type="text"], textarea
 {
-   background-color: #FFF;
-   border: 1px solid #0A3485;
-   padding: 1px 2px;
-   color: #000;
-   font: 1em "Lucida Grande", Lucida, Verdana, sans-serif;
+	background-color: #FFF;
+	/* border: 1px solid #0A3485; */
+	padding: 1px 2px;
+	color: #000;
+	font: 75% "Lucida Grande", Lucida, Verdana, sans-serif;
+	width: 40em;
 }
 
+/*
 input[type="text"]:focus, textarea:focus
 {
-   background-color: #e8e8e8;
-   border: 1px ridge #aaa;
+	background-color: #e8e8e8;
 }
 
-form p
+
+form textarea#msg_send_announcement
 {
-	display: inline;
+	border-top: 3px groove #eaeaea;
+	border-left: 2px groove rgba(234,234,234,0.6);
+	border-right: 2px groove rgba(254,255,255,0.6);
+	border-bottom: 2px groove rgba(254,255,255,0.6);
+}
+*/
+
+form div.add
+{
+	display: inline-block;
 }
 
 form div
 {
 	clear: left;
-}
-
-input[type=hidden]
-{
-   border: 0;
-   padding: 0;
-   display: none;
 }

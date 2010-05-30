@@ -23,7 +23,7 @@
 		$recipient = $_GET['to'];
 	}
 	$allow_different_timestamp = false;
-	
+		
 	// write private messages instead of announcements
 	$message_mode = true;
 	$table_name = 'messages_storage';

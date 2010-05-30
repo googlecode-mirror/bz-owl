@@ -51,12 +51,12 @@
 		
 		return $checksum;
 	}
-		
+	
 	function setTableUnchanged($site, $connection)
 	{
 		$_SESSION['checksum_matches'] = get_table_checksum($site, $connection);
 	}
-	
+		
 	function team_name_from_id($site, $connection, $id)
 	{
 		$query = 'SELECT `name` FROM `teams` WHERE id=';
@@ -99,18 +99,51 @@
 	}
 	
 	// TODO: make the limit dynamic so users can browse the entire list of matches
-	$query = 'SELECT * FROM `matches` ORDER BY `timestamp` DESC LIMIT 0,200';
+	$query = 'SELECT * FROM `matches` ORDER BY `timestamp` ';
+	// newest matches first please
+	$query .= 'DESC ';
+	// limit the output to the requested rows to speed up displaying
+	$query .= 'LIMIT ';
+	// the "LIMIT 0,200" part of query means only the first 200 entries are received
+	// the range of shown matches is set by the GET variable i
+	$view_range = (int) 0;
+	if (isset($_GET['i']))
+	{
+		if (((int) $_GET['i']) > 0)
+		{
+			$view_range = (int) $_GET['i'];
+			$query .=  $view_range . ',';
+		} else
+		{
+			// force write 0 for value 0 (speed)
+			// and 0 for negative values (security: DBMS error handling prevention)
+			$query .= '0,';
+		}
+	} else
+	{
+		// no special value set -> write 0 for value 0 (speed)
+		$query .= '0,';
+	}
+	$query .= ((int) $view_range)+201;
+	
 	if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 	{
 		$site->dieAndEndPage('The list of matches could not be displayed because of an SQL/database connectivity problem.');
 	}
 	
-	if ((int) mysql_num_rows($result) === 0)
+	$rows = (int) mysql_num_rows($result);
+	$show_next_matches_button = false;
+	if ($rows > 200)
+	{
+		$show_next_messages_button = true;
+	}
+	if ($rows === (int) 0)
 	{
 		echo '<p>No matches have been played yet.</p>' . "\n";
 		setTableUnchanged($site, $connection);
 		$site->dieAndEndPage('');
 	}
+	unset($rows);
 	
 	echo '<table class="table_matches_played">' . "\n";
 	echo '<caption>Matches played</caption>' . "\n";
@@ -121,46 +154,97 @@
 	if ($allow_any_match_action)
 	{
 		echo '<th>Allowed actions</th>' . "\n";
-	}		
+	}
 	echo '</tr>' . "\n\n";
+	// display message overview
+	$matchid_list = Array (Array ());
+	// read each entry, row by row
+	$current_match_row = 0;
 	while($row = mysql_fetch_array($result))
+	{
+		$matchid_list[$current_match_row]['timestamp'] = $row['timestamp'];
+		$matchid_list[$current_match_row]['team1_teamid'] = $row['team1_teamid'];
+		$matchid_list[$current_match_row]['team2_teamid'] = $row['team2_teamid'];
+		$matchid_list[$current_match_row]['team1_points'] = $row['team1_points'];
+		$matchid_list[$current_match_row]['team2_points'] = $row['team2_points'];
+		$matchid_list[$current_match_row]['id'] = $row['id'];
+		$matchid_list[$current_match_row]['team2_points'] = $row['team2_points'];
+
+		$current_match_row++;
+	}
+	unset($current_match_row);
+	// query result no longer needed
+	mysql_free_result($result);
+	
+	// are more than 200 rows in the result?
+	if ($show_next_matches_button)
+	{
+		// only show 200 messages, not 201
+		// NOTE: array_pop would not work on a resource (e.g. $result)
+		array_pop($matchid_list);
+	}
+	
+	// walk through the array values
+	foreach($matchid_list as $match_entry)
 	{
 		echo '<tr class="matches_overview">' . "\n";
 		echo '<td>';
-		echo htmlentities($row['timestamp']);
+		echo htmlentities($match_entry['timestamp']);
 		echo '</td>' . "\n" . '<td>';
 		
 		// get name of first team
-		team_name_from_id($site, $connection, $row['team1_teamid']);
+		team_name_from_id($site, $connection, $match_entry['team1_teamid']);
 		
 		// seperator showing that opponent team will be named soon
 		echo ' versus ';
 		
 		// get name of second team
-		team_name_from_id($site, $connection, $row['team2_teamid']);
+		team_name_from_id($site, $connection, $match_entry['team2_teamid']);
 		
 		// done with the table field, go to next field
 		echo '</td>' . "\n" . '<td>';
 		
-		echo htmlentities($row['team1_points']);
+		echo htmlentities($match_entry['team1_points']);
 		echo ' - ';
-		echo htmlentities($row['team2_points']);
+		echo htmlentities($match_entry['team2_points']);
 		echo '</td>' . "\n";
 		
 		// TODO: use more permissions
 		if ($allow_any_match_action)
 		{
-			echo '<td><a class="button" href="./?edit=' . htmlspecialchars($row['id']) . '">Edit match result</a> <a class="button" href="./?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a></td>' . "\n";
+			echo '<td><a class="button" href="./?edit=' . htmlspecialchars($match_entry['id']) . '">Edit match result</a> <a class="button" href="./?delete=' . htmlspecialchars(urlencode($match_entry['id'])) . '">Delete match</a></td>' . "\n";
 		}
 		
 		
 		echo '</tr>' . "\n\n";
 	}
-	// query result no longer needed
-	mysql_free_result($result);
+	unset($matchid_list);
+	unset($match_entry);
 	
 	// no more matches to display
 	echo '</table>' . "\n";
+	
+	// look up if next and previous buttons are needed to look at all messages in overview
+	if ($show_next_matches_button || ($view_range !== (int) 0))
+	{
+		// browse previous and next entries, if possible
+		echo "\n" . '<p>'  . "\n";
+		
+		if ($view_range !== (int) 0)
+		{
+			echo '	<a href="./?i=';
+			echo ((int) $view_range)-200;
+			echo '">Previous matches</a>' . "\n";
+		}
+		if ($show_next_matches_button)
+		{
+			
+			echo '	<a href="./?i=';
+			echo ((int) $view_range)+200;
+			echo '">Next matches</a>' . "\n";
+		}
+		echo '</p>' . "\n";
+	}	
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{

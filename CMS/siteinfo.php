@@ -157,7 +157,7 @@
 			// output the query in debug mode
 			if ($this->debug_sql())
 			{
-				echo '<p>executing query: ' . htmlentities($query) . '</p>' . "\n";
+				echo '<p class="first_p">executing query: ' . htmlentities($query) . '</p>' . "\n";
 			}
 			$result = mysql_query($query, $connection);
 			if (!$result)

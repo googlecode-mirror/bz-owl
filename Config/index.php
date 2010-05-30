@@ -63,7 +63,7 @@
 <?php
 	require realpath('../CMS/navi.inc');
 ?>
-<p>This is the user configuration section.</p>
+<p class="first_p">This is the user configuration section.</p>
 <p>Please note: ONLY Snow and White look good, the other ones are just a technology demo</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	
