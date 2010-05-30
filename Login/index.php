@@ -6,6 +6,9 @@
 	// choose database
 	mysql_select_db($site->db_used_name(), $connection);
 	
+	$path = (pathinfo(realpath('./')));
+	$display_page_title = $path['basename'];
+	
 	require '../CMS/index.php';
 	
 	// set the date and time

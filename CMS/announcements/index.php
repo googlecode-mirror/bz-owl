@@ -4,8 +4,9 @@
 	session_start();
 	
 	$path = (pathinfo(realpath('./')));
-	$page_title = $path['basename'];
-
+	$display_page_title = $path['basename'];
+	$page_title = $display_page_title;
+	
 	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
 	

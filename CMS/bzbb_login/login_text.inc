@@ -1,6 +1,6 @@
 <?php
 	require_once '../CMS/navi.inc';
-	echo '<p>Please log in using your accout at <a href=';
+	echo '<p class="first_p">Please log in using your accout at <a href=';
 	require_once '../CMS/siteinfo.php';
 	//$url = urlencode(baseaddress() . 'CMS/' . '?bzbbauth=%25TOKEN%25,%25USERNAME%25');
 	//$url = urlencode(baseaddress() . 'CMS/' . '?bzbbauth=%TOKEN%&username=%USERNAME%');
