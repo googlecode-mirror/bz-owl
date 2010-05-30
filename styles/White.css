@@ -99,8 +99,31 @@ a.msg_overview_unread:link
 	font-weight: bold;
 }
 
+/* news announcements */
+p.article {
+	border-top: #cccccc solid thin;
+	border-left-style: none;
+}
+
+div.article
+{
+	padding-bottom: 1em;
+}
+
+div.timestamp
+{
+	text-align: left;
+	float: left;
+}
+
+
+div.author
+{
+	text-align: right;
+}
+
 /* this  is only a theoretical case but handle it because a new message
- might get an id previousyl used by a deleted message */
+ might get an id previously used by a deleted message */
 a.msg_overview_unread:visited
 {
 	color: #dd4718;
@@ -389,7 +412,7 @@ div.edit_user_suspended_status_send
 	display: inline;
 }
 
-/* common buttons */
+/* common links */
 
 span.onlineUsers
 {
