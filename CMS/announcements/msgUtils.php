@@ -3,10 +3,10 @@
 	{
 		if ($unread)
 		{
-			return '<a class="msg_overview_unread" href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text) . '</a>';
+			return '<a class="msg_overview_unread" href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text, ENT_COMPAT, 'UTF-8') . '</a>';
 		} else
 		{
-			return '<a href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text) . '</a>';
+			return '<a href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text, ENT_COMPAT, 'UTF-8') . '</a>';
 		}
 	}
 	
