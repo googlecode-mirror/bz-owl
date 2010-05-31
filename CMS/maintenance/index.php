@@ -119,7 +119,7 @@
 				if (((int) $row['member_count']) === 0)
 				{
 					// no members in team implies team inactive
-					$cur_team_active = true;
+					$cur_team_active = false;
 				}
 				
 				// if team not active and is not new, delete it for real (do not mark as deleted but actually do it!)
@@ -175,6 +175,7 @@
 				}
 			}
 		}
+		
 		function do_maintenance($site, $connection)
 		{
 			echo '<p>Performing maintenance...</p>';
@@ -190,6 +191,7 @@
 			
 			// maintain players now
 			
+			// get player id of teamless players that have not been logged-in in the last 2 months
 			$query = 'SELECT `playerid` FROM `players`, `players_profile`';
 			$query .= ' WHERE `players`.`teamid`=' . "'" . sqlSafeString('0') . "'";
 			$query .= ' AND `players_profile`.`playerid`=`players`.`id` AND `players_profile`.`last_visit`<' . "'";
@@ -250,7 +252,7 @@
 				$query = 'DELETE FROM `messages_users_connection` WHERE `playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
 				@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);				
 				
-				// private messages itself, in case no one else has the message in mailbox
+				// delete private messages itself, in case no one else has the message in mailbox
 				foreach ($msg_list as $msgid)
 				{
 					$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `msgid`=' . "'" . sqlSafeString($msgid) . "'";
@@ -272,6 +274,7 @@
 						@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);								
 					}
 				}
+				unset($msgid);
 				
 				// mark account as deleted
 				$query = 'UPDATE `players` SET `suspended`=' . "'" . sqlSafeString('1') . "'";
