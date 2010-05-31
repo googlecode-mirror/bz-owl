@@ -26,7 +26,7 @@
 		if (($lenLogin > 50) || ($lenLogin < 1))
 		{
 			require_once '../CMS/navi.inc';
-			echo '<p>User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.</p>' . "\n";
+			echo '<p class="first_p">User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
@@ -86,7 +86,7 @@
 			if (($lenPw < 10) || ($lenPw > 32))
 			{
 				require_once '../CMS/navi.inc';
-				echo '<p>Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.</p>' . "\n";
+				echo '<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.</p>' . "\n";
 				$site->dieAndEndPage('');
 			}
 		} else
@@ -99,7 +99,7 @@
 		{
 			// TODO: automatically log these cases and lock account for some hours after several unsuccessful tries
 			require_once '../CMS/navi.inc';
-			echo '<p>Your password does not match the stored password.</p>' . "\n";
+			echo '<p class="first_p">Your password does not match the stored password.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
@@ -115,6 +115,6 @@
 		allow_delete_messages();
 		
 		require_once '../CMS/navi.inc';
-		echo '<p>Local login successful.</p>' . "\n";
+		echo '<p class="first_p">Local login successful.</p>' . "\n";
 	}
 ?>
