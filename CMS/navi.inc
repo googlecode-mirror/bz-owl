@@ -26,8 +26,8 @@
 			$saved_timestamp = $row['last_activity'];
 			$old_timestamp = strtotime($saved_timestamp);
 			$now = (int) strtotime("now");
-			// is entry more than one hour old?
-			if ($now - $old_timestamp > (60*60))
+			// is entry more than two hours old?
+			if ($now - $old_timestamp > (60*60*2))
 			{
 				$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
 				$query .= "'" . sqlSafeString($saved_timestamp) . "'";

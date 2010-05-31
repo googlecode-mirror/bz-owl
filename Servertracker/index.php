@@ -2,6 +2,7 @@
 	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
 	ini_set ('allow_url_fopen', 0);
+	ini_set('session.gc_maxlifetime', '7200');
 	session_start();
 	
 //	if (!(isset($_SESSION['IsGoodVisitor'])) || !($_SESSION['IsGoodVisitor']))

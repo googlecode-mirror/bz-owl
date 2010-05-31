@@ -37,6 +37,7 @@
 	}
 	
 	ini_set ('session.name', 'SID');
+	ini_set('session.gc_maxlifetime', '7200');
 	session_start();
 	
 	$output_buffer .= ob_get_contents();

@@ -1,6 +1,7 @@
 <?php
 	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
+	ini_set('session.gc_maxlifetime', '7200');
 	session_start();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -34,7 +35,7 @@
 	
 	if ($rows < 1)
 	{
-		echo '<p>Table does not exist. Attempting to create table.<p>';
+		echo '<p class="first_p">Table does not exist. Attempting to create table.<p>';
 		
 		// query will be
 		//CREATE TABLE `online_users` (
@@ -53,7 +54,7 @@
 		$query = $query . ') ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8' . "\n";
 		if (!(@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 		{
-			echo "<p>Creation of table failed.</p>";
+			echo '<p>Creation of table failed.</p>';
 			die("\n</div>\n</body>\n</html>");
 		}
 	}
