@@ -62,13 +62,14 @@
 		function cleanup_teams($site, $connection, $two_months_in_past)
 		{
 			// teams cleanup
+			
 			$query = 'SELECT `teamid`, `member_count`, `deleted` FROM `teams_overview`';
-			$query .= ' WHERE `deleted`<>' . "'" . sqlSafeString('1') . "'";
+			$query .= ' WHERE `deleted`<>' . "'" . sqlSafeString('2') . "'";
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
-				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of teams with deleted not equal 1 (1 means deleted team) failed.');
+				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of teams with deleted not equal 2 (2 means deleted team) failed.');
 			}
 			
 			// 6 months long inactive teams will be deleted during maintenance
