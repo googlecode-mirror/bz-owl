@@ -35,8 +35,8 @@
 		// team permissions
 		$_SESSION['allow_kick_any_team_members'] = false;
 		$_SESSION['allow_edit_any_team_profile'] = false;
-		$_SESSION['allow_invite_in_any_team'] = false;
 		$_SESSION['allow_delete_any_team'] = false;
+		$_SESSION['allow_invite_in_any_team'] = false;
 		
 		// user permissions
 		$_SESSION['allow_edit_any_user_profile'] = false;
@@ -47,7 +47,9 @@
 		$_SESSION['allow_view_user_visits'] = false;
 		
 		// match permissions
-		$_SESSION['allow_any_match_action'] = false;
+		$_SESSION['allow_add_match'] = false;
+		$_SESSION['allow_edit_match'] = false;
+		$_SESSION['allow_delete_match'] = false;
 		
 	}
 	
@@ -175,7 +177,15 @@
 		{
 			$_SESSION['allow_delete_any_team'] = true;
 		}
-	}	
+	}
+	
+	function allow_invite_in_any_team()
+	{
+		if (!($_SESSION['allow_invite_in_any_team']))
+		{
+			$_SESSION['allow_invite_in_any_team'] = true;
+		}
+	}
 	
 	function allow_edit_any_user_profile()
 	{
@@ -208,20 +218,28 @@
 			$_SESSION['allow_view_user_visits'] = true;
 		}
 	}
-	
-	function allow_any_match_action()
+		
+	function allow_add_match()
 	{
-		if (!($_SESSION['allow_any_match_action']))
+		if (!($_SESSION['allow_add_match']))
 		{
-			$_SESSION['allow_any_match_action'] = true;
+			$_SESSION['allow_add_match'] = true;
 		}
 	}
 	
-	function allow_invite_in_any_team()
+	function allow_edit_match()
 	{
-		if (!($_SESSION['allow_invite_in_any_team']))
+		if (!($_SESSION['allow_edit_match']))
 		{
-			$_SESSION['allow_invite_in_any_team'] = true;
+			$_SESSION['allow_edit_match'] = true;
+		}
+	}
+	
+	function allow_delete_match()
+	{
+		if (!($_SESSION['allow_delete_match']))
+		{
+			$_SESSION['allow_delete_match'] = true;
 		}
 	}
 ?>

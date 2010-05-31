@@ -38,13 +38,31 @@
 	
 	$randomkey_name = 'randomkey_matches';
 	$viewerid = (int) getUserID();
-	
-	$allow_any_match_action = false;
-	if (isset($_SESSION['allow_any_match_action']))
+		
+	$allow_add_match = false;
+	if (isset($_SESSION['allow_add_match']))
 	{
-		if (($_SESSION['allow_any_match_action']) === true)
+		if (($_SESSION['allow_add_match']) === true)
 		{
-			$allow_any_match_action = true;
+			$allow_add_match = true;
+		}
+	}
+	
+	$allow_edit_match = false;
+	if (isset($_SESSION['allow_edit_match']))
+	{
+		if (($_SESSION['allow_edit_match']) === true)
+		{
+			$allow_edit_match = true;
+		}
+	}
+	
+	$allow_delete_match = false;
+	if (isset($_SESSION['allow_delete_match']))
+	{
+		if (($_SESSION['allow_delete_match']) === true)
+		{
+			$allow_delete_match = true;
 		}
 	}
 	
@@ -298,23 +316,20 @@
 			}
 			$site->dieAndEndPage('');
 		}
-				
-		if ($allow_any_match_action === false)
+		
+		if (!$allow_add_match && isset($_GET['enter']))
 		{
-			if (isset($_GET['enter']))
-			{
-				$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to enter new matches!');
-			}
-			if (isset($_GET['edit']))
-			{
-				$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to edit matches!');
-			}
-			if (isset($_GET['delete']))
-			{
-				$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to delete matches!');
-			}
+			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to enter new matches!');
 		}
-				
+		if (!$allow_edit_match && isset($_GET['edit']))
+		{
+			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to edit matches!');
+		}
+		if (!$allow_delete_match && isset($_GET['delete']))
+		{
+			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to delete matches!');
+		}
+		
 		$confirmed = (int) 0;
 		if (isset($_POST['confirmed']))
 		{

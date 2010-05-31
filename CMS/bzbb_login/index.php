@@ -60,7 +60,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_view_user_visits();
 		
 		// match permissions
-		allow_any_match_action();		
+		allow_add_match();
+		allow_edit_match();
+		allow_delete_match();
 	}
 	
 	// remove first group
@@ -104,7 +106,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_view_user_visits();
 		
 		// match permissions
-		allow_any_match_action();
+		allow_add_match();
+		allow_edit_match();
+		allow_delete_match();
 	}
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])

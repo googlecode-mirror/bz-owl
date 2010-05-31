@@ -24,14 +24,33 @@
 	$randomkey_name = 'randomkey_matches';
 	$viewerid = (int) getUserID();
 	
-	$allow_any_match_action = false;
-	if (isset($_SESSION['allow_any_match_action']))
+	$allow_add_match = false;
+	if (isset($_SESSION['allow_add_match']))
 	{
-		if (($_SESSION['allow_any_match_action']) === true)
+		if (($_SESSION['allow_add_match']) === true)
 		{
-			$allow_any_match_action = true;
+			$allow_add_match = true;
 		}
 	}
+	
+	$allow_edit_match = false;
+	if (isset($_SESSION['allow_edit_match']))
+	{
+		if (($_SESSION['allow_edit_match']) === true)
+		{
+			$allow_edit_match = true;
+		}
+	}
+	
+	$allow_delete_match = false;
+	if (isset($_SESSION['allow_delete_match']))
+	{
+		if (($_SESSION['allow_delete_match']) === true)
+		{
+			$allow_delete_match = true;
+		}
+	}	
+
 	
 	function get_table_checksum($site, $connection)
 	{
@@ -93,7 +112,7 @@
 	}
 		
 	// TODO: use more permissions
-	if ($allow_any_match_action)
+	if ($allow_add_match)
 	{
 		echo '<a class="button" href="./?enter">Enter a new match</a>' . "\n";
 	}
@@ -151,9 +170,11 @@
 	echo '	<th>Time</th>' . "\n";
 	echo '	<th>Teams</th>' . "\n";
 	echo '	<th>Result</th>' . "\n";
-	if ($allow_any_match_action)
+	// show edit/delete links in a new table column if user has permission to use these
+	// adding matches is not done from within the table
+	if ($allow_edit_match || $allow_delete_match)
 	{
-		echo '<th>Allowed actions</th>' . "\n";
+		echo '	<th>Allowed actions</th>' . "\n";
 	}
 	echo '</tr>' . "\n\n";
 	// display message overview
@@ -209,10 +230,23 @@
 		echo htmlentities($match_entry['team2_points']);
 		echo '</td>' . "\n";
 		
-		// TODO: use more permissions
-		if ($allow_any_match_action)
+		// show allowed actions based on permissions
+		if ($allow_edit_match || $allow_delete_match)
 		{
-			echo '<td><a class="button" href="./?edit=' . htmlspecialchars($match_entry['id']) . '">Edit match result</a> <a class="button" href="./?delete=' . htmlspecialchars(urlencode($match_entry['id'])) . '">Delete match</a></td>' . "\n";
+			echo '<td>';
+			if ($allow_edit_match)
+			{
+				echo '<a class="button" href="./?edit=' . htmlspecialchars($match_entry['id']) . '">Edit match result</a>';
+			}
+			if ($allow_edit_match && $allow_delete_match)
+			{
+				echo ' ';
+			}
+			if ($allow_edit_match)
+			{
+				echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($match_entry['id'])) . '">Delete match</a>';
+			}
+			echo '</td>' . "\n";
 		}
 		
 		
