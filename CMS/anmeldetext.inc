@@ -7,8 +7,8 @@
 
 <div class="content">
 
-<p>Das hier ist das Anmeldungsmoduls des auf dieser Seite eingesetzten <abbr title="Content Management System">CMS</abbr>.</p>
-<p>Es stehen folgende M&ouml;glichkeiten zum Anmelden zur Verf&uuml;gung:</p>
+<p class="first_p">This is the login module of the used <abbr title="Content Management System">CMS</abbr>here.</p>
+<p>The following possibilities to login are available:</p>
 <ul>
 
 <?php
