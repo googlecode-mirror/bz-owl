@@ -288,7 +288,7 @@
 			$rows = (int) mysql_num_rows($result);
 			if ($rows === 0)
 			{
-				echo '<p>No entries made yet.</p>' . "\n";
+				echo '<p class="first_p">No entries made yet.</p>' . "\n";
 				$site-dieAndEndPage('');
 			}
 			
