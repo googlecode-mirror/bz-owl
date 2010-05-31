@@ -296,7 +296,7 @@
 			
 			// create invitation message in database
 			$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
-			$query .= '(' . "'" . sqlSafeString('league managagement system') . "'" . ', ' . "'" . sqlSafeString ('0'). "'";
+			$query .= '(' . "'" . sqlSafeString('league management system') . "'" . ', ' . "'" . sqlSafeString ('0'). "'";
 			$query .= ', ' . "'" . sqlSafeString(('Invitation to team ' . htmlentities($team_name))) . "'" . ', ' . "'" . sqlSafeString (date('Y-m-d H:i:s')). "'";
 			$query .= ', ' . "'" . sqlSafeString(('Congratulations, you were invited by ' . htmlentities($player_name) . ' to the team ' . htmlentities($team_name) . '!' . "\n" . 'The invitation will expire in 7 days.')) . "'";
 			$query .= ', ' . "'" . sqlSafeString('0') . "'" . ', ' . "'" . sqlSafeString($profile) . "'" . ')';
