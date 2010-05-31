@@ -42,7 +42,7 @@
 		{
 			// team 2 won
 			$query = 'UPDATE `teams_profile` SET `num_matches_won`=`num_matches_won`+1';
-			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($team_id1) . "'";
+			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($team_id2) . "'";
 			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
