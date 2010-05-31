@@ -146,13 +146,13 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		
 		$_SESSION['external_login'] = true;
 		$external_login_id = $_SESSION['external_id'];
-		echo '<p>Login was successful!</p>' . "\n";
+		echo '<p class="first_p">Login was successful!</p>' . "\n";
 	} else
 	{
 		// login did not work, removing permissions not necessary as additional permissions where never granted
 		// after permissions were removed at the beginning of the file
 		require_once '../CMS/navi.inc';
-		echo '<p>Error: The returned values could not be validated!</p>' . "\n";
+		echo '<p class="first_p">Error: The returned values could not be validated!</p>' . "\n";
 	}
 }
 ?>
