@@ -72,7 +72,7 @@
 	$name = $site->base_name();
 	
 	// public_html auf FreeBSD oder Sites auf Mac OS X
-	$ganzOben = (strcmp($name, 'public_html') == 0) || (strcmp($name, 'Sites') == 0) || (strcmp($name, 'leaguesite') == 0);;
+	$ganzOben = (strcmp($name, 'public_html') == 0) || (strcmp($name, 'Sites') == 0) || (strcmp($name, 'leaguesite') == 0) || (strcmp($name, 'ts') == 0);
 	
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
