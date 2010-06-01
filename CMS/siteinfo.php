@@ -139,7 +139,7 @@
 			if (!$result)
 			{
 				echo('<p>Query is probably not valid SQL. ');
-				echo 'Updating: An error occurred while executing the query (' . htmlentities($query) . ') , ';
+				echo 'Updating: An error occurred while executing the query (' . htmlent($query) . ') , ';
 				echo htmlentities($table) . ' may be now completly broken.</p>' . "\n";
 				// print out the error in debug mode
 				if ($this->debug_sql())
@@ -162,14 +162,14 @@
 			// output the query in debug mode
 			if ($this->debug_sql())
 			{
-				echo '<p class="first_p">executing query: ' . htmlentities($query) . '</p>' . "\n";
+				echo '<p class="first_p">executing query: ' . htmlent($query) . '</p>' . "\n";
 			}
 			$result = mysql_query($query, $connection);
 			if (!$result)
 			{
 				if ($this->debug_sql())
 				{
-					echo('<p>Query ' . htmlentities($query) . ' is probably not valid SQL. ');
+					echo('<p>Query ' . htmlent($query) . ' is probably not valid SQL. ');
 					echo 'Updating: An error occurred while executing the query, ' . htmlentities($table);
 					echo ' may be now completly broken.</p>' . "\n";
 					// print out the raw error in debug mode
@@ -261,12 +261,9 @@
 		function dieAndEndPage($message='')
 		{
 			// TODO: report this to admins
-			if (strcmp($message, '') === 0)
+			if (!(strcmp($message, '') === 0)
 			{
-				echo htmlentities($message);
-			} else
-			{
-				echo '<p>' . htmlentities($message) . '</p>';
+				echo '<p>' . htmlent($message) . '</p>';
 			}
 			die("\n" . '</div>' . "\n" . '</body>' . "\n" . '</html>');
 		}
