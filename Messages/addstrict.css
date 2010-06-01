@@ -1,93 +1,72 @@
 /* @override http://192.168.1.10/~ts/BZFlag/Ligen/GU/leaguesite/Messages/addstrict.css */
 
-label, input[type="text"], textarea
+div.form_area
 {
-	float: left;
-	margin: 5px 5px 0 0;
-	width: 25em;
-}
-
-/** html label, * html input, * html textarea
-{
-   margin: 5px 5px 0 6px;
-}*/
-
-textarea
-{
-	height: 10em;
-	overflow: auto;
-}
-
-input[type=submit]
-{
-	text-align: center;
-	margin: 5px 5px 2em 0;
-}
-
-input[type=submit]#msg_send_add_recipient
-{
-	text-align: center;
-	position: relative;
-	clear: left;
-	margin: 7px 0 0 0;
-}
-
-div.msg_send_recipient_readonly:before
-{
-	 /* somehow content is needded so put something hidden */ 
-	content:"\2022";
-	visibility: hidden;
-	width: 12.5em;
-	float: left;
-}
-
-input[type=text][readonly]
-{
-	background-color: #f0f0f0;
-	position: relative;
-	bottom: 2.3em;
+	width: inherit;
 }
 
 label
 {
+	width: 10em;
 	text-align: right;
-	width: 12em;
-	padding: 2px 5px 0 0;
-	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-}
-
-input[type="text"], textarea
-{
-	background-color: #FFF;
-	/* border: 1px solid #0A3485; */
-	padding: 1px 2px;
-	color: #000;
-	font: 75% "Lucida Grande", Lucida, Verdana, sans-serif;
-	width: 40em;
-}
-
-/*
-input[type="text"]:focus, textarea:focus
-{
-	background-color: #e8e8e8;
+	float: left;
+	padding: 1mm 2mm 0 0;
 }
 
 
-form textarea#msg_send_announcement
+input[type=text]
 {
-	border-top: 3px groove #eaeaea;
-	border-left: 2px groove rgba(234,234,234,0.6);
-	border-right: 2px groove rgba(254,255,255,0.6);
-	border-bottom: 2px groove rgba(254,255,255,0.6);
-}
-*/
-
-form div.add
-{
-	display: inline-block;
+	width: 10cm;
+	margin-bottom: 2mm;
 }
 
-form div
+input[type=text][readonly]
 {
-	clear: left;
+	position: relative;
+	width: 9.24cm;
+	background-color: #f4f4f4;
+	margin-right: 1mm;
+}
+
+input[type=text]#msg_send_toN
+{
+	
+	margin-bottom: 2mm;
+	width: 9.24cm;
+	margin-right: 1mm;
+}
+
+input[type=submit]#msg_send_add_recipient
+{
+	position: relative;
+	width: 0.7cm;
+	text-align: center;
+}
+
+input[type=submit].msg_send_remove_recipient
+{
+	position: relative;
+	width: 0.7cm;
+	text-align: center;
+}
+
+div.invisi
+{
+	visibility: hidden;
+}
+
+div.add
+{
+	margin-bottom: 1em;
+	margin-left: 10em;
+	margin-top: 2mm;
+}
+
+textarea#msg_send_announcement
+{
+	font-size: 1em;
+	//max-width: 100%;
+	//min-width: 1em;
+	width: 10.1cm;
+	height: 10em;
 }
