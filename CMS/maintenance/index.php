@@ -30,11 +30,11 @@
 	{
 		// nothing to do
 		// stop silently
-		die();
+		$site->dieAndEndPage('');
 	} else
 	{
-		// FIXME: maint not working at the moment, therefore disable it
-		die();
+		// FIXME: maint not working correctly at the moment, therefore disable it
+		$site->dieAndEndPage('');
 		
 		// delete the file's content
 		if (!fclose($handle)) {
