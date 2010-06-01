@@ -33,19 +33,19 @@
 		$site->dieAndEndPage('');
 	} else
 	{
-		// FIXME: maint not working correctly at the moment, therefore disable it
-		$site->dieAndEndPage('');
-		
 		// delete the file's content
-		if (!fclose($handle)) {
+		if (!fclose($handle))
+		{
 			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not close handle to file ' . sqlSafeString($file)));
 		}
 		// open file in write mode
-		if (!$handle = fopen($file, 'w')) {
+		if (!$handle = fopen($file, 'w'))
+		{
 			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not open file ' . sqlSafeString($file)));
 		}
 		// write date of today
-		if (!fwrite($handle, $today)) {
+		if (!fwrite($handle, $today))
+		{
 			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not write content into file ' . sqlSafeString($file)));
 		}
 		@fclose($handle);
@@ -93,11 +93,11 @@
 				if ((int) $row['deleted'] === 3)
 				{
 					// re-activated team from admins will only last 2 months without matching
-					$query .= ' WHERE `timestamp`<' . "'" . sqlSafeString($two_months_in_past) . "'";
+					$query .= ' WHERE `timestamp`>' . "'" . sqlSafeString($two_months_in_past) . "'";
 				} else
 				{
 					// team marked as active (deleted === 1) has 6 months to match before being deleted
-					$query .= ' WHERE `timestamp`<' . "'" . sqlSafeString($six_months_in_past) . "'";
+					$query .= ' WHERE `timestamp`>' . "'" . sqlSafeString($six_months_in_past) . "'";
 				}
 				$query .= ' AND (`team1_teamid`=' . "'" . sqlSafeString($curTeam) . "'";
 				$query .= ' OR `team2_teamid`=' . "'" . sqlSafeString($curTeam) . "'" . ')';
@@ -110,7 +110,7 @@
 					$site->dieAndEndPage('MAINTENANCE ERROR: getting list of recent matches from teams failed.');
 				}
 				
-				// set the team as inactive by default
+				// mark the team as inactive by default
 				$cur_team_active = false;
 				// walk through results
 				while($row_matches = mysql_fetch_array($result_matches))
@@ -166,16 +166,16 @@
 					$query .= ' LIMIT 1';
 					// execute query, ignoring result
 					@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
-				}
-				
-				// mark who was where, to easily restore an unwanted team deletion
-				$query = 'UPDATE `players` SET `last_teamid`=' . "'" . sqlSafeString($teamid) . "'";
-				$query .= ', `teamid`=' . "'" . sqlSafeString('0') . "'";
-				$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
-				if (!($result_update = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-				{
-					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('');
+					
+					// mark who was where, to easily restore an unwanted team deletion
+					$query = 'UPDATE `players` SET `last_teamid`=' . "'" . sqlSafeString($curTeam) . "'";
+					$query .= ', `teamid`=' . "'" . sqlSafeString('0') . "'";
+					$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($curTeam) . "'";
+					if (!($result_update = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPage('');
+					}
 				}
 			}
 		}
@@ -197,9 +197,10 @@
 			
 			// get player id of teamless players that have not been logged-in in the last 2 months
 			$query = 'SELECT `playerid` FROM `players`, `players_profile`';
-			$query .= ' WHERE `players`.`teamid`=' . "'" . sqlSafeString('0') . "'";
-			$query .= ' AND `players_profile`.`playerid`=`players`.`id` AND `players_profile`.`last_visit`<' . "'";
-			$query .= sqlSafeString($two_months_in_past) . "'";
+			$query .= ' WHERE `players`.`teamid`=' . sqlSafeStringQuotes('0');
+			$query .= 'AND `players`.`suspended`=' . sqlSafeStringQuotes('0');
+			$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
+			$query .= 'AND `players_profile`.`last_visit`<' . sqlSafeStringQuotes($two_months_in_past);
 			
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
