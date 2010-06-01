@@ -261,7 +261,7 @@
 		function dieAndEndPage($message='')
 		{
 			// TODO: report this to admins
-			if (!(strcmp($message, '') === 0)
+			if (!(strcmp($message, '') === 0))
 			{
 				echo '<p>' . htmlent($message) . '</p>';
 			}
