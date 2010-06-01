@@ -28,7 +28,7 @@
 			if ($message_mode)
 			{
 				// give possibility to go back to overview because the back button leads to the deletion form
-				echo '<p><a href="./?folder=' . htmlspecialchars($folder) . '">[overview]</a><p>';
+				echo '<p class="first_p"><a class="button" href="./?folder=' . htmlspecialchars($folder) . '">overview</a><p>';
 				
 				// the request string contains the playerid, which takes care of permissions
 				$user_id = 0;
