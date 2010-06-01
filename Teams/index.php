@@ -55,6 +55,12 @@
 		}
 	}
 	
+	$allow_reactivate_teams = false;
+	if (isset($_SESSION['allow_reactivate_teams']) && ($_SESSION['allow_reactivate_teams'] == true))
+	{
+		$allow_reactivate_teams = true;
+	}
+	
 	$team_description = '(no description)';
 	if (isset($_GET['join']) || isset($_GET['edit']) || isset($_GET['profile']))
 	{
@@ -96,10 +102,10 @@
 		$profile = 0;
 		if (isset($_GET['profile']))
 		{
-			$profile = $_GET['profile'];
+			$profile = (int) $_GET['profile'];
 		} else
 		{
-			$profile = $_GET['edit'];
+			$profile = (int) $_GET['edit'];
 		}
 		
 		if ($profile < 0)
@@ -118,11 +124,11 @@
 		
 		
 		
-		$query = 'SELECT `id` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 0,1';
+		$query = 'SELECT `id` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
-			$site->dieAndEndPage('<p>It seems like the list of known players can not be accessed for an unknown reason.</p>');
+			$site->dieAndEndPage('<p>It seems like the list of known teams can not be accessed for an unknown reason.</p>');
 		}
 		
 		$rows = (int) mysql_num_rows($result);
@@ -147,7 +153,7 @@
 			// TODO: implement preview
 			if (($_POST['confirmed'] < 1) || ($_POST['confirmed'] > 2))
 			{
-				$site->dieAndEndPage('Your (id='. $viewerid. ') attempt to insert wrong data into the form was detected.');
+				$site->dieAndEndPage('Your (id='. sqlSafeString($viewerid) . ') attempt to insert wrong data into the form was detected.');
 			}
 			
 			$new_randomkey_name = '';
@@ -300,6 +306,228 @@
 		$site->dieAndEndPage('');
 	}
 	
+	if (isset($_GET['reactivate']))
+	{
+		echo '<a class="button" href="./">overview</a>' . "\n";
+		
+		// no anon team deletion
+		if ($viewerid < 1)
+		{
+			echo '<p>You must login to reactivate the team.</p>' . "\n";
+			$site->dieAndEndPage('');
+		}
+		
+		if (!$allow_reactivate_teams)
+		{
+			echo '<p>You have no permission to reactivate any team</p>';
+			$site->dieAndEndPage('');
+		}
+		
+		// get a full list of deleted teams
+		// teams_overview.deleted: 0 new; 1 active; 2 deleted; 3 revived
+		$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
+		$query .= ' WHERE (`teams_overview`.`deleted`=' . "'" . sqlSafeString('2') . "'";
+		$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`)';
+		if (!($result_teams = @$site->execute_query($site->db_used_name(), 'teams, teams_overview', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
+		}
+		if ((int) mysql_num_rows($result_teams) < 1)
+		{
+			// not deleted team yet
+			echo '<p>There is not a single deleted team in the database</p>' . "\n";
+			$site->dieAndEndPage('');
+		}
+		
+		// get a full list of teamless, not deleted players
+		// suspended: 0 active; 1 maint-deleted; 2 disabled; 3 banned
+		$query = 'SELECT `id`,`name` FROM `players`';
+		$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString('0') . "'";
+		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'" . ')';
+		if (!($result_players = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
+		}
+		if ((int) mysql_num_rows($result_players) < 1)
+		{
+			// not deleted team yet
+			echo '<p>There is not a single teamless player in the database</p>' . "\n";
+			$site->dieAndEndPage('');
+		}
+		
+		$profile = 0;
+		if (isset($_POST['reactivate_team_id']))
+		{
+			$profile = (int) $_POST['reactivate_team_id'];
+		}
+		$leader_profile = 0;
+		if (isset($_POST['reactivate_team_new_leader_id']))
+		{
+			$leader_profile = (int) $_POST['reactivate_team_new_leader_id'];
+		}
+		if (($profile > 0) && ($leader_profile > 0))
+		{
+			// team to be revived has been chosen
+			
+			$new_randomkey_name = '';
+			if (isset($_POST['key_name']))
+			{
+				$new_randomkey_name = html_entity_decode($_POST['key_name']);
+			}
+			$randomkeysmatch = $site->compare_keys($randomkey_name, $new_randomkey_name);			
+			if (!($randomkeysmatch))
+			{
+				echo '<a class="button" href="./">overview</a>' . "\n";
+				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
+				$site->dieAndEndPage('');
+			}
+			
+			// no further information about total deleted teams and total teamless players needed
+			mysql_free_result($result_players);
+			mysql_free_result($result_teams);
+			
+			// check if the team is deleted
+			$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
+			$query .= ' WHERE (`teams`.`id`=' . sqlSafeString(htmlentities($profile));
+			$query .= ' AND `teams_overview`.`deleted`=' . sqlSafeStringQuotes('2');
+			$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`)';
+			if (!($result_teams = @$site->execute_query($site->db_used_name(), 'teams, teams_overview', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			if (((int) mysql_num_rows($result_teams) < 1) || ((int) mysql_num_rows($result_teams) > 1))
+			{
+				// not deleted team yet
+				echo '<p class="first_p">There must be exactly one deleted team spefified to revive a team</p>' . "\n";
+				$site->dieAndEndPage('');
+			}
+			
+			// check if the new team leader is teamless
+			$query = 'SELECT `id`,`name` FROM `players`';
+			$query .= ' WHERE (`id`=' . "'" . sqlSafeString(htmlentities($leader_profile)) . "'";
+			$query .= ' AND `teamid`=' . "'" . sqlSafeString('0') . "'";
+			$query .= ' AND `suspended`<>' . sqlSafeStringQuotes('1') . ')';
+			if (!($result_players = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			if (((int) mysql_num_rows($result_players) < 1) || ((int) mysql_num_rows($result_players) > 1))
+			{
+				// not deleted team yet
+				echo '<p class="first_p">There must be exactly one teamless player spefified to revive a team</p>' . "\n";
+				$site->dieAndEndPage('');
+			}
+			// initalise variable with error, will be overwritten if a name was found
+			$username = '(error: no username found)';
+			while($row = mysql_fetch_array($result_players))
+			{
+				$username = $row['name'];
+			}
+			
+			// reactivate the team
+			$query = 'UPDATE `teams_overview` SET `deleted`=' . sqlSafeStringQuotes('1');
+			$query .= ',`member_count`=' . sqlSafeStringQuotes('1');
+			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($profile) . "'";
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			{
+				$site->dieAndEndPage('The team with id ' . sqlSafeString($profile) .
+									 ' could not be revived by player with id ' . sqlSafeString($viewerid). '!');
+			}
+			
+			// set the user's new teamid
+			$query = 'UPDATE `players` SET `teamid`=' . "'" . sqlSafeString($profile) . "'";
+			$query .= ' WHERE `id`=' . "'" . sqlSafeString($leader_profile). "'";
+			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			{
+				$site->dieAndEndPage('The player with id ' . sqlSafeString($leader_profile) .
+									 ' could not be set to be a member of team with id ' .
+									 sqlSafeString($profile). ' by player with id ' . sqlSafeString($viewerid). '!');
+			}
+			
+			// all done
+			echo '<p class="first_p">The team was successfully reactivated with ' . htmlent($username) . ' as leader!</p>' . "\n";
+			$site->dieAndEndPage('');
+		}
+		
+		
+		$team_name_list = Array();
+		$team_id_list = Array();
+		while($row = mysql_fetch_array($result_teams))
+		{
+			$team_name_list[] = $row['name'];
+			$team_id_list[] = $row['id'];
+		}
+		mysql_free_result($result_teams);
+		
+		$list_team_id_and_name = Array();
+		
+		$list_team_id_and_name[] = $team_id_list;
+		$list_team_id_and_name[] = $team_name_list;
+		
+		$n = ((int) count($team_id_list)) - 1;
+		
+		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?reactivate">' . "\n";
+		echo '<p><label for="reactivate_team">Select the team to be reactivated:</label>' . "\n";
+		echo '<span><select id="reactivate_team" name="reactivate_team_id">' . "\n";
+		
+		$n = ((int) count($team_id_list)) - 1;
+		for ($i = 0; $i <= $n; $i++)
+		{
+			echo '<option value="';
+			echo htmlentities($list_team_id_and_name[0][$i]);
+			if (isset($leader_of_team_with_id) && ((int) $list_team_id_and_name[0][$i] === $leader_of_team_with_id))
+			{
+				echo '" selected="selected';
+			}
+			echo '">' . htmlentities(($list_team_id_and_name[1][$i]), ENT_COMPAT, 'UTF-8');
+			echo '</option>' . "\n";
+		}
+		
+		echo '</select></span>' . "\n";
+				
+		echo '<p><label for="reactivate_team_new_leader">Select the new team leader:</label>' . "\n";
+		echo '<span><select id="reactivate_team_new_leader" name="reactivate_team_new_leader_id">' . "\n";
+		$player_name_list = Array();
+		$player_id_list = Array();
+		while($row = mysql_fetch_array($result_players))
+		{
+			$player_name_list[] = $row['name'];
+			$player_id_list[] = $row['id'];
+		}
+		mysql_free_result($result_players);
+		
+		$list_player_id_and_name = Array();
+		
+		$list_player_id_and_name[] = $player_id_list;
+		$list_player_id_and_name[] = $player_name_list;
+		
+		$n = ((int) count($player_id_list)) - 1;
+		for ($i = 0; $i <= $n; $i++)
+		{
+			echo '<option value="';
+			echo htmlentities($list_player_id_and_name[0][$i]);
+			echo '">' . htmlentities(($list_player_id_and_name[1][$i]), ENT_COMPAT, 'UTF-8');
+			echo '</option>' . "\n";
+		}
+		
+		echo '</select></span>' . "\n";		
+		
+		// protection against links
+		$new_randomkey_name = $randomkey_name . microtime();
+		$new_randomkey = $site->set_key($new_randomkey_name);
+		echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
+		echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
+		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
+		
+		echo '<div style="display:inline"><input type="submit" name="reactivate_team" value="Reactivate the team" id="send"></div>' . "\n";
+		echo '</form>' . "\n";		
+		
+		$site->dieAndEndPage('');
+	}
 	
 	if (isset($_GET['join']) && ($viewerid > 0))
 	{
@@ -403,7 +631,7 @@
 			if ($allowed_to_join === 1)
 			{
 				$query = 'UPDATE `players` SET `teamid`=' . "'" . sqlSafeString($join_team_id) . "'";
-				$query .= ' WHERE `id`=' . "'" . sqlSafeString((int) $viewerid) . "'";
+				$query .= ' WHERE `id`=' . "'" . sqlSafeString($viewerid) . "'";
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
@@ -560,10 +788,10 @@
 		
 		if (isset($_POST['confirmed']))
 		{
-			echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+			echo '<a class="button" href="./">overview</a>' . "\n";
 			if (($_POST['confirmed'] < 1) || ($_POST['confirmed'] > 2))
 			{
-				$site->dieAndEndPage('Your (id='. $viewerid. ') attempt to delete a team by manipulating the form was detected.');
+				$site->dieAndEndPage('Your (id='. sqlSafeString($viewerid) . ') attempt to delete a team by manipulating the form was detected.');
 			}
 			
 			$new_randomkey_name = '';
@@ -654,6 +882,7 @@
 		$site->dieAndEndPage('');
 	}
 	
+	// someone wants to edit a team
 	if (isset($_GET['edit']))
 	{
 		if ($viewerid < 1)
@@ -667,7 +896,7 @@
 		if ($teamid < 1)
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
-			$site->dieAndEndPage('You (id=' . $viewerid . ') did not specify a team to edit.');
+			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') did not specify a team to edit.');
 		}
 		
 		if (!(($viewerid === $team_leader_id) || $allow_edit_any_team_profile))
@@ -689,7 +918,7 @@
 		if ($rows < (int) 1)
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
-			$site->dieAndEndPage('You (id=' . $viewerid . ') tried to edit a nonexisting team (id=' . sqlSafeString($teamid) . ').');
+			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') tried to edit a nonexisting team (id=' . sqlSafeString($teamid) . ').');
 		}
 		
 		// only one team must exist for each id
@@ -714,7 +943,7 @@
 			// TODO: implement preview
 			if (($_POST['confirmed'] < 1) || ($_POST['confirmed'] > 2))
 			{
-				$site->dieAndEndPage('Your (id='. $viewerid. ') attempt to insert wrong data into the form was detected.');
+				$site->dieAndEndPage('Your (id='. sqlSafeString($viewerid) . ') attempt to insert wrong data into the form was detected.');
 			}
 						
 			// general permissions given, do further sanity checks
@@ -960,7 +1189,7 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('There was a problem preventing the user with id (' . ($viewerid) . ') from being kicked from team with id (' . htmlentities($join_team_id)) . ')';
+					$site->dieAndEndPage('There was a problem preventing the user with id (' . sqlSafeString($viewerid) . ') from being kicked from team with id (' . htmlentities($join_team_id)) . ')';
 				}
 				
 				// update member count of team
@@ -970,7 +1199,7 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview, nested players ', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('There was a problem updating the member count of team id (' . ($viewerid) . ') from being kicked from team with id (' . htmlentities($join_team_id)) . ')';
+					$site->dieAndEndPage('There was a problem updating the member count of team id (' . sqlSafeString($viewerid) . ') from being kicked from team with id (' . htmlentities($join_team_id)) . ')';
 				}
 				
 				echo '<a class="button" href="./">overview</a>' . "\n";
@@ -984,7 +1213,7 @@
 			} else
 			{
 				// someone tried to kick a member without permissions
-				$site->dieAndEndPage('You (' . htmlentities($viewerid) . ') are not allowed to kick that member (' . htmlentities($playerid_to_remove) . ') from his team');
+				$site->dieAndEndPage('You (' . htmlentities(sqlSafeString($viewerid)) . ') are not allowed to kick that member (' . htmlentities($playerid_to_remove) . ') from his team');
 			}
 			$site->dieAndEndPage('');
 		}
@@ -1032,6 +1261,7 @@
 		$site->dieAndEndPage('');
 	}
 	
+	// someone wants to look at a team profile
 	if (isset($_GET['profile']))
 	{
 		// display team profile page
@@ -1267,6 +1497,12 @@
 	} else
 	{
 		// display overview
+		
+		// reactivate button
+		if ($allow_reactivate_teams)
+		{
+			echo '<a class="button" href="./?reactivate">Reactivate a team</a>' . "\n";
+		}
 		
 		// is player teamless?
 		$player_teamless = false;

@@ -37,6 +37,8 @@
 		$_SESSION['allow_edit_any_team_profile'] = false;
 		$_SESSION['allow_delete_any_team'] = false;
 		$_SESSION['allow_invite_in_any_team'] = false;
+		$_SESSION['allow_reactivate_teams'] = false;
+		
 		
 		// user permissions
 		$_SESSION['allow_edit_any_user_profile'] = false;
@@ -184,6 +186,14 @@
 		if (!($_SESSION['allow_invite_in_any_team']))
 		{
 			$_SESSION['allow_invite_in_any_team'] = true;
+		}
+	}
+	
+	function allow_reactivate_teams()
+	{
+		if (!($_SESSION['allow_reactivate_teams']))
+		{
+			$_SESSION['allow_reactivate_teams'] = true;
 		}
 	}
 	

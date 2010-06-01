@@ -297,8 +297,8 @@
 			// create invitation message in database
 			$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
 			$query .= '(' . "'" . sqlSafeString('league management system') . "'" . ', ' . "'" . sqlSafeString ('0'). "'";
-			$query .= ', ' . "'" . sqlSafeString(('Invitation to team ' . htmlentities($team_name))) . "'" . ', ' . "'" . sqlSafeString (date('Y-m-d H:i:s')). "'";
-			$query .= ', ' . "'" . sqlSafeString(('Congratulations, you were invited by ' . htmlentities($player_name) . ' to the team ' . htmlentities($team_name) . '!' . "\n" . 'The invitation will expire in 7 days.')) . "'";
+			$query .= ', ' . "'" . sqlSafeString(('Invitation to team ' . htmlent($team_name))) . "'" . ', ' . "'" . sqlSafeString (date('Y-m-d H:i:s')). "'";
+			$query .= ', ' . "'" . sqlSafeString(('Congratulations, you were invited by ' . htmlent($player_name) . ' to the team ' . htmlent($team_name) . '!' . "\n" . 'The invitation will expire in 7 days.')) . "'";
 			$query .= ', ' . "'" . sqlSafeString('0') . "'" . ', ' . "'" . sqlSafeString($profile) . "'" . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 			{
@@ -340,7 +340,7 @@
 			// display team picker in case the user can invite a player to any team
 			if ($allow_invite_in_any_team)
 			{
-				// get a full list of teams
+				// get a full list of teams, excluding deleted teams
 				// teams_overview.deleted: 0 new; 1 active; 2 deleted; 3 revived
 				$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
 				$query .= ' WHERE (`teams_overview`.`deleted`=' . "'" . sqlSafeString('0') . "'";
@@ -386,7 +386,7 @@
 					{
 						echo '" selected="selected';
 					}
-					echo '">' . htmlentities($list_team_id_and_name[1][$i]);
+					echo '">' . htmlent($list_team_id_and_name[1][$i]);
 					echo '</option>' . "\n";
 				}
 				
@@ -677,7 +677,7 @@
 				echo '<p>The new suspended status for';
 				while($row = mysql_fetch_array($result_suspended))
 				{
-					echo htmlentities($row['name']);
+					echo htmlent($row['name']);
 				}
 				mysql_free_result($result_suspended);
 				echo 'could not be set due to a SQL/db connectivity problem.</p>';
@@ -688,7 +688,7 @@
 			echo '<p>The new suspended status of user ';
 			while($row = mysql_fetch_array($result))
 			{
-				echo htmlentities($row['name']);
+				echo htmlent($row['name']);
 			}
 			mysql_free_result($result);
 			echo ' has been set to ';
@@ -719,7 +719,7 @@
 		
 		while($row = mysql_fetch_array($result))
 		{
-			echo htmlentities($row['name']);
+			echo htmlent($row['name']);
 		}
 		mysql_free_result($result);
 		echo ':' . "\n";
@@ -743,7 +743,7 @@
 			{
 				echo '" selected="selected';
 			}
-			echo '">' . htmlentities($options[$i -1]);
+			echo '">' . htmlent($options[$i -1]);
 			echo '</option>' . "\n";
 		}
 		echo '</select></span></p>' . "\n";			
@@ -819,7 +819,7 @@
 			
 			echo '<div class="user_area">' . "\n";
 			echo '	<div class="user_header">' . "\n";
-			echo '		<div class="user_description"><span class="user_profile_name">' . htmlentities($row['name']) . '</span> ';
+			echo '		<div class="user_description"><span class="user_profile_name">' . htmlent($row['name']) . '</span> ';
 			if ($suspended_status === 1)
 			{
 				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";
@@ -828,7 +828,7 @@
 			{
 				echo '<span class="user_description_banned">(banned)</span>' . "\n";
 			}			
-			echo '<span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlentities($row['location']) . '</span></div>' . "\n";
+			echo '<span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
 			echo '		<span class="user_comment">';
 			
 			if (strcmp ($row['user_comment'], '') === 0)
@@ -969,7 +969,7 @@
 					// go through the list anyway, could even help to analyse when in case several teams have the same name
 					while($team_row = mysql_fetch_array($team_result))
 					{
-						echo '<p><a href="../Teams/?profile=' . htmlentities($row['teamid']) . '">' . htmlentities($team_row['name']) . '</a>:</p>';
+						echo '<p><a href="../Teams/?profile=' . htmlentities($row['teamid']) . '">' . htmlent($team_row['name']) . '</a>:</p>';
 					}
 					// delete result as soon as possible from memory, especially in a loop
 					mysql_free_result($team_result);
@@ -977,7 +977,7 @@
 				// ordered list of players in that team begins
 				echo "\n" . '<ol>' . "\n";
 			}
-			echo '<li><a href="./?profile=' . htmlentities($row['id']) . '">' . htmlentities($row["name"]) . '</a></li>' . "\n";
+			echo '<li><a href="./?profile=' . htmlentities($row['id']) . '">' . htmlent($row['name']) . '</a></li>' . "\n";
 			$teamid = (int) $row['teamid'];
 		}
 		mysql_free_result($result);

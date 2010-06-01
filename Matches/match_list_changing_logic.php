@@ -1502,11 +1502,27 @@
 			$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
 			$query .= ' WHERE (`teams_overview`.`deleted`<>' . "'" . sqlSafeString('2') . "'" . ')';
 			$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
+			
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
 			}
+			
+			$rows = (int) mysql_num_rows($result);
+			
+			// only show a confirmation question, the case is not too unusual and 
+			if ($rows < 1)
+			{
+				echo '<p class="first_p">There are no teams in the database. A valid match requires at least 2 teams<p/>';
+				$site->dieAndEndPage('');
+			}
+			
+			if ($rows < 2)
+			{
+				echo '<p class="first_p">There is only 1 team in the database. A valid match requires at least 2 teams<p/>';
+				$site->dieAndEndPage('');
+			}			
 			
 			$team_name_list = Array();
 			$team_id_list = Array();
@@ -1541,7 +1557,7 @@
 				{
 					echo '" selected="selected';
 				}
-				echo '">' . htmlentities($list_team_id_and_name[1][$i]);
+				echo '">' . htmlentities($list_team_id_and_name[1][$i], ENT_COMPAT, 'UTF-8');
 				echo '</option>' . "\n";
 			}
 			
@@ -1576,7 +1592,7 @@
 				{
 					echo '" selected="selected';
 				}
-				echo '">' . htmlentities($list_team_id_and_name[1][$i]);
+				echo '">' . htmlentities($list_team_id_and_name[1][$i], ENT_COMPAT, 'UTF-8');
 				echo '</option>' . "\n";
 			}
 			echo '</select></span>' . "\n";

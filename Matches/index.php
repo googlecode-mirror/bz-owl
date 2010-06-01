@@ -87,20 +87,20 @@
 		// execute query
 		if (!($result_team_name = @$site->execute_silent_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
-			$site->dieAndEndPage('The name of matching team with id ' . htmlentities($row['team1_teamid']) . ' could not be displayed because of an SQL/database connectivity problem.');
+			$site->dieAndEndPage('The name of matching team with id ' . htmlentities($row['team1_teamid'], ENT_COMPAT, 'UTF-8') . ' could not be displayed because of an SQL/database connectivity problem.');
 		}
 		
 		// no rows in team name query result is not valid
 		if ((int) mysql_num_rows($result_team_name) === 0)
 		{
-			echo '<span style="font-weight: bold">No team name for id ' . htmlentities($row['team1_teamid']) . '!</span>' . "\n";
+			echo '<span style="font-weight: bold">No team name for id ' . htmlentities($row['team1_teamid'], ENT_COMPAT, 'UTF-8') . '!</span>' . "\n";
 			setTableUnchanged($site, $connection);
 			echo '</td>' . "\n" . '<td></td>' . "\n" . '</tr>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		while($row_team_name = mysql_fetch_array($result_team_name))
 		{
-			echo htmlentities($row_team_name['name']);
+			echo htmlentities($row_team_name['name'], ENT_COMPAT, 'UTF-8');
 		}
 		mysql_free_result($result_team_name);		
 	}

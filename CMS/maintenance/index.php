@@ -33,6 +33,9 @@
 		die();
 	} else
 	{
+		// FIXME: maint not working at the moment, therefore disable it
+		die();
+		
 		// delete the file's content
 		if (!fclose($handle)) {
 			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not close handle to file ' . sqlSafeString($file)));

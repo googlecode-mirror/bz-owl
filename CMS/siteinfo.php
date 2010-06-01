@@ -54,6 +54,11 @@
 		return (int) $userid;
 	}
 	
+	// shortcut for utf-8 aware htmlentities
+	function htmlent($string)
+	{
+		return htmlentities($string, ENT_COMPAT, 'UTF-8');
+	}
 	
 	// give ability to use a limited custom style
 	function bbcode($string)

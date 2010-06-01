@@ -51,6 +51,13 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_edit_bans();
 		allow_delete_bans();
 		
+		// permissions for team page
+		allow_kick_any_team_members();
+		allow_edit_any_team_profile();
+		allow_invite_in_any_team();
+		allow_delete_any_team();
+		allow_reactivate_teams();		
+		
 		// user permissions
 		allow_edit_any_user_profile();
 		allow_add_admin_comments_to_user_profile();
@@ -96,6 +103,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_edit_any_team_profile();
 		allow_invite_in_any_team();
 		allow_delete_any_team();
+		allow_reactivate_teams();
 		
 		// user permissions
 		allow_edit_any_user_profile();
