@@ -133,7 +133,32 @@
 	{
 		$profile = (int) urldecode($_GET['invite']);
 		
+		// was the player deleted during maintenance
+		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
+		// 1 means maintenance-deleted
+		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'";
+		// only information about one player needed
+		$query .= ' LIMIT 1';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
+		}
+		
+		$suspended_status = 1;
+		while($row = mysql_fetch_array($result))
+		{
+			$suspended_status = (int) $row['suspended'];
+		}
+		mysql_free_result($result);
+		
 		echo '<a class="button" href="./">overview</a>' . "\n";
+		
+		if ($suspended_status > 0)
+		{
+			echo '<p>You may not invite deleted, disabled or banned users</p>' . "\n";
+			$site->dieAndEndPage('');
+		}
 		
 		$allow_invite_in_any_team = false;
 		if (isset($_SESSION['allow_invite_in_any_team']))
@@ -439,6 +464,32 @@
 		if (!(($profile === $viewerid) || $allow_edit_any_user_profile))
 		{
 			$site->dieAndEndPage('You (id='. $viewerid. ') are not allowed to edit the profile of the user with id ' . sqlSafeString($profile));
+		}
+		
+		$suspended_status = 1;
+		if (!(isset($_POST['user_suspended_status_id'])))
+		{
+			// get entire suspended status, including maintenance-deleted
+			$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
+			// only information about one player needed
+			$query .= ' LIMIT 1';
+			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			
+			while($row = mysql_fetch_array($result))
+			{
+				$suspended_status = (int) $row['suspended'];
+			}
+			mysql_free_result($result);
+			
+			if ($suspended_status === 1)
+			{
+				echo '<p>You may not edit this user as the user was deleted during maintenance.</p>';
+				$site->dieAndEndPage('');
+			}
 		}		
 		
 		if (isset($_POST['confirmed']))
@@ -578,29 +629,7 @@
 		
 		$site->dieAndEndPage('');
 	}
-	
-	if (isset($_GET['profile']))
-	{
-		// is player banned?
-		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
-		// 1 means maintenance-deleted
-		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'";
-		// only information about one player needed
-		$query .= ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-		{
-			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPage('');
-		}
 		
-		$suspended_status = 0;
-		while($row = mysql_fetch_array($result))
-		{
-			$suspended_status = (int) $row['suspended'];
-		}
-		mysql_free_result($result);
-	}
-	
 	// banning user section
 	if (isset($_GET['ban']))
 	{
@@ -610,7 +639,7 @@
 			$site->dieAndEndPage('');
 		}
 		
-		$suspended_status = 0;
+		$suspended_status = 1;
 		if (!(isset($_POST['user_suspended_status_id'])))
 		{
 			// get entire suspended status, including maintenance-deleted
@@ -670,7 +699,7 @@
 			{
 				$suspended_status = 0;
 			}
-			$query = 'UPDATE `players` SET `suspended`=' . "'" . sqlSafeString($suspended_status) . "'";
+			$query = 'UPDATE `players` SET `suspended`=' . "'" . sqlSafeString(htmlentities($suspended_status)) . "'";
 			$query .= ' WHERE `id`=' . "'" . sqlSafeString($profile) . "'";
 			if (!($result_suspended = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
@@ -769,10 +798,26 @@
 	if (isset($_GET['profile']))
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
-		if (($profile > 0) && $viewerid === $profile || $allow_edit_any_user_profile)
+		
+		// is player banned?
+		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
+		// 1 means maintenance-deleted
+		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'";
+		// only information about one player needed
+		$query .= ' LIMIT 1';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
-			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
 		}
+		
+		$suspended_status = 1;
+		while($row = mysql_fetch_array($result))
+		{
+			$suspended_status = (int) $row['suspended'];
+		}
+		mysql_free_result($result);
+		
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
 			if ($suspended_status === 0)
@@ -784,6 +829,11 @@
 				echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">unban</a>' . "\n";
 			}
 		}
+		
+		if ((($profile > 0) && $viewerid === $profile || $allow_edit_any_user_profile) && ($suspended_status !== 1))
+		{
+			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
+		}		
 		
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 		$query = 'SELECT `players`.`name`, `players_profile`.`location`, `players_profile`.`user_comment`';
@@ -889,7 +939,7 @@
 		}
 		
 		// users are not supposed to invite themselves
-		if ($allow_invite_in_any_team || (($leader_of_team_with_id > 0) && ($viewerid !== $profile)))
+		if (($allow_invite_in_any_team || (($leader_of_team_with_id > 0) && ($viewerid !== $profile))) && ($suspended_status !== 1))
 		{
 			// if permission is given write a br tag to get the link in a new line
 			// it would be easier to always write a br tag but then that would be more output
@@ -900,12 +950,12 @@
 			} else
 			{
 				echo '<br>' . "\n";
-			}			
+			}
 			echo '<a class="button" href="?invite=' . htmlentities(urlencode($profile)) . '">Invite player to team</a>' . "\n";
 		}
 		
 		
-		if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
+		if (((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true)) && ($suspended_status !== 1))
 		{
 			// avoid to enter the br tag twice, instead align it with the previous link
 			if (!($allow_invite_in_any_team) && ($leader_of_team_with_id < 1))
