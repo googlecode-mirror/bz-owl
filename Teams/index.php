@@ -647,7 +647,7 @@
 					$site->dieAndEndPage('There was a problem updating member count for the team with id ' . htmlentities($join_team_id));
 				}
 				
-				echo '<p>You successfully joined the the team ' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '!</p>';
+				echo '<p>You successfully joined the team ' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '!</p>';
 				
 				// check if a invite was used to join
 				if ($invite_available)
