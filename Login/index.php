@@ -137,7 +137,7 @@
 				// adding player profile entry
 				$query = 'INSERT INTO `players_profile` (`playerid`, `joined`, `location`) VALUES (';
 				$query .= "'" . sqlSafeString(getUserID()) . "'" . ', ' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
-				$query .= ', ' . "'" . sqlSafeString('here be dragons') . "'" . ')';
+				$query .= ', ' . "'" . sqlSafeString('Here be dragons') . "'" . ')';
 				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
 					// FIXME: report automatically
