@@ -65,6 +65,58 @@
 	require realpath('../CMS/navi.inc');
 ?>
 <p class="first_p">This is the user configuration section.</p>
+<?php
+	// allow turning on or off SQL debug output
+	if (isset($_SESSION['allow_change_debug_sql']) && $_SESSION['allow_change_debug_sql'])
+	{
+		// $site has been instantiated in navi.inc
+		if ($site->debug_sql())
+		{
+			// SQL debuggin currently on
+			
+			if (isset($_GET['debug']))
+			{
+				if ((int) $_GET['debug'] === 0)
+				{
+					echo htmlent((int) $_GET['debug']);
+					// user wishes to turn off SQL debugging
+					echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
+					$_SESSION['debug_sql'] = false;
+				} else
+				{
+					// user wishes to turn on SQL debugging
+					echo '<a href=".?debug=0">Turn off SQL debugging this session</a>' . "\n";
+					$_SESSION['debug_sql'] = true;
+				}
+			} else
+			{
+				echo '<a href=".?debug=0">Turn off SQL debugging this session</a>' . "\n";
+			}
+		} else
+		{
+			// SQL debuggin currently off
+			
+			if (isset($_GET['debug']))
+			{
+				if ((int) $_GET['debug'] === 0)
+				{
+					echo htmlent((int) $_GET['debug']);
+					// user wishes to turn off SQL debugging
+					echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
+					$_SESSION['debug_sql'] = false;
+				} else
+				{
+					// user wishes to turn on SQL debugging
+					echo '<a href=".?debug=0">Turn off SQL debugging this session</a>' . "\n";
+					$_SESSION['debug_sql'] = true;
+				}
+			} else
+			{
+				echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
+			}
+		}
+	}
+?>
 <p>Please note: ONLY Snow and White look good, the other ones are just a technology demo and they will be improved but that is low priority at the moment.</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	

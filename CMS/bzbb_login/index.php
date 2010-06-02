@@ -41,6 +41,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		$_SESSION['user_logged_in'] = true;
 		$_SESSION['IsAdmin'] = true;
 		
+		// can change debug sql setting
+		allow_change_debug_sql();
+		
 		// permissions for news page
 		allow_add_news();
 		allow_edit_news();
@@ -82,6 +85,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		$_SESSION['bzid'] = bzid($info, $args[1]);
 		$_SESSION['user_logged_in'] = true;
 		$_SESSION['IsAdmin'] = true;
+		
+		// can change debug sql setting
+		allow_change_debug_sql();
 		
 		// permissions for news page
 		allow_set_different_news_author();

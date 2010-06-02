@@ -10,6 +10,9 @@
 		// assume local login by default
 		$_SESSION['external_login'] = false;
 		
+		// can change debug sql setting
+		$_SESSION['allow_change_debug_sql'] = false;
+		
 		// set all permission to false by default
 		// permissions for news page
 		$_SESSION['allow_set_different_news_author'] = false;
@@ -53,6 +56,14 @@
 		$_SESSION['allow_edit_match'] = false;
 		$_SESSION['allow_delete_match'] = false;
 		
+	}
+	
+	function allow_change_debug_sql()
+	{
+		if (!($_SESSION['allow_change_debug_sql']))
+		{
+			$_SESSION['allow_change_debug_sql'] = true;
+		}
 	}
 	
 	function allow_set_different_news_author()

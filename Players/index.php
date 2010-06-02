@@ -940,7 +940,7 @@
 			{
 				if ((int) $row['teamid'] === 0)
 				{
-					echo '<p>Teamless players:<p>';
+					echo '<p class="first_p">Teamless players:<p>';
 				} else
 				{
 					// end ordered list because each list of players within a certain team did just end

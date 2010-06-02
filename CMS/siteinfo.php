@@ -124,7 +124,13 @@
 		
 		function debug_sql()
 		{
-			return debug_sql_custom();
+			if (isset($_SESSION['debug_sql']))
+			{
+				return ($_SESSION['debug_sql']);
+			} else
+			{
+				return debug_sql_custom();
+			}
 		}
 		
 		function execute_silent_query($db, $table, $query, $connection)
