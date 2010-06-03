@@ -78,7 +78,6 @@
 			{
 				if ((int) $_GET['debug'] === 0)
 				{
-					echo htmlent((int) $_GET['debug']);
 					// user wishes to turn off SQL debugging
 					echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
 					$_SESSION['debug_sql'] = false;

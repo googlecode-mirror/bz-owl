@@ -7,8 +7,8 @@
 	ini_set('session.gc_maxlifetime', '7200');
 	@session_start();
 	
-	require_once 'Modulliste.php';
-	$module = aktive_Anmeldungsmodule();
+	require_once 'login_module_list.php';
+	$module = active_login_modules();
 	$output = '';
 	
 	// load description presented to user
