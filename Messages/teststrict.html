@@ -9,10 +9,20 @@
 <body>
 
 <div class="form_area">
-<form enctype="application/x-www-form-urlencoded" method="post" action="?=add">
-<div><label for="msg_send_to0" id="msg_sendmsgto">Send message to:</label><span><input type="text" maxlength="50" name="to0" id="msg_send_to0" value="enter one callsign here"></span></div>
-<div><label for="msg_send_subject">Subject:</label><span><input type="text" id="msg_send_subject" maxlength="50" name="subject" value="Enter subject here"></span></div>
-<div><label for="msg_send_announcement">Message:</label><span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement"></textarea></span></div>
+<form enctype="application/x-www-form-urlencoded" method="post" action="?add">
+<div>
+	<label for="msg_send_to0" id="msg_sendmsgto">Send message to:</label>
+	<span><input type="text" maxlength="50" name="to0" id="msg_send_toN" value="enter one callsign here"></span>
+	<input type="submit" name="add_recipient" value="+" id="msg_send_add_recipient">
+</div>
+<div>
+	<label for="msg_send_subject">Subject:</label><span>
+	<input type="text" id="msg_send_subject" maxlength="50" name="subject" value="Enter subject here"></span>
+</div>
+<div>
+	<label for="msg_send_announcement">Message:</label>
+	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement"></textarea></span>
+</div>
 <div><input type="hidden" name="preview" value="1"></div>
 <div class="send"><input type="submit" name="submit" id="send" value="Preview"></div>
 </form>
@@ -22,14 +32,14 @@
 
 
 <div class="form_area">
-	<form enctype="application/x-www-form-urlencoded" method="post" action="?=add">
+	<form enctype="application/x-www-form-urlencoded" method="post" action="?add">
 		<div><label for="msg_send_to0" id="msg_sendmsgto">Send message to:</label></div>
 		<div class="msg_send_recipient_readonly">
 			<input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="ts">
 			<input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient">
 		</div>
 		
-		<div class="invisi"><label for="msg_send_to0" id="msg_send_to2">Send message to:</label></div>
+		<div class="invisi"><label>Send message to:</label></div>
 		<div class="msg_send_recipient_readonly">
 			<input type="text" maxlength="50" name="to1" id="msg_send_to2" readonly="readonly" value="Upsetter">
 			<input type="submit" name="remove_recipient1" value="-" class="msg_send_remove_recipient">
@@ -40,8 +50,14 @@
 			<input type="submit" name="add_recipient" value="+" id="msg_send_add_recipient">
 		</div>
 		
-		<div><label for="msg_send_subject">Subject:</label><span><input type="text" id="msg_send_subject" maxlength="50" name="subject" value="Enter subject here"></span></div>
-		<div><label for="msg_send_announcement">Message:</label><span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement"></textarea></span></div>
+		<div>
+			<label for="msg_send_subject">Subject:</label>
+			<span><input type="text" id="msg_send_subject" maxlength="50" name="subject" value="Enter subject here"></span>
+		</div>
+		<div>
+			<label for="msg_send_announcement">Message:</label>
+			<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement"></textarea></span>
+		</div>
 		<div class="send"><input type="submit" name="submit" id="send_multiple" value="Preview"></div>
 	</form>
 </div>

@@ -1,5 +1,3 @@
-/* @override http://192.168.1.10/~ts/BZFlag/Ligen/GU/leaguesite/styles/White */
-
 body
 {
 	background: #fafafa;
@@ -97,6 +95,82 @@ a.msg_overview_unread:link
 {
 	color: #dd4718;
 	font-weight: bold;
+}
+
+label.msg_send
+{
+	width: 10em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+label.msg_ann
+{
+	width: 3.5em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+input[type=text]
+{
+	width: 10cm;
+	margin-bottom: 2mm;
+}
+
+input[type=text]#msg_send_subject
+{
+	max-width: 100%;
+}
+
+input[type=text][readonly]
+{
+	width: 9.24cm;
+	max-width: 80%;
+	background-color: #f4f4f4;
+	margin-right: 1mm;
+}
+
+input[type=text]#msg_send_toN
+{
+	width: 9.24cm;
+	max-width: 80%;
+	margin-bottom: 2mm;
+	margin-right: 1mm;
+}
+
+input[type=submit]#msg_send_add_recipient
+{
+	width: 0.7cm;
+	text-align: center;
+}
+
+input[type=submit].msg_send_remove_recipient
+{
+	width: 0.7cm;
+	text-align: center;
+}
+
+div.invisi
+{
+	visibility: hidden;
+}
+
+div.add
+{
+	margin-bottom: 1em;
+	margin-left: 10em;
+	margin-top: 2mm;
+}
+
+textarea#msg_send_announcement
+{
+	width: 10.1cm;
+	max-width: 100%;
+	font-size: 1em;
+	height: 10em;
+	max-height: 90%;
 }
 
 /* news announcements */

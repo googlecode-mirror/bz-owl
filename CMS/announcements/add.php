@@ -115,7 +115,8 @@
 	// read the array using helper function
 	function write_hidden_input_element($item, $key, $utils)
 	{
-		$site = $utils->getSite();
+		global $site;
+		global $iteration_count;
 		
 		// example query: SELECT `id` FROM `players` WHERE `name`='ts'
 		$query = 'SELECT `id` FROM `players` WHERE `name`=' . "'" . sqlSafeString($item) . "'";
@@ -127,9 +128,32 @@
 			{
 				if ($utils->getDisplayName())
 				{
-					echo '<p>' . htmlentities($item) . '</p>';
+					if ($iteration_count > 0)
+					{
+						echo '<div class="invisi"><label class="msg_send">Send message to:</label></div>' . "\n";
+						echo '<div class="msg_send_recipient_readonly">' . "\n";
+						echo '	<input type="text" maxlength="50" name="to';
+						echo $iteration_count;
+						echo '" id="msg_send_to';
+						echo $iteration_count;
+						echo '" readonly="readonly" value="';
+						echo htmlent($item);
+						echo '">' . "\n";
+						echo '	<input type="submit" name="remove_recipient';
+						echo $iteration_count;
+						echo '" value="-" class="msg_send_remove_recipient">' . "\n";						
+					} else
+					{
+						echo '<div><label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label></div>' . "\n";
+						echo '<div class="msg_send_recipient_readonly">' . "\n";
+						echo '	<input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="';
+						echo htmlent($item);
+						echo '">' . "\n";
+						echo '	<input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient">' . "\n";						
+					}
+					echo '</div>' . "\n";
 				}
-				echo '<p><input type="hidden" name="to' . ((int) $key) .  '" value="' . (htmlentities($item)) . '"></p>' . "\n";
+				echo '<div><input type="hidden" name="to' . ((int) $key) .	'" value="' . (htmlentities($item)) . '"></div>' . "\n";
 			} else
 			{
 				// there is no playerid for that user (not registered)
@@ -139,6 +163,7 @@
 				$utils->setRecipients($tmp_array);
 			}
 		}
+		$iteration_count++;
 	}
 	
 	// initialise values
@@ -314,13 +339,16 @@
 				// use the result
 				if (!($utils->getAllUsersExist()))
 				{
-					echo '<p>Not all of the specified users did exist. Please check your recipients.<p>' . "\n";
+					echo '<p class="first_p">Not all of the specified recipients did exist. Please check your recipient list.<p>' . "\n";
 					// overwrite some values in order to go back to compose mode
 					$previewSeen = 0;
 					$known_recipients = $utils->getRecipients();
 					if (count($known_recipients) === 0)
 					{
-						echo 'no recipients';
+						if ($site->debug_sql())
+						{
+							echo '<p>No recipients in list at all!</p>';
+						}
 						$recipients = false;
 					}
 					
@@ -369,14 +397,15 @@
 							// caution, always gets information of last query, means also from another page
 							// thus the comment was even after the line, to call it as soon as possible after the query
 							// TODO: find out if there is an alternative
-							
-							// mark the message as message sent to an entire team
-							$query = 'INSERT INTO `messages_team_connection` (`msgid`, `teamid`)';
-							$query .= ' VALUES (' . "'" . sqlSafeString($rowId) . "'" . ', ' . "'" . sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
-							$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
-							
+														
 							if (isset($_POST['teamid']))
 							{
+								// mark the message as message sent to an entire team
+								$query = 'INSERT INTO `messages_team_connection` (`msgid`, `teamid`)';
+								$query .= ' VALUES (' . "'" . sqlSafeString($rowId) . "'" . ', ' . "'"
+										. sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
+								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
+								
 								foreach ($known_recipients as $one_recipient)
 								{
 									// delivery to inbox of the current player in the team messaged
@@ -465,9 +494,8 @@
 			$pfad = (pathinfo(realpath('./')));
 			$name = $pfad['basename'];
 			
-			if (($previewSeen===1) && ($previewSeen!==2))
+			if ($previewSeen === 1)
 			{
-//				echo "<form action=\x22" . baseaddress() . $name . '/?add' . "\x22 method=\x22post\x22>\n";
 				echo '<p>Preview:</p>' . "\n";
 				
 				// We are doing the preview by echoing the info
@@ -546,9 +574,9 @@
 								
 				if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 				{
-					echo '<p><input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"></p>' . "\n";
+					echo '<p><input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"></p>' . "\n";
 				}
-				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '"></p>' . "\n";
+				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"></p>' . "\n";
 				
 				
 				$new_randomkey_name = $randomkey_name . microtime();
@@ -570,11 +598,9 @@
 			} else
 			{
 				// $previewSeen === 0 means we just decided to add something but did not fill it out yet
-				if ($previewSeen===0)
+				if ($previewSeen === 0)
 				{
-					echo '<form action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
-					
-					print '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>';
+					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add">' . "\n";
 					
 					// timestamp
 					if ($allow_different_timestamp)
@@ -583,15 +609,20 @@
 					}
 					if ($message_mode)
 					{
-						echo '<tr><td style="vertical-align: top;">Send message to:</td><td style="vertical-align: top;">';
 						if ($recipients)
 						{
 							// walk through the array values
 							$utils->setDisplayName(true);
+							$iteration_count = 0;
 							array_walk($known_recipients, 'write_hidden_input_element', $utils);
+							unset($iteration_count);
 							
-							echo '<tr><td style="vertical-align: top;">Enter one more recipient:</td><td style="vertical-align: top;">';
-							echo '<input name="to' . count($known_recipients) . '" size="82" maxlength="255" accept-charset="UTF-8"></td>' . "\n";
+							echo "\n" . '<div>' . "\n";
+							echo '<label class="msg_send" for="msg_send_toN">Add one more recipient:</label>' . "\n";
+							echo '	<span><input type="text" id="msg_send_toN" maxlength="50" name="to';
+							// count($known_recipients) will always be higher than 0 here
+							echo count($known_recipients);
+							echo '"></span>' . "\n";
 						} else
 						{
 							if (isset($_GET['teamid']))
@@ -622,49 +653,71 @@
 								}
 								
 								mysql_free_result($team_name_result);
-								echo '<input name="to0" disabled="disabled" size="82" maxlength="255" accept-charset="UTF-8" value="' . htmlentities($team_name, ENT_COMPAT, 'UTF-8') . '">' . "\n";
+								echo '<div>' . "\n";
+								echo '	<label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label>' . "\n";
+								echo '	<span><input type="text" disabled="disabled" maxlength="255" name="to0" id="msg_send_to0" value="';
+								echo htmlent($team_name);
+								echo '"></span>' . "\n";
 							} else
 							{
-								echo '<input name="to0" size="82" maxlength="255" accept-charset="UTF-8">' . "\n";
+								echo '<div>';
+								echo "\n";
+								echo '	<label class="msg_send" for="msg_send_toN" id="msg_sendmsgto">Send message to:</label><span>' . "\n";
+								echo '	<input type="text" maxlength="50" name="to0" id="msg_send_toN" value="enter one callsign here"></span>';
+								echo "\n";
 							}
 						}
 						
 						// only one team per team message
 						if (!(isset($_GET['teamid'])))
 						{
-							echo '<input type="submit" name="add_recipient" value="' . 'Add recipient' . '"></tr>' . "\n";
+							echo '	<input type="submit" name="add_recipient" value="+" id="msg_send_add_recipient">' . "\n";
 						}
-						
+						echo '</div>' . "\n";
+
 						// new form begins
-						echo '<tr><td style="vertical-align: top;">Subject:</td><td style="vertical-align: top;">';
-						echo '<input name="subject" size="82" maxlength="1000" value="' . (htmlentities($subject, ENT_COMPAT, 'UTF-8'));
-						echo '" accept-charset="UTF-8"></td></tr>' . "\n";
+						echo '<div>' . "\n";
+						echo '	<label class="msg_send" for="msg_send_subject">Subject:</label><span>' . "\n";
+						echo '	<input type="text" id="msg_send_subject" maxlength="50" name="subject" value="Enter subject here"></span>' . "\n";
+						echo '</div>' . "\n";
 					}
 					
 					// announcement, it may be set when adding another recipient in private message mode
-					echo '<tr><td style="vertical-align: top;">announcement:</td><td style="vertical-align: top;">';
-					echo '<textarea cols="71" rows="20" name="announcement" accept-charset="UTF-8">' . (urldecode($announcement));
-					echo '</textarea>';
-					echo '</td></tr></tbody></table>' . "\n";
+					echo '<div>' . "\n";
+					echo '	<label class="';
+					// need to format it properly in CSS to prevent much useless whitespace
+					if (!$message_mode)
+					{
+						echo 'msg_ann';
+					} else
+					{
+						echo 'msg_send';
+					}
+					echo '" for="msg_send_announcement">Message:</label>' . "\n";
+					echo '	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement"></textarea></span>' . "\n";
+					echo '</div>' . "\n";
 					
 					
 					// author
 					if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 					{
-						echo 'Author: <textarea cols="71" rows="1" name="author" accept-charset="UTF-8">' . urlencode(htmlentities($_SESSION['username'], ENT_COMPAT, 'UTF-8')) . "</textarea><br>\n";
+						echo '<div>' . "\n";
+						echo '	<label class="msg_ann" for="msg_send_subject">Author:</label>' . "\n";
+						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="Enter subject here"></span>' . "\n";
+						echo '</div>' . "\n";
 					} else
 					{
-						// FIXME: better idea to compute just at the moment the action in form has been finally confirmed by user
-						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"><br>' . "\n";
+//						// FIXME: better idea to compute just at the moment the action in form has been finally confirmed by user
+//						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"><br>' . "\n";
 					}
 					
 					if (isset($_GET['teamid']))
 					{
-						echo '<input type="hidden" name="teamid" value="' . htmlspecialchars(urlencode($_GET['teamid'])) . '">' . "\n";
+						echo '<div><input type="hidden" name="teamid" value="' . htmlspecialchars(urlencode($_GET['teamid'])) . '"></div>' . "\n";
 					}
 					
-					echo '<input type="hidden" name="preview" value="' . '1' . '"><br>' . "\n";
-					echo '<input type="submit" value="' . 'Preview' . '">' . "\n";
+					echo '<div><input type="hidden" name="preview" value="' . '1' . '"></div>' . "\n";
+					echo '<div><input type="submit" value="Preview"></div>' . "\n";
 				}
 			}
 			// if there was a form opened, close it now
