@@ -486,6 +486,12 @@ div.edit_user_suspended_status_send
 	display: inline;
 }
 
+/* hack because it's not possible to say to display something blocking using :before */
+div.p
+{
+	margin-top: 1em;
+}
+
 /* common links */
 
 span.onlineUsers

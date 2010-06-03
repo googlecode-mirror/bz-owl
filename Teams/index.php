@@ -1303,6 +1303,8 @@
 		
 		while($row = mysql_fetch_array($result))
 		{
+			// need an element displayed with display: block before the team area
+			echo '<div class="p"></div>' . "\n";
 			echo '<div class="team_area">' . "\n";
 			echo '	<div class="team_header">' . "\n";
 			$team_name = $row['name'];

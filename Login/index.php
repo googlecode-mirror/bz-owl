@@ -146,7 +146,7 @@
 				}
 			} else
 			{
-				// user is not knew, update his callsign with new callsign supplied from login
+				// user is not new, update his callsign with new callsign supplied from login
 				$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString($_SESSION['username']) . "'" . ' WHERE `external_playerid`=' . "'" . sqlSafeString($_SESSION['external_id']) . "'";
 				// each user has only one entry in the database
 				$query .= ' LIMIT 1';

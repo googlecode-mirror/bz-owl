@@ -472,6 +472,11 @@ div.user_admin_comments
 	text-align: left;
 }
 
+/* hack because it's not possible to say to display something blocking using :before */
+div.p
+{
+	margin-top: 1em;
+}
 
 /* common links */
 

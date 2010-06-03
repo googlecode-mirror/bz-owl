@@ -867,6 +867,8 @@
 				$site->write_self_closing_tag('br');
 			}
 			
+			// need an element displayed with display: block before the team area
+			echo '<div class="p"></div>' . "\n";
 			echo '<div class="user_area">' . "\n";
 			echo '	<div class="user_header">' . "\n";
 			echo '		<div class="user_description"><span class="user_profile_name">' . htmlent($row['name']) . '</span> ';
