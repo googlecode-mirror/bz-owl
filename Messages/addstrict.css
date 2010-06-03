@@ -3,6 +3,7 @@
 div.form_area
 {
 	width: inherit;
+	max-width: 100%;
 }
 
 label
@@ -20,32 +21,35 @@ input[type=text]
 	margin-bottom: 2mm;
 }
 
+input[type=text]#msg_send_subject
+{
+	max-width: 100%;
+}
+
 input[type=text][readonly]
 {
-	position: relative;
 	width: 9.24cm;
+	max-width: 80%;
 	background-color: #f4f4f4;
 	margin-right: 1mm;
 }
 
 input[type=text]#msg_send_toN
 {
-	
-	margin-bottom: 2mm;
 	width: 9.24cm;
+	max-width: 80%;
+	margin-bottom: 2mm;
 	margin-right: 1mm;
 }
 
 input[type=submit]#msg_send_add_recipient
 {
-	position: relative;
 	width: 0.7cm;
 	text-align: center;
 }
 
 input[type=submit].msg_send_remove_recipient
 {
-	position: relative;
 	width: 0.7cm;
 	text-align: center;
 }
@@ -64,9 +68,9 @@ div.add
 
 textarea#msg_send_announcement
 {
-	font-size: 1em;
-	//max-width: 100%;
-	//min-width: 1em;
 	width: 10.1cm;
+	max-width: 100%;
+	font-size: 1em;
 	height: 10em;
+	max-height: 90%;
 }

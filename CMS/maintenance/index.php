@@ -3,52 +3,43 @@
 	date_default_timezone_set('Europe/Berlin');
 	
 	// find out if maintenance is needed (compare old date in plain text file)
-	$today = date("d.m.y");
+	$today = date("d.m.Y");
 	$file = (dirname(__FILE__)) . '/maintenance.txt';
 	
 	// siteinfo class used all the time
 	require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
 	$site = new siteinfo();
 	
-	if (is_writable($file))
+	
+	// find out when last maintenance happened
+	$last_maintenance = '00.00.0000';
+	$query = 'SELECT `last_maintenance` FROM `misc_data` LIMIT 1';
+	// execute query
+	if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 	{
-		// open $file in read mode.
-		if (!$handle = fopen($file, "r"))
-		{
-			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not open file ' . sqlSafeString($file)));
-		}
-	} else
-	{
-		$site->dieAndEndPage(('MAINTENANCE ERROR: Can not write content to file ' . sqlSafeString($file)));
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
 	}
 	
-	// read first 10 characters
-	$text = fread($handle, 10);
-	
-	// was maintenance done today?
-	if (strcasecmp($text, $today) == 0)
+	if ((int) mysql_num_rows($result) === 0)
 	{
-		// nothing to do
-		// stop silently
-		$site->dieAndEndPage('');
+		mysql_free_result($result);
+		// first maintenance run in history
+		$query = 'INSERT INTO `misc_data` (`last_maintenance`) VALUES (' . sqlSafeStringQuotes($today) . ')';
+		// execute query
+		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
+		}
 	} else
 	{
-		// delete the file's content
-		if (!fclose($handle))
+		// read out the date of last maintenance
+		while ($row = mysql_fetch_array($result))
 		{
-			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not close handle to file ' . sqlSafeString($file)));
+			$last_maintenance = $row['last_maintenance'];
 		}
-		// open file in write mode
-		if (!$handle = fopen($file, 'w'))
-		{
-			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not open file ' . sqlSafeString($file)));
-		}
-		// write date of today
-		if (!fwrite($handle, $today))
-		{
-			$site->dieAndEndPage(('MAINTENANCE ERROR: Can not write content into file ' . sqlSafeString($file)));
-		}
-		@fclose($handle);
+		mysql_free_result($result);
 	}
 	
 	// database connection is used during maintenance
@@ -182,6 +173,7 @@
 		
 		function do_maintenance($site, $connection)
 		{
+			global $today;
 			echo '<p>Performing maintenance...</p>';
 			
 			// date of 2 months in past will help during maintenance
@@ -330,6 +322,15 @@
 				}
 			}
 			echo '<p>Maintenance performed successfully.</p>';
+			
+			// update maintenance date
+			$query = 'UPDATE `misc_data` SET `last_maintenance`=' . sqlSafeStringQuotes($today);
+			// execute query
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
+			}
 			$site->dieAndEndPage();
 		}
 	}

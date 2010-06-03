@@ -188,7 +188,7 @@
 			echo $content;
 			echo '</div>' . "\n";
 			echo '<div>';
-			$site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlentities($content, ENT_COMPAT, 'UTF-8') . '"');
+			$site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlent($content) . '"');
 			echo '</div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
@@ -201,7 +201,7 @@
 		{
 			echo '<p>Put the articles in p-tags and headlines into h1-tags to get their style being applied.</p>' . "\n";
 			echo '<div>Keep in mind the home page currently uses HTML, not XHTML.</div>' . "\n";
-			echo '<div><textarea cols="75" rows="20" name="News">' . htmlentities($buffer, ENT_COMPAT, 'UTF-8') . '</textarea></div>' . "\n";
+			echo '<div><textarea cols="75" rows="20" name="News">' . htmlent($buffer) . '</textarea></div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="1"');
 			echo '</div>' . "\n";
