@@ -171,10 +171,17 @@
 	$utils->setConnection($connection);
 	$utils->setSite($site);
 	$recipients = false;
-	$subject = '';
+	$subject = 'Enter subject here';
+	echo '<p class="first_p"><a class="button" href="./">bzmail overview</a><p>' . "\n";
 	if (isset($_POST['subject']))
 	{
 		$subject = $_POST['subject'];
+		if (strcmp($subject, '') === 0)
+		{
+			// no subject is not allowed
+			echo '<p>You need to specify a subject.<p>' . "\n";
+			$previewSeen = 0;
+		}
 	}
 	
 	// check again for adding entry permission, just in case
@@ -255,7 +262,7 @@
 		{
 			// do not send messages without recipients
 			$previewSeen = 0;
-			echo '<p>Please specify at least one recipient in order to send the message.<p>';
+			echo '<p class="first_p">Please specify at least one recipient in order to send the message.<p>';
 		}
 		
 		// just in case sanity check
@@ -508,9 +515,9 @@
 					echo '<div class="msg_view_full">' . "\n";
 					
 					echo '	<div class="msg_header_full">' . "\n";
-					echo '		<span class="msg_subject">' .  htmlentities($subject, ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
-					echo '		<span class="msg_author"> by ' .  htmlentities($author, ENT_COMPAT, 'UTF-8'). '</span>' . "\n";
-					echo '		<span class="msg_timestamp"> at ' .	 htmlentities($timestamp, ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
+					echo '		<span class="msg_subject">' .  htmlent($subject) . '</span>' . "\n";
+					echo '		<span class="msg_author"> by ' .  htmlent($author). '</span>' . "\n";
+					echo '		<span class="msg_timestamp"> at ' .	 htmlent($timestamp) . '</span>' . "\n";
 					echo '	</div>' . "\n";
 					// appending to string with . broken here, need to use seperate echo lines
 					echo '	<div class="msg_contents">';
@@ -545,7 +552,7 @@
 				if ($message_mode)
 				{
 					echo '<form class="msg_buttons" action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
-					echo '<p><input type="hidden" name="subject" value="' . (htmlentities($subject, ENT_COMPAT, 'UTF-8')) . '"></p>' ."\n";
+					echo '<p><input type="hidden" name="subject" value="' . (htmlent($subject)) . '"></p>' ."\n";
 				} else
 				{
 					echo '<form action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
@@ -666,7 +673,8 @@
 								echo '<div>';
 								echo "\n";
 								echo '	<label class="msg_send" for="msg_send_toN" id="msg_sendmsgto">Send message to:</label><span>' . "\n";
-								echo '	<input type="text" maxlength="50" name="to0" id="msg_send_toN" value="enter one callsign here"></span>';
+								echo '	<input type="text" maxlength="50" name="to0" id="msg_send_toN" value="Enter one callsign here"';
+								echo ' onFocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "''" . '" ></span>';
 								echo "\n";
 							}
 						}
@@ -681,7 +689,9 @@
 						// new form begins
 						echo '<div>' . "\n";
 						echo '	<label class="msg_send" for="msg_send_subject">Subject:</label><span>' . "\n";
-						echo '	<input type="text" id="msg_send_subject" maxlength="50" name="subject" value="Enter subject here"></span>' . "\n";
+						echo '	<input type="text" id="msg_send_subject" maxlength="50" name="subject" value="' . $subject . '"';
+						echo ' onFocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '" ></span>';
+						echo "\n";
 						echo '</div>' . "\n";
 					}
 					
@@ -697,7 +707,9 @@
 						echo 'msg_send';
 					}
 					echo '" for="msg_send_announcement">Message:</label>' . "\n";
-					echo '	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement"></textarea></span>' . "\n";
+					echo '	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement">';
+					echo $announcement;
+					echo '</textarea></span>' . "\n";
 					echo '</div>' . "\n";
 					
 					
@@ -706,7 +718,7 @@
 					{
 						echo '<div>' . "\n";
 						echo '	<label class="msg_ann" for="msg_send_subject">Author:</label>' . "\n";
-						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="Enter subject here"></span>' . "\n";
+						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . $subject . '"></span>' . "\n";
 						echo '</div>' . "\n";
 					} else
 					{

@@ -256,7 +256,13 @@
 			if ((strcmp($folder, 'inbox') == 0) || (strcmp($folder, '') == 0))
 			{
 				// inbox displayed
-				echo 'inbox!';
+				if (isset($_GET['view']))
+				{
+					echo '<a href="./?folder=inbox">inbox!</a>';
+				} else
+				{
+					echo 'inbox!';
+				}
 				echo ' <a href="./?folder=outbox">outbox</a>';
 			} else
 			{
@@ -264,7 +270,13 @@
 				{
 					// outbox displayed
 					echo '<a href="./?folder=inbox">inbox</a>';
-					echo ' outbox!';
+					if (isset($_GET['view']))
+					{
+						echo ' <a href="./?folder=outbox">outbox!</a>';
+					} else
+					{
+						echo ' outbox!';
+					}
 				}
 			}
 			echo "\n" . '</div>' . "\n";
