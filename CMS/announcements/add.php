@@ -118,51 +118,34 @@
 		global $site;
 		global $iteration_count;
 		
-		// example query: SELECT `id` FROM `players` WHERE `name`='ts'
-		$query = 'SELECT `id` FROM `players` WHERE `name`=' . "'" . sqlSafeString($item) . "'";
-		
-		if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))
+		if ($utils->getDisplayName())
 		{
-			$rows = mysql_num_rows($result);
-			if ($rows > 0)
+			if ($iteration_count > 0)
 			{
-				if ($utils->getDisplayName())
-				{
-					if ($iteration_count > 0)
-					{
-						echo '<div class="invisi"><label class="msg_send">Send message to:</label></div>' . "\n";
-						echo '<div class="msg_send_recipient_readonly">' . "\n";
-						echo '	<input type="text" maxlength="50" name="to';
-						echo $iteration_count;
-						echo '" id="msg_send_to';
-						echo $iteration_count;
-						echo '" readonly="readonly" value="';
-						echo htmlent($item);
-						echo '">' . "\n";
-						echo '	<input type="submit" name="remove_recipient';
-						echo $iteration_count;
-						echo '" value="-" class="msg_send_remove_recipient">' . "\n";						
-					} else
-					{
-						echo '<div><label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label></div>' . "\n";
-						echo '<div class="msg_send_recipient_readonly">' . "\n";
-						echo '	<input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="';
-						echo htmlent($item);
-						echo '">' . "\n";
-						echo '	<input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient">' . "\n";						
-					}
-					echo '</div>' . "\n";
-				}
-				echo '<div><input type="hidden" name="to' . ((int) $key) .	'" value="' . (htmlentities($item)) . '"></div>' . "\n";
+				echo '<div class="invisi"><label class="msg_send">Send message to:</label></div>' . "\n";
+				echo '<div class="msg_send_recipient_readonly">' . "\n";
+				echo '	<input type="text" maxlength="50" name="to';
+				echo $iteration_count;
+				echo '" id="msg_send_to';
+				echo $iteration_count;
+				echo '" readonly="readonly" value="';
+				echo htmlent($item);
+				echo '">' . "\n";
+				echo '	<input type="submit" name="remove_recipient';
+				echo $iteration_count;
+				echo '" value="-" class="msg_send_remove_recipient">' . "\n";						
 			} else
 			{
-				// there is no playerid for that user (not registered)
-				$utils->setNotAllUsersExist();
-				$tmp_array = $utils->getRecipients();
-				unset($tmp_array[$key]);
-				$utils->setRecipients($tmp_array);
+				echo '<div><label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label></div>' . "\n";
+				echo '<div class="msg_send_recipient_readonly">' . "\n";
+				echo '	<input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="';
+				echo htmlent($item);
+				echo '">' . "\n";
+				echo '	<input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient">' . "\n";						
 			}
+			echo '</div>' . "\n";
 		}
+		echo '<div><input type="hidden" name="to' . ((int) $key) .	'" value="' . (htmlentities($item)) . '"></div>' . "\n";
 		$iteration_count++;
 	}
 	
@@ -225,7 +208,16 @@
 					}
 				}
 				// remove duplicates
+				$dup_check = count($known_recipients);
 				$known_recipients = array_unique($known_recipients);
+				if (!($dup_check === (count($known_recipients))))
+				{
+					echo '<p>Some double entries were removed. Please check your recipients.<p>' . "\n";
+					// back to overview to let them check
+					$previewSeen = 0;
+				}
+				// variable $dup_check no longer needed
+				unset($dup_check);
 			}
 		} else
 		{
