@@ -64,7 +64,7 @@
 <?php
 	require realpath('../CMS/navi.inc');
 ?>
-<p class="first_p">This is the user configuration section. (TEST)</p>
+<p class="first_p">This is the user configuration section.</p>
 <?php
 	// allow turning on or off SQL debug output
 	if (isset($_SESSION['allow_change_debug_sql']) && $_SESSION['allow_change_debug_sql'])
