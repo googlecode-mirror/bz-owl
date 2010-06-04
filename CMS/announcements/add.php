@@ -184,8 +184,7 @@
 		
 		if (!(isset($_POST['teamid'])))
 		{
-			// a new recipient was either added or removed and thus do not show the preview yet
-			// FIXME: no way to remove recipients yet
+			// a new recipient was added and thus do not show the preview yet
 			if (isset($_POST['add_recipient']))
 			{
 				// echo '<p>variable previewSeen was reset because first recipient was added</p>';
@@ -196,26 +195,30 @@
 			// we set the max to 20 (20-0) here
 			// TODO: Put the value in the global settings file
 			
-			// FIXME: this should probably be done:
-			// html_entity_decode(urldecode( EACH VALUE ))
 			for($count = 0; $count < 20; $count++)
 			{
-				$variable_name = 'to' . $count;
+				$variable_add_name = 'to' . $count;
+				$variable_remove_name = 'remove_recipient' . $count;
+				
+				if ((isset($_POST[$variable_remove_name])) && (!(strcmp ($_POST[$variable_remove_name], '') == 0)))
+				{
+					// a recipient was removed and thus do not show the preview yet
+					$previewSeen = 0;
+				}
 				// fill the recipients array with values
-				//				echo '<p>' . $variable_name . ' ' . (htmlentities(urldecode($_POST[$variable_name]))) . '</p>';
-				if ((isset($_POST[$variable_name])) && (!(strcmp ($_POST[$variable_name], '') == 0)))
+				if (((isset($_POST[$variable_add_name])) && (!(strcmp ($_POST[$variable_add_name], '') == 0)))
+					&& (!((isset($_POST[$variable_remove_name])) && (!(strcmp ($_POST[$variable_remove_name], '') == 0)))))
 				{
 					// fill the array with values
 					$one_recipient = '';
-					if (isset($_POST[$variable_name]))
+					if (isset($_POST[$variable_add_name]))
 					{
-						$one_recipient = (html_entity_decode(urldecode($_POST[$variable_name])));
+						$one_recipient = (html_entity_decode(urldecode($_POST[$variable_add_name])));
 						$known_recipients[] = $one_recipient;
 					}
 				}
 				// remove duplicates
 				$known_recipients = array_unique($known_recipients);
-				
 			}
 		} else
 		{
