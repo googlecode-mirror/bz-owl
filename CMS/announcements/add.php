@@ -666,7 +666,9 @@
 								echo "\n";
 								echo '	<label class="msg_send" for="msg_send_toN" id="msg_sendmsgto">Send message to:</label><span>' . "\n";
 								echo '	<input type="text" maxlength="50" name="to0" id="msg_send_toN" value="Enter one callsign here"';
-								echo ' onFocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "''" . '" ></span>';
+								echo ' onFocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "'" . "'" . '"';
+								echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter one callsign here' . "'" . '"';
+								echo '></span>';
 								echo "\n";
 							}
 						}
@@ -682,7 +684,9 @@
 						echo '<div>' . "\n";
 						echo '	<label class="msg_send" for="msg_send_subject">Subject:</label><span>' . "\n";
 						echo '	<input type="text" id="msg_send_subject" maxlength="50" name="subject" value="' . $subject . '"';
-						echo ' onFocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '" ></span>';
+						echo ' onFocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '"';
+						echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter subject here' . "'" . '"';
+						echo '></span>';
 						echo "\n";
 						echo '</div>' . "\n";
 					}

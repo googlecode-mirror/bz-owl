@@ -12,7 +12,7 @@
 <form enctype="application/x-www-form-urlencoded" method="post" action="?add">
 <div>
 	<label for="msg_send_to0" id="msg_sendmsgto">Send message to:</label>
-	<span><input type="text" maxlength="50" name="to0" id="msg_send_toN" value="enter one callsign here"></span>
+	<span><input type="text" maxlength="50" name="to0" id="msg_send_toN" value="enter one callsign here"  onFocus="if(this.value=='Enter one callsign here') this.value=''" onblur="if(this.value=='') this.value='Enter one callsign here'"></span>
 	<input type="submit" name="add_recipient" value="+" id="msg_send_add_recipient">
 </div>
 <div>
