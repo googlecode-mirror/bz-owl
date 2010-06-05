@@ -799,6 +799,8 @@
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		
+		echo '<div class="p"></div>' . "\n";
+		
 		// is player banned?
 		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 		// 1 means maintenance-deleted
@@ -977,65 +979,71 @@
 	}
 	
 	// display overview
-	$query = 'SELECT * FROM `players`';
+	
+	// get all data at once instead of many small queries -> a lot more efficient
+	// example query:
+	// SELECT DISTINCT `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,
+	// IF (`players`.`teamid`<>'0',`teams`.`name`,'') AS `team_name` FROM `players`,`teams`
+	// WHERE `suspended`<>'1' AND IF (`players`.`teamid`<>'0', `players`.`teamid`=`teams`.`id`,'1')
+	// ORDER BY `players`.`teamid`, `players`.`name`
+	// SELECT DISTINCT: No double entries
+	$query = 'SELECT DISTINCT';
+	// the needed values
+	$query .= ' `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,';
+	// team name only available if player belongs to a team
+	$query .= 'IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') .',`teams`.`name`,' . sqlSafeStringQuotes('') . ') AS `team_name`';
+	// player first joined date
+	$query .= ',`players_profile`.`joined`';
+	// tables involved
+	$query .= ' FROM `players`,`teams`,`players_profile`';
 	// do not display deleted players during maintenance
 	$query .= ' WHERE `suspended`<>' . "'" . sqlSafeString('1') . "'";
+	// can only require players`.`teamid`=`teams`.`id` in case player belongs to a team
+	$query .= ' AND IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') .', `players`.`teamid`=`teams`.`id`,';
+	// force an output value otherwise
+	$query .= sqlSafeStringQuotes('1') .')';
+	// the profile id of the player must match the actual player id (profile must belong to the same player)
+	$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
 	// sort the result
-	$query .= ' ORDER BY `teamid`, `name`';
-	if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection))
+	$query .= ' ORDER BY `players`.`teamid`, `players`.`name`';
+	if ($result = @$site->execute_query($site->db_used_name(), 'players, teams', $query, $connection))
 	{
 		// unfortunately as the list is sorted by teamid and name we need to keep track of teamid changes
 		$teamid = (int) -1;
+		echo '<table class="table_players_overview">' . "\n";
+		echo '<caption>Active Players</caption>' . "\n";
+		echo '<tr>' . "\n";
+		echo '	<th>Name</th>' . "\n";
+		echo '	<th>Team</th>' . "\n";
+		echo '	<th>Joined</th>' . "\n";
+		echo '</tr>' . "\n\n";
+		
 		while($row = mysql_fetch_array($result))
 		{
-			if ($teamid !== ((int) $row['teamid']))
+			echo '<tr class="players_overview">' . "\n";
+			echo '	<td class="players_overview_name">';
+			echo '<a href="./?profile=' . htmlentities($row['id']) . '">';
+			echo htmlent($row['player_name']);
+			echo '</a></td>' . "\n";
+			echo '	<td class="players_overview_team">';
+			if ((int) $row['teamid'] === 0)
 			{
-				if ((int) $row['teamid'] === 0)
-				{
-					echo '<p class="first_p">Teamless players:<p>';
-				} else
-				{
-					// end ordered list because each list of players within a certain team did just end
-					echo '</ol>' . "\n";
-					
-					// find out which team belongs to that teamid
-					// deleted teams have no members and thus we do not need to query for the deleted attribute in `teams_overview`
-					// example query: SELECT `name` FROM `teams` WHERE `id`='1' LIMIT 0,2
-					$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . ((int) $row['teamid']) . "'";
-					// TODO: maybe limit to fetch one entry only; 2 is better for sanity checks but worse for performance
-					$query .= ' LIMIT 0,2';
-					if (!($team_result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
-					{
-						// query was bad, error message was already given in $site->execute_query(...)
-						$site->dieAndEndPage('');
-					}
-					
-					$rows = (int) mysql_num_rows($team_result);
-					if ($rows > 1)
-					{
-						// if this happens then some team code must be wrong
-						echo '<p>There should no teams with same name exist but there are ' . htmlentities($rows);
-						echo ' teams in the database with the same name.</p>';
-					}
-					
-					// go through the list anyway, could even help to analyse when in case several teams have the same name
-					while($team_row = mysql_fetch_array($team_result))
-					{
-						echo '<p><a href="../Teams/?profile=' . htmlentities($row['teamid']) . '">' . htmlent($team_row['name']) . '</a>:</p>';
-					}
-					// delete result as soon as possible from memory, especially in a loop
-					mysql_free_result($team_result);
-				}
-				// ordered list of players in that team begins
-				echo "\n" . '<ol>' . "\n";
+				echo '(teamless)';
+			} else
+			{
+				echo '<a href="../Teams/?profile=' . htmlentities($row['teamid']) . '">';
+				echo htmlent($row['team_name']);
+				echo '</a>';
 			}
-			echo '<li><a href="./?profile=' . htmlentities($row['id']) . '">' . htmlent($row['name']) . '</a></li>' . "\n";
-			$teamid = (int) $row['teamid'];
+			echo '</td>'. "\n";
+			echo '	<td class="players_overview_joined">';
+			echo htmlent($row['joined']);
+			echo '</td>' . "\n";
 		}
 		mysql_free_result($result);
 		
 		// no more players left to display
-		echo '</ol>' . "\n";
+		echo '</table>' . "\n";
 	}
 ?>
 </div>

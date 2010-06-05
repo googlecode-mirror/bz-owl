@@ -3,10 +3,10 @@
 	{
 		if ($unread)
 		{
-			return '<a class="msg_overview_unread" href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text, ENT_COMPAT, 'UTF-8') . '</a>';
+			return '<a class="msg_overview_unread" href="./?folder=' . urlencode($folder) . '&amp;view=' . htmlentities((int) $id) . '">' . htmlent($text) . '</a>';
 		} else
 		{
-			return '<a href="./?folder=' . urlencode($folder) . '&view=' . htmlentities((int) $id) . '">' . htmlentities($text, ENT_COMPAT, 'UTF-8') . '</a>';
+			return '<a href="./?folder=' . urlencode($folder) . '&amp;view=' . htmlentities((int) $id) . '">' . htmlent($text) . '</a>';
 		}
 	}
 	
@@ -25,7 +25,7 @@
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = htmlentities($row['name'], ENT_COMPAT, 'UTF-8');
+			$item = htmlent($row['name']);
 		}
 		mysql_free_result($result);
 	}
@@ -159,8 +159,8 @@
 					array_walk($recipients, 'find_recipient_team', $connection);
 				}
 				echo (implode('<span class="msg_recipient_seperator">, </span>', $recipients));
-				echo '</td>' . "\n";
 			}
+			echo '</td>' . "\n";
 			echo '</tr>' . "\n\n";
 			
 		}
