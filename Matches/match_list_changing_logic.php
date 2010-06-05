@@ -190,7 +190,7 @@
 			// use the post data as much as possible instead of looking up the same data in the database
 			echo '<p>At ' . htmlentities($timestamp) . ' teams ';
 			team_name_from_id($site, $connection, $team_id1);
-			echo ' versus ';
+			echo ' - ';
 			team_name_from_id($site, $connection, $team_id2);
 			echo ' with result ' . htmlentities($team1_points) . ' - ' . htmlentities($team2_points) . '</p>';
 			echo "\n";
