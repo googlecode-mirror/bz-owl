@@ -218,7 +218,7 @@
 		team_name_from_id($site, $connection, $match_entry['team1_teamid']);
 		
 		// seperator showing that opponent team will be named soon
-		echo ' versus ';
+		echo ' - ';
 		
 		// get name of second team
 		team_name_from_id($site, $connection, $match_entry['team2_teamid']);
