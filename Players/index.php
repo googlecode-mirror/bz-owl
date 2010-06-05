@@ -837,16 +837,17 @@
 			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
 		}		
 		
-		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
-		$query = 'SELECT `players`.`name`, `players_profile`.`location`, `players_profile`.`user_comment`';
+		// the data we want
+		$query = 'SELECT `players`.`name`, `players_profile`.`location`, `players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
 		// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 		if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
 		{
 			$query .= ', `players_profile`.`admin_comments`';
 		}
 		$query .= ', `players_profile`.`logo_url`';
+		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 		$query .= ' FROM `players`, `players_profile` WHERE `players`.`id` = `players_profile`.`playerid` AND `players`.`id`=';
-		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 0,1';
+		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -882,8 +883,12 @@
 			{
 				echo '<span class="user_description_banned">(banned)</span>' . "\n";
 			}			
-			echo '<span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
-			echo '		<span class="user_comment">';
+//			echo '<span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
+			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
+			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
+			echo '		<div class="user_profile_last_visit_description_row"><span class="user_profile_last_visit_description">last visit:</span> <span class="user_profile_last_visit">' . htmlent($row['last_visit']) . '</span></div>' . "\n";
+			echo '	</div>' . "\n";
+			echo '	<span class="user_comment">';
 			
 			if (strcmp ($row['user_comment'], '') === 0)
 			{
@@ -893,7 +898,7 @@
 				$site->linebreaks(bbcode($row['user_comment']));
 			}
 			echo '</span>' . "\n";
-			echo'	</div>' . "\n";
+			echo '</div>' . "\n";
 			
 			// only admins can see their comments, as users may be upset about admin comments on their profile page
 			if ($allow_add_admin_comments_to_user_profile === true)

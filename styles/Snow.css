@@ -425,6 +425,16 @@ div.user_description
 	padding: 0.5em 1em 0.2em;
 }
 
+span.user_description_deleted
+{
+	color: grey;
+}
+
+span.user_description_banned
+{
+	color: red;
+}
+
 span.user_comment
 {
     display:block;
