@@ -167,6 +167,12 @@
 		}
 	}
 	
+	if (isset($_POST['edit_message']))
+	{
+		// user looked at preview but chose to edit the message again
+		$previewSeen = 0;
+	}
+	
 	// check again for adding entry permission, just in case
 	if (isset($_SESSION[$entry_add_permission]) && $_SESSION[$entry_add_permission])
 	{
@@ -592,7 +598,10 @@
 					{
 						echo '<p><input type="hidden" name="teamid" value="' . htmlentities(urldecode(htmlspecialchars_decode($_POST['teamid']))) . '"></p>' . "\n";
 					}
-					echo '<p><input type="submit" value="' . 'Send the private message' . '"></p>' . "\n";
+					echo '<p>' . "\n";
+					echo '	<input type="submit" value="' . 'Send the private message' . '">' . "\n";
+					echo '	<input type="submit" name="edit_message" value="Edit message">' . "\n";
+					echo '</p>' . "\n";
 				} else
 				{
 					echo '<p><input type="submit" value="' . 'Confirm changes' . '"></p>' . "\n";
