@@ -3,21 +3,9 @@
 	ini_set ('session.name', 'SID');
 	ini_set('session.gc_maxlifetime', '7200');
 	@session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<?php
-	include('../stylesheet.inc');
 	
-	$pfad = (pathinfo(realpath('./')));
-	$name = $pfad['basename'];
-	print '  <title>' . $name . '</title>' . "\n";
-?>
-</head>
-<body>
-<?php
+	$display_page_title = 'Visits log';
+	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require realpath('../CMS/navi.inc');
 	
 	$site = new siteinfo();
@@ -109,17 +97,18 @@
 		{
 			$search_expression = $_GET['search_string'];
 		}
-		
+		// people like to use * as wildcard
+		$search_expression = str_replace('*', '%', $search_expression);
 		
 		// get list of last 200 visits
 		$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players` ';
 		$query .= 'WHERE `visits`.`playerid`=`players`.`id` AND `visits`.`' . sqlSafeString($search_type);
 		if ($search_for_host)
 		{
-			$query .= '` LIKE ' . "'" . '%' . sqlSafeString($search_expression) . '%'. "'";
+			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%' . "'";
 		} else
 		{
-			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%'. "'";
+			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%' . "'";
 		}
 		$query .= ' ORDER BY `visits`.`id` DESC LIMIT 0,200';
 		
