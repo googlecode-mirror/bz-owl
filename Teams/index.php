@@ -1279,9 +1279,11 @@
 		{
 			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
 		}
-				
+		// need an element displayed with display: block before the team area
+		echo '<div class="p"></div>' . "\n";
+		
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
-		$query = 'SELECT `name`, `score`, `member_count`, `num_matches_played`, `num_matches_won`, `num_matches_draw`, `num_matches_lost`';
+		$query = 'SELECT `name`, `score`, `member_count`, `num_matches_played`, `num_matches_won`, `num_matches_draw`, `num_matches_lost`, `teams_profile`.`logo_url`';
 		$query .= ' FROM `teams`, `teams_overview`, `teams_profile`';
 		$query .= ' WHERE `teams`.`id` = `teams_overview`.`teamid` AND `teams_overview`.`teamid` = `teams_profile`.`teamid` AND `teams`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
@@ -1301,10 +1303,16 @@
 		$team_name = '(no name)';
 		$number_team_members = 0;
 		
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
-			// need an element displayed with display: block before the team area
-			echo '<div class="p"></div>' . "\n";
+			if (!(strcmp(($row['logo_url']), '') === 0))
+			{
+				// user entered a logo
+				$site->write_self_closing_tag('img src="' . htmlentities($row['logo_url']) . '" style="max-width:400px; max-height:300px" alt="player logo"');
+				$site->write_self_closing_tag('br');
+				$site->write_self_closing_tag('br');
+			}
+			
 			echo '<div class="team_area">' . "\n";
 			echo '	<div class="team_header">' . "\n";
 			$team_name = $row['name'];

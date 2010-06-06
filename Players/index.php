@@ -799,8 +799,6 @@
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		
-		echo '<div class="p"></div>' . "\n";
-		
 		// is player banned?
 		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 		// 1 means maintenance-deleted
@@ -835,7 +833,9 @@
 		if ((($profile > 0) && $viewerid === $profile || $allow_edit_any_user_profile) && ($suspended_status !== 1))
 		{
 			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
-		}		
+		}
+		// need an element displayed with display: block before the team area
+		echo '<div class="p"></div>' . "\n";
 		
 		// the data we want
 		$query = 'SELECT `players`.`name`, `players_profile`.`location`, `players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
@@ -860,7 +860,7 @@
 			// this should never happen
 			$site->dieAndEndPage('There was more than one user with that id (' . sqlSafeString($profile) . '). This is a database error, please report it to admins.');
 		}
-				
+		
 		while($row = mysql_fetch_array($result))
 		{
 			if (!(strcmp(($row['logo_url']), '') === 0))
@@ -868,10 +868,9 @@
 				// user entered a logo
 				$site->write_self_closing_tag('img src="' . htmlentities($row['logo_url']) . '" style="max-width:400px; max-height:300px" alt="player logo"');
 				$site->write_self_closing_tag('br');
+				$site->write_self_closing_tag('br');
 			}
 			
-			// need an element displayed with display: block before the team area
-			echo '<div class="p"></div>' . "\n";
 			echo '<div class="user_area">' . "\n";
 			echo '	<div class="user_header">' . "\n";
 			echo '		<div class="user_description"><span class="user_profile_name">' . htmlent($row['name']) . '</span> ';
