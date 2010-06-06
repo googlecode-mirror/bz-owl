@@ -820,13 +820,19 @@
 		
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
-			if ($suspended_status === 0)
+			// a user should not be able to ban the own account
+			// allowing to unban is also not wished as there could always be a (theoretical) problem
+			// in the login code that lets a banned player login to the site
+			if (!($viewerid === $profile))
 			{
-				echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">ban</a>' . "\n";
-			}
-			if ($suspended_status > 1)
-			{
-				echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">unban</a>' . "\n";
+				if ($suspended_status === 0)
+				{
+					echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">ban</a>' . "\n";
+				}
+				if ($suspended_status > 1)
+				{
+					echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">unban</a>' . "\n";
+				}
 			}
 		}
 		
@@ -881,7 +887,7 @@
 			if ($suspended_status > 1)
 			{
 				echo '<span class="user_description_banned">(banned)</span>' . "\n";
-			}			
+			}
 //			echo '<span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
