@@ -187,7 +187,7 @@
 		$query = 'SELECT `name` FROM `players` WHERE `players`.`id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
-			$site->dieAndEndPage('<p>It seems like the player' . "'" . 's visits log can not be accessed for an unknown reason.</p>');
+			$site->dieAndEndPage('<p>It seems like the name of player with id ' . sqlSafeStringQuotes(htmlent($profile)) . ' can not be accessed for an unknown reason.</p>');
 		}
 		
 		// existance test of user skipped intentionally
@@ -218,7 +218,7 @@
 		
 		if ((int) mysql_num_rows($result) < 1)
 		{
-			$site->dieAndEndPage('There are no visits by this user (id=' . sqlSafeString($profile) . '). Make sure the user is not deleted.');
+			$site->dieAndEndPage('There are no visits by this user (id=' . sqlSafeString(htmlent($profile)) . '). Make sure the user is not deleted.');
 		}
 		
 		// format the output with a nice table
