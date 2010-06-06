@@ -184,36 +184,11 @@
 			$site->dieAndEndPage('');
 		}
 		
-		$query = 'SELECT `id` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
+		$query = 'SELECT `name` FROM `players` WHERE `players`.`id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
 			$site->dieAndEndPage('<p>It seems like the player' . "'" . 's visits log can not be accessed for an unknown reason.</p>');
 		}
-		
-		$rows = (int) mysql_num_rows($result);
-		mysql_free_result($result);
-		
-		if ($rows === 0)
-		{
-			// either the user does not exist or its profile page was not created yet due to a problem
-			// find out if the user exists
-			// example query: SELECT `id` FROM `players` WHERE `playerid`='1194'
-			$query = 'SELECT `id` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-			{
-				$site->dieAndEndPage('<p>It seems like the list of known players can not be accessed for an unknown reason.</p>');
-			}
-			
-			$rows = (int) mysql_num_rows($result);
-			mysql_free_result($result);
-			if ($rows ===0)
-			{
-				// someone tried to view the profile of a non existing user
-				echo '<p>You tried to view the visits log of a not existing user!</p>';
-				$site->dieAndEndPage('');
-			}
-		}
-		
 		
 		// existance test of user skipped intentionally
 		// if the user does not exist, there will be no visits for him
@@ -222,19 +197,12 @@
 		
 		// get the name of the player in question
 		$player_name = '(no player name)';
-		// example query: SELECT `name` FROM `players` WHERE `id`='16' LIMIT 1
-		$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
-		{
-			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPage('');
-		}
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			$player_name = $row['name'];
 		}
 		mysql_free_result($result);
-		$html_save_player_name = htmlentities($player_name);
+		$html_save_player_name = htmlent($player_name);
 		
 		// collect visits list of that player
 		// example query: SELECT `ip-address`, `host` FROM `visits` WHERE `playerid`='16'
