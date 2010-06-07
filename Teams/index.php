@@ -257,7 +257,7 @@
 			
 			// set up team profile
 			$query = 'INSERT INTO `teams_profile` (`teamid`, `description`) VALUES (' . "'" . sqlSafeString($new_team_id) . "'" . ', ' . "'";
-			$query .= sqlSafeString($_POST['team_description']) . "'" . ')';
+			$query .= sqlSafeString(bbcode($_POST['team_description'])) . "'" . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -1002,7 +1002,7 @@
 				
 				// find out if new leader is member of team
 				// first get the list of playerid's belonging to that team
-				$query = 'SELECT `id` FROM `players` WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
+				$query = 'SELECT `id` FROM `players` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
@@ -1028,7 +1028,7 @@
 				}
 				
 				// sanity checks passed, change the team leader
-				$query = 'UPDATE `teams` SET `leader_playerid`=' . "'" . sqlSafeString($new_leader) . "'" . ' WHERE `id`=' . "'" . sqlSafeString($teamid) . "'";
+				$query = 'UPDATE `teams` SET `leader_playerid`=' . sqlSafeStringQuotes($new_leader) . ' WHERE `id`=' . "'" . sqlSafeString($teamid) . "'";
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
@@ -1066,7 +1066,7 @@
 			// update team description
 			if (isset($_POST['team_description']))
 			{
-				$query = 'UPDATE `teams_profile` SET `description`=' . "'" . sqlSafeString($_POST['team_description']) . "'";
+				$query = 'UPDATE `teams_profile` SET `description`=' . "'" . sqlSafeString(bbcode($_POST['team_description'])) . "'";
 				$query .= ' WHERE `teamid`=' . "'" . $teamid . "'";
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 				{
@@ -1074,6 +1074,8 @@
 					$site->dieAndEndPage('');
 				}
 			}
+			
+//			echo 'test: ' . (bbcode($_POST['team_description']));
 			echo '<p>Changes were successfully written.</p>';
 			
 			// we're done editing
@@ -1355,7 +1357,7 @@
 			
 			echo '	<div class="team_profile_box">' . "\n";
 			echo '		<div class="team_profile_header_text">team description</div>' . "\n";
-			echo '		<div class="team_description">' . $site->linebreaks(bbcode($team_description)) . '</div>' . "\n";
+			echo '		<div class="team_description">' . $team_description . '</div>' . "\n";
 			echo '	</div>' . "\n";
 			echo '</div>' . "\n";
 		}
