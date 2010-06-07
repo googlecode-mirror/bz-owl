@@ -15,7 +15,7 @@
 		// $item is passed by reference and therefore changes to $item will be passed back to the caller function
 		
 		// find out player name by the specified player id in the variable named $item
-		$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($item) . "'" . ' LIMIT 1';
+		$query = 'SELECT `name` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($item) . ' LIMIT 1';
 		$result = @mysql_query($query, $connection);
 		
 		// initialise the variable with an error message
@@ -25,7 +25,7 @@
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = htmlent($row['name']);
+			$item = $row['name'];
 		}
 		mysql_free_result($result);
 	}
@@ -35,7 +35,7 @@
 		// $item is passed by reference and therefore changes to $item will be passed back to the caller function
 		
 		// find out team name by the specified team id in the variable named $item		  
-		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($item) . "'" . ' LIMIT 1';
+		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($item) . ' LIMIT 1';
 		$result = @mysql_query($query, $connection);
 		
 		// initialise the variable with an error message
@@ -45,7 +45,7 @@
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = htmlentities($row['name'], ENT_COMPAT, 'UTF-8');
+			$item = $row['name'];
 		}
 		mysql_free_result($result);		   
 	}
