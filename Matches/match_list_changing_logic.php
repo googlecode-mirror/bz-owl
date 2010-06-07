@@ -188,7 +188,7 @@
 			}
 			echo ' match in the database is quite similar:</p>';
 			// use the post data as much as possible instead of looking up the same data in the database
-			echo '<p>At ' . htmlentities($timestamp) . ' teams ';
+			echo '<p>At ' . $timestamp . ' teams ';
 			team_name_from_id($site, $connection, $team_id1);
 			echo ' - ';
 			team_name_from_id($site, $connection, $team_id2);
@@ -1552,12 +1552,13 @@
 			for ($i = 0; $i <= $n; $i++)
 			{
 				echo '<option value="';
-				echo htmlentities($list_team_id_and_name[0][$i]);
+				// no htmlentities because team id 0 is reserved
+				echo $list_team_id_and_name[0][$i];
 				if (isset($team1_teamid) && ((int) $list_team_id_and_name[0][$i] === $team1_teamid))
 				{
 					echo '" selected="selected';
 				}
-				echo '">' . htmlentities($list_team_id_and_name[1][$i], ENT_COMPAT, 'UTF-8');
+				echo '">' . $list_team_id_and_name[1][$i];
 				echo '</option>' . "\n";
 			}
 			
@@ -1587,12 +1588,13 @@
 			for ($i = 0; $i <= $n; $i++)
 			{
 				echo '<option value="';
-				echo htmlentities($list_team_id_and_name[0][$i]);
+				// no htmlentities because team id 0 is reserved
+				echo $list_team_id_and_name[0][$i];
 				if (isset($team2_teamid) && ((int) $list_team_id_and_name[0][$i] === $team2_teamid))
 				{
 					echo '" selected="selected';
 				}
-				echo '">' . htmlentities($list_team_id_and_name[1][$i], ENT_COMPAT, 'UTF-8');
+				echo '">' . $list_team_id_and_name[1][$i];
 				echo '</option>' . "\n";
 			}
 			echo '</select></span>' . "\n";

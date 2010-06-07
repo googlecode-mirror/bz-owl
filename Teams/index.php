@@ -478,12 +478,13 @@
 		for ($i = 0; $i <= $n; $i++)
 		{
 			echo '<option value="';
-			echo htmlentities($list_team_id_and_name[0][$i]);
+			// no htmlentities because team id 0 is reserved
+			echo $list_team_id_and_name[0][$i];
 			if (isset($leader_of_team_with_id) && ((int) $list_team_id_and_name[0][$i] === $leader_of_team_with_id))
 			{
 				echo '" selected="selected';
 			}
-			echo '">' . htmlentities(($list_team_id_and_name[1][$i]), ENT_COMPAT, 'UTF-8');
+			echo '">' . $list_team_id_and_name[1][$i];
 			echo '</option>' . "\n";
 		}
 		
@@ -509,8 +510,9 @@
 		for ($i = 0; $i <= $n; $i++)
 		{
 			echo '<option value="';
-			echo htmlentities($list_player_id_and_name[0][$i]);
-			echo '">' . htmlentities(($list_player_id_and_name[1][$i]), ENT_COMPAT, 'UTF-8');
+			// no htmlentities because team id 0 is reserved
+			echo $list_player_id_and_name[0][$i];
+			echo '">' . $list_player_id_and_name[1][$i];
 			echo '</option>' . "\n";
 		}
 		
