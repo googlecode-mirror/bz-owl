@@ -72,7 +72,7 @@
 				$site->dieAndEndPage('Could not reactivate deleted account with id ' . sqlSafeString(getUserID()) . '.');
 			}
 			$suspended_mode = (int) 0;
-		}		
+		}
 		if ($suspended_mode > (int) 1)
 		{
 			// remove the logged in flag
@@ -88,6 +88,7 @@
 				echo '<p>Admins specified you should be banned from the entire site.</p>';
 			}
 			echo "\n";
+			// skip updates if the user has a disabled login or is banned (inappropriate callsign for instance)
 			$site->dieAndEndPage('');
 		}
 		
@@ -163,13 +164,15 @@
 		{
 			// find out if someone else once used the same callsign
 			// update the callsign from the other player in case he did
-			// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194') AND (`external_playerid` <> '')
+			// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194') AND (`external_playerid` <> '') AND (`suspended` < '2')
 			// FIXME sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
 			// FIXME: find out if this depends on platform
-			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . "'" . sqlSafeString($_SESSION['username']) . "'";
-			$query .= ') AND (`external_playerid` <> ' . "'" . sqlSafeString($_SESSION['external_id']) . "'" . ')';
+			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes($_SESSION['username']) . ')';
+			$query .= ' AND (`external_playerid` <> ' . sqlSafeStringQuotes($_SESSION['external_id']) . ')';
 			// do not update users with local login
 			$query .= ' AND (`external_playerid` <> ' . "'" . "'" . ')';
+			// skip updates for banned or disabled accounts (inappropriate callsign for instance)
+			$query .= ' AND (`suspended` < ' . sqlSafeStringQuotes('2') . ')';
 			if ($result = $site->execute_query($site->db_used_name(), 'players', $query, $connection))
 			{
 				$errno = 0;
