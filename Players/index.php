@@ -1071,7 +1071,7 @@
 			echo '<tr class="players_overview">' . "\n";
 			echo '	<td class="players_overview_name">';
 			echo '<a href="./?profile=' . htmlentities($row['id']) . '">';
-			echo htmlent($row['player_name']);
+			echo $row['player_name'];
 			echo '</a></td>' . "\n";
 			echo '	<td class="players_overview_team">';
 			if ((int) $row['teamid'] === 0)
