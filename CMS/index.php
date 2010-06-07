@@ -15,6 +15,8 @@
 	$page_title = 'ts-CMS';
 	require_once 'index.inc';
 	
+	$auth_performed = false;
+	
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
 		// load modules to check input and buffer output
@@ -33,7 +35,12 @@
 			include_once 'local_login/index.php';
 			$output .= ob_get_contents();
 			ob_end_clean();
-		}		
+		}
+		
+		if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
+		{
+			$auth_performed = true;
+		}
 	}
 	
 	
@@ -46,7 +53,7 @@
 	if ((strcmp($output, '') == 0) && (isset($_SESSION['user_logged_in'])) && $_SESSION['user_logged_in'])
 	{
 		require_once '../CMS/navi.inc'; 
-		echo '<p>Login was already successful.</p>' . "\n";
+		echo '<p class="first_p">Login was already successful.</p>' . "\n";
 		$site->dieAndEndPage('');
 	}
 	
