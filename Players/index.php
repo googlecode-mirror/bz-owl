@@ -1078,8 +1078,8 @@
 				echo '(teamless)';
 			} else
 			{
-				echo '<a href="../Teams/?profile=' . htmlentities($row['teamid']) . '">';
-				echo htmlent($row['team_name']);
+				echo '<a href="../Teams/?profile=' . $row['teamid'] . '">';
+				echo $row['team_name'];
 				echo '</a>';
 			}
 			echo '</td>'. "\n";
