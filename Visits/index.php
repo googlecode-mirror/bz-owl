@@ -26,7 +26,7 @@
 	// in any case you need to be logged in to view the visits log
 	if ($viewerid === 0)
 	{
-		echo '<p>You need to login in order to view the visits log!</p>';
+		echo '<p class="first_p">You need to login in order to view the visits log!</p>';
 		$site->dieAndEndPage('');
 	}
 	

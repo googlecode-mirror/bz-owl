@@ -129,7 +129,7 @@
 				echo '" id="msg_send_to';
 				echo $iteration_count;
 				echo '" readonly="readonly" value="';
-				echo htmlent($item);
+				echo ($item);
 				echo '">' . "\n";
 				echo '	<input type="submit" name="remove_recipient';
 				echo $iteration_count;
@@ -139,7 +139,7 @@
 				echo '<div><label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label></div>' . "\n";
 				echo '<div class="msg_send_recipient_readonly">' . "\n";
 				echo '	<input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="';
-				echo htmlent($item);
+				echo ($item);
 				echo '">' . "\n";
 				echo '	<input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient">' . "\n";						
 			}
@@ -209,7 +209,7 @@
 					$one_recipient = '';
 					if (isset($_POST[$variable_add_name]))
 					{
-						$one_recipient = (html_entity_decode(urldecode($_POST[$variable_add_name])));
+						$one_recipient = (urldecode(htmlent($_POST[$variable_add_name])));
 						$known_recipients[] = $one_recipient;
 					}
 				}

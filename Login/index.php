@@ -25,6 +25,7 @@
 			$site->dieAndEndPage('Could not delete expired invitations.');
 		}
 	}
+	unset($auth_performed);
 	
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 	{
@@ -100,7 +101,7 @@
 				echo '<p class="first_p">Adding user to database…</p>' . "\n";
 				// example query: INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES('1194', '0', 'ts')
 				$query = 'INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES(';
-				$query .= "'" . sqlSafeString($_SESSION['external_id']) . "'" . ', ' . "'" . '0' . "'" . ', ' . "'" . sqlSafeString($_SESSION['username']) . "'" .')';
+				$query .= "'" . sqlSafeString($_SESSION['external_id']) . "'" . ', ' . "'" . '0' . "'" . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) .')';
 				if ($insert_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection))
 				{
 					$query = 'SELECT `id` FROM `players` WHERE `external_playerid`=' . "'" . sqlSafeString($_SESSION['external_id']) . "'";
@@ -148,7 +149,7 @@
 			} else
 			{
 				// user is not new, update his callsign with new callsign supplied from login
-				$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString($_SESSION['username']) . "'" . ' WHERE `external_playerid`=' . "'" . sqlSafeString($_SESSION['external_id']) . "'";
+				$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ' WHERE `external_playerid`=' . "'" . sqlSafeString($_SESSION['external_id']) . "'";
 				// each user has only one entry in the database
 				$query .= ' LIMIT 1';
 				if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -167,7 +168,7 @@
 			// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194') AND (`external_playerid` <> '') AND (`suspended` < '2')
 			// FIXME sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
 			// FIXME: find out if this depends on platform
-			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes($_SESSION['username']) . ')';
+			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ')';
 			$query .= ' AND (`external_playerid` <> ' . sqlSafeStringQuotes($_SESSION['external_id']) . ')';
 			// do not update users with local login
 			$query .= ' AND (`external_playerid` <> ' . "'" . "'" . ')';
@@ -195,7 +196,7 @@
 					
 					// update the entry with the result from the bzidtools.php script
 					// example query: UPDATE `players` SET `name`='moep' WHERE `external_playerid`='1885';
-					$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString($output) . "'" . ' WHERE `external_playerid`=' . "'" . sqlSafeString((int) $row['bzid']) . "'";
+					$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString(htmlent($output)) . "'" . ' WHERE `external_playerid`=' . "'" . sqlSafeString((int) $row['bzid']) . "'";
 					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
 						// trying to update the players old callsign failed
@@ -275,7 +276,7 @@
 			
 			// insert logged in user into online_users table
 			$query = 'INSERT INTO `online_users` (`playerid`, `username`, `last_activity`) Values';
-			$query .= '(' . "'" . sqlSafeString(getUserID()) . "'" . ', ' . "'" . (mysql_real_escape_string($_SESSION['username'])) . "'" . ', ' . "'" . $curDate . "'" . ')';	
+			$query .= '(' . sqlSafeStringQuotes(getUserID()) . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ', ' . "'" . $curDate . "'" . ')';	
 			$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
 			
 			// do maintenance in case a user still belongs to a deleted team (database problem)

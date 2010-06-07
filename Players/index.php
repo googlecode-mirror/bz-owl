@@ -284,7 +284,7 @@
 			
 			// get team name
 			$team_name = '(no team name)';
-			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($invited_to_team) . "'" . ' LIMIT 1';
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($invited_to_team) . ' LIMIT 1';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -322,8 +322,8 @@
 			// create invitation message in database
 			$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
 			$query .= '(' . "'" . sqlSafeString('league management system') . "'" . ', ' . "'" . sqlSafeString ('0'). "'";
-			$query .= ', ' . "'" . sqlSafeString(('Invitation to team ' . htmlent($team_name))) . "'" . ', ' . "'" . sqlSafeString (date('Y-m-d H:i:s')). "'";
-			$query .= ', ' . "'" . sqlSafeString(('Congratulations, you were invited by ' . htmlent($player_name) . ' to the team ' . htmlent($team_name) . '!' . "\n" . 'The invitation will expire in 7 days.')) . "'";
+			$query .= ', ' . "'" . sqlSafeString(('Invitation to team ' . $team_name)) . "'" . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+			$query .= ', ' . "'" . sqlSafeString(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n" . 'The invitation will expire in 7 days.')) . "'";
 			$query .= ', ' . "'" . sqlSafeString('0') . "'" . ', ' . "'" . sqlSafeString($profile) . "'" . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 			{
@@ -352,6 +352,8 @@
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
 			}
+			
+			echo '<p>The player was invited successfully.</p>' . "\n";
 			
 			// invitation and notification was sent
 			$site->dieAndEndPage('');
@@ -470,7 +472,13 @@
 		if (!(isset($_POST['user_suspended_status_id'])))
 		{
 			// get entire suspended status, including maintenance-deleted
-			$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
+			$query = 'SELECT `suspended`';
+			if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
+			{
+				// the ones who can ban, can also change a user's callsign
+				$query .= ',`name`';
+			}
+			$query .= ' FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 			// only information about one player needed
 			$query .= ' LIMIT 1';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -478,10 +486,12 @@
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
 			}
-			
+			// inisialise name with error message, it will get overwritten if a name can be found
+			$callsign = 'ERROR: unknown callsign';
 			while($row = mysql_fetch_array($result))
 			{
 				$suspended_status = (int) $row['suspended'];
+				$callsign = htmlent($row['name']);
 			}
 			mysql_free_result($result);
 			
@@ -514,6 +524,22 @@
 				$site->dieAndEndPage('');
 			}
 			
+			// callsign change requested?
+			if (isset($_POST['callsign']))
+			{
+				// only admins can edit their comments
+				if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
+				{
+					$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString(htmlent(urldecode($_POST['callsign']))) . "'";
+					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
+					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPage('');
+					}
+				}
+			}
+			
 			// is there a user comment?
 			if (isset($_POST['user_comment']))
 			{
@@ -529,7 +555,7 @@
 					}
 				}
 			}
-
+			
 			if (isset($_POST['logo_url']))
 			{
 				$allowedExtensions = array('.png', '.bmp', '.jpg', '.gif', 'jpeg');
@@ -546,9 +572,11 @@
 					}
 				} else
 				{
-					echo '<p>Error: Skipping logo setting: Not allowed URL or extension.</p>';
+					if (!(strcmp(($_POST['logo_url']), '') === 0))
+					{
+						echo '<p>Error: Skipping logo setting: Not allowed URL or extension.</p>';
+					}
 				}
-
 			}
 			
 			if (isset($_POST['admin_comments']))
@@ -605,21 +633,30 @@
 			$user_comment = 'No profile text has yet been set up';
 		}
 		
+		// admins may change user names
+		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
+		{
+			echo '<p><label class="player_edit" for="edit_player_name">Change callsign: </label>';
+			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'.$callsign.'"');
+			echo '</p>';
+		}
+		
 		// user comment
-		echo '<p><label for="edit_user_comment">User comment: </label>' . "\n";
-		echo '<span><textarea id="edit_user_comment" rows="10" cols="50" name="user_comment">';
+		echo '<p><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
+		echo '<span><textarea class="player_edit" id="edit_user_comment" rows="10" cols="50" name="user_comment">';
 		echo bbcode($user_comment);
 		echo '</textarea></span></p>';
 
 		// logo/avatar url
-		echo '<p><label for="edit_avatar_url">Avatar URL: </label>';
-		echo '<input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'" /></p>';
+		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'"');
+		echo '</p>';
 		
 		// admin comments, these should only be set by an admin
 		if ($allow_add_admin_comments_to_user_profile === true)
 		{
-			echo '<p><label for="edit_admin_comments">Edit admin comments: </label>';
-			echo '<span><textarea id="edit_admin_comments" rows="10" cols="50" name="admin_comments">';
+			echo '<p><label class="player_edit" for="edit_admin_comments">Edit admin comments: </label>';
+			echo '<span><textarea class="player_edit" id="edit_admin_comments" rows="10" cols="50" name="admin_comments">';
 			echo bbcode($admin_comments);
 			echo '</textarea></span></p>' . "\n";
 		}
@@ -635,7 +672,7 @@
 	{
 		if (!(isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user']))
 		{
-			echo '<p>You have no permissions to perform that action.</p>';
+			echo '<p class="first_p">You have no permissions to perform that action.</p>';
 			$site->dieAndEndPage('');
 		}
 		
@@ -879,7 +916,7 @@
 			
 			echo '<div class="user_area">' . "\n";
 			echo '	<div class="user_header">' . "\n";
-			echo '		<div class="user_description"><span class="user_profile_name">' . htmlent($row['name']) . '</span> ';
+			echo '		<div class="user_description"><span class="user_profile_name">' . ($row['name']) . '</span> ';
 			if ($suspended_status === 1)
 			{
 				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";

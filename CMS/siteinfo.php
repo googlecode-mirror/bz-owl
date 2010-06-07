@@ -60,12 +60,17 @@
 		return htmlentities($string, ENT_COMPAT, 'UTF-8');
 	}
 	
+	function htmlent_decode($string)
+	{
+		return html_entity_decode($string, ENT_COMPAT, 'UTF-8');
+	}
+	
 	// give ability to use a limited custom style
 	function bbcode($string)
 	{
 		// TODO: Parse bbcode!
 		// TODO: strip_tags maybe useful for sanity check at the end
-		return htmlentities($string, ENT_COMPAT, 'UTF-8');
+		return htmlentities($string);
 	}
 	
 	// set up a class for less frequently used functions

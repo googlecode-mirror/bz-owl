@@ -470,6 +470,29 @@ div.user_admin_comments
 	text-align: left;
 }
 
+/* edit section */
+label.player_edit
+{
+	width: 7em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+input[type=text].logo_url
+{
+	max-width: 100%;
+}
+
+textarea.player_edit
+{
+	width: 10.1cm;
+	max-width: 100%;
+	font-size: 1em;
+	height: 10em;
+	max-height: 90%;
+}
+
 /* ban section */
 form p#edit_user_suspended_status_description
 {
