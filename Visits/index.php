@@ -41,7 +41,7 @@
 	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline"><label for="visit_search_string">Search for: </label>' . "\n";
+	echo '<div style="display:inline"><label for="visit_search_string">Search for:</label> ' . "\n";
 	echo '<span><input type="text" id="visit_search_string" name="search_string"';
 	if (isset($_GET['search']))
 	{
@@ -51,7 +51,7 @@
 	echo '</span></div> ' . "\n";
 	
 	// looking for either ip-address or host?
-	echo '<div style="display:inline"><label for="visit_search_type">Search for: </label>' . "\n";
+	echo '<div style="display:inline"><label for="visit_search_type">result type:</label> ' . "\n";
 	echo '<span><select id="visit_search_type" name="search_type">';
 	echo '<option>ip-address</option>';
 	echo '<option';
@@ -68,7 +68,17 @@
 		}
 	}
 	echo '>host</option>';
-	echo '</select></span></div> ' . "\n";
+	echo '</select></span>';
+	
+	echo ' <label for="visit_search_result_amount">Entries:</label> ';
+	echo '<span><select id="visit_search_result_amount" name="search_result_amount">';
+	echo '<option>200</option>';
+	echo '<option>400</option>';
+	echo '<option>800</option>';
+	echo '<option>1600</option>';
+	echo '<option>3200</option>';
+	echo '</select></span>';
+	echo '</div> ' . "\n";
 	
 	echo '<div style="display:inline"> <input type="submit" name="search" value="Search" id="send"></div>' . "\n";
 	echo '</form>' . "\n";
@@ -110,7 +120,19 @@
 		{
 			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%' . "'";
 		}
-		$query .= ' ORDER BY `visits`.`id` DESC LIMIT 0,200';
+		
+		// how many resulting rows does the user wish?
+		// assume 200 by default
+		$num_results = 200;
+		if (isset($_GET['search_result_amount']))
+		{
+			if ($_GET['search_result_amount'] > 0)
+			{
+				// cast result to int to avoid SQL injections
+				$num_results = (int) $_GET['search_result_amount'];
+			}
+		}
+		$query .= ' ORDER BY `visits`.`id` DESC LIMIT 0,' . sqlSafeString($num_results);
 		
 		if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
 		{
