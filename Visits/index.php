@@ -162,7 +162,7 @@
 		{
 			echo '<tr>' . "\n";
 			echo '	<td><a href="./?profile=' . htmlspecialchars($row['playerid']) . '">';
-			echo htmlentities($row['name']);
+			echo $row['name'];
 			echo '</a></td>' . "\n";
 			echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
@@ -213,7 +213,6 @@
 			$player_name = $row['name'];
 		}
 		mysql_free_result($result);
-		$html_save_player_name = htmlent($player_name);
 		
 		// collect visits list of that player
 		// example query: SELECT `ip-address`, `host` FROM `visits` WHERE `playerid`='16'
@@ -234,7 +233,7 @@
 		
 		// format the output with a nice table
 		echo "\n" . '<table class="table_team_members">' . "\n";
-		echo '<caption>Visits log of player ' . $html_save_player_name . '</caption>' . "\n";
+		echo '<caption>Visits log of player ' . $player_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
 		echo '	<th>ip-address</th>' . "\n";
@@ -246,7 +245,7 @@
 		while($row = mysql_fetch_array($result))
 		{
 			echo '<tr>' . "\n";
-			echo '	<td> ' . $html_save_player_name . '</td>' . "\n";
+			echo '	<td> ' . $player_name . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['timestamp']) . '</td>' . "\n";
@@ -289,7 +288,7 @@
 	{
 		echo '<tr>' . "\n";
 		echo '	<td><a href="./?profile=' . htmlspecialchars($row['playerid']) . '">';
-		echo htmlentities($row['name']);
+		echo $row['name'];
 		echo '</a></td>' . "\n";
 		echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
 		echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
