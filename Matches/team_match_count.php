@@ -19,6 +19,13 @@
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
 		}
+		
+		$query = 'UPDATE `teams_overview` SET `deleted`=' . "'" . sqlSafeString('1') . "'";
+		$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($teamid). "'";
+		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		{
+			$site->dieAndEndPage('Could not mark team with id ' . sqlSafeString($teamid) . ' as active!');
+		}
 	}
 	
 	function increase_won_match_count($teamid, $site, $connection)
@@ -75,6 +82,9 @@
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
 		}
+		
+		// do not set team as inactive or something else because that would have to be computed
+		// by considering a lot of matches and maintenance is supposed to do that
 	}
 	
 	function decrease_won_match_count($teamid, $site, $connection)
