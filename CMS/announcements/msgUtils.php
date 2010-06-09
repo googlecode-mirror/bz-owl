@@ -69,7 +69,7 @@
 			echo '<div class="msg_view_full">' . "\n";
 			
 			echo '	<div class="msg_header_full">' . "\n";
-			echo '		<span class="msg_subject">' .  ($row["subject"]) . '</span>' . "\n";
+			echo '		<span class="msg_subject">' .  htmlent($row["subject"]) . '</span>' . "\n";
 			echo '		<span class="msg_author"> by ' .  htmlentities($row["author"], ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
 			echo '		<span class="msg_timestamp"> at ' .	 htmlentities($row['timestamp']) . '</span>' . "\n";
 			echo '	</div>' . "\n";

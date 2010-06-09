@@ -179,7 +179,7 @@
 	// check again for adding entry permission, just in case
 	if (isset($_SESSION[$entry_add_permission]) && $_SESSION[$entry_add_permission])
 	{
-		$known_recipients = Array ();
+		$known_recipients = array();
 		
 		if (!(isset($_POST['teamid'])))
 		{
