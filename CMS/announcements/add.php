@@ -158,7 +158,10 @@
 	$utils->setSite($site);
 	$recipients = false;
 	$subject = 'Enter subject here';
-	echo '<p class="first_p"><a class="button" href="./">bzmail overview</a><p>' . "\n";
+	if ($message_mode)
+	{
+		echo '<p class="first_p"><a class="button" href="./">bzmail overview</a><p>' . "\n";
+	}
 	if (isset($_POST['subject']))
 	{
 		$subject = $_POST['subject'];
@@ -322,7 +325,7 @@
 			if (!$randomkeysmatch && $previewSeen > 1)
 			{
 				// give possibility to go back to main view
-				echo '<p><a href="./">[overview]</a><p>';
+				echo '<a href="./">[overview]</a>';
 				echo '<p>The magic key does not match, it looks like you came from somewhere else or your session expired.';
 				echo ' Going back to compositing mode</p>' . "\n";
 				$previewSeen = 0;
@@ -561,7 +564,7 @@
 					echo htmlentities($author, ENT_COMPAT, 'UTF-8');
 					echo '</div>' . "\n";
 					echo '<hr>';
-					echo bbcode($announcement);
+					echo htmlent($announcement);
 					echo '</div>' . "\n\n";
 				}
 				if ($message_mode)
@@ -590,7 +593,7 @@
 					}
 				} else
 				{
-					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlent$timestamp) . '"></p>' . "\n";
+					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"></p>' . "\n";
 				}
 				
 				// keep the information in case user confirms by using invisible form items

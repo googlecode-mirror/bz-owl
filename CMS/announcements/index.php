@@ -33,6 +33,16 @@
 		$logged_in = $_SESSION['user_logged_in'];
 	}
 	
+	if (!(isset($message_mode)))
+	{
+		$message_mode = false;
+	}
+	
+	if (!(isset($allow_different_timestamp)))
+	{
+		$allow_different_timestamp = false;
+	}
+	
 	// only logged in users can read messages
 	// usually the permission system should take care of permissions anyway
 	// but just throw one more sanity check at it, for the sake of it
@@ -284,7 +294,8 @@
 		} else
 		{
 			// take care the table(s) do exist and if not create them
-			db_create_when_needed($site, $connection, $message_mode, $table_name, $table_name_msg_user_connection);
+			// FIXME: do this in maintenance
+//			db_create_when_needed($site, $connection, $message_mode, $table_name, $table_name_msg_user_connection);
 			
 			
 			// the "LIMIT 0,15" part of query means only the first fifteen entries are received

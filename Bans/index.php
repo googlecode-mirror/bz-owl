@@ -5,5 +5,5 @@
 	$entry_add_permission = 'allow_add_bans';
 	$entry_edit_permission = 'allow_edit_bans';
 	$entry_delete_permission = 'allow_delete_bans';
-	@require '../CMS/announcements/index.php';
+	require '../CMS/announcements/index.php';
 ?>
