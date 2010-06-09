@@ -251,7 +251,10 @@
 		 newA=oldA+diff, newB=oldB-diff; */
 		
 		// FIXME: remove debug comment
-		echo 'computed scores before: ' . $score_a . ', ' . $score_b;
+		if ($site->debug_sql())
+		{
+			echo 'computed scores before: ' . $score_a . ', ' . $score_b;
+		}
 		
 		if (is_numeric($score_a) && is_numeric($score_b))
 		{

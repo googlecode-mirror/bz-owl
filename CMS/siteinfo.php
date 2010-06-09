@@ -70,7 +70,7 @@
 	{
 		// TODO: Parse bbcode!
 		// TODO: strip_tags maybe useful for sanity check at the end
-		return htmlentities($string);
+		return $string;
 	}
 	
 	// set up a class for less frequently used functions
