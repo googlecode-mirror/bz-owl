@@ -80,7 +80,7 @@
 	function team_name_from_id($site, $connection, $id)
 	{
 		$query = 'SELECT `name` FROM `teams` WHERE id=';
-		$query .= "'" . sqlSafeString((int) $id) . "'";
+		$query .= sqlSafeStringQuotes((int) $id);
 		// only one team name as result
 		$query .= ' LIMIT 1';
 		
@@ -100,7 +100,7 @@
 		}
 		while($row_team_name = mysql_fetch_array($result_team_name))
 		{
-			echo $row_team_name['name'];
+			echo '<a href="../Teams?profile=' . ((int) $id) . '">' . $row_team_name['name'] . '</a>';
 		}
 		mysql_free_result($result_team_name);		
 	}

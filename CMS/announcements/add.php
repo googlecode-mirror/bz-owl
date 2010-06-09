@@ -397,12 +397,12 @@
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
 							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString(htmlent($subject)) . "'" . ', ';
-							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($announcement) . "'" . ', 1, ' . "'" . sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
+							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString(htmlent($announcement)) . "'" . ', 1, ' . "'" . sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
 						} else
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
 							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString(htmlent($subject)) . "'" . ', ';
-							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($announcement) . "'" . ', 0, ' . "'" . sqlSafeString(implode(' ', ($utils->getRecipientsIDs()))) . "'" . ')';
+							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString(htmlent($announcement)) . "'" . ', 0, ' . "'" . sqlSafeString(implode(' ', ($utils->getRecipientsIDs()))) . "'" . ')';
 						}
 						$message_sent = true;
 						if ($result = (@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
