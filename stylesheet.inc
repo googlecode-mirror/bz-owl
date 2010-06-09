@@ -27,9 +27,8 @@
 	$url = baseaddress();
 	
 	echo '  <link href="' . $url;
-	// do not append .css because the server should
-	// choose what to send, depending on client
-	// remember: Cool URIs do not change!
-	echo 'styles/' . $stylesheet . '"';
+	// Need to append file extension as only
+	// apache allows not using it by default
+	echo 'styles/' . $stylesheet . '.css"';
 	echo ' rel="stylesheet" type="text/css">' . "\n";
 ?>
