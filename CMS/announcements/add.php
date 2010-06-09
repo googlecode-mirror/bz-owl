@@ -269,7 +269,7 @@
 			$announcement = '';
 			if (isset($_POST['announcement']))
 			{
-				$announcement = (html_entity_decode(urldecode($_POST['announcement']), ENT_COMPAT, 'UTF-8'));
+				$announcement = (htmlent_decode(urldecode($_POST['announcement'])));
 			}
 			if ($message_mode)
 			{
@@ -282,7 +282,7 @@
 				$timestamp = '';
 				if (isset($_POST['timestamp']))
 				{
-					$timestamp = (html_entity_decode(urldecode($_POST['timestamp'])));
+					$timestamp = (htmlent_decode(urldecode($_POST['timestamp'])));
 				}
 				if ((!$allow_different_timestamp) || (!(strcmp($timestamp, '') === 0)))
 				{
@@ -293,7 +293,7 @@
 			// FIXME: only use author information in announcement mode and even then only when $previewSeen==2
 			if (isset($_POST['author']))
 			{
-				$author = (html_entity_decode(urldecode($_POST['author'])));
+				$author = (htmlent_decode(urldecode($_POST['author'])));
 			}
 			
 			// handle shown author of entry
@@ -528,7 +528,7 @@
 					if ($message_mode)
 					{
 						echo '<div class="to">' . "\n";
-						echo htmlentities($recipients, ENT_COMPAT, 'UTF-8');
+						echo htmlent($recipients);
 					}
 					echo '<div class="timestamp">';
 					if ($message_mode)
@@ -620,6 +620,147 @@
 					}
 					if ($message_mode)
 					{
+						// are we replying to a valid (id>0) message?
+						if ((isset($_GET['reply'])) && (isset($_GET['id']) && ((int) $_GET['id'] > 0)))
+						{
+							// reply to all?
+							if (strcmp($_GET['reply'], 'players') === 0)
+							{
+								$query = 'SELECT `author_id`,`from_team`,`recipients`,`subject`,`message`';
+								$query .= ' FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes((int) $_GET['id']);
+								// a message id is always unique -> maximum 1 match in table
+								$query .= ' LIMIT 1';
+								
+								if (!($recipient_list = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+								{
+									// query was bad, error message was already given in $site->execute_query(...)
+									$site->dieAndEndPage('ERROR: Could not get recipient list for message with id ' . sqlSafeStringQuotes((int) $_GET['id']));
+								}
+								$tmp_recipients = '';
+								while($row = mysql_fetch_array($recipient_list))
+								{
+									if ((int) $row['from_team'] === 0)
+									{
+										// raw list of recipients id's
+										$tmp_recipients = $row['recipients'];
+										$tmp_recipients .= ' ';
+									} else
+									{
+										$for_team = (int) $row['from_team'];
+									}
+									$tmp_recipients .= $row['author_id'];
+									// add a 'Re: ' before the subject if there is none already
+									// like in email
+									if (strncmp('Re: ', 'r', 3) === 0)
+									{
+										$subject = $row['subject'];
+									} else
+									{
+										$subject = 'Re: ' . $row['subject'];
+									}
+									// citation signs, like in email
+									$announcement = '> ' . str_replace("\n","\n> ",$row['message']) . "\n\n";
+								}
+								mysql_free_result($recipient_list);
+								
+								// remove viewing user from recipient list
+								
+								// TODO: as currently only 20 players at max are allowed, linear searching will do it for the moment
+								// TODO: With more recipients replacing using regular expressions might be better
+								// user at beginning of list
+								$tmp_recipients = str_replace((getUserID() . ' '), '', $tmp_recipients);
+								// user at mid of list
+								$tmp_recipients = str_replace(' ' . (getUserID() . ' '), '', $tmp_recipients);
+								// user at end of list
+								$tmp_recipients = str_replace(' ' . (getUserID()), '', $tmp_recipients);
+								
+								// user id 0 is reserved
+								$tmp_recipients = str_replace('0 ', '', $tmp_recipients);
+								$tmp_recipients = str_replace(' 0 ', '', $tmp_recipients);
+								$tmp_recipients = str_replace(' 0', '', $tmp_recipients);
+								// clean whitespace
+								$tmp_recipients = str_replace('  ', ' ', $tmp_recipients);
+								
+								$recipients = explode(' ', $tmp_recipients);
+								unset($tmp_recipients);
+								
+								$num_recipients = (int) count($recipients);
+								if (($num_recipients === 1) && ((int) $recipients[0] === 0))
+								{
+									echo '<p>There is no user with the id 0.</p>' . "\n";
+									$site->dieAndEndPage();
+								}
+								
+								$query = 'SELECT `id`,`name` FROM `players` WHERE (`id`=';
+								$curRecipient = (int) 1;
+								foreach ($recipients as $one_recipient)
+								{
+									$query .= sqlSafeStringQuotes((int) $one_recipient);
+									if ($curRecipient < $num_recipients)
+									{
+										$query .= ' OR `id`=';
+										$curRecipient++;
+									}
+								}
+								$query .= ')';
+								// TODO: only 20 players in message are currently supported
+								$query .= ' LIMIT 20';
+								
+								// variables no longer needed
+								unset($curRecipient);
+								unset($num_recipients);
+								
+								if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+								{
+									// query was bad, error message was already given in $site->execute_query(...)
+									$site->dieAndEndPage('ERROR: Could not get recipient id/name list for message with id ' . sqlSafeStringQuotes((int) $_GET['id']));
+								}
+								$known_recipients = Array();
+								while($row = mysql_fetch_array($result))
+								{
+									$known_recipients[] = $row['name'];
+								}
+								mysql_free_result($result);
+								
+								// we have recipients
+								// recipients were used before, thus we need to explicitly set them to false again
+								if (count($known_recipients) < 1)
+								{
+									$recipients = false;
+								}
+							} else
+							{
+								// subject and message changes like in player reply mode have to be done
+								// do it seperately to save SQL queries
+								
+								$query = 'SELECT `subject`,`message`';
+								$query .= ' FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes((int) $_GET['id']);
+								// a message id is always unique -> maximum 1 match in table
+								$query .= ' LIMIT 1';
+								
+								if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+								{
+									// query was bad, error message was already given in $site->execute_query(...)
+									$site->dieAndEndPage('ERROR: Could not get name and subject for message with id ' . sqlSafeStringQuotes((int) $_GET['id']));
+								}
+								while($row = mysql_fetch_array($result))
+								{
+									// add a 'Re: ' before the subject if there is none already
+									// like in email
+									if (strncmp('Re: ', 'r', 3) === 0)
+									{
+										$subject = $row['subject'];
+									} else
+									{
+										$subject = 'Re: ' . $row['subject'];
+									}
+									// citation signs, like in email
+									$announcement = '> ' . str_replace("\n","\n> ",$row['message']) . "\n\n";
+								}
+								mysql_free_result($result);
+							}
+						}
+						
 						if ($recipients)
 						{
 							// walk through the array values
@@ -662,12 +803,12 @@
 								{
 									$team_name = $row['name'];
 								}
-								
 								mysql_free_result($team_name_result);
+								
 								echo '<div>' . "\n";
 								echo '	<label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label>' . "\n";
 								echo '	<span><input type="text" disabled="disabled" maxlength="255" name="to0" id="msg_send_to0" value="';
-								echo htmlent($team_name);
+								echo $team_name;
 								echo '"></span>' . "\n";
 							} else
 							{
