@@ -64,7 +64,7 @@
 	// write buffer
 	echo $buffer;
 ?>
-<p>You have been logged out.</p>
+<p class="first_p">You have been logged out.</p>
 </div>
 </body>
 </html>

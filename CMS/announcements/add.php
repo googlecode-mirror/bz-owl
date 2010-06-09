@@ -76,20 +76,20 @@
 	// this file handles adding new entries into table $table_name of database
 	
 	// verify recipients array using this function
-	function verifyRecipients($item, $key, $utils)
+	function verifyRecipients(&$item, $key, $utils)
 	{
 		$site = $utils->getSite();
 		
 		if (isset($_POST['teamid']))
 		{
-			// example query: SELECT `id` FROM `players` WHERE `name`='ts' AND `suspended`='0' AND `teamid`='1'
-			$query = 'SELECT `id` FROM `players` WHERE `id`=' . "'" . sqlSafeString($item) . "'";
+			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `suspended`='0' AND `teamid`='1'
+			$query = 'SELECT `id`,`name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($item) . "'";
 			$query .= ' AND `suspended`=' . "'" . sqlSafeString('0') . "'";
 			$query .= ' AND `teamid`=' . "'" . sqlSafeString($_POST['teamid']) . "'";
 		} else
 		{
-			// example query: SELECT `id` FROM `players` WHERE `name`='ts' AND `suspended`='0'
-			$query = 'SELECT `id` FROM `players` WHERE `name`=' . "'" . sqlSafeString($item) . "'";
+			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `suspended`='0'
+			$query = 'SELECT `id`,`name` FROM `players` WHERE `name`=' . "'" . sqlSafeString($item) . "'";
 			$query .= ' AND `suspended`=' . "'" . sqlSafeString('0') . "'";
 		}
 		if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))
@@ -108,6 +108,9 @@
 			while($row = mysql_fetch_array($result))
 			{
 				$utils->addRecipientID($row['id']);
+				// overwrite specified name by user with the one from database
+				// this ensures the case will be correct
+				$item = $row['name'];
 			}
 		}
 	}
@@ -213,18 +216,8 @@
 						$known_recipients[] = $one_recipient;
 					}
 				}
-				// remove duplicates
-				$dup_check = count($known_recipients);
-				$known_recipients = array_unique($known_recipients);
-				if (!($dup_check === (count($known_recipients))))
-				{
-					echo '<p>Some double entries were removed. Please check your recipients.<p>' . "\n";
-					// back to overview to let them check
-					$previewSeen = 0;
-				}
-				// variable $dup_check no longer needed
-				unset($dup_check);
 			}
+			// duplicates will be removed after calling verifyRecipients (which enforces the correct case) 
 		} else
 		{
 			// get list of players belonging to the team to be messaged
@@ -344,6 +337,20 @@
 				
 				// the result of the function will be stored in the class accessed by $utils
 				array_walk($known_recipients, 'verifyRecipients', $utils);
+				
+				// remove duplicates
+				$dup_check = count($known_recipients);
+				// array_unique is case sensitive, thus the loading of name from database
+				$known_recipients = array_unique($known_recipients);
+				if (!($dup_check === (count($known_recipients))))
+				{
+					echo '<p>Some double entries were removed. Please check your recipients.<p>' . "\n";
+					// back to overview to let them check
+					$previewSeen = 0;
+				}
+				// variable $dup_check no longer needed
+				unset($dup_check);
+				
 				// use the result
 				if (!($utils->getAllUsersExist()))
 				{
