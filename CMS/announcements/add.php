@@ -496,12 +496,12 @@
 					if (isset ($recipients))
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
+						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString(htmlent($announcement)) . "'"	 .')';
 						
 					} else
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
+						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString(htmlent($announcement)) . "'"	 .')';
 					}
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
@@ -590,11 +590,11 @@
 					}
 				} else
 				{
-					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlentities($timestamp, ENT_COMPAT, 'UTF-8')) . '"></p>' . "\n";
+					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlent$timestamp) . '"></p>' . "\n";
 				}
 				
 				// keep the information in case user confirms by using invisible form items
-				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '"></p>' ."\n";
+				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"></p>' ."\n";
 				echo '<p><input type="hidden" name="preview" value="' . '2' . '"></p>' ."\n";
 								
 				if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
@@ -871,7 +871,7 @@
 					}
 					echo '" for="msg_send_announcement">Message:</label>' . "\n";
 					echo '	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement">';
-					echo $announcement;
+					echo htmlent($announcement);
 					echo '</textarea></span>' . "\n";
 					echo '</div>' . "\n";
 					

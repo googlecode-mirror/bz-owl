@@ -102,7 +102,7 @@
 		{
 			echo '<a href="../Teams?profile=' . ((int) $id) . '">' . $row_team_name['name'] . '</a>';
 		}
-		mysql_free_result($result_team_name);		
+		mysql_free_result($result_team_name);
 	}
 	
 	if (isset($_GET['enter']) || isset($_GET['edit']) || isset($_GET['delete']))
