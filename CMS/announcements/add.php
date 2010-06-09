@@ -396,12 +396,12 @@
 						if (isset($_POST['teamid']))
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
-							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString($subject) . "'" . ', ';
+							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString(htmlent($subject)) . "'" . ', ';
 							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($announcement) . "'" . ', 1, ' . "'" . sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
 						} else
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
-							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString($subject) . "'" . ', ';
+							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString(htmlent($subject)) . "'" . ', ';
 							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($announcement) . "'" . ', 0, ' . "'" . sqlSafeString(implode(' ', ($utils->getRecipientsIDs()))) . "'" . ')';
 						}
 						$message_sent = true;
@@ -420,6 +420,16 @@
 								$query .= ' VALUES (' . "'" . sqlSafeString($rowId) . "'" . ', ' . "'"
 										. sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
 								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
+								
+								$known_recipients = array();
+								$query = 'SELECT `id` FROM `players` WHERE `teamid`=';
+								$query .= sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid']));
+								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
+																
+								while($row = mysql_fetch_array($result))
+								{
+									$known_recipients[] = $row['id'];
+								}
 								
 								foreach ($known_recipients as $one_recipient)
 								{
