@@ -3,21 +3,12 @@
 	ini_set ('session.name', 'SID');
 	ini_set('session.gc_maxlifetime', '7200');
 	session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<?php
-	include('../stylesheet.inc');
+	$path = (pathinfo(realpath('./')));
+	$name = $path['basename'];
 	
-	$pfad = (pathinfo(realpath('./')));
-	$name = $pfad['basename'];
-	print '  <title>' . $name . '</title>' . "\n";
-?>
-</head>
-<body>
-<?php
+	$display_page_title = $name;
+	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
+	
 	function writeLogo()
 	{
 		global $profile;
@@ -365,7 +356,7 @@
 		
 		// team name
 		echo '<p><label for="edit_team_name">Team name: </label>' . "\n";
-		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlentities('enter team name here', ENT_COMPAT, 'UTF-8') . '" id="edit_team_name"></p>' . "\n";
+		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlent('enter team name here') . '" id="edit_team_name"></p>' . "\n";
 		
 		// team leader is automatically the creator of the team
 		
@@ -1296,7 +1287,10 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('There was a problem preventing the user with id (' . sqlSafeString($viewerid) . ') from being kicked from team with id (' . htmlentities($join_team_id)) . ')';
+					$site->dieAndEndPage('There was a problem preventing the user with id ('
+										 . sqlSafeString($viewerid)
+										 . ') from being kicked from team with id ('
+										 . htmlentities($join_team_id)) . ')';
 				}
 				
 				// update member count of team
@@ -1306,7 +1300,9 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview, nested players ', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('There was a problem updating the member count of team id (' . sqlSafeString($viewerid) . ') from being kicked from team with id (' . htmlentities($join_team_id)) . ')';
+					$site->dieAndEndPage('There was a problem updating the member count of team id ('
+										 . sqlSafeString($viewerid) . ') from being kicked from team with id ('
+										 . htmlentities($join_team_id)) . ')';
 				}
 				
 				echo '<a class="button" href="./">overview</a>' . "\n";
@@ -1320,7 +1316,9 @@
 			} else
 			{
 				// someone tried to kick a member without permissions
-				$site->dieAndEndPage('You (' . htmlentities(sqlSafeString($viewerid)) . ') are not allowed to kick that member (' . htmlentities($playerid_to_remove) . ') from his team');
+				$site->dieAndEndPage('You (' . htmlentities(sqlSafeString($viewerid))
+									 . ') are not allowed to kick that member ('
+									 . htmlentities($playerid_to_remove) . ') from his team');
 			}
 			$site->dieAndEndPage('');
 		}

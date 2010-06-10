@@ -3,21 +3,11 @@
 	ini_set ('session.name', 'SID');
 	ini_set('session.gc_maxlifetime', '7200');
 	session_start();
-	?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<?php
-	include('../stylesheet.inc');
+	$path = (pathinfo(realpath('./')));
+	$name = $path['basename'];
 	
-	$pfad = (pathinfo(realpath('./')));
-	$name = $pfad['basename'];
-	print '	 <title>' . $name . '</title>' . "\n";
-?>
-</head>
-<body>
-<?php
+	$display_page_title = $name;
+	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require ('../CMS/navi.inc');
 	
 	$site = new siteinfo();
