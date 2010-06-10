@@ -1415,7 +1415,7 @@
 			if (!(strcmp(($row['logo_url']), '') === 0))
 			{
 				// user entered a logo
-				$site->write_self_closing_tag('img src="' . htmlentities($row['logo_url']) . '" style="max-width:400px; max-height:300px" alt="player logo"');
+				$site->write_self_closing_tag('img src="' . htmlentities($row['logo_url']) . '" style="max-width:400px; max-height:300px" alt="team logo"');
 				$site->write_self_closing_tag('br');
 				$site->write_self_closing_tag('br');
 			}
