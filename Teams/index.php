@@ -204,6 +204,40 @@
 
 			}
 			
+			// is the team name already used?
+			$query = 'SELECT `name` FROM `teams` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['edit_team_name'])) . "'" . ' LIMIT 1';
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			
+			if ((int) mysql_num_rows($result) > 0)
+			{
+				mysql_free_result($result);
+				// team name already used -> do not create team with that name
+				echo '<p>The team was not created because there is already a team with that name in the database.</p>' . "\n";
+				$site->dieAndEndPage('');
+			}
+			mysql_free_result($result);
+			
+			// is the player name already used?
+			$query = 'SELECT `teamid` FROM `players` WHERE `id`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
+			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			
+			if ((int) mysql_num_rows($result) > 0)
+			{
+				mysql_free_result($result);
+				// the supposed leader is already in a team -> do not create team with him as leader
+				echo '<p>The team was not created because the team leader already belongs to a team.</p>' . "\n";
+				$site->dieAndEndPage('');
+			}
+			mysql_free_result($result);
+			
 			// create the team itself
 			$query = 'INSERT INTO `teams` (`name`, `leader_playerid`) VALUES (' . "'" . sqlSafeString($_POST['edit_team_name']) . "'" . ', ' . "'" . sqlSafeString($viewerid) . "'" . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
@@ -978,7 +1012,7 @@
 					mysql_free_result($result);
 					// team name already used -> do not change to team name to it
 					// note: this does also happen when the team profile is changed but not its name
-					echo '<p>The team name was not changed.</p>' . "\n";
+					echo '<p>The team name was not changed because there is already a team with that name in the database.</p>' . "\n";
 				} else
 				{
 					mysql_free_result($result);

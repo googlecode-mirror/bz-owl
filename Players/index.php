@@ -296,7 +296,7 @@
 			}
 			mysql_free_result($result);
 			
-			// get team name
+			// get player name
 			$player_name = '(no player name)';
 			$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -531,12 +531,29 @@
 				// only admins can edit their comments
 				if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 				{
-					$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString(htmlent(urldecode($_POST['callsign']))) . "'";
-					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
-					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					// is the player name already used?
+					$query = 'SELECT `name` FROM `players` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['callsign'])) . "'" . ' LIMIT 1';
+					if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPage('');
+					}
+					
+					if ((int) mysql_num_rows($result) > 0)
+					{
+						mysql_free_result($result);
+						// player name already used -> do not change to player name to it
+						echo '<p>The player name was not changed because there is already a player with that name in the database.</p>' . "\n";
+					} else
+					{
+						mysql_free_result($result);
+						$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString(htmlent(urldecode($_POST['callsign']))) . "'";
+						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
+						if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+						{
+							// query was bad, error message was already given in $site->execute_query(...)
+							$site->dieAndEndPage('');
+						}
 					}
 				}
 			}
@@ -638,7 +655,7 @@
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
 			echo '<p><label class="player_edit" for="edit_player_name">Change callsign: </label>';
-			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'.$callsign.'"');
+			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'.htmlent_decode($callsign).'"');
 			echo '</p>';
 		}
 		
