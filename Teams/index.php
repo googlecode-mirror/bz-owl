@@ -17,7 +17,38 @@
 ?>
 </head>
 <body>
-<?php	
+<?php
+	function writeLogo()
+	{
+		global $profile;
+		global $connection;
+		global $site;
+		
+		if (isset($_POST['logo_url']))
+		{
+			$allowedExtensions = array('.png', '.bmp', '.jpg', '.gif', 'jpeg');
+			$logo_url = sqlSafeString($_POST['logo_url']);
+			if ((in_array(substr($logo_url, -4), $allowedExtensions)) && (substr($logo_url, 0, 7) == 'http://'))
+			{
+				// image url exists and has a valid file extension
+				$query = 'UPDATE `teams_profile` SET `logo_url`=' . sqlSafeStringQuotes($logo_url);
+				$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($profile);
+				if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					$site->dieAndEndPage('');
+				}
+			} else
+			{
+				if (!(strcmp(($_POST['logo_url']), '') === 0))
+				{
+					echo '<p>Error: Skipping logo setting: Not allowed URL or extension.</p>';
+				}
+			}
+		}
+	}
+	
+	
 	function checkNumberRows($result, $site)
 	{				
 		if (mysql_num_rows($result) > 1)	
@@ -64,7 +95,12 @@
 	$team_description = '(no description)';
 	if (isset($_GET['join']) || isset($_GET['edit']) || isset($_GET['profile']))
 	{
-		$query = 'SELECT `description` FROM `teams_profile` WHERE `teamid`=' . "'";
+		$query = 'SELECT `description`';
+		if (isset($_GET['edit']))
+		{
+			$query .= ',`logo_url`';
+		}
+		$query .= 'FROM `teams_profile` WHERE `teamid`=' . "'";
 	}
 	if (isset($_GET['join']))
 	{
@@ -93,6 +129,10 @@
 		while($row = mysql_fetch_array($result))
 		{
 			$team_description = $row['description'];
+			if (isset($_GET['edit']))
+			{
+				$logo_url = $row['logo_url'];
+			}
 		}
 	}
 	
@@ -307,6 +347,8 @@
 				$site->dieAndEndPage('');
 			}
 			
+			// write logo
+			writeLogo();
 			
 			echo '<p>Your new team was created successfully.</p>';
 			$site->dieAndEndPage('');
@@ -334,6 +376,11 @@
 		// team description
 		echo '<div><label for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
 		echo $team_description . '</textarea></span></div>' . "\n";
+		
+		// logo/avatar url
+		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'"');
+		echo '</p>';
 		
 		echo '<div><input type="submit" name="edit_team_data" value="Submit new team creation" id="send"></div>' . "\n";
 		echo '</form>' . "\n";
@@ -1000,7 +1047,7 @@
 			if (isset($_POST['edit_team_name']))
 			{
 				// is the team name already used?
-				$query = 'SELECT `name` FROM `teams` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['edit_team_name'])) . "'" . ' LIMIT 1';
+				$query = 'SELECT `id` FROM `teams` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['edit_team_name'])) . "'" . ' LIMIT 1';
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
@@ -1009,10 +1056,24 @@
 				
 				if ((int) mysql_num_rows($result) > 0)
 				{
+					// is the team owning the name the current team?
+					$name_change_tried = true;
+					while ($row = mysql_fetch_array($result))
+					{
+						if (((int) $row['id']) === ((int) $teamid))
+						{
+							// there was no name changed tried
+							$name_change_tried = false;
+						}
+					}
 					mysql_free_result($result);
-					// team name already used -> do not change to team name to it
-					// note: this does also happen when the team profile is changed but not its name
-					echo '<p>The team name was not changed because there is already a team with that name in the database.</p>' . "\n";
+					// suppress error message when no name change was tried
+					if ($name_change_tried)
+					{
+						// team name already used -> do not change to team name to it
+						// note: this does also happen when the team profile is changed but not its name
+						echo '<p>The team name was not changed because there is already a team with that name in the database.</p>' . "\n";
+					}
 				} else
 				{
 					mysql_free_result($result);
@@ -1111,6 +1172,9 @@
 				}
 			}
 			
+			// write logo
+			writeLogo();
+			
 //			echo 'test: ' . (bbcode($_POST['team_description']));
 			echo '<p>Changes were successfully written.</p>';
 			
@@ -1179,7 +1243,12 @@
 		// team description
 		echo '<div><label for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
 		echo $team_description . '</textarea></span></div>';
-
+		
+		// logo/avatar url
+		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'. $logo_url .'"');
+		echo '</p>';
+		
 		echo '<div><input type="submit" name="edit_team_data" value="Submit new team data" id="send"></div>' . "\n";
 		echo '</form>' . "\n";
 		$site->dieAndEndPage('');
