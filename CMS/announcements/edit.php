@@ -15,9 +15,21 @@
 			}
 			
 			
-			$announcement = (html_entity_decode(urldecode($_POST['announcement']), ENT_COMPAT, 'UTF-8'));
-			$timestamp = (html_entity_decode(urldecode($_POST['timestamp']), ENT_COMPAT, 'UTF-8'));
-			$author = (html_entity_decode(urldecode($_POST['author']), ENT_COMPAT, 'UTF-8'));
+			$announcement = '';
+			if (isset($_POST['announcement']))
+			{
+				$announcement = (htmlent_decode(urldecode($_POST['announcement'])));
+			}
+			$timestamp = '';
+			if (isset($_POST['timestamp']))
+			{
+				$timestamp = (htmlent_decode(urldecode($_POST['timestamp'])));
+			}
+			$author = '';
+			if (isset($_POST['author']))
+			{
+				$author = (htmlent_decode(urldecode($_POST['author'])));
+			}
 			
 			// handle shown author of entry
 			if ($_SESSION[$author_change_allowed])
@@ -138,11 +150,11 @@
 						// timestamp
 						print '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>';
 						echo "<tr><td style=\x22vertical-align: top;\x22>timestamp:</td><td style=\x22vertical-align: top;\x22>";
-						echo "<input name=\x22timestamp\x22 value=\x22" . htmlentities(urldecode($timestamp)) . "\x22>$buffer</input></p></td></tr>\n";
+						echo '<input name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"></input></p></td></tr>' . "\n";
 						
 						// announcement
 						echo "<tr><td style=\x22vertical-align: top;\x22>announcement:</td><td style=\x22vertical-align: top;\x22>";
-						echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlentities(urldecode($announcement), ENT_COMPAT, 'UTF-8');
+						echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlent(urldecode($announcement));
 						echo '</textarea></td></tr>' . "\n";
 						
 						// author

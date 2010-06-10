@@ -905,8 +905,10 @@
 			$site->dieAndEndPage('There was more than one user with that id (' . sqlSafeString($profile) . '). This is a database error, please report it to admins.');
 		}
 		
+		$player_name = '';
 		while($row = mysql_fetch_array($result))
 		{
+			$player_name = $row['name'];
 			if (!(strcmp(($row['logo_url']), '') === 0))
 			{
 				// user entered a logo
@@ -963,39 +965,10 @@
 		// query result no longer needed
 		mysql_free_result($result);
 		
-		$allow_invite_in_any_team = false;
-		if (isset($_SESSION['allow_invite_in_any_team']))
+		// user needs to be logged in to see some links
+		if ($viewerid > 0)
 		{
-			if (($_SESSION['allow_invite_in_any_team']) === true)
-			{
-				$allow_invite_in_any_team = true;
-			}
-		}
-		
-		// 0 is a reserved value and stands for no team
-		$leader_of_team_with_id = 0;
-		if (!($allow_invite_in_any_team))
-		{
-			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
-			{
-				$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
-			}
 			
-			// if the viewer is leader of a team, a value other than 0 will be the result of the query
-			// and that value will be the id of the team the viewer is leader
-			while($row = mysql_fetch_array($result))
-			{
-				$leader_of_team_with_id = $row['id'];
-			}
-		}
-		
-		// users are not supposed to invite themselves
-		if (($allow_invite_in_any_team || (($leader_of_team_with_id > 0) && ($viewerid !== $profile))) && ($suspended_status !== 1))
-		{
-			// if permission is given write a br tag to get the link in a new line
-			// it would be easier to always write a br tag but then that would be more output
-			// one of the major objectives is to output as less bloat as possible
 			if ($site->use_xtml())
 			{
 				echo '<br />' . "\n";
@@ -1003,26 +976,47 @@
 			{
 				echo '<br>' . "\n";
 			}
-			echo '<a class="button" href="?invite=' . htmlentities(urlencode($profile)) . '">Invite player to team</a>' . "\n";
-		}
-		
-		
-		if (((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true)) && ($suspended_status !== 1))
-		{
-			// avoid to enter the br tag twice, instead align it with the previous link
-			if (!($allow_invite_in_any_team) && ($leader_of_team_with_id < 1))
+			echo '<a class="button" href="../Messages/?add&amp;playerid=' . htmlspecialchars(urlencode($player_name)) . '">Write bzmail to player</a>' . "\n";
+			
+			$allow_invite_in_any_team = false;
+			if (isset($_SESSION['allow_invite_in_any_team']))
 			{
-				if ($site->use_xtml())
+				if (($_SESSION['allow_invite_in_any_team']) === true)
 				{
-					echo '<br />' . "\n";
-				} else
-				{
-					echo '<br>' . "\n";
+					$allow_invite_in_any_team = true;
 				}
 			}
-			echo '<a class="button" href="../Visits/?profile=' . htmlspecialchars($profile) . '">View visits log</a>' . "\n";
+			
+			// 0 is a reserved value and stands for no team
+			$leader_of_team_with_id = 0;
+			if (!($allow_invite_in_any_team))
+			{
+				$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
+				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				{
+					$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
+				}
+				
+				// if the viewer is leader of a team, a value other than 0 will be the result of the query
+				// and that value will be the id of the team the viewer is leader
+				while($row = mysql_fetch_array($result))
+				{
+					$leader_of_team_with_id = $row['id'];
+				}
+			}
+			
+			// users are not supposed to invite themselves
+			if (($allow_invite_in_any_team || (($leader_of_team_with_id > 0) && ($viewerid !== $profile))) && ($suspended_status !== 1))
+			{
+				echo '<a class="button" href="?invite=' . htmlspecialchars(urlencode($profile)) . '">Invite player to team</a>' . "\n";
+			}
+			
+			
+			if (((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true)) && ($suspended_status !== 1))
+			{
+				echo '<a class="button" href="../Visits/?profile=' . htmlspecialchars($profile) . '">View visits log</a>' . "\n";
+			}
 		}
-		
 		$site->dieAndEndPage('');
 	}
 	

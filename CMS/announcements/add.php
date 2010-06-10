@@ -220,7 +220,13 @@
 					}
 				}
 			}
-			// duplicates will be removed after calling verifyRecipients (which enforces the correct case) 
+			// duplicates will be removed after calling verifyRecipients (which enforces the correct case)
+			
+			// if viewer followed a link from player profile, select the target player as recipient
+			if ((count($known_recipients) < 1) && isset($_GET['playerid']))
+			{
+				$known_recipients[] = $_GET['playerid'];
+			}
 		} else
 		{
 			// get list of players belonging to the team to be messaged
@@ -499,12 +505,12 @@
 					if (isset ($recipients))
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString(htmlent($announcement)) . "'"	 .')';
+						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
 						
 					} else
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString(htmlent($announcement)) . "'"	 .')';
+						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
 					}
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
