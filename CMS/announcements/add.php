@@ -545,7 +545,8 @@
 					echo '	</div>' . "\n";
 					// appending to string with . broken here, need to use seperate echo lines
 					echo '	<div class="msg_contents">';
-					echo $site->linebreaks(bbcode($announcement));
+					// TODO: bbcode would be cool
+					echo $site->linebreaks(htmlent($announcement));
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
 				} else
@@ -567,7 +568,7 @@
 					}
 					echo '</div>' . "\n";
 					echo '<div class="author"> By: ';
-					echo htmlentities($author, ENT_COMPAT, 'UTF-8');
+					echo htmlent($author);
 					echo '</div>' . "\n";
 					echo '<hr>';
 					echo htmlent($announcement);
@@ -685,7 +686,7 @@
 										$subject = 'Re: ' . $row['subject'];
 									}
 									// citation signs, like in email
-									$announcement = '> ' . str_replace("\n","\n> ",$row['message']) . "\n\n";
+									$announcement = '> ' . str_replace("\n","\n> ", htmlent_decode($row['message'])) . "\n";
 								}
 								mysql_free_result($recipient_list);
 								

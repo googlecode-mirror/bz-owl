@@ -20,14 +20,17 @@
 		
 		// initialise the variable with an error message
 		// if the query is successfull the variable will be overwritten with the player name
-		$item = 'Unknown player!';
+		$result_callsign = 'Unknown player!';
 		
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = $row['name'];
+			$result_callsign = '<a href="../Players/?profile=' . htmlspecialchars($item) . '">' .$row['name'] . '</a>';
 		}
 		mysql_free_result($result);
+		
+		// pass the result to $item which is used by reference
+		$item = $result_callsign;
 	}
 	
 	function find_recipient_team(&$item, $key, $connection)
@@ -40,14 +43,17 @@
 		
 		// initialise the variable with an error message
 		// if the query is successfull the variable will be overwritten with the player name
-		$item = 'Unknown team!';
+		$result_team = 'Unknown team!';
 		
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
 		{
-			$item = $row['name'];
+			$result_team = '<a href="../Teams/?profile=' . htmlspecialchars($item) . '">' .$row['name'] . '</a>';
 		}
 		mysql_free_result($result);
+		
+		// pass the result to $item which is used by reference
+		$item = $result_team;
 	}
 	
 	function displayMessage($id, $site, $connection, $folder)
@@ -70,8 +76,8 @@
 			
 			echo '	<div class="msg_header_full">' . "\n";
 			echo '		<span class="msg_subject">' .  $row["subject"] . '</span>' . "\n";
-			echo '		<span class="msg_author"> by ' .  htmlentities($row["author"], ENT_COMPAT, 'UTF-8') . '</span>' . "\n";
-			echo '		<span class="msg_timestamp"> at ' .	 htmlentities($row['timestamp']) . '</span>' . "\n";
+			echo '		<span class="msg_author"> by ' .  htmlent($row["author"]) . '</span>' . "\n";
+			echo '		<span class="msg_timestamp"> at ' .	 htmlent($row['timestamp']) . '</span>' . "\n";
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
 			echo '	<div class="msg_contents">';
@@ -135,11 +141,22 @@
 			$currentId = $row['msgid'];
 			$unread = $row['msg_unread'];
 			// TODO: implement class in stylesheets
-			echo '	<td class="msg_overview_subject">' . (formatOverviewText($row["author"], $currentId, $folder, $unread)) . '</td>' . "\n";
+			echo '	<td class="msg_overview_author">';
+			// player id 0 is reserved
+			if ((int) $row['author_id'] > 0)
+			{
+				echo '<a href="../Players/?profile=' . htmlspecialchars($row['author_id']) . '">';
+			}
+			echo $row['author'];
+			if ((int) $row['author_id'] > 0)
+			{
+				'</a>' . "\n";
+			}
+			//($row["author"], $currentId, $folder, $unread)) . '</td>' . "\n";
 			// TODO: implement class in stylesheets
-			echo '	<td class="msg_overview_timestamp">' . (formatOverviewText($row["subject"], $currentId, $folder, $unread)) . '</td>' . "\n";
+			echo '	<td class="msg_overview_subject">' . (formatOverviewText($row["subject"], $currentId, $folder, $unread)) . '</td>' . "\n";
 			// TODO: implement class in stylesheets
-			echo '	<td class="msg_overview_author">' . (formatOverviewText($row["timestamp"], $currentId, $folder, $unread)) . '</td>' . "\n";
+			echo '	<td class="msg_overview_timestamp">' . $row["timestamp"] . '</td>' . "\n";
 			
 			echo '	<td class="msg_overview_recipients">';
 			if (!(strcmp($folder, 'inbox') == 0))
