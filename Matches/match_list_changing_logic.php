@@ -924,7 +924,7 @@
 					$team2_points_before = (int) $row['team2_points'];
 					// write down old score
 					$team_stats_changes[$team_id1]['old_score'] = $row['team1_new_score'];
-					$team_stats_changes[$team_id2]['old_score'] = $row['team1_new_score'];
+					$team_stats_changes[$team_id2]['old_score'] = $row['team2_new_score'];
 				}
 				mysql_free_result($result);
 				
