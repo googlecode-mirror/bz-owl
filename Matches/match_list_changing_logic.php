@@ -240,8 +240,10 @@
 		return (int) $score;
 	}
 	
-	function compute_scores(&$score_a, &$score_b, $caps_a, $caps_b, &$diff, $site)
+	function compute_scores($team_id1, $team_id2, &$score_a, &$score_b, $caps_a, $caps_b, &$diff, &$team_stats_changes=array())
 	{
+		global $site;
+		
 		/* A:  Using the old ratings oldA and oldB, the win probability for team A is calculated:
 		 prob=1.0 / (1 + 10 ^ ((oldB-oldA)/400.0));
 		 score= 1 if A wins, 0.5 for draw, 0 if B wins
@@ -254,6 +256,21 @@
 		if ($site->debug_sql())
 		{
 			echo 'computed scores before: ' . $score_a . ', ' . $score_b;
+		}
+		
+		if (is_array($team_stats_changes))
+		{
+			// write down the old score before the match table is changed
+			// as this procedure can be recursive (match before last match entered, edited or deleted)
+			// use a lock to prevent overwriting already existing entries
+			if (!(isset($team_stats_changes[$team_id1]['old_score'])))
+			{
+				$team_stats_changes[$team_id1]['old_score'] = $score_a;
+			}
+			if (!(isset($team_stats_changes[$team_id2]['old_score'])))
+			{
+				$team_stats_changes[$team_id2]['old_score'] = $score_b;
+			}
 		}
 		
 		if (is_numeric($score_a) && is_numeric($score_b))
@@ -286,6 +303,14 @@
 		if ($site->debug_sql())
 		{
 			echo ' values after ' . $score_a . ', ' .  $score_b . ', ' . $caps_a . ', ' . $caps_b . ', ' . $diff . '';
+		}
+		
+		if (is_array($team_stats_changes))
+		{
+			// force writing new values into the array
+			// this might produce a little overhead but it is convenient to do so
+			$team_stats_changes[$team_id1]['new_score'] = &$score_a;
+			$team_stats_changes[$team_id2]['new_score'] = &$score_b;
 		}
 	}
 	
@@ -844,7 +869,8 @@
 			// we got the score for both team 1 and team 2 at that point
 			// thus we can enter the match at this point
 			$diff = 0;
-			compute_scores($team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $site);
+			$team_stats_changes = array();
+			compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 			
 			// insert new entry
 			if (isset($_GET['enter']))
@@ -872,7 +898,7 @@
 			// first find out which team won the match before editing the table
 			$query = '';
 			// find out the appropriate team id list for the edited match
-			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
+			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, team1_new_score, team2_new_score FROM `matches`';
 			$query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
 			if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
@@ -896,6 +922,9 @@
 					$team2_checkid = (int) $row['team2_teamid']; // team id 2 before
 					$team1_points_before = (int) $row['team1_points'];
 					$team2_points_before = (int) $row['team2_points'];
+					// write down old score
+					$team_stats_changes[$team_id1]['old_score'] = $row['team1_new_score'];
+					$team_stats_changes[$team_id2]['old_score'] = $row['team1_new_score'];
 				}
 				mysql_free_result($result);
 				
@@ -919,14 +948,7 @@
 			
 			// editing means the entry in question should be updated with the data provided by request
 			if (isset($_GET['edit']))
-			{				
-//				// the editor says team 1 won
-//				cmp_team1_won();
-//				// the editor says team 2 won
-//				cmp_team2_won();
-//				// the editor says the match ended in a draw
-//				cmp_teams_tied();
-				
+			{
 				// update match table (perform the editing)
 				$query = 'UPDATE `matches` SET `timestamp`=' . "'" . sqlSafeString($timestamp) . "'";
 				$query .= ',`team1_teamid`=' . "'" . sqlSafeString($team_id1) . "'";
@@ -946,6 +968,9 @@
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be edited due to a sql problem!');
 				}
 				
+				// score has been updated, log it
+				$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
+				$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
 				// done with the entering of that one match
 				echo '<p>The match was edited successfully.</p>' . "\n";
 			}
@@ -1072,6 +1097,8 @@
 				
 			}
 			
+			$team1_old_score = 1200;
+			$team2_old_score = 1200;
 			// each match needs to be recomputed to make sure scores are being up-to-date
 			while($row = mysql_fetch_array($result))
 			{
@@ -1098,7 +1125,7 @@
 				
 				
 				$diff = 0;
-				compute_scores($team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $site);
+				compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 				
 				// update score if necessary
 				if (!($diff === 0))
@@ -1117,6 +1144,10 @@
 						// FIXME: entire matches should now be locked to get attention!
 					}
 				}
+				
+				// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
+				$team_stats_changes[$team_id1]['old_score'] = $row['team1_new_score'];
+				$team_stats_changes[$team_id2]['old_score'] = $row['team1_new_score'];
 			}
 			mysql_free_result($result);
 			// remove write lock
@@ -1162,6 +1193,7 @@
 			
 			// we're done
 			// TODO: show score differences
+			print_r($team_stats_changes);
 			echo '<p>All team scores were updated sucessfully.</p>' . "\n";
 			// unlock all tables so site will still work
 			unlock_tables($site, $connection);
@@ -1204,7 +1236,8 @@
 		}
 		mysql_free_result($result);
 		
-		compute_scores($team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $site);
+		$team_stats_changes = array();
+		compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 		
 		if (isset($_GET['enter'])  && ($confirmed > 1))
 		{
@@ -1246,6 +1279,7 @@
 			// difference of score between before and after changing match list is always positive (absolute value)
 			// &plusmn; displays a +- symbol
 			echo 'diff is &plusmn; ' . htmlentities($diff);
+			print_r($team_stats_changes);
 			
 			
 			// do maintenance after a match has been entered
