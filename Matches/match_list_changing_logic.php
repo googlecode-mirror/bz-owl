@@ -940,8 +940,7 @@
 				update_team_match_edit($team1_points_before, $team2_points_before,
 									   $team1_points, $team2_points,
 									   $team1_checkid, $team2_checkid,
-									   $team_id1, $team_id2,
-									   $site, $connection);
+									   $team_id1, $team_id2);
 			}
 			
 			if (isset($_GET['delete']))
@@ -1157,10 +1156,6 @@
 						// FIXME: entire matches should now be locked to get attention!
 					}
 				}
-				
-				// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
-				$team_stats_changes[$team_id1]['old_score'] = $row['team1_new_score'];
-				$team_stats_changes[$team_id2]['old_score'] = $row['team1_new_score'];
 			}
 			mysql_free_result($result);
 			// remove write lock
@@ -1189,9 +1184,13 @@
 			
 			while($row = mysql_fetch_array($result))
 			{
+				$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
+				// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
+				$team_stats_changes[$row['teamid']]['new_score'] = $new_score;
+				
 				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
 				$query = 'UPDATE `teams_overview` SET `score`=';
-				$query .= sqlSafeStringQuotes(get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true));
+				$query .= sqlSafeStringQuotes($new_score);
 				// use current row id to access the entry
 				$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
 				// only one row is updated per loop iteration
@@ -1207,7 +1206,9 @@
 			
 			// we're done
 			// TODO: show score differences
+			echo '<pre>';
 			print_r($team_stats_changes);
+			echo '</pre>';
 			echo '<p>All team scores were updated sucessfully.</p>' . "\n";
 			// unlock all tables so site will still work
 			unlock_tables($site, $connection);
