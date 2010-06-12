@@ -1190,7 +1190,7 @@
 			while($row = mysql_fetch_array($result))
 			{
 				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
-				$query = 'UPDATE `teams_overview` SET `score`='
+				$query = 'UPDATE `teams_overview` SET `score`=';
 				$query .= sqlSafeStringQuotes(get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true));
 				// use current row id to access the entry
 				$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
