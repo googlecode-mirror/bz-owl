@@ -5,36 +5,6 @@
 		die("This file is meant to be only included by other files!");
 	}
 	
-//	class match_changing_logic_utils
-//	{
-//		var $connection;
-//		var $site;
-//		
-//		function setConnection($conn)
-//		{
-//			$this->connection = $conn;
-//		}
-//		function getConnection()
-//		{
-//			return $this->connection;
-//		}
-//		
-//		function getSite()
-//		{
-//			return $this->site;
-//		}
-//		
-//		function setSite(&$information)
-//		{
-//			$this->site = $information;
-//		}
-//	}
-//	
-//	// initialise values
-//	$utils = new match_changing_logic_utils();
-//	$utils->setConnection($connection);
-//	$utils->setSite($site);
-//	
 	
 	$randomkey_name = 'randomkey_matches';
 	$viewerid = (int) getUserID();
@@ -253,7 +223,7 @@
 		 After that some rounding magic to integer is applied and the new ratings are calculated:
 		 newA=oldA+diff, newB=oldB-diff; */
 		
-		// FIXME: remove debug comment
+		// TODO: remove debug comment
 		if ($site->debug_sql())
 		{
 			echo 'computed scores before: ' . $score_a . ', ' . $score_b;
@@ -261,17 +231,11 @@
 		
 		if (is_array($team_stats_changes))
 		{
-			// write down the old score before the match table is changed
-			// as this procedure can be recursive (match before last match entered, edited or deleted)
-			// use a lock to prevent overwriting already existing entries
-			if (!(isset($team_stats_changes[$team_id1]['old_score'])))
-			{
-				$team_stats_changes[$team_id1]['old_score'] = $score_a;
-			}
-			if (!(isset($team_stats_changes[$team_id2]['old_score'])))
-			{
-				$team_stats_changes[$team_id2]['old_score'] = $score_b;
-			}
+			// write down the team id's of the teams in question
+			// as the query does not compare the old total and the new total score
+			// we can only use this as a mark where to check for changes later
+			$team_stats_changes[$team_id1] = '';
+			$team_stats_changes[$team_id2] = '';
 		}
 		
 		if (is_numeric($score_a) && is_numeric($score_b))
@@ -304,14 +268,6 @@
 		if ($site->debug_sql())
 		{
 			echo ' values after ' . $score_a . ', ' .  $score_b . ', ' . $caps_a . ', ' . $caps_b . ', ' . $diff . '';
-		}
-		
-		if (is_array($team_stats_changes))
-		{
-			// force writing new values into the array
-			// this might produce a little overhead but it is convenient to do so
-			$team_stats_changes[$team_id1]['new_score'] = &$score_a;
-			$team_stats_changes[$team_id2]['new_score'] = &$score_b;
 		}
 	}
 	
@@ -870,15 +826,21 @@
 			// first get the score of team 1 at that time
 			// remember the first team entered in the form must not be the first team in the match entry of database
 			$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $timestamp, $viewerid);
-			
 			// find out the score for team 2 like done above for team 1
 			$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $timestamp, $viewerid);
+			// mark score might has changed for these teams
+			$team_stats_changes[$team_id1];
+			$team_stats_changes[$team_id2];
 			
 			// we got the score for both team 1 and team 2 at that point
 			// thus we can enter the match at this point
 			$diff = 0;
 			$team_stats_changes = array();
-			compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
+			compute_scores($team_id1, $team_id2, $team1_new_score, $team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
+			
+//			// write down old score
+//			$team_stats_changes[$team_id1]['old_score'] = $team1_new_score;
+//			$team_stats_changes[$team_id2]['old_score'] = $team2_new_score;
 			
 			// insert new entry
 			if (isset($_GET['enter']))
@@ -887,7 +849,7 @@
 				$query .= ' `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
 				$query .= ' VALUES (' . sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($team_id1) .', ';
 				$query .= sqlSafeStringQuotes($team_id2) . ', ' . sqlSafeStringQuotes($team1_points) . ', ' . sqlSafeStringQuotes($team2_points);
-				$query .= ', ' . "'" . sqlSafeString($team1_new_score) . "'" . ', ' . "'" . sqlSafeString($team2_new_score) . "'";
+				$query .= ', ' . sqlSafeStringQuotes($team1_new_score) . ', ' . sqlSafeStringQuotes($team2_new_score);
 				$query .= ')';
 				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 				{
@@ -907,7 +869,8 @@
 			// first find out which team won the match before editing the table
 			$query = '';
 			// find out the appropriate team id list for the edited match
-			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, team1_new_score, team2_new_score FROM `matches`';
+//			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, team1_new_score, team2_new_score FROM `matches`';
+			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
 			$query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
 			if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
@@ -931,12 +894,10 @@
 					$team2_checkid = (int) $row['team2_teamid']; // team id 2 before
 					$team1_points_before = (int) $row['team1_points'];
 					$team2_points_before = (int) $row['team2_points'];
-					// write down old score
-					$team_stats_changes[$team_id1]['old_score'] = $row['team1_new_score'];
-					$team_stats_changes[$team_id2]['old_score'] = $row['team2_new_score'];
 				}
 				mysql_free_result($result);
 				
+				// if a team did not participate in the newer version, it will be marked inside the following function
 				update_team_match_edit($team1_points_before, $team2_points_before,
 									   $team1_points, $team2_points,
 									   $team1_checkid, $team2_checkid,
@@ -980,9 +941,9 @@
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be edited due to a sql problem!');
 				}
 				
-				// score has been updated, log it
-				$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
-				$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
+//				// score has been updated, log it
+//				$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
+//				$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
 				// done with the entering of that one match
 				echo '<p>The match was edited successfully.</p>' . "\n";
 			}
@@ -1076,7 +1037,7 @@
 					}					
 				}
 				
-				$query = 'DELETE FROM `matches` WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
+				$query = 'DELETE FROM `matches` WHERE `id`=' . sqlSafeStringQuotes($match_id);
 				// only one row needs to be updated
 				$query .= ' LIMIT 1';
 				
@@ -1103,11 +1064,11 @@
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 			}
 			
-			$rows = (int) mysql_num_rows($result);
-			if ($rows === 0)
-			{
-				
-			}
+//			$rows = (int) mysql_num_rows($result);
+//			if ($rows === 0)
+//			{
+//				
+//			}
 			
 			$team1_old_score = 1200;
 			$team2_old_score = 1200;
@@ -1131,6 +1092,11 @@
 				// get team scores at that point
 				$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $timestamp, $viewerid);
 				$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $timestamp, $viewerid);
+				// mark these teams as having an updated score
+				echo 'marking team scores as changed...get_score_at_that_time<br>';
+				$team_stats_changes[$team_id1] = '';
+				$team_stats_changes[$team_id2] = '';
+				
 				// FIXME: remove debug comment
 				echo '$team1_new_score: ' . $team1_new_score . '<br>';
 				echo '$team2_new_score: ' . $team2_new_score . '<br>';
@@ -1186,7 +1152,13 @@
 			{
 				$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
 				// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
-				$team_stats_changes[$row['teamid']]['new_score'] = $new_score;
+				
+				// keep track of score changes
+				if (isset($team_stats_changes[$row['teamid']]))
+				{
+					$team_stats_changes[$row['teamid']]['old_score'] = $row['score'];
+					$team_stats_changes[$row['teamid']]['new_score'] = $new_score;
+				}
 				
 				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
 				$query = 'UPDATE `teams_overview` SET `score`=';
@@ -1253,10 +1225,13 @@
 		mysql_free_result($result);
 		
 		$team_stats_changes = array();
+		$team_stats_changes[$team_id1]['old_score'] = $team1_new_score;
+		$team_stats_changes[$team_id2]['old_score'] = $team2_new_score;
 		compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 		
 		if (isset($_GET['enter'])  && ($confirmed > 1))
 		{
+			// only one match to be entered
 			$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
 			$query .= ' VALUES (' . "'" . sqlSafeString($match_day . ' ' . $match_time) . "'" . ', ' . "'" . sqlSafeString($team_id1) . "'" .', ';
 			$query .= "'" . sqlSafeString($team_id2) . "'" . ', ' . "'" . sqlSafeString($team1_points) . "'" . ', ' . "'" . sqlSafeString($team2_points) . "'";
@@ -1294,6 +1269,10 @@
 			
 			// display some summary to the user about new scores team names and diff
 			// TODO: list the stuff mentioned in the comment above
+			
+			// log the changes
+			$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
+			$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
 			
 			// difference of score between before and after changing match list is always positive (absolute value)
 			// &plusmn; displays a +- symbol

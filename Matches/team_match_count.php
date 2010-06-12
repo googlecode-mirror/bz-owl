@@ -84,6 +84,7 @@
 	
 	function decrease_total_match_count($teamid)
 	{
+		global $team_stats_changes;
 		global $connection;
 		global $site;
 		
@@ -97,6 +98,10 @@
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
 		}
+		
+		// the team did not participate in the newer version and its score did depend on the former match
+		//  which should now no longer have a dependence on this team's score, thus mark the team score as being changed
+		$team_stats_changes[$teamid] = '';
 		
 		// do not set team as inactive or something else because that would have to be computed
 		// by considering a lot of matches and maintenance is supposed to do that
