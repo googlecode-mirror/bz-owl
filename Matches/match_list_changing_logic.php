@@ -829,12 +829,11 @@
 			// find out the score for team 2 like done above for team 1
 			$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $timestamp, $viewerid);
 			// mark score might has changed for these teams
-			$team_stats_changes[$team_id1];
-			$team_stats_changes[$team_id2];
 			
 			// we got the score for both team 1 and team 2 at that point
 			// thus we can enter the match at this point
 			$diff = 0;
+			// create array that keeps track of team score changes
 			$team_stats_changes = array();
 			compute_scores($team_id1, $team_id2, $team1_new_score, $team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 			
@@ -1140,6 +1139,23 @@
 			
 			// first get the list of teams
 			$query = 'SELECT `id`,`teamid`,`score` FROM `teams_overview`';
+			
+			// find out which team's have new scores
+			$teams = array_keys($team_stats_changes);
+			print_r($teams);
+			$query .= ' WHERE (';
+			$n_teams = ((int) count($teams)) - 1;
+			for ($i = 0; $i <= $n_teams; $i++)
+			{
+				$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
+				if ($i <= ($n_teams - 1))
+				{
+					$query .= ' OR ';
+				}
+			}
+			$query .= ')';
+			
+			// execute the query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -1148,6 +1164,7 @@
 				// FIXME: entire matches should now be locked to get attention!
 			}
 			
+			// now update the team scores in the overview
 			while($row = mysql_fetch_array($result))
 			{
 				$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
@@ -1176,11 +1193,9 @@
 			}
 			mysql_free_result($result);
 			
+			// TODO: show score differences recorded in the array $team_stats_changes
+			
 			// we're done
-			// TODO: show score differences
-			echo '<pre>';
-			print_r($team_stats_changes);
-			echo '</pre>';
 			echo '<p>All team scores were updated sucessfully.</p>' . "\n";
 			// unlock all tables so site will still work
 			unlock_tables($site, $connection);
