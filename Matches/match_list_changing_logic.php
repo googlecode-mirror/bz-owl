@@ -1145,18 +1145,29 @@
 			print_r($teams);
 			$query .= ' WHERE (';
 			$n_teams = ((int) count($teams)) - 1;
+			$one_or_more_teams_have_changed_score = false;
 			for ($i = 0; $i <= $n_teams; $i++)
 			{
-				$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
-				if ($i <= ($n_teams - 1))
+				if ($teams[$i]['old_score'] === $teams[$i]['new_score'])
 				{
-					$query .= ' OR ';
+					unset($teams[$i]);
+					$n_teams--;
+					
+				} else
+				{
+					$one_or_more_teams_have_changed_score = true;
+					$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
+					if ($i <= ($n_teams - 1))
+					{
+						$query .= ' OR ';
+					}
 				}
 			}
 			$query .= ')';
 			
-			// execute the query
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			// execute the query if there are teams scores to be updated
+			if ($one_or_more_teams_have_changed_score
+				&& !($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables($site, $connection);
@@ -1165,38 +1176,71 @@
 			}
 			
 			// now update the team scores in the overview
-			while($row = mysql_fetch_array($result))
+			// if needed
+			if ($one_or_more_teams_have_changed_score)
 			{
-				$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
-				// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
-				
-				// keep track of score changes
-				if (isset($team_stats_changes[$row['teamid']]))
+				while($row = mysql_fetch_array($result))
 				{
-					$team_stats_changes[$row['teamid']]['old_score'] = $row['score'];
-					$team_stats_changes[$row['teamid']]['new_score'] = $new_score;
+					$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
+					// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
+					
+					// keep track of score changes
+					if (isset($team_stats_changes[$row['teamid']]))
+					{
+						$team_stats_changes[$row['teamid']]['old_score'] = $row['score'];
+						$team_stats_changes[$row['teamid']]['new_score'] = $new_score;
+					}
+					
+					// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
+					$query = 'UPDATE `teams_overview` SET `score`=';
+					$query .= sqlSafeStringQuotes($new_score);
+					// use current row id to access the entry
+					$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
+					// only one row is updated per loop iteration
+					$query .= ' LIMIT 1';
+					if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						unlock_tables($site, $connection);
+						$site->dieAndEndPage('Updating team scores failed.');
+					}
+				}
+				mysql_free_result($result);
+				
+				// TODO: show score differences recorded in the array $team_stats_changes
+				echo '<table class="table_scores_changed_overview">' . "\n";
+				echo '<caption>Changed teams scores</caption>' . "\n";
+				echo '<tr>' . "\n";
+				echo '	<th>Team</th>' . "\n";
+				echo '	<th>Previous score</th>' . "\n";
+				echo '	<th>New score</th>' . "\n";
+				echo '</tr>' . "\n\n";
+				
+				for ($i = 0; $i <= $n_teams; $i++)
+				{
+					echo '<tr class="table_scores_changed_overview">' . "\n";
+					echo '	<td class="table_scores_changed_overview_name">';
+					echo '<a href="../Teams/?profile=' . htmlspecialchars($teams[$i]) . '">';
+					echo 'insert_teamid_here';
+					echo '</a>';
+					echo '</td>' . "\n";
+					echo '	<td class="table_scores_changed_overview_score_before">';
+					echo strval($team_stats_changes[$teams[$i]]['old_score']);
+					echo '</td>' . "\n";
+					echo '	<td class="table_scores_changed_overview_score_after">';
+					echo strval($team_stats_changes[$teams[$i]]['new_score']);
+					echo '</td>' . "\n";
+					echo '</tr>' . "\n";
 				}
 				
-				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
-				$query = 'UPDATE `teams_overview` SET `score`=';
-				$query .= sqlSafeStringQuotes($new_score);
-				// use current row id to access the entry
-				$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
-				// only one row is updated per loop iteration
-				$query .= ' LIMIT 1';
-				if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
-				{
-					// query was bad, error message was already given in $site->execute_query(...)
-					unlock_tables($site, $connection);
-					$site->dieAndEndPage('Updating team scores failed.');
-				}
+				echo '</table>' . "\n";
+				
+				// we're done
+				echo '<p>All team scores were updated sucessfully.</p>' . "\n";
+			} else
+			{
+				echo '<p>There were no team scores changed.</p>';
 			}
-			mysql_free_result($result);
-			
-			// TODO: show score differences recorded in the array $team_stats_changes
-			
-			// we're done
-			echo '<p>All team scores were updated sucessfully.</p>' . "\n";
 			// unlock all tables so site will still work
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('');
