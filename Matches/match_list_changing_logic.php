@@ -5,36 +5,36 @@
 		die("This file is meant to be only included by other files!");
 	}
 	
-	class match_changing_logic_utils
-	{
-		var $connection;
-		var $site;
-		
-		function setConnection($conn)
-		{
-			$this->connection = $conn;
-		}
-		function getConnection()
-		{
-			return $this->connection;
-		}
-		
-		function getSite()
-		{
-			return $this->site;
-		}
-		
-		function setSite(&$information)
-		{
-			$this->site = $information;
-		}
-	}
-	
-	// initialise values
-	$utils = new match_changing_logic_utils();
-	$utils->setConnection($connection);
-	$utils->setSite($site);
-	
+//	class match_changing_logic_utils
+//	{
+//		var $connection;
+//		var $site;
+//		
+//		function setConnection($conn)
+//		{
+//			$this->connection = $conn;
+//		}
+//		function getConnection()
+//		{
+//			return $this->connection;
+//		}
+//		
+//		function getSite()
+//		{
+//			return $this->site;
+//		}
+//		
+//		function setSite(&$information)
+//		{
+//			$this->site = $information;
+//		}
+//	}
+//	
+//	// initialise values
+//	$utils = new match_changing_logic_utils();
+//	$utils->setConnection($connection);
+//	$utils->setSite($site);
+//	
 	
 	$randomkey_name = 'randomkey_matches';
 	$viewerid = (int) getUserID();
@@ -106,7 +106,7 @@
 		// similar match entered already?
 		// strategy: ask for one match before the entered one and one after the one to be entered and do not let the database engine do the comparison
 		$query = 'SELECT `id`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points` FROM `matches`';
-		$query .= ' WHERE (`timestamp`' . sqlSafeString($comparisonOperator) ."'" . sqlSafeString($_POST['match_day']) . ' ' . sqlSafeString($_POST['match_time']) . "'";
+		$query .= ' WHERE (`timestamp`' . sqlSafeString($comparisonOperator) . "'" . sqlSafeString($_POST['match_day']). ' ' . sqlSafeString($_POST['match_time']) . "'";
 		// sorting needed
 		$query .= ') ORDER BY `timestamp` DESC';
 		// only comparing nearest match in time
@@ -115,7 +115,8 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
-			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps (using operator ' . sqlSafeString($comparisonOperator) . ') of matches failed.');
+			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps (using operator '
+								 . sqlSafeString($comparisonOperator) . ') of matches failed.');
 		}
 		
 		// initialise values
@@ -209,7 +210,7 @@
 			$query .= '=';
 		}
 		$query .= "'" . sqlSafeString($timestamp) . "'";
-		$query .= ' AND (`team1_teamid`=' . "'" . sqlSafeString($teamid) . "'" . ' OR `team2_teamid`=' . "'" . sqlSafeString($teamid) . "'" . ')';
+		$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		$query .= ' ORDER BY `timestamp` DESC LIMIT 0,1';
 		if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
@@ -447,7 +448,8 @@
 			$curTime = (int) strtotime('now');
 			if ((((int) $specifiedTime) - $curTime) >= 0)
 			{
-				echo '<p>You tried to enter, edit or delete a match that would have been played in the future. Only matches in the past can be entered, edited or deleted.</p>' . "\n";
+				echo '<p>You tried to enter, edit or delete a match that would have been played in the future.';
+				echo ' Only matches in the past can be entered, edited or deleted.</p>' . "\n";
 				$confirmed = (int) 0;
 			}
 		}
@@ -458,7 +460,8 @@
 			$eightWeeksAgo = (int) strtotime('now -8 weeks');
 			if (((int) $specifiedTime) <= $eightWeeksAgo)
 			{
-				echo '<p>You tried to enter, edit or delete a match that is older than 8 weeks. Only matches played in the last 8 weeks can be entered, edited or deleted.</p>' . "\n";
+				echo '<p>You tried to enter, edit or delete a match that is older than 8 weeks.';
+				echo ' Only matches played in the last 8 weeks can be entered, edited or deleted.</p>' . "\n";
 				$confirmed = (int) 0;
 			}
 
@@ -506,7 +509,8 @@
 			while($row = mysql_fetch_array($result_active))
 			{
 				// now we know the current team is deleted
-				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id ' . sqlSafeString($team_id1) . ' (deleted team).');
+				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id '
+									 . sqlSafeString($team_id1) . ' (deleted team).');
 			}
 			mysql_free_result($result_active);
 			
@@ -523,7 +527,8 @@
 			while($row = mysql_fetch_array($result_active))
 			{
 				// now we know the current team is deleted
-				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id ' . sqlSafeString($team_id2) . ' (deleted team).');
+				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id '
+									 . sqlSafeString($team_id2) . ' (deleted team).');
 			}
 			mysql_free_result($result_active);
 			
@@ -541,7 +546,8 @@
 			}
 			if ((int) mysql_num_rows($result_exists) < 1)
 			{
-				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id ' . sqlSafeString($team_id1) . ' (team does not exist).');
+				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id '
+									 . sqlSafeString($team_id1) . ' (team does not exist).');
 			}
 			mysql_free_result($result_exists);
 			
@@ -556,7 +562,8 @@
 			}
 			if ((int) mysql_num_rows($result_exists) < 1)
 			{
-				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id ' . sqlSafeString($team_id2) . ' (team does not exist).');
+				$site->dieAndEndPage('User (id=' . sqlSafeString($viewerid) . ') tried to modify a match against team with id '
+									 . sqlSafeString($team_id2) . ' (team does not exist).');
 			}
 			mysql_free_result($result_exists);
 			
@@ -571,7 +578,8 @@
 			if (!(isset($_GET['delete'])) && (($team_id1 === 0) || ($team_id2 === 0)))
 			{
 				// entering wrong data on purpose is not good, this case should even be impossible through the GUI
-				$site->dieAndEndPage('Neither team of the ones being specified for entering a match should have the id 0. This incident was created by user with id ' . sqlSafeString($viewerid));
+				$site->dieAndEndPage('Neither team of the ones being specified for entering a match should have the id 0. This incident was created by user with id '
+									 . sqlSafeString($viewerid));
 			}
 			
 			// ready to insert the data
@@ -667,7 +675,7 @@
 		{
 			// checked if there is already a match entered at that time
 			// scores depend on the order, two matches done at the same time lead to undefined behaviour
-			$query = 'SELECT `timestamp` FROM `matches` WHERE `timestamp`=' . "'" . sqlSafeString($_POST['match_day']) . ' ' . sqlSafeString($_POST['match_time']) . "'";
+			$query = 'SELECT `timestamp` FROM `matches` WHERE `timestamp`=' . sqlSafeStringQuotes(($_POST['match_day'])  . ' ' . ($_POST['match_time']));
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				echo '<a class="button" href="./">overview</a>' . "\n";
@@ -744,7 +752,7 @@
 		if ($confirmed === 2)
 		{			
 			// checked if there are newer matches already entered
-			$query = 'SELECT * FROM `matches` WHERE `timestamp`>' . "'" . sqlSafeString($_POST['match_day']) . ' ' . sqlSafeString($_POST['match_time']) . "'";
+			$query = 'SELECT * FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes(($_POST['match_day'])  . ' ' . ($_POST['match_time']));
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				echo '<a class="button" href="./">overview</a>' . "\n";
@@ -875,9 +883,10 @@
 			// insert new entry
 			if (isset($_GET['enter']))
 			{
-				$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
-				$query .= ' VALUES (' . "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString($team_id1) . "'" .', ';
-				$query .= "'" . sqlSafeString($team_id2) . "'" . ', ' . "'" . sqlSafeString($team1_points) . "'" . ', ' . "'" . sqlSafeString($team2_points) . "'";
+				$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`,';
+				$query .= ' `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
+				$query .= ' VALUES (' . sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($team_id1) .', ';
+				$query .= sqlSafeStringQuotes($team_id2) . ', ' . sqlSafeStringQuotes($team1_points) . ', ' . sqlSafeStringQuotes($team2_points);
 				$query .= ', ' . "'" . sqlSafeString($team1_new_score) . "'" . ', ' . "'" . sqlSafeString($team2_new_score) . "'";
 				$query .= ')';
 				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
@@ -928,7 +937,11 @@
 				}
 				mysql_free_result($result);
 				
-				update_team_match_edit($team1_points_before, $team2_points_before, $team1_points, $team2_points, $team1_checkid, $team2_checkid, $team_id1, $team_id2, $site, $connection);
+				update_team_match_edit($team1_points_before, $team2_points_before,
+									   $team1_points, $team2_points,
+									   $team1_checkid, $team2_checkid,
+									   $team_id1, $team_id2,
+									   $site, $connection);
 			}
 			
 			if (isset($_GET['delete']))
@@ -1177,7 +1190,8 @@
 			while($row = mysql_fetch_array($result))
 			{
 				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
-				$query = 'UPDATE `teams_overview` SET `score`=' . "'" . sqlSafeString(get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true)) . "'";
+				$query = 'UPDATE `teams_overview` SET `score`='
+				$query .= sqlSafeStringQuotes(get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true));
 				// use current row id to access the entry
 				$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
 				// only one row is updated per loop iteration
@@ -1227,7 +1241,8 @@
 		$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . "'" . sqlSafeString($team_id2) . "'";
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
-			$site->dieAndEndPage('Could not get score of team with id ' . sqlSafeString($team_id2) . ', requested by user with id ' . sqlSafeString($viewerid) . '.');
+			$site->dieAndEndPage('Could not get score of team with id ' . sqlSafeString($team_id2)
+								 . ', requested by user with id ' . sqlSafeString($viewerid) . '.');
 		}
 		
 		while($row = mysql_fetch_array($result))
@@ -1248,7 +1263,8 @@
 			$query .= ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be reported due to a sql problem!');
+				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
+									 . ' could not be reported due to a sql problem!');
 			}
 			
 			// match was entered successfully, now update the score in teams overview
@@ -1257,14 +1273,16 @@
 			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($team_id1). "'";
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
-				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' was entered but the team score of team with id ' . sqlSafeString($team_id1). ' could not be updated!');
+				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
+									 . ' was entered but the team score of team with id ' . sqlSafeString($team_id1). ' could not be updated!');
 			}
 			$query = 'UPDATE `teams_overview` SET `score`=' . "'" . sqlSafeString($team2_new_score) . "'";
 			$query .= ', deleted=' . "'" . sqlSafeString('1') . "'";
 			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($team_id2). "'";
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
-				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' was entered but the team score of team with id ' . sqlSafeString($team_id2). ' could not be updated!');
+				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
+									 . ' was entered but the team score of team with id ' . sqlSafeString($team_id2). ' could not be updated!');
 			}
 			
 			require_once('update_match_stats.php');

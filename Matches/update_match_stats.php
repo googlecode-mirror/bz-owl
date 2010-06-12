@@ -13,7 +13,8 @@
 		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
-			$site->dieAndEndPage('The match count for the teams with id' . sqlSafeString($team_id1) . ' and ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
+			$site->dieAndEndPage('The match count for the teams with id'
+								 . sqlSafeString($team_id1) . ' and ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
 		}
 		
 		// increase match win count for teams that participated
@@ -67,7 +68,8 @@
 			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
-				$site->dieAndEndPage('The match draw count for the teams with id' . sqlSafeString($team_id1) . ' and ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
+				$site->dieAndEndPage('The match draw count for the teams with id'
+									 . sqlSafeString($team_id1) . ' and ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
 			}
 			
 		}
