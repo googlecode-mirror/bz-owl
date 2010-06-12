@@ -209,7 +209,7 @@
 		{
 			$query .= '=';
 		}
-		$query .= "'" . sqlSafeString($timestamp) . "'";
+		$query .= sqlSafeStringQuotes($timestamp);
 		$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		$query .= ' ORDER BY `timestamp` DESC LIMIT 0,1';
 		if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))

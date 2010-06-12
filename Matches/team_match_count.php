@@ -7,8 +7,11 @@
 	
    
 	// backend functions
-	function increase_total_match_count($teamid, $site, $connection)
+	function increase_total_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_played`=`num_matches_played`+' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -28,8 +31,11 @@
 		}
 	}
 	
-	function increase_won_match_count($teamid, $site, $connection)
+	function increase_won_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_won`=`num_matches_won`+' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -42,8 +48,11 @@
 		}
 	}
 	
-	function increase_lost_match_count($teamid, $site, $connection)
+	function increase_lost_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_lost`=`num_matches_lost`+' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -56,8 +65,11 @@
 		}
 	}
 	
-	function increase_draw_match_count($teamid, $site, $connection)
+	function increase_draw_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_draw`=`num_matches_draw`+' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -70,8 +82,11 @@
 		}
 	}
 	
-	function decrease_total_match_count($teamid, $site, $connection)
+	function decrease_total_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -87,8 +102,11 @@
 		// by considering a lot of matches and maintenance is supposed to do that
 	}
 	
-	function decrease_won_match_count($teamid, $site, $connection)
+	function decrease_won_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -101,8 +119,11 @@
 		}
 	}
 	
-	function decrease_lost_match_count($teamid, $site, $connection)
+	function decrease_lost_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -115,8 +136,11 @@
 		}
 	}
 	
-	function decrease_draw_match_count($teamid, $site, $connection)
+	function decrease_draw_match_count($teamid)
 	{
+		global $connection;
+		global $site;
+		
 		$query = 'UPDATE `teams_profile` SET ';
 		$query .= '`num_matches_draw`=`num_matches_draw`-' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
@@ -132,9 +156,11 @@
 	function cmp_did_team_participate_at_all($team1_points_before, $team2_points_before,
 											  $team1_points, $team2_points,
 											  $team_id1_before, $team_id2_before,
-											  $team_id1, $team_id2,
-											  $site, $connection)
+											  $team_id1, $team_id2)
 	{
+		global $connection;
+		global $site;
+		
 		if ($site->debug_sql())
 		{
 			echo '<hr>' . "\n";
@@ -181,9 +207,11 @@
 									   $team1_points, $team2_points,
 									   $team_id1_before, $team_id2_before,
 									   $team_id1, $team_id2,
-									   $team1_increased, $team2_increased,
-									   $site, $connection)
+									   $team1_increased, $team2_increased)
 	{
+		global $connection;
+		global $site;
+		
 		if ($site->debug_sql())
 		{
 			echo '<hr>' . "\n";
@@ -210,23 +238,23 @@
 		{
 			$team_increased = $team_id1;
 			// new team1 played a match not counted yet
-			increase_total_match_count($team_id1, $site, $connection);
+			increase_total_match_count($team_id1);
 			
 			// update new team1 data
 			if ($team1_points > $team2_points)
 			{
 				// new team1 won
-				increase_won_match_count($team_id1, $site, $connection);
+				increase_won_match_count($team_id1);
 			} else
 			{
 				if ($team1_points < $team2_points)
 				{
 					// new team1 lost
-					increase_lost_match_count($team_id1, $site, $connection);
+					increase_lost_match_count($team_id1);
 				} else
 				{
 					// new team1 tied
-					increase_draw_match_count($team_id1, $site, $connection);
+					increase_draw_match_count($team_id1);
 				}
 			}
 		}
@@ -236,9 +264,11 @@
 	function cmp_team_participated_change($team1_points_before, $team2_points_before,
 										  $team1_points, $team2_points,
 										  $team_id1_before, $team_id2_before,
-										  $team_id1, $team_id2,
-										  $site, $connection)
-	{		 
+										  $team_id1, $team_id2)
+	{
+		global $connection;
+		global $site;
+		
 		// map old team id to new team id
 		if ($team_id1_before === $team_id1)
 		{
@@ -269,13 +299,13 @@
 					if ($team1_points < $team2_points)
 					{
 						// team1 lost in the newer version but won in the older version
-						decrease_won_match_count($team_id1, $site, $connection);
-						increase_lost_match_count($team_id1, $site, $connection);
+						decrease_won_match_count($team_id1);
+						increase_lost_match_count($team_id1);
 					} else
 					{
 						// team1 tied in the newer version but won in the older version
-						decrease_won_match_count($team_id1, $site, $connection);
-						increase_draw_match_count($team_id1, $site, $connection);
+						decrease_won_match_count($team_id1);
+						increase_draw_match_count($team_id1);
 					}
 				}
 			} else
@@ -286,8 +316,8 @@
 					if ($team1_points > $team2_points)
 					{
 						// team1 won in the newer version
-						decrease_lost_match_count($team_id1, $site, $connection);
-						increase_won_match_count($team_id1, $site, $connection);
+						decrease_lost_match_count($team_id1);
+						increase_won_match_count($team_id1);
 					} else
 					{
 						if ($team1_points < $team2_points)
@@ -296,8 +326,8 @@
 						} else
 						{
 							// team1 lost in the older version but tied in the newer version
-							decrease_lost_match_count($team_id1, $site, $connection);
-							increase_draw_match_count($team_id1, $site, $connection);
+							decrease_lost_match_count($team_id1);
+							increase_draw_match_count($team_id1);
 						}
 					}
 				} else
@@ -307,15 +337,15 @@
 					if ($team1_points > $team2_points)
 					{
 						// team1 won in the newer version
-						decrease_draw_match_count($team_id1, $site, $connection);
-						increase_won_match_count($team_id1, $site, $connection);
+						decrease_draw_match_count($team_id1);
+						increase_won_match_count($team_id1);
 					} else
 					{
 						if ($team1_points < $team2_points)
 						{
 							// team1 tied in the older version and lost in the newer version
-							decrease_draw_match_count($team_id1, $site, $connection);
-							increase_lost_match_count($team_id1, $site, $connection);
+							decrease_draw_match_count($team_id1);
+							increase_lost_match_count($team_id1);
 						} else
 						{
 							// team1 tied in the older version and also tied in the newer version -> nothing to do
@@ -331,9 +361,11 @@
 	function update_team_match_edit($team1_points_before, $team2_points_before,
 									$team1_points, $team2_points,
 									$team_id1_before, $team_id2_before,
-									$team_id1, $team_id2,
-									$site, $connection)
+									$team_id1, $team_id2)
 	{
+		global $connection;
+		global $site;
+		
 		if ($site->debug_sql())
 		{
 			echo '<hr>' . "\n";
@@ -353,14 +385,12 @@
 		cmp_did_team_participate_at_all($team1_points_before, $team2_points_before,
 										 $team1_points, $team2_points,
 										 $team_id1_before, $team_id2_before,
-										 $team_id1, $team_id2,
-										 $site, $connection);
+										 $team_id1, $team_id2);
 		// swap the team orders to apply the same algorithm to old team2
 		cmp_did_team_participate_at_all($team2_points_before, $team1_points_before,
 										 $team2_points, $team1_points,
 										 $team_id2_before, $team_id1_before,
-										 $team_id2, $team_id1,
-										 $site, $connection);
+										 $team_id2, $team_id1);
 		
 		// check for new teams, to give them credit for new match
 		// initialise locking variables
@@ -371,14 +401,13 @@
 												 $team1_points, $team2_points,
 												 $team_id1_before, $team_id2_before,
 												 $team_id1, $team_id2,
-												 $team1_added, $team2_added,
-												 $site, $connection);
+												 $team1_added, $team2_added);
 		$team2_added = cmp_new_team_participated($team2_points_before, $team1_points_before,
 												 $team1_points, $team2_points,
 												 $team_id2_before, $team_id1_before,
 												 $team_id1, $team_id2,
-												 $team1_added, $team2_added,
-												 $site, $connection);
+												 $team1_added, $team2_added);
+		
 		if (!(($team1_added !== 0) && ($team2_added !== 0)))
 		{
 			if ($team1_added !== 0)
@@ -392,8 +421,8 @@
 													 $team2_points, $team1_points,
 													 $team_id1_before, $team_id2_before,
 													 $team_id2, $team_id1,
-													 $team1_added, $team2_added,
-													 $site, $connection);
+													 $team1_added, $team2_added);
+			
 			if (!(($team1_added !== 0) && ($team2_added !== 0)))
 			{
 				if ($team1_added !== 0)
@@ -408,8 +437,7 @@
 										  $team2_points, $team1_points,
 										  $team_id2_before, $team_id1_before,
 										  $team_id2, $team_id1,
-										  $team1_added, $team2_added,
-										  $site, $connection);
+										  $team1_added, $team2_added);
 			}
 		}
 		unset($team1_added);
@@ -422,8 +450,7 @@
 		if (cmp_team_participated_change($team1_points_before, $team2_points_before,
 										 $team1_points, $team2_points,
 										 $team_id1_before, $team_id2_before,
-										 $team_id1, $team_id2,
-										 $site, $connection))
+										 $team_id1, $team_id2))
 		{
 			$number_teams_mapped = $number_teams_mapped + 1;
 		}
@@ -433,8 +460,7 @@
 		if (cmp_team_participated_change($team2_points_before, $team1_points_before,
 										 $team1_points, $team2_points,
 										 $team_id2_before, $team_id1_before,
-										 $team_id1, $team_id2,
-										 $site, $connection))
+										 $team_id1, $team_id2))
 		{
 			$number_teams_mapped = $number_teams_mapped + 1;
 		}
@@ -446,8 +472,7 @@
 			if (cmp_team_participated_change($team1_points_before, $team2_points_before,
 											 $team2_points, $team1_points,
 											 $team_id1_before, $team_id2_before,
-											 $team_id2, $team_id1,
-											 $site, $connection))
+											 $team_id2, $team_id1))
 			{
 				$number_teams_mapped = $number_teams_mapped + 1;
 			}
@@ -458,8 +483,7 @@
 				if (cmp_team_participated_change($team2_points_before, $team1_points_before,
 												 $team2_points, $team1_points,
 												 $team_id2_before, $team_id1_before,
-												 $team_id2, $team_id1,
-												 $site, $connection))
+												 $team_id2, $team_id1))
 				{
 					$number_teams_mapped = $number_teams_mapped + 1;
 				}
