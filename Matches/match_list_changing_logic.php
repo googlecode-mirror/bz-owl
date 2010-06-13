@@ -261,14 +261,51 @@
 			$score_a = round($score_a + $diff);
 			$score_b = round($score_b - $diff);
 			
-			// compute absolute value of rounded difference
-			$diff = abs(round($diff));
+			// do not compute absolute value of rounded difference
+			// as we need a signed integer to track score changes
+			$diff = round($diff);
 		}
 		
 		if ($site->debug_sql())
 		{
 			echo ' values after ' . $score_a . ', ' .  $score_b . ', ' . $caps_a . ', ' . $caps_b . ', ' . $diff . '';
 		}
+	}
+	
+	function show_score_changes($team_stats_changes, $keys, $n_teams=0)
+	{
+		if ((int) $n_teams === 0)
+		{
+			$n_teams=(((int) count($keys)) - 1);
+		}
+		
+		// TODO: show score differences recorded in the array $team_stats_changes
+		echo '<table class="table_scores_changed_overview">' . "\n";
+		echo '<caption>Changed teams scores</caption>' . "\n";
+		echo '<tr>' . "\n";
+		echo '	<th>Team</th>' . "\n";
+		echo '	<th>Previous score</th>' . "\n";
+		echo '	<th>New score</th>' . "\n";
+		echo '</tr>' . "\n\n";
+		
+		for ($i = 0; $i <= $n_teams; $i++)
+		{
+			echo '<tr class="table_scores_changed_overview">' . "\n";
+			echo '	<td class="table_scores_changed_overview_name">';
+			echo '<a href="../Teams/?profile=' . htmlspecialchars($keys[$i]) . '">';
+			echo 'insert_teamid_here';
+			echo '</a>';
+			echo '</td>' . "\n";
+			echo '	<td class="table_scores_changed_overview_score_before">';
+			echo strval($team_stats_changes[$keys[$i]]['old_score']);
+			echo '</td>' . "\n";
+			echo '	<td class="table_scores_changed_overview_score_after">';
+			echo strval($team_stats_changes[$keys[$i]]['new_score']);
+			echo '</td>' . "\n";
+			echo '</tr>' . "\n";
+		}
+		
+		echo '</table>' . "\n";
 	}
 	
 	function unlock_tables($site, $connection)
@@ -949,6 +986,11 @@
 			
 			if (isset($_GET['delete']))
 			{
+				// both teams might have an updated score
+				echo 'marking team scores as changed...get_score_at_that_time<br>';
+				$team_stats_changes[$team_id1] = '';
+				$team_stats_changes[$team_id2] = '';
+				
 				// originally team 1 won
 				if ($team1_points_before > $team2_points_before)
 				{
@@ -1142,32 +1184,20 @@
 			
 			// find out which team's have new scores
 			$teams = array_keys($team_stats_changes);
-			print_r($teams);
 			$query .= ' WHERE (';
 			$n_teams = ((int) count($teams)) - 1;
-			$one_or_more_teams_have_changed_score = false;
 			for ($i = 0; $i <= $n_teams; $i++)
 			{
-				if ($teams[$i]['old_score'] === $teams[$i]['new_score'])
+				$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
+				if ($i <= ($n_teams - 1))
 				{
-					unset($teams[$i]);
-					$n_teams--;
-					
-				} else
-				{
-					$one_or_more_teams_have_changed_score = true;
-					$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
-					if ($i <= ($n_teams - 1))
-					{
-						$query .= ' OR ';
-					}
+					$query .= ' OR ';
 				}
 			}
 			$query .= ')';
 			
 			// execute the query if there are teams scores to be updated
-			if ($one_or_more_teams_have_changed_score
-				&& !($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables($site, $connection);
@@ -1177,64 +1207,57 @@
 			
 			// now update the team scores in the overview
 			// if needed
+			while($row = mysql_fetch_array($result))
+			{
+				$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
+				// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
+				
+				// keep track of score changes
+				if (isset($team_stats_changes[$row['teamid']]))
+				{
+					$team_stats_changes[$row['teamid']]['old_score'] = (int) $row['score'];
+					$team_stats_changes[$row['teamid']]['new_score'] = (int) $new_score;
+				}
+				
+				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
+				$query = 'UPDATE `teams_overview` SET `score`=';
+				$query .= sqlSafeStringQuotes($new_score);
+				// use current row id to access the entry
+				$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
+				// only one row is updated per loop iteration
+				$query .= ' LIMIT 1';
+				if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					unlock_tables($site, $connection);
+					$site->dieAndEndPage('Updating team scores failed.');
+				}
+			}
+			mysql_free_result($result);
+			
+			// assume tere were no score changes
+			// set that to true when a score changed
+			$one_or_more_teams_have_changed_score = false;
+			
+			for ($i = 0; $i <= $n_teams; $i++)
+			{
+				// was score changed?
+				if ($team_stats_changes[$teams[$i]]['old_score'] === $team_stats_changes[$teams[$i]]['new_score'])
+				{
+					unset($teams[$i]);
+					$n_teams--;
+					
+				} else
+				{
+					$one_or_more_teams_have_changed_score = true;
+					$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
+				}
+			}
+			
+				
 			if ($one_or_more_teams_have_changed_score)
 			{
-				while($row = mysql_fetch_array($result))
-				{
-					$new_score = get_score_at_that_time($site, $connection, ((int) $row['teamid']), $timestamp, $viewerid, true);
-					// as the matches are sorted by date in the last loop iteration we will get the old scores of both team1 and team2
-					
-					// keep track of score changes
-					if (isset($team_stats_changes[$row['teamid']]))
-					{
-						$team_stats_changes[$row['teamid']]['old_score'] = $row['score'];
-						$team_stats_changes[$row['teamid']]['new_score'] = $new_score;
-					}
-					
-					// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
-					$query = 'UPDATE `teams_overview` SET `score`=';
-					$query .= sqlSafeStringQuotes($new_score);
-					// use current row id to access the entry
-					$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
-					// only one row is updated per loop iteration
-					$query .= ' LIMIT 1';
-					if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
-					{
-						// query was bad, error message was already given in $site->execute_query(...)
-						unlock_tables($site, $connection);
-						$site->dieAndEndPage('Updating team scores failed.');
-					}
-				}
-				mysql_free_result($result);
-				
-				// TODO: show score differences recorded in the array $team_stats_changes
-				echo '<table class="table_scores_changed_overview">' . "\n";
-				echo '<caption>Changed teams scores</caption>' . "\n";
-				echo '<tr>' . "\n";
-				echo '	<th>Team</th>' . "\n";
-				echo '	<th>Previous score</th>' . "\n";
-				echo '	<th>New score</th>' . "\n";
-				echo '</tr>' . "\n\n";
-				
-				for ($i = 0; $i <= $n_teams; $i++)
-				{
-					echo '<tr class="table_scores_changed_overview">' . "\n";
-					echo '	<td class="table_scores_changed_overview_name">';
-					echo '<a href="../Teams/?profile=' . htmlspecialchars($teams[$i]) . '">';
-					echo 'insert_teamid_here';
-					echo '</a>';
-					echo '</td>' . "\n";
-					echo '	<td class="table_scores_changed_overview_score_before">';
-					echo strval($team_stats_changes[$teams[$i]]['old_score']);
-					echo '</td>' . "\n";
-					echo '	<td class="table_scores_changed_overview_score_after">';
-					echo strval($team_stats_changes[$teams[$i]]['new_score']);
-					echo '</td>' . "\n";
-					echo '</tr>' . "\n";
-				}
-				
-				echo '</table>' . "\n";
-				
+				show_score_changes($team_stats_changes, $teams, $n_teams);
 				// we're done
 				echo '<p>All team scores were updated sucessfully.</p>' . "\n";
 			} else
@@ -1332,10 +1355,14 @@
 			// log the changes
 			$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
 			$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
+			$team_stats_changes[$team_id1]['old_score'] = $team1_new_score - $diff;
+			$team_stats_changes[$team_id2]['old_score'] = $team2_new_score + $diff;
 			
 			// difference of score between before and after changing match list is always positive (absolute value)
+			show_score_changes($team_stats_changes,  array_keys($team_stats_changes));
+			
 			// &plusmn; displays a +- symbol
-			echo 'diff is &plusmn; ' . htmlentities($diff);
+			echo 'diff is &plusmn; ' . strval(abs($diff));
 			print_r($team_stats_changes);
 			
 			
