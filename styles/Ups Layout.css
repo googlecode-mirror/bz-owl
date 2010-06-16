@@ -33,17 +33,14 @@ tr:nth-child(odd)
 }
 
 /* navigation */
-/* navigation */
 ul.navigation
 {
 	text-align: center;
 	list-style: none;
-	font-size: 1.5em;
-	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 	font-stretch: ultra-condensed;
-	
+
 	/*float: left;*/
-	background: #e8e8e8;
+	/*background: #e8e8e8;*/
 	margin-top: 0em;
 	padding-top: 0.1em;
 	padding-bottom: 0.3em;
@@ -51,6 +48,9 @@ ul.navigation
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
+	word-spacing: -0.1em;
+	letter-spacing: -0.1em;
+	font: bold 1.1em "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 
 ul.navigation li
@@ -63,7 +63,7 @@ ul.navigation li
 
 ul.navigation a
 {
-	color : #1f1f1f;
+	color: #669;
 	text-decoration : none;
 	font-weight: bold;
 	font-variant: normal;
