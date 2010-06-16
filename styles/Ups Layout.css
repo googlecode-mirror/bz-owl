@@ -48,8 +48,10 @@ ul.navigation
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
+	/*
 	word-spacing: -0.1em;
 	letter-spacing: -0.1em;
+	*/
 	font: bold 1.1em "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 
