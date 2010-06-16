@@ -40,9 +40,9 @@ ul.navigation
 	text-align: center;
 	list-style: none;
 	margin-top: 0em;
-	word-spacing: -0.1em;
-	letter-spacing: -0.1em;
-	font: bold 1.5em "Lucida Grande", Lucida, Verdana, sans-serif;
+	/*word-spacing: -0.1em;
+	letter-spacing: -0.1em;*/
+	font: bold 1.5em Verdana, "Lucida Grande", Lucida, sans-serif;
 	border: 0.2em dashed #677068;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
