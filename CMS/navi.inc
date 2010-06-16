@@ -1,3 +1,4 @@
+<span class="logo"></span>
 
 <ul class="navigation">
 <?php

@@ -6,6 +6,18 @@ body
 	color: black;
 }
 
+span.logo
+{
+	background: url(GUlogo.png) no-repeat fixed 9px 8px;
+	width: auto;
+	height: auto;
+	padding-bottom: 16cm;
+	display: inline-block;
+	position: fixed;
+	padding-right: 5.1cm;
+	padding-left: 5.1px;
+}
+
 p.first_p
 {
 	position: relative;
@@ -36,18 +48,17 @@ tr:nth-child(odd)
 ul.navigation
 {
 	padding: 0.2em 0.5em;
-	display: inline-block;
 	text-align: center;
 	list-style: none;
-	margin-top: 0em;
 	/*word-spacing: -0.1em;
 	letter-spacing: -0.1em;*/
 	font: bold 1.5em Verdana, "Lucida Grande", Lucida, sans-serif;
 	border: 0.2em dashed #677068;
-	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
+	display: block;
+	margin: 0em 1cm 1em 6cm;
 }
 
 ul.navigation li
@@ -60,7 +71,7 @@ ul.navigation li
 
 ul.navigation a
 {
-	color: #669;
+	color: #838499;
 	text-decoration : none;
 	font-weight: bold;
 	font-variant: normal;
@@ -76,8 +87,7 @@ div.content
 {
 	color: black;
 	text-align: left;
-	margin-left: 9em;
-	width: auto;
+	margin-left: 5.3cm;
 }
 
 div.userbuttons
