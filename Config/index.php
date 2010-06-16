@@ -168,7 +168,13 @@
 	{
 		echo GEWAEHLT;
 	}
-	echo '>Snow</option>' . "\n";	
+	echo '>Snow</option>' . "\n";
+	echo '    <option';
+	if (strcmp($stylesheet, 'Ups Layout') == 0)
+	{
+		echo GEWAEHLT;
+	}
+	echo '>Ups Layout</option>' . "\n";
 	
 ?>
   </select>
