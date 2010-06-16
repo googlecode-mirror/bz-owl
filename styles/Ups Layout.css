@@ -1,3 +1,5 @@
+/* @override http://vps1.moooo.org/ts/styles/Ups%20Layout */
+
 body
 {
 	background: #fafafa url(warm-snow.png) repeat scroll;
@@ -31,12 +33,13 @@ tr:nth-child(odd)
 }
 
 /* navigation */
+/* navigation */
 ul.navigation
 {
-	text-align: left;
+	text-align: center;
 	list-style: none;
 	font-size: 1.5em;
-	float: left;
+	/*float: left;*/
 	background: #e8e8e8;
 	margin-top: 0em;
 	padding-top: 0.1em;
@@ -49,8 +52,10 @@ ul.navigation
 
 ul.navigation li
 {
-	margin-left: -0.8em;
-	padding-right: 0.4em;
+	list-style: none;
+	display: inline;
+	/*margin-left: -0.8em;
+	padding-right: 0.4em;*/
 }
 
 ul.navigation a
