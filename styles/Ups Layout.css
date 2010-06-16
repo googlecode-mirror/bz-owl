@@ -35,24 +35,19 @@ tr:nth-child(odd)
 /* navigation */
 ul.navigation
 {
+	padding: 0.2em 0.5em;
+	display: inline-block;
 	text-align: center;
 	list-style: none;
-	font-stretch: ultra-condensed;
-
-	/*float: left;*/
-	/*background: #e8e8e8;*/
 	margin-top: 0em;
-	padding-top: 0.1em;
-	padding-bottom: 0.3em;
-	padding-left: 1.4em;
+	word-spacing: -0.1em;
+	letter-spacing: -0.1em;
+	font: bold 1.5em "Lucida Grande", Lucida, Verdana, sans-serif;
+	border: 0.2em dashed #677068;
+	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	/*
-	word-spacing: -0.1em;
-	letter-spacing: -0.1em;
-	*/
-	font: bold 1.1em "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 
 ul.navigation li
