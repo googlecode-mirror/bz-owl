@@ -10,7 +10,10 @@
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require realpath('../CMS/navi.inc');
 	
-	$site = new siteinfo();
+	if (!isset($site))
+	{
+		$site = new siteinfo();
+	}
 	
 	$connection = $site->connect_to_db();
 	$randomkey_name = 'randomkey_user';

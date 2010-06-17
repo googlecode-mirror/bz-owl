@@ -4,6 +4,9 @@
 <head>
   <meta content="text/html; charset=utf-8" http-equiv="content-type">
 <?php
+	require_once 'siteinfo.php';
+	$site = new siteinfo();
+	
 	require (dirname(dirname(__FILE__)) . '/stylesheet.inc');
 	echo '  <title>';
 	// display the title specified in $page_title

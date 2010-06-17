@@ -1,4 +1,7 @@
-/* @override http://vps1.moooo.org/ts/styles/Ups%20Layout */
+/* @override 
+	http://vps1.moooo.org/ts/styles/Ups%20Layout
+	http://192.168.1.10/~spiele/league_svn/ts/styles/Ups%20Layout.css
+*/
 
 body
 {
@@ -6,7 +9,7 @@ body
 	color: black;
 }
 
-span.logo
+div.logo
 {
 	background: url(GUlogo.png) no-repeat fixed 9px 8px;
 	width: auto;
@@ -25,16 +28,48 @@ p.first_p
 }
 
 /* I want fancy tables */
+table
+{
+	border: 0.2em dashed #677068;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	display: block;
+}
+
 table caption
 {
-	background: #eee;
+	background: rgba(191,194,198,0.64) -3px;
+	display: block;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	text-align: center;
+	padding: 0.5em 1em 0.2em;
 	margin-bottom: 0.5em;
+}
+
+th
+{
+	height: 1.5em;
+}
+
+tbody
+{
+	display: block;
+	margin-bottom: 0.5em;
+	margin-left: 1em;
+	overflow: auto;
 }
 
 /* even table rows */
 tr:nth-child(even)
 {
-	background: #e8e8e8
+	background: rgba(191,194,198,0.24) -3px;
 }
 
 /* uneven (odd) table rows */
@@ -58,7 +93,7 @@ ul.navigation
 	-moz-border-radius: 1em;
 	border-radius: 1em;
 	display: block;
-	margin: 0em 1cm 1em 6cm;
+	margin: 0em 0.2em 1em 5.3cm;
 }
 
 ul.navigation li
@@ -88,11 +123,14 @@ div.content
 	color: black;
 	text-align: left;
 	margin-left: 5.3cm;
+	margin-right: 0.2em;
 }
 
 div.userbuttons
 {
 	text-align: right;
+	margin-bottom: 1em;
+	margin-right: 0.2em;
 }
 
 div.online_user

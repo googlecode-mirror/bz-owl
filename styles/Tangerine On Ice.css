@@ -1,83 +1,0 @@
-/* @override http://192.168.1.10/~ts/styles/Tangerine%20On%20Ice.css */
-
-body
-{
-	background: #66ffff;
-}
-
-div.navigation
-{
-	text-align: center;
-	list-style: none;
-	color: black;
-	font-size: 2em;
-	background: #ff8000;
-}
-
-ul.navigation
-{	text-align: center;
-	color: black;	font-size: 2em;
-	background: #ff8000;
-	margin-top: 0;
-}
-
-ul.navigation li
-{	list-style: none;	display: inline;} 
-* html ul.navigation a, * html ul.navigation span {	width: 1em;    /* nur fuer IE 5.0x erforderlich */}
-
-ul.navigation li a
-{	color : #ffcc66;	text-decoration : underline;
-}
-
-div.navigation a {
-	color : #ffcc66;	text-decoration : underline;
-}
-
-ul.navigation li a:active
-{	color : #000088;	text-decoration : underline;}
-
-div.navigation a:active
-{	color : #000088;	text-decoration : underline;}
-
-div.content
-{
-	width: auto;
-	padding-left: 75pt;
-	color: black;
-	padding-top: 2.5em;
-}
-
-span.logo
-{
-	background: url(logo.png) no-repeat;
-	float: right;
-	width: 239px; 
-	height: 75px;
-	margin-bottom: 0.5em;
-	text-align: right;
-}
-
-
-div.createdby
-{
-	text-align: right;
-	float: right;
-	clear: both;
-}
-
-img
-{
-	float: right;
-	clear: both;
-}
-
-a:link
-{
-	color : #004080;	text-decoration : underline;}
-
-a:visited
-{
-	color : #004080;	text-decoration : underline;}
-
-a:active
-{	color : #000088;	text-decoration : underline;}

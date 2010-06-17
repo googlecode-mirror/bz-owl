@@ -2,24 +2,18 @@
 	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
 	ini_set('session.gc_maxlifetime', '7200');
-	session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<?php
-	include('../stylesheet.inc');
-	$pfad = (pathinfo(realpath('./')));
-	$name = $pfad['basename'];
-	print '  <title>' . $name . '</title>' . "\n";
-?>
-</head>
-<body>
-<?php
+	@session_start();
+	$path = (pathinfo(realpath('./')));
+	$name = $path['basename'];
+	
+	$display_page_title = $name;
+	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require realpath('../CMS/navi.inc');
-	require_once ('../CMS/siteinfo.php');	
-	$site = new siteinfo();
+	
+	if (!isset($site))
+	{
+		$site = new siteinfo();
+	}
 	
 	$connection = $site->connect_to_db();
 	// choose database
@@ -77,7 +71,7 @@
 		// by definition this is a joke but online guests are not shown by default
 		if ($rows < 1)
 		{
-			echo '<div class="online_user">None</div>';
+			echo '<div class="online_user">No user online at the moment</div>';
 		} else
 		{
 			// convert $result resource to array

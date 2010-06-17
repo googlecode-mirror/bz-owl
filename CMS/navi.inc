@@ -1,10 +1,13 @@
-<span class="logo"></span>
+<div class="logo"></div>
 
 <ul class="navigation">
 <?php
 	require_once 'siteinfo.php';
 	require_once 'permissions.php';
-	$site = new siteinfo();
+	if (!isset($site))
+	{
+		$site = new siteinfo();
+	}
 	
 	$unread_messages = false;
 	
@@ -213,10 +216,8 @@
 ?>
 </ul>
 
-<div class="content">
-
+<div class="userbuttons">
 <?php
-	echo '<div class="userbuttons">' . "\n";
 	if (!(strcmp($name, 'Online') == 0))
 	{
 		echo '<span class="onlineUsers">';
@@ -232,3 +233,4 @@
 	}
 	echo '</div>' . "\n\n" ;
 ?>
+<div class="content">

@@ -1,5 +1,11 @@
 <?php
-	define("default_stylesheet", 'White');
+	if ($site->mobile_version())
+	{
+		define("default_stylesheet", 'White');
+	} else
+	{
+		define("default_stylesheet", 'Ups Layout');
+	}
 	
 	$stylesheet = default_stylesheet;
 	foreach ($_COOKIE as $key => $value)

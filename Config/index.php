@@ -50,11 +50,17 @@
 	echo "  <meta content=\x22text/html; charset=ISO-8859-1\x22 http-equiv=\x22content-type\x22>\n";
 	if (strlen($stylesheet) > 0)
 	{
+		// we have a new stylesheet chosen by user
 		echo '  <link href="../styles/';
 		echo $stylesheet;
 		echo '" rel="stylesheet" type="text/css">' . "\n";
 	} else
 	{
+		// use previously used stylesheet
+		
+		require_once '../CMS/siteinfo.php';
+		$site = new siteinfo();
+		
 		include '../stylesheet.inc';
 	}
 	?>
@@ -116,7 +122,7 @@
 		}
 	}
 ?>
-<p>Please note: ONLY Snow and White look good, the other ones are just a technology demo and they will be improved but that is low priority at the moment.</p>
+<p>Please note: Stylesheets are not finalised yet. Snow and White were designed for mobile devices in particular, the other ones are in flux at the moment.</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	
 	// the address depends on where the file resides
@@ -126,53 +132,25 @@
 <p>Theme:
   <select name="stylesheet">
 <?php
-	define ('GEWAEHLT', ' selected="selected"');
-	
-	echo '    <option';
-	if (strcmp($stylesheet, 'black') == 0)
-	{
-		echo GEWAEHLT;
-	}
-	echo '>black</option>' . "\n";
-	
-	echo '    <option';
-	if (strcmp($stylesheet, 'Tangerine On White') == 0)
-	{
-		echo GEWAEHLT;
-	}
-	echo '>Tangerine On White</option>' . "\n";
-	
-	echo '    <option';
-	if (strcmp($stylesheet, 'Tangerine On Ice') == 0)
-	{
-		echo GEWAEHLT;
-	}
-	echo '>Tangerine On Ice</option>' . "\n";
-	
-	echo '    <option';
-	if (strcmp($stylesheet, 'Sky On White') == 0)
-	{
-		echo GEWAEHLT;
-	}
-	echo '>Sky On White</option>' . "\n";
+	define ('SELECTED', ' selected="selected"');
 	
 	echo '    <option';
 	if (strcmp($stylesheet, 'White') == 0)
 	{
-		echo GEWAEHLT;
+		echo SELECTED;
 	}
 	echo '>White</option>' . "\n";
 	
 	echo '    <option';
 	if (strcmp($stylesheet, 'Snow') == 0)
 	{
-		echo GEWAEHLT;
+		echo SELECTED;
 	}
 	echo '>Snow</option>' . "\n";
 	echo '    <option';
 	if (strcmp($stylesheet, 'Ups Layout') == 0)
 	{
-		echo GEWAEHLT;
+		echo SELECTED;
 	}
 	echo '>Ups Layout</option>' . "\n";
 	

@@ -1,71 +1,0 @@
-/* @override http://192.168.1.10/~ts/styles/Tangerine%20On%20White.css */
-
-body
-{
-	background: #ffffff;
-}
-
-
-ul.navigation
-{
-	text-align: center;
-	list-style: none;
-	color: black;
-	font-size: 2em;
-	background: #ff8000;
-}
-
-ul.navigation li
-{	list-style: none;	display: inline;
-}
-
-ul.navigation a {
-	color : #ffcc66;	text-decoration : underline;
-}
-
-ul.navigation a:active
-{	color : #000088;	text-decoration : underline;}
-
-div.content
-{
-	width: auto;
-	color: black;
-	padding-top: 2.5em;
-	text-align: left;
-	padding-left: 0.5em;
-}
-
-span.logo
-{
-	background: url(logo.png) no-repeat;
-	float: right;
-	width: 239px; 
-	height: 75px;
-	margin-bottom: 0.5em;
-	text-align: right;
-}
-
-
-div.createdby
-{
-	text-align: right;
-	float: right;
-	clear: both;
-}
-
-img
-{
-	float: right;
-	clear: both;
-}
-
-a:link
-{
-	color : #004080;	text-decoration : underline;}
-
-a:visited
-{
-	color : #004080;	text-decoration : underline;}
-
-a:active
-{	color : #000088;	text-decoration : underline;}

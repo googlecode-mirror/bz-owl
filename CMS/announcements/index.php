@@ -319,12 +319,12 @@
 			// read each entry, row by row
 			while($row = mysql_fetch_array($result))
 			{
-				if ($_SESSION[$entry_edit_permission])
+				if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
 				{
 					$currentId = $row["id"];
 					echo '<a href="./?edit=' . $currentId . '">[edit]</a>' . "\n";
 				}
-				if ($_SESSION[$entry_delete_permission])
+				if ((isset($_SESSION[$entry_delete_permission])) && ($_SESSION[$entry_delete_permission]))
 				{
 					$currentId = $row["id"];
 					echo '<a href="./?delete=' . $currentId . '">[delete]</a>' . "\n";
