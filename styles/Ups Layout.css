@@ -1,6 +1,7 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Ups%20Layout
 	http://192.168.1.10/~spiele/league_svn/ts/styles/Ups%20Layout.css
+	http://84.58.110.81/~spiele/league_svn/ts/styles/Ups%20Layout.css
 */
 
 body
@@ -9,16 +10,21 @@ body
 	color: black;
 }
 
+/* wrap lines when there is not enough space */
+pre
+{
+	white-space: pre-wrap;
+}
+
 div.logo
 {
-	background: url(GUlogo.png) no-repeat fixed 9px 8px;
+	background: url(GUlogoTall.png) no-repeat fixed 9px 8px;
 	width: auto;
 	height: auto;
-	padding-bottom: 16cm;
 	display: inline-block;
 	position: fixed;
-	padding-right: 5.1cm;
-	padding-left: 5.1px;
+	padding-right: 143px;
+	padding-bottom: 600px;
 }
 
 p.first_p
@@ -82,7 +88,6 @@ tr:nth-child(odd)
 /* navigation */
 ul.navigation
 {
-	padding: 0.2em 0.5em;
 	text-align: center;
 	list-style: none;
 	/*word-spacing: -0.1em;
@@ -93,7 +98,10 @@ ul.navigation
 	-moz-border-radius: 1em;
 	border-radius: 1em;
 	display: block;
-	margin: 0em 0.2em 1em 5.3cm;
+	padding-left: 0.5em;
+	padding-top: 0.2em;
+	margin: 0em 0.2em 0.5em 150px;
+	padding-right: 0.5em;
 }
 
 ul.navigation li
@@ -122,7 +130,7 @@ div.content
 {
 	color: black;
 	text-align: left;
-	margin-left: 5.3cm;
+	margin-left: 150px;
 	margin-right: 0.2em;
 }
 
