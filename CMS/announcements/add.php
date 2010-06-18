@@ -891,7 +891,10 @@
 					{
 						echo '<div>' . "\n";
 						echo '	<label class="msg_ann" for="msg_send_subject">Author:</label>' . "\n";
-						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . $subject . '"></span>' . "\n";
+						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="Enter callsign here"';
+						echo ' onFocus="if(this.value==' . "'" . 'Enter callsign here' . "'" . ') this.value=' . "'" . "'" . '"';
+						echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter callsign here' . "'" . '"';
+						echo '></span>' . "\n";
 						echo '</div>' . "\n";
 					} else
 					{
