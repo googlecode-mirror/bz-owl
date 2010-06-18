@@ -1605,7 +1605,7 @@
 			
 			echo '</select></span>' . "\n";
 			echo '<label for="match_points_team1">Points: </label>' . "\n";
-			echo '<span><input type="text" id="match_points_team1" name="team1_points"';
+			echo '<span><input type="text" class="small_input_field" id="match_points_team1" name="team1_points"';
 			if (isset($team1_points))
 			{
 				echo ' value="' . htmlentities($team1_points) . '"';
@@ -1641,7 +1641,7 @@
 			echo '</select></span>' . "\n";
 			
 			echo '<label for="match_points_team2">Points: </label>' . "\n";
-			echo '<span><input type="text" id="match_points_team2" name="team2_points"';
+			echo '<span><input type="text" class="small_input_field" id="match_points_team2" name="team2_points"';
 			if (isset($team2_points))
 			{
 				echo ' value="' . htmlentities($team2_points) . '"';
@@ -1653,7 +1653,7 @@
 			echo '></span></p>' . "\n\n";
 			
 			echo '<p><label for="match_day">Day: </label>' . "\n";
-			echo '<span><input type="text" id="match_day" name="match_day" value="';
+			echo '<span><input type="text" class="small_input_field" id="match_day" name="match_day" value="';
 			if (isset($match_day))
 			{
 				echo htmlentities($match_day);
@@ -1674,7 +1674,7 @@
 			echo '"></span></p>' . "\n\n";
 			
 			echo '<p><label for="match_time">Time: </label>' . "\n";
-			echo '<span><input type="text" id="match_time" name="match_time" value="';
+			echo '<span><input type="text" class="small_input_field" id="match_time" name="match_time" value="';
 			if (isset($match_time))
 			{
 				echo htmlentities($match_time);

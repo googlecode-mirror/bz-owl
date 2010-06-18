@@ -1,13 +1,13 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Ups%20Layout
 	http://192.168.1.10/~spiele/league_svn/ts/styles/Ups%20Layout.css
-	http://84.58.110.81/~spiele/league_svn/ts/styles/Ups%20Layout.css
 */
 
 body
 {
 	background: #fafafa url(warm-snow.png) repeat scroll;
 	color: black;
+	max-width: 100em;
 }
 
 /* wrap lines when there is not enough space */
@@ -70,6 +70,7 @@ tbody
 	margin-bottom: 0.5em;
 	margin-left: 1em;
 	overflow: auto;
+	margin-right: 1em;
 }
 
 /* even table rows */
@@ -90,26 +91,21 @@ ul.navigation
 {
 	text-align: center;
 	list-style: none;
-	/*word-spacing: -0.1em;
-	letter-spacing: -0.1em;*/
-	font: bold 1.5em Verdana, "Lucida Grande", Lucida, sans-serif;
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
 	display: block;
-	padding-left: 0.5em;
-	padding-top: 0.2em;
 	margin: 0em 0.2em 0.5em 150px;
-	padding-right: 0.5em;
+	font: bold 1.2em Verdana, "Lucida Grande", Lucida, sans-serif;
+	padding: 0.2em 0.5em;
 }
 
 ul.navigation li
 {
 	list-style: none;
 	display: inline;
-	/*margin-left: -0.8em;
-	padding-right: 0.4em;*/
+	white-space: nowrap;
 }
 
 ul.navigation a
@@ -130,8 +126,8 @@ div.content
 {
 	color: black;
 	text-align: left;
-	margin-left: 150px;
 	margin-right: 0.2em;
+	margin-left: 150px;
 }
 
 div.userbuttons
@@ -139,6 +135,7 @@ div.userbuttons
 	text-align: right;
 	margin-bottom: 1em;
 	margin-right: 0.2em;
+	font-size: 0.8em;
 }
 
 div.online_user
@@ -177,6 +174,12 @@ label.msg_ann
 input[type=text]
 {
 	width: 10cm;
+	margin-bottom: 2mm;
+}
+
+input[type=text].small_input_field
+{
+	width: auto;
 	margin-bottom: 2mm;
 }
 
@@ -267,20 +270,19 @@ a.msg_overview_unread:visited
 
 div.folder_selection
 {
-	margin-bottom: 2em;
+	margin-bottom: 1em;
 }
 
 div.msg_area
 {
-	display: inline-block;
-	overflow: visible;
-	min-width: 25em;
+	/*min-width: 80%;*/
+	/*max-width: 55em;*/
 	margin-bottom: 1em;
 }
 
 div.msg_view_full
 {
-	border: 0.2em dashed silver;
+	border: 0.2em dashed #677068;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -291,7 +293,7 @@ div.msg_view_full
 div.msg_header_full
 {
 	text-align: left;
-	background: #e8e8e8 -3px;
+	background: rgba(191,194,198,0.64) -3px;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
@@ -592,17 +594,13 @@ span.logout
 
 div.msg_view_button_list
 {
-	position: relative;
-	opacity: 1;
 	text-align: center;
 }
 
 form.msg_buttons
 {
-	margin-top: 1em;
 	text-align: center;
 	display: inline-block;
-	padding-right: 0.25em;
 }
 
 /* no need for a br tag after the form*/
@@ -620,6 +618,12 @@ a.button:before
 a.button:after
 {
     content: "]";
+}
+
+/* remove underline from links */
+a
+{
+	text-decoration: none;
 }
 
 a:visited

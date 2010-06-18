@@ -105,6 +105,8 @@
 	if ($allow_add_match)
 	{
 		echo '<a class="button" href="./?enter">Enter a new match</a>' . "\n";
+		$site->write_self_closing_tag('br');
+		$site->write_self_closing_tag('br');
 	}
 	
 	// TODO: make the limit dynamic so users can browse the entire list of matches
