@@ -629,11 +629,9 @@ a
 a:visited
 {
 	color : #004080;
-	text-decoration : underline;
 }
 
 a:active
 {
 	color : #000088;
-	text-decoration : underline;
 }
