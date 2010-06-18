@@ -130,12 +130,12 @@ div.content
 	margin-left: 150px;
 }
 
-div.userbuttons
-{
-	text-align: right;
-	margin-bottom: 1em;
-	margin-right: 0.2em;
-	font-size: 0.8em;
+	div.userbuttons
+	{
+		text-align: right;
+		margin-bottom: 1em;
+		font-size: 0.9em;
+	margin-right: 0.5em;
 }
 
 div.online_user
