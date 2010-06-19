@@ -341,15 +341,17 @@
 					echo '<a href="./?delete=' . $currentId . '">[delete]</a>' . "\n";
 				}
 				echo '<div class="article">' . "\n";
+				echo '<div class="article_header">' . "\n";
 				echo '<div class="timestamp">' . "\n";
 				printf("%s", htmlentities($row["timestamp"]));
 				echo '</div>' . "\n";
 				echo '<div class="author">';
 				printf("By: %s", htmlent($row["author"]));
 				echo '</div>' . "\n";
-				echo '<hr>';
+				echo '</div>' . "\n";
 				printf("<p>%s</p>\n", htmlent($row["announcement"]));
 				echo "</div>\n\n";
+				$site->write_self_closing_tag('br');
 			}
 			// done
 			mysql_free_result($result);
