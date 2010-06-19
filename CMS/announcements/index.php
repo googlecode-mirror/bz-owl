@@ -349,7 +349,9 @@
 				printf("By: %s", htmlent($row["author"]));
 				echo '</div>' . "\n";
 				echo '</div>' . "\n";
-				printf("<p>%s</p>\n", $site->linebreaks(htmlent($row['announcement'])));
+				echo '<p>';
+				echo $site->linebreaks(htmlent($row['announcement']));
+				echo '</p>' . "\n";
 				echo "</div>\n\n";
 				$site->write_self_closing_tag('br');
 			}
