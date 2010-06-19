@@ -211,7 +211,7 @@
 		return (int) $score;
 	}
 	
-	function compute_scores($team_id1, $team_id2, &$score_a, &$score_b, $caps_a, $caps_b, &$diff, &$team_stats_changes=array())
+	function compute_scores($team_id1, $team_id2, &$score_a, &$score_b, $caps_a, $caps_b, &$diff, &$team_stats_changes)
 	{
 		global $site;
 		
@@ -234,8 +234,14 @@
 			// write down the team id's of the teams in question
 			// as the query does not compare the old total and the new total score
 			// we can only use this as a mark where to check for changes later
-			$team_stats_changes[$team_id1] = '';
-			$team_stats_changes[$team_id2] = '';
+			if (!(isset($team_stats_changes[$team_id1])))
+			{
+				$team_stats_changes[$team_id1] = '';
+			}
+			if (!(isset($team_stats_changes[$team_id2])))
+			{
+				$team_stats_changes[$team_id2] = '';
+			}
 		}
 		
 		if (is_numeric($score_a) && is_numeric($score_b))
@@ -351,7 +357,7 @@
 		{
 			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to delete matches!');
 		}
-		
+				
 		$confirmed = (int) 0;
 		if (isset($_POST['confirmed']))
 		{
@@ -525,17 +531,25 @@
 			}
 			mysql_free_result($result_active);
 			
-			
+			// keep track of team score changes
+			$team_stats_changes = array();
 			
 			// we also need to find out if the teams do exist at all
 			// check $team_id1
-			$query = 'SELECT `id` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($team_id1) . "'";
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($team_id1) . "'";
 			// id is a unique identifier and therefore there will always be only one team at max with the same id
 			$query .= ' LIMIT 1';
 			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('could not find out if team with id ' . sqlSafeString($team_id1) . ' exists.');
+			}
+			else
+			{
+				while($row = mysql_fetch_array($result_exists))
+				{
+					$team_stats_changes[$team_id1]['name'] = $row['name'];
+				}
 			}
 			if ((int) mysql_num_rows($result_exists) < 1)
 			{
@@ -545,13 +559,19 @@
 			mysql_free_result($result_exists);
 			
 			// check $team_id2
-			$query = 'SELECT `id` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($team_id2) . "'";
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($team_id2) . "'";
 			// id is a unique identifier and therefore there will always be only one team at max with the same id
 			$query .= ' LIMIT 1';
-			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('could not find out if team with id ' . sqlSafeString($team_id2) . ' exists.');
+			} else
+			{
+				while($row = mysql_fetch_array($result_exists))
+				{
+					$team_stats_changes[$team_id2]['name'] = $row['name'];
+				}
 			}
 			if ((int) mysql_num_rows($result_exists) < 1)
 			{
@@ -871,12 +891,7 @@
 			// thus we can enter the match at this point
 			$diff = 0;
 			// create array that keeps track of team score changes
-			$team_stats_changes = array();
 			compute_scores($team_id1, $team_id2, $team1_new_score, $team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
-			
-//			// write down old score
-//			$team_stats_changes[$team_id1]['old_score'] = $team1_new_score;
-//			$team_stats_changes[$team_id2]['old_score'] = $team2_new_score;
 			
 			// insert new entry
 			if (isset($_GET['enter']))
@@ -977,9 +992,6 @@
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be edited due to a sql problem!');
 				}
 				
-//				// score has been updated, log it
-//				$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
-//				$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
 				// done with the entering of that one match
 				echo '<p>The match was edited successfully.</p>' . "\n";
 			}
@@ -1294,7 +1306,7 @@
 			mysql_free_result($result);
 		}
 		
-		$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . "'" . sqlSafeString($team_id2) . "'";
+		$query = 'SELECT `score` FROM `teams_overview`,`teams` WHERE `teamid`=' . "'" . sqlSafeString($team_id2) . "'";
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
 			$site->dieAndEndPage('Could not get score of team with id ' . sqlSafeString($team_id2)
@@ -1307,7 +1319,6 @@
 		}
 		mysql_free_result($result);
 		
-		$team_stats_changes = array();
 		$team_stats_changes[$team_id1]['old_score'] = $team1_new_score;
 		$team_stats_changes[$team_id2]['old_score'] = $team2_new_score;
 		compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
