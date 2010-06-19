@@ -1091,6 +1091,7 @@
 			echo '	<td class="players_overview_joined">';
 			echo htmlent($row['joined']);
 			echo '</td>' . "\n";
+			echo '</tr>' . "\n";
 		}
 		mysql_free_result($result);
 		
