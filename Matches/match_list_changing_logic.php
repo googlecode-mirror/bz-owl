@@ -293,7 +293,7 @@
 			echo '<tr class="table_scores_changed_overview">' . "\n";
 			echo '	<td class="table_scores_changed_overview_name">';
 			echo '<a href="../Teams/?profile=' . htmlspecialchars($keys[$i]) . '">';
-			echo 'insert_teamid_here';
+			echo strval($team_stats_changes[$keys[$i]]['name']);
 			echo '</a>';
 			echo '</td>' . "\n";
 			echo '	<td class="table_scores_changed_overview_score_before">';
@@ -1169,7 +1169,7 @@
 			unlock_tables($site, $connection);
 			
 			// lock table matches for read access only, lock teams_overview with write access to copy the data from matches
-			$query = 'LOCK TABLES `matches` READ, `teams_overview` WRITE';
+			$query = 'LOCK TABLES `matches` READ, `teams_overview` WRITE, `teams` WRITE;';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				echo '<a class="button" href="./">overview</a>' . "\n";
@@ -1180,7 +1180,7 @@
 			// the scores should now be updated in the matches table but not in the team overview
 			
 			// first get the list of teams
-			$query = 'SELECT `id`,`teamid`,`score` FROM `teams_overview`';
+			$query = 'SELECT `name`,`teamid`,`score` FROM `teams_overview`,`teams`';
 			
 			// find out which team's have new scores
 			$teams = array_keys($team_stats_changes);
@@ -1194,10 +1194,10 @@
 					$query .= ' OR ';
 				}
 			}
-			$query .= ')';
+			$query .= ') AND `teams_overview`.`teamid`=`teams`.`id`';
 			
 			// execute the query if there are teams scores to be updated
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview, teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables($site, $connection);
@@ -1215,15 +1215,16 @@
 				// keep track of score changes
 				if (isset($team_stats_changes[$row['teamid']]))
 				{
+					// team name is htmlentitied in database already
+					$team_stats_changes[$row['teamid']]['name'] = strval($row['name']);
 					$team_stats_changes[$row['teamid']]['old_score'] = (int) $row['score'];
 					$team_stats_changes[$row['teamid']]['new_score'] = (int) $new_score;
 				}
 				
-				// TODO: safe the scores before the update in an array to display a nice difference table for status before and after update
 				$query = 'UPDATE `teams_overview` SET `score`=';
 				$query .= sqlSafeStringQuotes($new_score);
 				// use current row id to access the entry
-				$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
+				$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($row['teamid']) . "'";
 				// only one row is updated per loop iteration
 				$query .= ' LIMIT 1';
 				if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
