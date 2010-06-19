@@ -191,6 +191,11 @@ input[type=text]#msg_send_subject
 
 input[type=text][readonly]
 {
+	background-color: #f4f4f4;
+}
+
+div.msg_send_recipient_readonly input[type=text][readonly]
+{
 	width: 9.24cm;
 	max-width: 80%;
 	background-color: #f4f4f4;
