@@ -267,7 +267,7 @@ div.timestamp
 {
 	text-align: left;
 	float: left;
-	margin-left: 0.5em;
+	margin-left: 1em;
 }
 
 
@@ -278,7 +278,7 @@ div.author
 
 div.article p
 {
-	margin-left: 0.5em;
+	margin-left: 1em;
 }
 
 /* this  is only a theoretical case but handle it because a new message
