@@ -238,11 +238,6 @@ textarea#msg_send_announcement
 }
 
 /* news announcements */
-p.article {
-	border-top: #cccccc solid thin;
-	border-left-style: none;
-}
-
 div.article
 {
 	border: 0.2em dashed #677068;
@@ -272,12 +267,18 @@ div.timestamp
 {
 	text-align: left;
 	float: left;
+	margin-left: 0.5em;
 }
 
 
 div.author
 {
 	text-align: right;
+}
+
+div.article p
+{
+	margin-left: 0.5em;
 }
 
 /* this  is only a theoretical case but handle it because a new message
