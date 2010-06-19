@@ -231,6 +231,17 @@
 		echo "\n";
 	}
 	
+	// overview link
+	if (isset($_GET['add']) || isset($_GET['edit']) || isset($_GET['delete']))
+	{
+		if ($message_mode && (!((strcmp($folder, 'inbox') == 0) || (strcmp($folder, '') == 0))))
+		{
+			// back button might lead to the deletion form, show link to last viewed folder
+			echo '<p class="first_p"><a class="button" href="./?folder=' . htmlspecialchars($folder) . '">overview</a><p>';
+		}
+		echo '<p class="first_p"><a class="button" href="./">overview</a></p>';
+	}
+	
 	// handle adding new item
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
@@ -334,10 +345,10 @@
 				printf("%s", htmlentities($row["timestamp"]));
 				echo '</div>' . "\n";
 				echo '<div class="author">';
-				printf("By: %s", htmlentities($row["author"], ENT_COMPAT, 'UTF-8'));
+				printf("By: %s", htmlent($row["author"]));
 				echo '</div>' . "\n";
 				echo '<hr>';
-				printf("<p>%s</p>\n", htmlentities($row["announcement"], ENT_COMPAT, 'UTF-8'));
+				printf("<p>%s</p>\n", htmlent($row["announcement"]));
 				echo "</div>\n\n";
 			}
 			// done

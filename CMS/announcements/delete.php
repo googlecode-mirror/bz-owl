@@ -27,9 +27,6 @@
 		{
 			if ($message_mode)
 			{
-				// give possibility to go back to overview because the back button leads to the deletion form
-				echo '<p class="first_p"><a class="button" href="./?folder=' . htmlspecialchars($folder) . '">overview</a><p>';
-				
 				// the request string contains the playerid, which takes care of permissions
 				$user_id = 0;
 				$box_name = sqlSafeString('in_' . $folder);
@@ -87,12 +84,10 @@
 				if ($result)
 				{
 					echo '<p>Deleting: No problems occured, entry deleted!</p>' . "\n";
-					echo '<p><a href="./">[overview]</a><p>' . "\n";
 					$previewSeen=0;
 				} else
 				{
 					echo '<p>Seems like deletion failed.<ü>';
-					echo '<p><a href="./">[overview]</a><p>' . "\n";
 				}
 			}
 		} else

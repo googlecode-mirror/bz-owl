@@ -68,11 +68,9 @@
 				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 				{
 					echo "Updating: No problems occured, changes written!<br><br>\n";
-					echo '<p><a href="./">[overview]</a><p>' . "\n";
 				} else
 				{
 					echo "Seems like editing failed.";
-					echo '<p><a href="./">[overview]</a><p>' . "\n";
 				}
 			}
 			
@@ -121,62 +119,57 @@
 				// $previewSeen == 0 means we just decided to add something but did not fill it out yet
 				if ($previewSeen==0)
 				{
-					$query = 'SELECT * from ' . $table_name . ' WHERE id=' . sqlSafeString($currentId) . ' ORDER BY id LIMIT 0,2';
+					$query = 'SELECT * from `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' ORDER BY id LIMIT 1';
 					$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 					if (!$result)
 					{
 						die("Query is not valid SQL.");
 					}
 					
-					$rows = mysql_num_rows($result);
-					// there is only one row as result
-					if ($rows === 1)
+					// read each entry, row by row
+					while($row = mysql_fetch_array($result))
 					{
-						// read each entry, row by row
-						while($row = mysql_fetch_array($result))
-						{
-							// overwrite each variable at first request of editing
-							// these values come right from the database so perform no sanity checks
-							$timestamp = $row["timestamp"];
-							$author = $row["author"];
-							$announcement = $row["announcement"];
-						}
-						// done
-						mysql_free_result($result);
-						
-						
-						echo "<form action=\x22" . baseaddress() . $name . '/?edit=' . $currentId . "\x22 method=\x22post\x22>\n";
-						
-						// timestamp
-						print '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>';
-						echo "<tr><td style=\x22vertical-align: top;\x22>timestamp:</td><td style=\x22vertical-align: top;\x22>";
-						echo '<input name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"></input></p></td></tr>' . "\n";
-						
-						// announcement
-						echo "<tr><td style=\x22vertical-align: top;\x22>announcement:</td><td style=\x22vertical-align: top;\x22>";
-						echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlent(urldecode($announcement));
-						echo '</textarea></td></tr>' . "\n";
-						
-						// author
-						if ($_SESSION[$author_change_allowed])
-						{
-							echo '<tr><td style="vertical-align: top;">Author:</td><td style="vertical-align: top;">';
-							echo '<input name="author" value="' . htmlentities(urldecode($author), ENT_COMPAT, 'UTF-8') . '"></input>' . "\n";
-							echo '</td></tr>' . "\n";
-						} else
-						{
-							echo '<input type="hidden" name="author" value="' . htmlentities(urldecode($author), ENT_COMPAT, 'UTF-8') . '"><br>' . "\n";
-						}
-						
-						echo '<input type="hidden" name="preview" value="' . '1' . '"><br>' . "\n";
-						echo '<input type="submit" value="' . 'Preview' . '">' . "\n";
-						echo '</tbody></table>' . "\n";
-						
-						// if there was a form opened, close it now
-						if (($previewSeen==0) || ($previewSeen==1))
-						{
-							echo "</form>\n";
-						}
+						// overwrite each variable at first request of editing
+						// these values come right from the database so perform no sanity checks
+						$timestamp = $row["timestamp"];
+						$author = $row["author"];
+						$announcement = $row["announcement"];
+					}
+					// done
+					mysql_free_result($result);
+					
+					
+					echo "<form action=\x22" . baseaddress() . $name . '/?edit=' . $currentId . "\x22 method=\x22post\x22>\n";
+					
+					// timestamp
+					print '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>';
+					echo "<tr><td style=\x22vertical-align: top;\x22>timestamp:</td><td style=\x22vertical-align: top;\x22>";
+					echo '<input name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"></input></p></td></tr>' . "\n";
+					
+					// announcement
+					echo "<tr><td style=\x22vertical-align: top;\x22>announcement:</td><td style=\x22vertical-align: top;\x22>";
+					echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlent(urldecode($announcement));
+					echo '</textarea></td></tr>' . "\n";
+					
+					// author
+					if ($_SESSION[$author_change_allowed])
+					{
+						echo '<tr><td style="vertical-align: top;">Author:</td><td style="vertical-align: top;">';
+						echo '<input name="author" value="' . htmlent(urldecode($author)) . '"></input>' . "\n";
+						echo '</td></tr>' . "\n";
+					} else
+					{
+						echo '<input type="hidden" name="author" value="' . htmlent(urldecode($author)) . '"><br>' . "\n";
+					}
+					
+					echo '<input type="hidden" name="preview" value="' . '1' . '"><br>' . "\n";
+					echo '<input type="submit" value="' . 'Preview' . '">' . "\n";
+					echo '</tbody></table>' . "\n";
+					
+					// if there was a form opened, close it now
+					if (($previewSeen==0) || ($previewSeen==1))
+					{
+						echo "</form>\n";
 					}
 				}
 			}

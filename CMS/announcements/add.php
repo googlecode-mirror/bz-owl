@@ -158,10 +158,22 @@
 	$utils->setSite($site);
 	$recipients = false;
 	$subject = 'Enter subject here';
-	if ($message_mode)
+	if (!$message_mode)
 	{
-		echo '<p class="first_p"><a class="button" href="./">bzmail overview</a><p>' . "\n";
+		$subject = 'Enter callsign here';
+		
+		// find out callsign
+		$query = 'SELECT `name` FROM `players` WHERE `id`=' . sqlSafeStringQuotes(strval(getUserID())) . ' LIMIT 1';
+		if ($result = (@$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		{
+			while($row = mysql_fetch_array($result))
+			{
+				$subject = $row['name'];
+			}
+		}
+		mysql_free_result($result);
 	}
+	
 	if (isset($_POST['subject']))
 	{
 		$subject = $_POST['subject'];
@@ -891,7 +903,7 @@
 					{
 						echo '<div>' . "\n";
 						echo '	<label class="msg_ann" for="msg_send_subject">Author:</label>' . "\n";
-						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="Enter callsign here"';
+						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . htmlent($subject) . '"';
 						echo ' onFocus="if(this.value==' . "'" . 'Enter callsign here' . "'" . ') this.value=' . "'" . "'" . '"';
 						echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter callsign here' . "'" . '"';
 						echo '></span>' . "\n";
