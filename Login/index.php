@@ -19,7 +19,7 @@
 	{
 		// delete expired invitations
 		$query = 'DELETE LOW_PRIORITY FROM `invitations` WHERE `expiration`<=';
-		$query .= "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
+		$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 		if (!$result = $site->execute_query($site->db_used_name(), 'invitations', $query, $connection))
 		{
 			$site->dieAndEndPage('Could not delete expired invitations.');

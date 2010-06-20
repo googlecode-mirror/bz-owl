@@ -321,8 +321,10 @@
 			}
 			
 			// set up team profile
-			$query = 'INSERT INTO `teams_profile` (`teamid`, `description`) VALUES (' . "'" . sqlSafeString($new_team_id) . "'" . ', ' . "'";
-			$query .= sqlSafeString(bbcode($_POST['team_description'])) . "'" . ')';
+			// set the date and time (for team creation timestamp)
+			date_default_timezone_set('Europe/Berlin');
+			$query = 'INSERT INTO `teams_profile` (`teamid`, `description`, `created`) VALUES (' . sqlSafeStringQuotes($new_team_id) . ', ';
+			$query .= sqlSafeStringQuotes(bbcode($_POST['team_description'])) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
