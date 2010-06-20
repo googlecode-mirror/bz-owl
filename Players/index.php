@@ -892,10 +892,13 @@
 				$site->write_self_closing_tag('br');
 			}
 			
+			echo '<div class="user_areas_container">' . "\n";
 			echo '<div class="user_area">' . "\n";
 			echo '	<div class="user_header">' . "\n";
 			echo '		<div class="user_general_info_header">Player Profile</div>' . "\n";
-			echo '		<div class="user_description"><span class="user_profile_name">' . ($row['name']) . '</span> ';
+			echo '	</div>' . "\n";
+			echo '	<div class="user_description">' . "\n";
+			echo '		<span class="user_profile_name">' . ($row['name']) . '</span> ';
 			if ($suspended_status === 1)
 			{
 				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";
@@ -904,11 +907,14 @@
 			{
 				echo '<span class="user_description_banned">(banned)</span>' . "\n";
 			}
-//			echo '<span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_last_visit_description_row"><span class="user_profile_last_visit_description">last visit:</span> <span class="user_profile_last_visit">' . htmlent($row['last_visit']) . '</span></div>' . "\n";
 			echo '	</div>' . "\n";
+			echo '</div>' . "\n";
+			
+			echo '<div class="user_area">' . "\n";
+			echo '	<div class="user_general_info_header">Profile Text</div>' . "\n";
 			echo '	<span class="user_comment">';
 			
 			if (strcmp ($row['user_comment'], '') === 0)
@@ -936,8 +942,8 @@
 					echo '	</div>' . "\n";
 				}
 			}
-			echo '</div>' . "\n";
 		}
+		echo '</div>' . "\n";
 		// query result no longer needed
 		mysql_free_result($result);
 		

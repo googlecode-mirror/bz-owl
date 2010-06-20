@@ -462,16 +462,17 @@ table.table_team_members caption
 }
 
 /* user profile */
-div.user_area
+div.user_areas_container
 {
 	display: inline-block;
+}
+
+div.user_area
+{
+	display: block;
 	overflow: visible;
 	min-width: 25em;
 	margin-bottom: 1em;
-}
-
-div.user_header
-{
 	border: 0.2em dashed silver;
 	padding: 1em;
 	margin-bottom: 1em;
@@ -480,14 +481,9 @@ div.user_header
 	border-radius: 1em;
 }
 
-span.user_profile_name
+div.user_general_info_header
 {
-    font-weight: bold;
-}
-
-div.user_description
-{
-    text-align: left;
+	text-align: center;
 	background: #e8e8e8 -3px;
 	margin-left: -1em;
 	margin-top: -1em;
@@ -500,27 +496,58 @@ div.user_description
 	-moz-border-radius: 1em 1em 0em 0em;
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
-	padding: 0.5em 1em 0.2em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	font-weight: bold;
+}
+
+span.user_profile_name
+{
+	margin-bottom: 1em;
+	font-weight: bold;
+	display: block;
+}
+span.user_description_banned
+{
+	color: red;
+	display: block;
+	text-align: right;
+	margin-top: -2em;
+	margin-bottom: 1em;
+}
+
+div.user_profile_location_description_row
+{
+	margin-bottom: 1em;
+}
+
+div.user_description
+{
+    text-align: left;
+	margin-top: 0.5em;
+	margin-bottom: 0.2em;
 }
 
 span.user_description_deleted
 {
 	color: grey;
+	display: block;
+	text-align: right;
+	margin-top: -2em;
+	margin-bottom: 1em;
 }
 
-span.user_description_banned
-{
-	color: red;
-}
 
 span.user_comment
 {
-    display:block;
+	display:block;
+	margin-top: 0.5em;
 }
 
 span.no_user_comment
 {
-    color: #4f4f4f;
+	color: #4f4f4f;
+	display: block;
 }
 
 div.user_admin_comments_area
@@ -538,9 +565,6 @@ div.user_admin_comments_header_text
 	content: "ewwewewe";
 	text-align: left;
 	background: #e8e8e8 -3px;
-	margin-left: -1em;
-	margin-top: -1em;
-	margin-right: -1em;
 	overflow: auto;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
@@ -550,14 +574,14 @@ div.user_admin_comments_header_text
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.5em 1em 0.2em;
-
+	margin: -1em -1em 0.2em;
 }
 
 div.user_admin_comments
 {
-	margin-top: 0.2em;
 	overflow: auto;
 	text-align: left;
+	margin-top: 0.2em;
 }
 
 /* edit section */
