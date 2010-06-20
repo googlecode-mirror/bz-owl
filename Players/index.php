@@ -98,37 +98,12 @@
 		
 		if ($rows === 0)
 		{
-			// either the user does not exist or its profile page was not created yet due to a problem
-			// find out if the user exists
-			// example query: SELECT `id` FROM `players` WHERE `playerid`='1194'
-			$query = 'SELECT `id` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 0,1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
-				$site->dieAndEndPage('It seems like the list of known players can not be accessed for an unknown reason.');
-			}
-			
-			$rows = (int) mysql_num_rows($result);
-			mysql_free_result($result);
-			if ($rows ===0)
-			{
-				// someone tried to view the profile of a non existing user
-				echo '<a class="button" href="./">overview</a>' . "\n";
-				echo '<p>This user does not exist.</p>';
-				$site->dieAndEndPage('');
-			} else
-			{
-				// adding player profile entry
-				// for obvious reasons only the default profile will be shown
-				// example query: INSERT INTO `players_profile` (`playerid`) VALUES ('1194')
-				$query = 'INSERT INTO `players_profile` (`playerid`) VALUES (' . "'" . sqlSafeString($profile) . "'" . ')';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-				{
-					echo '<a class="button" href="./">overview</a>' . "\n";
-					$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus creating the profile page failed.');
-				}
-			}
+			// someone tried to view the profile of a non existing user
+			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<p>This user does not exist.</p>';
+			$site->dieAndEndPage('');
 		}
+		unset($rows);
 	}
 	
 	if (isset($_GET['invite']))
