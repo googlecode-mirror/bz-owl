@@ -471,7 +471,7 @@ div.user_areas_container
 div.user_area
 {
 	display: block;
-	overflow: auto;
+	overflow: hidden;
 	min-width: 25em;
 	border: 0.2em dashed #677068;
 	margin-bottom: 1em;
