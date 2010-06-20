@@ -464,13 +464,14 @@ table.table_team_members caption
 /* user profile */
 div.user_areas_container
 {
-	display: inline-block;
+	display: block;
+	overflow: auto;
 }
 
 div.user_area
 {
 	display: block;
-	overflow: visible;
+	overflow: auto;
 	min-width: 25em;
 	margin-bottom: 1em;
 	border: 0.2em dashed silver;
@@ -484,7 +485,7 @@ div.user_area
 div.user_general_info_header
 {
 	text-align: center;
-	background: #e8e8e8 -3px;
+	background: rgba(191,194,198,0.64) -3px;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
@@ -528,6 +529,11 @@ div.user_description
 	margin-bottom: 0.2em;
 }
 
+img.player_logo
+{
+	float: right;
+}
+
 span.user_description_deleted
 {
 	color: grey;
@@ -562,10 +568,7 @@ div.user_admin_comments_area
 
 div.user_admin_comments_header_text
 {
-	content: "ewwewewe";
-	text-align: left;
-	background: #e8e8e8 -3px;
-	overflow: auto;
+	background: rgba(191,194,198,0.64) -3px;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -575,6 +578,8 @@ div.user_admin_comments_header_text
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.5em 1em 0.2em;
 	margin: -1em -1em 0.2em;
+	text-align: center;
+	font-weight: bold;
 }
 
 div.user_admin_comments

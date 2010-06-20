@@ -884,13 +884,6 @@
 		while($row = mysql_fetch_array($result))
 		{
 			$player_name = $row['name'];
-			if (!(strcmp(($row['logo_url']), '') === 0))
-			{
-				// user entered a logo
-				$site->write_self_closing_tag('img src="' . htmlentities($row['logo_url']) . '" style="max-width:400px; max-height:300px" alt="player logo"');
-				$site->write_self_closing_tag('br');
-				$site->write_self_closing_tag('br');
-			}
 			
 			echo '<div class="user_areas_container">' . "\n";
 			echo '<div class="user_area">' . "\n";
@@ -898,6 +891,13 @@
 			echo '		<div class="user_general_info_header">Player Profile</div>' . "\n";
 			echo '	</div>' . "\n";
 			echo '	<div class="user_description">' . "\n";
+			if (!(strcmp(($row['logo_url']), '') === 0))
+			{
+				// user entered a logo
+				$site->write_self_closing_tag('img class="player_logo" src="'
+											  . htmlentities($row['logo_url'])
+											  . '" style="max-width:200px; max-height:150px" alt="player logo"');
+			}
 			echo '		<span class="user_profile_name">' . ($row['name']) . '</span> ';
 			if ($suspended_status === 1)
 			{
