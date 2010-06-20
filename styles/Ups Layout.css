@@ -473,8 +473,8 @@ div.user_area
 	display: block;
 	overflow: auto;
 	min-width: 25em;
+	border: 0.2em dashed #677068;
 	margin-bottom: 1em;
-	border: 0.2em dashed silver;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -558,7 +558,7 @@ span.no_user_comment
 
 div.user_admin_comments_area
 {
-	border: 0.2em dashed silver;
+	border: 0.2em dashed #677068;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
