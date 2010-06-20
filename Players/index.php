@@ -502,14 +502,14 @@
 				$site->dieAndEndPage('');
 			}
 			
-			// callsign change requested?
+			// could callsign change be requested?
 			if (isset($_POST['callsign']))
 			{
 				// only admins can edit their comments
 				if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 				{
 					// is the player name already used?
-					$query = 'SELECT `name` FROM `players` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['callsign'])) . "'" . ' LIMIT 1';
+					$query = 'SELECT `id` FROM `players` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['callsign'])) . "'" . ' LIMIT 1';
 					if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
@@ -518,9 +518,27 @@
 					
 					if ((int) mysql_num_rows($result) > 0)
 					{
+						$tmp_name_change_requested = true;
+						if (!((int) mysql_num_rows($result) > 1))
+						{
+							while($row = mysql_fetch_array($result))
+							{
+								if ((int) $row['id']) === ((int) $profile)
+								{
+									$tmp_name_change_requested = false;
+								}
+							}
+						}
 						mysql_free_result($result);
-						// player name already used -> do not change to player name to it
-						echo '<p>The player name was not changed because there is already a player with that name in the database.</p>' . "\n";
+						
+						// was callsign change requested?
+						if ($tmp_name_change_requested)
+						{
+							// callsign change was requested!
+							// player name already used -> do not change to player name to it
+							echo '<p>The player name was not changed because there is already a player with that name in the database.</p>' . "\n";
+						}
+						unset($tmp_name_change_requested);
 					} else
 					{
 						mysql_free_result($result);
