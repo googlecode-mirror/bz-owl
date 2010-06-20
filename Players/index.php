@@ -77,14 +77,23 @@
 			$site->dieAndEndPage('');
 		}
 		
-		$query = 'SELECT `id` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 0,1';
+		// is player banned and does he exist?
+		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
 			$site->dieAndEndPage('It seems like the player profile can not be accessed for an unknown reason.');
 		}
 		
+		$suspended_status = 1;
 		$rows = (int) mysql_num_rows($result);
+		if ($rows === 1)
+		{
+			while($row = mysql_fetch_array($result))
+			{
+				$suspended_status = (int) $row['suspended'];
+			}
+		}
 		mysql_free_result($result);
 		
 		if ($rows === 0)
@@ -847,25 +856,6 @@
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		
-		// is player banned?
-		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
-		// 1 means maintenance-deleted
-		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'";
-		// only information about one player needed
-		$query .= ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-		{
-			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPage('');
-		}
-		
-		$suspended_status = 1;
-		while($row = mysql_fetch_array($result))
-		{
-			$suspended_status = (int) $row['suspended'];
-		}
-		mysql_free_result($result);
-		
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
 			// a user should not be able to ban the own account
@@ -929,6 +919,7 @@
 			
 			echo '<div class="user_area">' . "\n";
 			echo '	<div class="user_header">' . "\n";
+			echo '		<div class="user_general_info_header">Player Profile</div>' . "\n";
 			echo '		<div class="user_description"><span class="user_profile_name">' . ($row['name']) . '</span> ';
 			if ($suspended_status === 1)
 			{
