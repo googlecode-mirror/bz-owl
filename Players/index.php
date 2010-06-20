@@ -523,7 +523,7 @@
 						{
 							while($row = mysql_fetch_array($result))
 							{
-								if ((int) $row['id']) === ((int) $profile)
+								if (((int) $row['id']) === ((int) $profile))
 								{
 									$tmp_name_change_requested = false;
 								}
