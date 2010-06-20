@@ -262,10 +262,19 @@
 			
 			if ((int) mysql_num_rows($result) > 0)
 			{
-				mysql_free_result($result);
-				// the supposed leader is already in a team -> do not create team with him as leader
-				echo '<p>The team was not created because the team leader already belongs to a team.</p>' . "\n";
-				$site->dieAndEndPage('');
+				$tmp_team_id = (int) 0;
+				while($row = mysql_fetch_array($result))
+				{
+					$tmp_team_id = $row['teamid'];
+				}				
+				if ($tmp_team_id <> 0)
+				{
+					mysql_free_result($result);
+					// the supposed leader is already in a team -> do not create team with him as leader
+					echo '<p>The team was not created because the team leader already belongs to a team.</p>' . "\n";
+					$site->dieAndEndPage('');
+				}
+				unset($tmp_team_id);
 			}
 			mysql_free_result($result);
 			
@@ -358,7 +367,10 @@
 		
 		// team name
 		echo '<p><label for="edit_team_name">Team name: </label>' . "\n";
-		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . htmlent('enter team name here') . '" id="edit_team_name"></p>' . "\n";
+		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="enter team name here" id="edit_team_name"';
+		echo ' onFocus="if(this.value==' . "'" . 'enter team name here' . "'" . ') this.value=' . "'" . "'" . '"';
+		echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'enter team name here' . "'" . '"';
+		echo '></p>' . "\n";
 		
 		// team leader is automatically the creator of the team
 		
@@ -372,6 +384,12 @@
 		
 		// logo/avatar url
 		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		
+		// quell warning about not initialised variable
+		if (!(isset($logo_url)))
+		{
+			$logo_url = '';
+		}
 		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'"');
 		echo '</p>';
 		
