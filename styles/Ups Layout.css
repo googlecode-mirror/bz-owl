@@ -371,21 +371,22 @@ div.msg_contents
 /*team profile*/
 div.team_area
 {
-	display: inline-block;
-	overflow: visible;
-	min-width: 25em;
+	display: block;
+	min-width: 100%;
 	margin-bottom: 1em;
+	overflow: auto;
 }
 
 div.team_header
 {
+	display: block;
 	border: 0.2em dashed #677068;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	overflow: hidden;
+	overflow: auto;
 }
 
 div.team_name
@@ -395,7 +396,6 @@ div.team_name
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
-	overflow: auto;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -422,11 +422,13 @@ span.team_score
 div.team_activity
 {
 	margin-bottom: 1em;
+	display: block;
 }
 
 div.team_profile_box
 {
 	border: 0.2em dashed #677068;
+	display: block;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -436,12 +438,12 @@ div.team_profile_box
 
 div.team_profile_header_text
 {
+	display: block;
 	text-align: left;
 	background: rgba(191,194,198,0.64) -3px;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
-	overflow: auto;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -455,7 +457,6 @@ div.team_profile_header_text
 div.team_description
 {
 	margin-top: 0.2em;
-	overflow: auto;
 	text-align: left;
 }
 
