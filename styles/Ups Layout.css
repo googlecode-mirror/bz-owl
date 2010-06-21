@@ -102,6 +102,7 @@ ul.navigation
 	padding: 0.2em 0.5em;
 	word-spacing: 0.3em;
 	letter-spacing: -0.06em;
+	overflow: auto;
 }
 
 ul.navigation li
@@ -133,12 +134,13 @@ div.content
 	margin-left: 151px;
 }
 
-	div.userbuttons
-	{
-		text-align: right;
-		margin-bottom: 1em;
-		font-size: 0.9em;
+div.userbuttons
+{
+	text-align: right;
+	margin-bottom: 1em;
+	font-size: 0.9em;
 	margin-right: 0.5em;
+	overflow: hidden;
 }
 
 div.online_user
@@ -380,13 +382,13 @@ div.team_area
 div.team_header
 {
 	display: block;
+	min-width: 84%;
 	border: 0.2em dashed #677068;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	overflow: auto;
 }
 
 div.team_name
@@ -413,6 +415,12 @@ img.team_logo
 	margin-top: 1em;
 }
 
+div.team_profile_box img
+{
+	max-width: 100%;
+	max-height: 100%;
+}
+
 span.team_score
 {
     display:block;
@@ -434,12 +442,13 @@ div.team_profile_box
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
+	overflow: hidden;
 }
 
 div.team_profile_header_text
 {
 	display: block;
-	text-align: left;
+	text-align: center;
 	background: rgba(191,194,198,0.64) -3px;
 	margin-left: -1em;
 	margin-top: -1em;
