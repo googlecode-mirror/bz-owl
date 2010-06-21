@@ -100,6 +100,8 @@ ul.navigation
 	margin: 0em 0.2em 0.5em 151px;
 	font: bold 1.2em Verdana, "Lucida Grande", Lucida, sans-serif;
 	padding: 0.2em 0.5em;
+	word-spacing: 0.3em;
+	letter-spacing: -0.06em;
 }
 
 ul.navigation li
@@ -377,18 +379,19 @@ div.team_area
 
 div.team_header
 {
-	border: 0.2em dashed silver;
+	border: 0.2em dashed #677068;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
+	overflow: hidden;
 }
 
 div.team_name
 {
-    text-align: left;
-	background: #e8e8e8 -3px;
+    text-align: center;
+	background: rgba(191,194,198,0.64) -3px;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
@@ -401,21 +404,29 @@ div.team_name
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.5em 1em 0.2em;
+	font-weight: bold;
+}
+
+img.team_logo
+{
+	float: right;
+	margin-top: 1em;
 }
 
 span.team_score
 {
     display:block;
+	margin-top: 1em;
 }
 
-span.team_member_count
+div.team_activity
 {
-    display:block;
+	margin-bottom: 1em;
 }
 
 div.team_profile_box
 {
-	border: 0.2em dashed silver;
+	border: 0.2em dashed #677068;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -425,9 +436,8 @@ div.team_profile_box
 
 div.team_profile_header_text
 {
-	content: "ewwewewe";
 	text-align: left;
-	background: #e8e8e8 -3px;
+	background: rgba(191,194,198,0.64) -3px;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
@@ -440,7 +450,6 @@ div.team_profile_header_text
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.5em 1em 0.2em;
-
 }
 
 div.team_description

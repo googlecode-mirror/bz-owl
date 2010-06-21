@@ -1408,7 +1408,7 @@
 		echo '<div class="p"></div>' . "\n";
 		
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
-		$query = 'SELECT `name`, `score`, `member_count`, `num_matches_played`, `num_matches_won`, `num_matches_draw`, `num_matches_lost`, `teams_profile`.`logo_url`';
+		$query = 'SELECT `name`, `score`, `activity`, `member_count`, `num_matches_played`, `num_matches_won`, `num_matches_draw`, `num_matches_lost`, `teams_profile`.`logo_url`, `created`';
 		$query .= ' FROM `teams`, `teams_overview`, `teams_profile`';
 		$query .= ' WHERE `teams`.`id` = `teams_overview`.`teamid` AND `teams_overview`.`teamid` = `teams_profile`.`teamid` AND `teams`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
@@ -1430,14 +1430,6 @@
 		
 		while ($row = mysql_fetch_array($result))
 		{
-			if (!(strcmp(($row['logo_url']), '') === 0))
-			{
-				// user entered a logo
-				$site->write_self_closing_tag('img src="' . htmlentities($row['logo_url']) . '" style="max-width:400px; max-height:300px" alt="team logo"');
-				$site->write_self_closing_tag('br');
-				$site->write_self_closing_tag('br');
-			}
-			
 			echo '<div class="team_area">' . "\n";
 			echo '	<div class="team_header">' . "\n";
 			$team_name = $row['name'];
@@ -1447,16 +1439,19 @@
 				$team_name = '(unnamed team)';
 			}
 			echo '		<div class="team_name">' . $team_name . '</div>' . "\n";
-			echo '		<span class="team_score">Rating: ' . $row['score'] . '</span>' . "\n";
-			$number_team_members = (int) $row['member_count'];
-			if ((int) $number_team_members === 1)
+			if (!(strcmp(($row['logo_url']), '') === 0))
 			{
-				echo '		<span class="team_member_count">' . $number_team_members . ' member</span>' . "\n";
-			} else
-			{
-				echo '		<span class="team_member_count">' . $number_team_members . ' members</span>' . "\n";
+				// user entered a logo
+				$site->write_self_closing_tag('img class="team_logo" src="' . htmlentities($row['logo_url']) . '" style="max-width:200px; max-height:150px" alt="team logo"');
 			}
-			
+			echo '		<span class="team_score">Rating: ' . $row['score'] . '</span>' . "\n";
+			echo '		<div class="team_activity"><span class="team_activity_announcement">Activity: </span><span class="team_activity">'
+				 . strval($row['activity']) . '</span></div>' . "\n";
+			$number_team_members = (int) $row['member_count'];
+			echo '		<div class="team_member_count"><span class="team_member_count_announcement">Members: </span><span class="team_member_count">'
+				 . strval($number_team_members) . '</span></div>' . "\n";
+			echo '		<div class="team_created"><span class="team_created_announcement">Created: </span><span class="team_created">'
+				 . strval($row['created']) . '</span></div>' . "\n";
 			echo'	</div>' . "\n";
 			
 			// matches statistics: won, draw, lost and total
