@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-06-21 16:14:03 +0200
+# Generation Time: 2010-06-21 19:48:44 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -164,7 +164,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -261,7 +261,7 @@ CREATE TABLE `teams_overview` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `score` int(11) NOT NULL DEFAULT '1200',
-  `activity` int(11) unsigned NOT NULL DEFAULT '0',
+  `activity` int(11) NOT NULL DEFAULT '0',
   `member_count` int(11) unsigned NOT NULL DEFAULT '1',
   `any_teamless_player_can_join` tinyint(1) NOT NULL DEFAULT '1',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -302,7 +302,7 @@ CREATE TABLE `teams_profile` (
   `num_matches_lost` int(11) NOT NULL DEFAULT '0',
   `description` varchar(3000) NOT NULL DEFAULT 'Think of a good description',
   `logo_url` varchar(200) DEFAULT NULL,
-  `created` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` varchar(10) NOT NULL DEFAULT '0000-00-00',
   PRIMARY KEY (`id`),
   KEY `teamid` (`teamid`),
   CONSTRAINT `teams_profile_ibfk_1` FOREIGN KEY (`teamid`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -324,7 +324,7 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=183 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
 
 
 

@@ -449,9 +449,6 @@ div.team_profile_header_text
 	display: block;
 	text-align: center;
 	background: rgba(191,194,198,0.64) -3px;
-	margin-left: -1em;
-	margin-top: -1em;
-	margin-right: -1em;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -460,6 +457,7 @@ div.team_profile_header_text
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.5em 1em 0.2em;
+	margin: -1em -1em 1em;
 }
 
 div.team_description
