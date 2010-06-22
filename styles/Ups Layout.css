@@ -455,7 +455,7 @@ table#table_team_matches_data
 {
 	display: inline-block;
 	margin-top: 1em;
-	border: 0.2em dashed #677068;
+	border: 0.2em dashed rgba(181,181,181,0.61);
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
@@ -464,6 +464,7 @@ table#table_team_matches_data
 
 table#table_team_matches_data caption
 {
+	background: rgba(191,194,198,0.43) -3px;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -471,7 +472,7 @@ table#table_team_matches_data caption
 	-moz-border-radius: 1em 1em 0em 0em;
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
-	padding: 0.5em;
+	padding: 0.25em;
 	margin-left: -0.5em;
 	margin-top: -0.5em;
 	margin-right: -0.5em;
@@ -481,12 +482,12 @@ div.team_profile_box
 {
 	border: 0.2em dashed #677068;
 	display: block;
-	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
 	overflow: hidden;
+	padding: 1em;
 }
 
 div.team_profile_header_text
@@ -501,8 +502,8 @@ div.team_profile_header_text
 	-moz-border-radius: 1em 1em 0em 0em;
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
+	margin: -1em -1em 1em -1px;
 	padding: 0.5em 1em 0.2em;
-	margin: -1em -1em 1em;
 }
 
 div.team_description
