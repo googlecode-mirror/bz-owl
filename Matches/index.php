@@ -156,7 +156,7 @@
 	}
 	unset($rows);
 	
-	echo '<table class="table_matches_played">' . "\n";
+	echo '<table id="table_matches_played" class="big">' . "\n";
 	echo '<caption>Matches played</caption>' . "\n";
 	echo '<tr>' . "\n";
 	echo '	<th>Time</th>' . "\n";

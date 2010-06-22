@@ -1052,7 +1052,7 @@
 	{
 		// unfortunately as the list is sorted by teamid and name we need to keep track of teamid changes
 		$teamid = (int) -1;
-		echo '<table class="table_players_overview">' . "\n";
+		echo '<table id="table_players_overview" class="big">' . "\n";
 		echo '<caption>Active Players</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";

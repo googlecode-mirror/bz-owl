@@ -148,7 +148,7 @@
 			$site->dieAndEndPage('');
 		}
 		
-		echo "\n" . '<table class="table_team_members">' . "\n";
+		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
 		echo '<caption>Search related visits log entries</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
@@ -232,7 +232,7 @@
 		}
 		
 		// format the output with a nice table
-		echo "\n" . '<table class="table_team_members">' . "\n";
+		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
 		echo '<caption>Visits log of player ' . $player_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
@@ -274,7 +274,7 @@
 	// however as someone needs to login there should be always at least one ip-address in the table
 	// except the table got deleted after someone logged in and the user then looks at the visits log
 	// format the output with a nice table
-	echo "\n" . '<table class="table_team_members">' . "\n";
+	echo "\n" . '<table id="table_team_members" class="big">' . "\n";
 	echo '<caption>Visits log of all players</caption>' . "\n";
 	echo '<tr>' . "\n";
 	echo '	<th>Name</th>' . "\n";

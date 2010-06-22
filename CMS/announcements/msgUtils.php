@@ -340,7 +340,7 @@
 					
 					// table of messages
 					// FIXME: Implement class in stylesheet
-					echo "\n" . '<table class="table_msg_overview">' . "\n";
+					echo "\n" . '<table id="table_msg_overview" class="big">' . "\n";
 					echo '<caption>Messages in ' . $folder . '</caption>' . "\n";
 					echo '<tr>' . "\n";
 					echo '	<th>Author</th>' . "\n";

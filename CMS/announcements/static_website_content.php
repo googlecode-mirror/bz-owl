@@ -214,7 +214,9 @@
 		echo '</form>' . "\n";
 	} else
 	{
+		echo '<div class="static_page_box">' . "\n";
 		echo $buffer;
+		echo '</div>' . "\n";
 	}
 ?>
 </div>

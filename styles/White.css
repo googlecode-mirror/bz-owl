@@ -362,12 +362,12 @@ div.team_description
 	text-align: left;
 }
 
-table.table_team_members
+table#table_team_members
 {
 	visibility: visible;
 }
 
-table.table_team_members caption
+table#table_team_members caption
 {
 	visibility: visible;
 	text-align: center;

@@ -1456,7 +1456,7 @@
 			echo '</div>' . "\n";
 			
 			// matches statistics: won, draw, lost and total
-			echo '	<table class="table_team_matches_data">' . "\n";
+			echo '	<table id="table_team_matches_data">' . "\n";
 			echo '	<caption>Match statistics</caption>' . "\n";
 			echo '	<tr>' . "\n";
 			echo '		<th>Wins</th>' . "\n";
@@ -1501,7 +1501,7 @@
 			$site->dieAndEndPage('');
 		}
 				
-		echo "\n" . '<table class="table_team_members">' . "\n";
+		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
 		echo '<caption>Members of team ' . $team_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
@@ -1683,7 +1683,7 @@
 				echo '<p>There are no teams in the database.</p>';
 			}
 			
-			echo '<table class="table_team_members">' . "\n";
+			echo '<table id="table_team_members" class="big">' . "\n";
 			echo '<caption>List of teams</caption>' . "\n";
 			echo '<tr>' . "\n";
 			echo '	<th>Name</th>' . "\n";

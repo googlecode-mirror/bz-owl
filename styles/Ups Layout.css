@@ -37,17 +37,29 @@ p.first_p
 /* I want fancy tables */
 table
 {
+	display: inline-block;
+}
+
+table.big
+{
+	display: block;
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	display: block;
 }
 
 table caption
 {
 	background: rgba(191,194,198,0.64) -3px;
 	display: block;
+	text-align: center;
+}
+
+table.big caption
+{
+	padding: 0.5em 1em 0.2em;
+	margin-bottom: 0.5em;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -55,9 +67,6 @@ table caption
 	-moz-border-radius: 1em 1em 0em 0em;
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
-	text-align: center;
-	padding: 0.5em 1em 0.2em;
-	margin-bottom: 0.5em;
 }
 
 th
@@ -65,7 +74,7 @@ th
 	height: 1.5em;
 }
 
-tbody
+table.big tbody
 {
 	display: block;
 	margin-bottom: 0.5em;
@@ -146,6 +155,16 @@ div.userbuttons
 div.online_user
 {
 	text-align: center;
+}
+
+div.static_page_box
+{
+	display: block;
+	padding: 1em;
+	border: 0.2em dashed #677068;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
 }
 
 /* private messages */
@@ -466,12 +485,12 @@ div.team_description
 	text-align: left;
 }
 
-table.table_team_members
+table#table_team_members
 {
 	visibility: visible;
 }
 
-table.table_team_members caption
+table#table_team_members caption
 {
 	visibility: visible;
 	text-align: center;

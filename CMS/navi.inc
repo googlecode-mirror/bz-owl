@@ -101,15 +101,15 @@
 	{
 		if (strcmp($name, 'Messages') == 0)
 		{
-			echo '<li>Bz mail</li>' . "\n";
+			echo '<li>Mail</li>' . "\n";
 		} else
 		{
 			if ($unread_messages)
 			{
-				schreibeVerweis('Messages', '<span class="unread_messages">Bz mail</span>');
+				schreibeVerweis('Messages', '<span class="unread_messages">Mail</span>');
 			} else
 			{
-				echo schreibeVerweis('Messages', 'Bz mail');
+				echo schreibeVerweis('Messages', 'Mail');
 			}
 		}
 	}
@@ -153,7 +153,7 @@
 			echo '<li>Visits log</li>' . "\n";
 		} else
 		{
-			echo schreibeVerweis('Visits', 'Visits log');
+			echo schreibeVerweis('Visits', 'Visits');
 		}
 	}
 	

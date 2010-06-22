@@ -71,7 +71,7 @@
 		// by definition this is a joke but online guests are not shown by default
 		if ($rows < 1)
 		{
-			echo '<div class="online_user">No user online at the moment</div>';
+			echo '<div class="online_user">No logged in user at the moment</div>';
 		} else
 		{
 			// convert $result resource to array
