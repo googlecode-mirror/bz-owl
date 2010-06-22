@@ -451,6 +451,32 @@ div.team_activity
 	display: block;
 }
 
+table#table_team_matches_data
+{
+	display: inline-block;
+	margin-top: 1em;
+	border: 0.2em dashed #677068;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	padding: 0.5em;
+}
+
+table#table_team_matches_data caption
+{
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em;
+	margin-left: -0.5em;
+	margin-top: -0.5em;
+	margin-right: -0.5em;
+}
+
 div.team_profile_box
 {
 	border: 0.2em dashed #677068;

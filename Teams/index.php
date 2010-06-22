@@ -1452,8 +1452,6 @@
 				 . strval($number_team_members) . '</span></div>' . "\n";
 			echo '		<div class="team_created"><span class="team_created_announcement">Created: </span><span class="team_created">'
 				 . strval($row['created']) . '</span></div>' . "\n";
-			echo'	</div>' . "\n";
-			echo '</div>' . "\n";
 			
 			// matches statistics: won, draw, lost and total
 			echo '	<table id="table_team_matches_data">' . "\n";
@@ -1473,6 +1471,9 @@
 			echo '	</tr>' . "\n";
 			echo '	</table>' . "\n";
 			$site->write_self_closing_tag('br');
+			
+			echo'	</div>' . "\n";
+			echo '</div>' . "\n";
 			
 			echo '<div class="team_area">' . "\n";
 			echo '	<div class="team_profile_box">' . "\n";
