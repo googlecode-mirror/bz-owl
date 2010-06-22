@@ -188,26 +188,47 @@ textarea#msg_send_announcement
 }
 
 /* news announcements */
-p.article {
-	border-top: #cccccc solid thin;
-	border-left-style: none;
-}
-
 div.article
 {
-	padding-bottom: 1em;
+	border: 0.2em dashed silver;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.article_header
+{
+	background: rgba(210,211,235,0.54) -3px;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding-top: 0.5em;
+	padding-bottom: 0.2em;
+	padding-right: 1em;
+	margin-bottom: -0.5em;
 }
 
 div.timestamp
 {
 	text-align: left;
 	float: left;
+	margin-left: 1em;
 }
 
 
 div.author
 {
 	text-align: right;
+}
+
+div.article p
+{
+	margin-left: 1em;
 }
 
 /* this  is only a theoretical case but handle it because a new message
@@ -327,6 +348,12 @@ div.team_name
 	padding: 0.5em 1em 0.2em;
 }
 
+img.team_logo
+{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
 span.team_score
 {
     display:block;
@@ -335,6 +362,11 @@ span.team_score
 span.team_member_count
 {
     display:block;
+}
+
+div.team_created
+{
+	margin-bottom: 1em;
 }
 
 div.team_profile_box
