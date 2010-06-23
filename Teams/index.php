@@ -1442,7 +1442,7 @@
 			if (!(strcmp(($row['logo_url']), '') === 0))
 			{
 				// user entered a logo
-				$site->write_self_closing_tag('img class="team_logo" src="' . htmlentities($row['logo_url']) . '" style="max-width:200px; max-height:150px" alt="team logo"');
+				$site->write_self_closing_tag('img class="team_logo" src="' . htmlentities($row['logo_url']) . '" style="max-width:300px; max-height:200px" alt="team logo"');
 			}
 			echo '		<span class="team_score">Rating: ' . $row['score'] . '</span>' . "\n";
 			echo '		<div class="team_activity"><span class="team_activity_announcement">Activity: </span><span class="team_activity">'
