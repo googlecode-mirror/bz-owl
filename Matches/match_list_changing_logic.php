@@ -313,7 +313,7 @@
 		
 		echo '</table>' . "\n";
 	}
-	
+		
 	function unlock_tables($site, $connection)
 	{
 		$query = 'UNLOCK TABLES';
@@ -1430,50 +1430,137 @@
 		echo '<div><input type="hidden" name="key_name" value="' . htmlspecialchars($new_randomkey_name) . '"></div>' . "\n";
 		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
-		echo '<input type="hidden" name="match_day" value="';
+		echo '<div><input type="hidden" name="match_day" value="';
 		if (isset($_POST['match_day']))
 		{
 			echo htmlspecialchars($_POST['match_day']);
 		}
-		echo '">' . "\n";
+		echo '"></div>' . "\n";
 		
-		echo '<input type="hidden" name="match_time" value="';
+		echo '<div><input type="hidden" name="match_time" value="';
 		if (isset($_POST['match_time']))
 		{
 			echo htmlspecialchars($_POST['match_time']);
 		}
-		echo '">' . "\n";
+		echo '"></div>' . "\n";
 		
-		echo '<input type="hidden" name="team_id1" value="';
+		echo '<div><input type="hidden" name="team_id1" value="';
 		if (isset($_POST['team_id1']))
 		{
 			echo htmlspecialchars((int) $_POST['team_id1']);
 		}
-		echo '">' . "\n";
+		echo '"></div>' . "\n";
 		
-		echo '<input type="hidden" name="team_id2" value="';
+		echo '<div><input type="hidden" name="team_id2" value="';
 		if (isset($_POST['team_id2']))
 		{
 			echo htmlspecialchars((int) $_POST['team_id2']);
 		}
-		echo '">' . "\n";
+		echo '"></div>' . "\n";
 		
-		echo '<input type="hidden" name="team1_points" value="';
+		echo '<div><input type="hidden" name="team1_points" value="';
 		if (isset($_POST['team1_points']))
 		{
 			echo htmlspecialchars($_POST['team1_points']);
 		}
-		echo '">' . "\n";
+		echo '"></div>' . "\n";
 		
-		echo '<input type="hidden" name="team2_points" value="';
+		echo '<div><input type="hidden" name="team2_points" value="';
 		if (isset($_POST['team2_points']))
 		{
 			echo htmlspecialchars($_POST['team2_points']);
 		}
-		echo '">' . "\n";
+		echo '"></div>' . "\n";
 		
 		if (isset($_GET['enter']))
 		{
+			
+			$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
+			$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
+			$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			$team_name_list = Array();
+			$team_id_list = Array();
+			while($row = mysql_fetch_array($result))
+			{
+				$team_name_list[] = $row['name'];
+				$team_id_list[] = $row['id'];
+			}
+			mysql_free_result($result);
+			
+			$list_team_id_and_name = Array();
+			
+			$list_team_id_and_name[] = $team_id_list;
+			$list_team_id_and_name[] = $team_name_list;
+			
+			echo '<p><label for="visits_team_id1">First team: </label>' . "\n";
+			echo '<span><select id="visits_team_id1" name="team_id1';
+			echo '" disabled="disabled';
+			echo '">' . "\n";
+			
+			$n = ((int) count($team_id_list)) - 1;
+			for ($i = 0; $i <= $n; $i++)
+			{
+				echo '<option value="';
+				// no strval because team id 0 is reserved
+				echo $list_team_id_and_name[0][$i];
+				if (isset($_POST['team_id1']) && ((int) $list_team_id_and_name[0][$i] === ((int) $_POST['team_id1'])))
+				{
+					echo '" selected="selected';
+				}
+				echo '">' . $list_team_id_and_name[1][$i];
+				echo '</option>' . "\n";
+			}
+			
+			echo '</select></span>' . "\n";
+			echo '<label for="match_points_team1">Points: </label>' . "\n";
+			echo '<span><input type="text" class="small_input_field" id="match_points_team1" name="team1_points"';
+			echo ' value="' . strval(intval($_POST['team1_points'])) . '"';
+			echo ' readonly="readonly"';
+			echo '></span></p>' . "\n\n";
+			
+			echo '<p><label for="visits_team_id2">Second team: </label>' . "\n";
+			echo '<span><select id="visits_team_id2" name="team_id2';
+			echo '" disabled="disabled';
+			echo '">' . "\n";
+			
+			$n = ((int) count($team_id_list)) - 1;
+			for ($i = 0; $i <= $n; $i++)
+			{
+				echo '<option value="';
+				// no strval because team id 0 is reserved
+				echo $list_team_id_and_name[0][$i];
+				if (isset($_POST['team_id2']) && ((int) $list_team_id_and_name[0][$i] === ((int) $_POST['team_id2'])))
+				{
+					echo '" selected="selected';
+				}
+				echo '">' . $list_team_id_and_name[1][$i];
+				echo '</option>' . "\n";
+			}
+			echo '</select></span>' . "\n";
+			
+			echo '<label for="match_points_team2">Points: </label>' . "\n";
+			echo '<span><input type="text" class="small_input_field" id="match_points_team2" name="team2_points"';
+			echo ' value="' . strval(intval($_POST['team2_points'])) . '"';
+			echo ' readonly="readonly"';
+			echo '></span></p>' . "\n\n";
+			
+			echo '<p><label for="match_day">Day: </label>' . "\n";
+			echo '<span><input type="text" class="small_input_field" id="match_day" name="match_day" value="';
+			echo htmlent($_POST['match_day']);
+			echo '" readonly="readonly';
+			echo '"></span></p>' . "\n\n";
+			
+			echo '<p><label for="match_time">Time: </label>' . "\n";
+			echo '<span><input type="text" class="small_input_field" id="match_time" name="match_time" value="';
+			echo htmlent($_POST['match_time']);
+			echo '" readonly="readonly';
+			echo '"></span></p>' . "\n\n";
+			
 			echo '<div><input type="submit" name="match_enter_confirmed" value="Confirm to enter the new match" id="send"></div>' . "\n";
 		}
 		if (isset($_GET['edit']))
@@ -1553,7 +1640,7 @@
 			echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
 			
 			$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
-			$query .= ' WHERE (`teams_overview`.`deleted`<>' . "'" . sqlSafeString('2') . "'" . ')';
+			$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
 			$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
 			
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
@@ -1605,7 +1692,7 @@
 			for ($i = 0; $i <= $n; $i++)
 			{
 				echo '<option value="';
-				// no htmlentities because team id 0 is reserved
+				// no strval because team id 0 is reserved
 				echo $list_team_id_and_name[0][$i];
 				if (isset($team1_teamid) && ((int) $list_team_id_and_name[0][$i] === $team1_teamid))
 				{
@@ -1641,9 +1728,9 @@
 			for ($i = 0; $i <= $n; $i++)
 			{
 				echo '<option value="';
-				// no htmlentities because team id 0 is reserved
+				// no strval because team id 0 is reserved
 				echo $list_team_id_and_name[0][$i];
-				if (isset($team2_teamid) && ((int) $list_team_id_and_name[0][$i] === $team2_teamid))
+				if (isset($team2_teamid) && ((int) $list_team_id_and_name[0][$i] === ((int) ($team2_teamid))))
 				{
 					echo '" selected="selected';
 				}
