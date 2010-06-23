@@ -70,6 +70,7 @@
 <?php
 	require realpath('../CMS/navi.inc');
 ?>
+<div class="static_page_box">
 <p class="first_p">This is the user configuration section.</p>
 <?php
 	// allow turning on or off SQL debug output
@@ -159,6 +160,7 @@
   <input type="submit" value="Submit changes">
 </p>
 </form>
+</div>
 </div>
 </body>
 </html>
