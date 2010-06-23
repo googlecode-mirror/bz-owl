@@ -150,7 +150,7 @@
 	{
 		if (strcmp($name, 'Visits') == 0)
 		{
-			echo '<li>Visits log</li>' . "\n";
+			echo '<li>Visits</li>' . "\n";
 		} else
 		{
 			echo schreibeVerweis('Visits', 'Visits');
