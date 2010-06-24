@@ -357,6 +357,10 @@
 		}
 		
 		// return the searched value
+		if ($site->debug_sql())
+		{
+			echo 'get_score_at_that_time returned ' . $score . '<br>';
+		}
 		return (int) $score;
 	}
 	
@@ -435,7 +439,7 @@
 		}
 		
 		// TODO: show score differences recorded in the array $team_stats_changes
-		echo '<table class="table_scores_changed_overview">' . "\n";
+		echo '<table id="table_scores_changed_overview" class="nested_table">' . "\n";
 		echo '<caption>Changed teams scores</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Team</th>' . "\n";
@@ -1480,7 +1484,7 @@
 		$team_stats_changes[$team_id2]['old_score'] = $team2_new_score;
 		compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 		
-		if (isset($_GET['enter'])  && ($confirmed > 0))
+		if (isset($_GET['enter'])  && ($confirmed > 1))
 		{
 			// only one match to be entered
 			$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
@@ -1538,10 +1542,7 @@
 			require_once('../CMS/maintenance/index.php');
 		}
 		
-		if ($confirmed > 0)
-		{
-			$site->dieAndEndPage('');
-		}
+		$site->dieAndEndPage('');
 	}
 	
 	if ($confirmed === 1)

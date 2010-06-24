@@ -1454,7 +1454,7 @@
 				 . strval($row['created']) . '</span></div>' . "\n";
 			
 			// matches statistics: won, draw, lost and total
-			echo '	<table id="table_team_matches_data">' . "\n";
+			echo '	<table id="table_team_matches_data" class="nested_table">' . "\n";
 			echo '	<caption>Match statistics</caption>' . "\n";
 			echo '	<tr>' . "\n";
 			echo '		<th>Wins</th>' . "\n";

@@ -451,7 +451,7 @@ div.team_activity
 	display: block;
 }
 
-table#table_team_matches_data
+table.nested_table
 {
 	display: inline-block;
 	margin-top: 1em;
@@ -462,7 +462,7 @@ table#table_team_matches_data
 	padding: 0.5em;
 }
 
-table#table_team_matches_data caption
+table.nested_table caption
 {
 	background: rgba(191,194,198,0.43) -3px;
 	-webkit-border-top-left-radius: 1em;
