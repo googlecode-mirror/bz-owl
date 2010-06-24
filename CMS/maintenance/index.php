@@ -3,12 +3,18 @@
 	date_default_timezone_set('Europe/Berlin');
 	
 	// find out if maintenance is needed (compare old date in plain text file)
-	$today = date("d.m.Y");
+	$today = date('d.m.Y');
 	$file = (dirname(__FILE__)) . '/maintenance.txt';
 	
 	// siteinfo class used all the time
 	require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
 	$site = new siteinfo();
+	
+	if (!(isset($connection)))
+	{
+		// database connection is used during maintenance
+		$connection = $site->connect_to_db();
+	}
 	
 	
 	// find out when last maintenance happened
@@ -42,9 +48,13 @@
 		mysql_free_result($result);
 	}
 	
-	// database connection is used during maintenance
-	$connection = $site->connect_to_db();
-	
+	// was maintenance done today?
+	if (strcasecmp($last_maintenance, $today) == 0)
+	{
+		// nothing to do
+		// stop silently
+		die();
+	}
 	
 	// do the maintenance
 	$maint = new maintenance();

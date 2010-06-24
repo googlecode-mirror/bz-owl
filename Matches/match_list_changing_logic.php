@@ -1049,7 +1049,7 @@
 				// must get original timestamp or it will access the wrong timestamp in db
 				$orig_timestamp = '';
 				$query = 'SELECT `timestamp` FROM `matches` WHERE `id`=';
-				if ($_GET['edit'])
+				if (isset($_GET['edit']))
 				{
 					$query .= sqlSafeStringQuotes((int) $_GET['edit']);
 				} else
