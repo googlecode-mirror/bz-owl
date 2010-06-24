@@ -176,6 +176,9 @@
 		global $site;
 		global $connection;
 		
+		global $match_day;
+		global $match_time;
+		
 		// displays match form
 		$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
 		$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
