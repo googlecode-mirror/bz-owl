@@ -171,6 +171,155 @@
 		return false;
 	}
 	
+	function show_form($team_id1, $team_id2, $team1_points, $team2_points, $readonly)
+	{
+		global $site;
+		global $connection;
+		
+		// displays match form
+		$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
+		$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
+		$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'teams, teams_overview', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
+		}
+		
+		$rows = (int) mysql_num_rows($result);
+		// only show a confirmation question, the case is not too unusual and 
+		if ($rows < 1)
+		{
+			echo '<p class="first_p">There are no teams in the database. A valid match requires at least 2 teams<p/>';
+			$site->dieAndEndPage('');
+		}
+		if ($rows < 2)
+		{
+			echo '<p class="first_p">There is only 1 team in the database. A valid match requires at least 2 teams<p/>';
+			$site->dieAndEndPage('');
+		}
+		
+		$team_name_list = Array();
+		$team_id_list = Array();
+		while($row = mysql_fetch_array($result))
+		{
+			$team_name_list[] = $row['name'];
+			$team_id_list[] = $row['id'];
+		}
+		mysql_free_result($result);
+		
+		$list_team_id_and_name = Array();
+		
+		$list_team_id_and_name[] = $team_id_list;
+		$list_team_id_and_name[] = $team_name_list;
+		
+		echo '<p><label for="visits_team_id1">First team: </label>' . "\n";
+		echo '<span><select id="visits_team_id1" name="team_id1';
+		if ($readonly)
+		{
+			echo '" disabled="disabled';
+		}
+		echo '">' . "\n";
+		
+		$n = ((int) count($team_id_list)) - 1;
+		for ($i = 0; $i <= $n; $i++)
+		{
+			echo '<option value="';
+			// no strval because team id 0 is reserved
+			echo $list_team_id_and_name[0][$i];
+			if (isset($team_id1) && ((int) $list_team_id_and_name[0][$i] === ((int) $team_id1)))
+			{
+				echo '" selected="selected';
+			}
+			echo '">' . $list_team_id_and_name[1][$i];
+			echo '</option>' . "\n";
+		}
+		
+		echo '</select></span>' . "\n";
+		echo '<label for="match_points_team1">Points: </label>' . "\n";
+		echo '<span><input type="text" class="small_input_field" id="match_points_team1" name="team1_points"';
+		echo ' value="' . strval(intval($team1_points)) . '"';
+		if ($readonly)
+		{
+			echo ' readonly="readonly"';
+		}
+		echo '></span></p>' . "\n\n";
+		
+		echo '<p><label for="visits_team_id2">Second team: </label>' . "\n";
+		echo '<span><select id="visits_team_id2" name="team_id2';
+		if ($readonly)
+		{
+			echo '" disabled="disabled';
+		}
+		echo '">' . "\n";
+		
+		$n = ((int) count($team_id_list)) - 1;
+		for ($i = 0; $i <= $n; $i++)
+		{
+			echo '<option value="';
+			// no strval because team id 0 is reserved
+			echo $list_team_id_and_name[0][$i];
+			if (isset($team_id2) && ((int) $list_team_id_and_name[0][$i] === ((int) $team_id2)))
+			{
+				echo '" selected="selected';
+			}
+			echo '">' . $list_team_id_and_name[1][$i];
+			echo '</option>' . "\n";
+		}
+		echo '</select></span>' . "\n";
+		
+		echo '<label for="match_points_team2">Points: </label>' . "\n";
+		echo '<span><input type="text" class="small_input_field" id="match_points_team2" name="team2_points"';
+		echo ' value="' . strval(intval($team2_points)) . '"';
+		if ($readonly)
+		{
+			echo ' readonly="readonly"';
+		}
+		echo '></span></p>' . "\n\n";
+		
+		echo '<p><label for="match_day">Day: </label>' . "\n";
+		echo '<span><input type="text" class="small_input_field" id="match_day" name="match_day" value="';
+		if (isset($match_day))
+		{
+			echo htmlentities($match_day);
+		} else
+		{
+			if (isset($_POST['match_day']))
+			{
+				echo htmlentities($_POST['match_day']);
+			} else
+			{
+				echo date('Y-m-d');
+			}
+		}
+		if ($readonly)
+		{
+			echo '" readonly="readonly';
+		}
+		echo '"></span></p>' . "\n\n";
+		
+		echo '<p><label for="match_time">Time: </label>' . "\n";
+		echo '<span><input type="text" class="small_input_field" id="match_time" name="match_time" value="';
+		if (isset($match_time))
+		{
+			echo htmlentities($match_time);
+		} else
+		{
+			if (isset($_POST['match_time']))
+			{
+				echo htmlentities($_POST['match_time']);
+			} else
+			{
+				echo date('H:i:s');
+			}
+		}
+		if ($readonly)
+		{
+			echo '" readonly="readonly';
+		}
+		echo '"></span></p>' . "\n\n";
+	}
+	
 	function get_score_at_that_time($site, $connection, $teamid, $timestamp, $viewerid, $equal=false)
 	{
 		$query = 'SELECT `team1_teamid`,`team2_teamid`,`team1_new_score`,`team2_new_score` FROM `matches`';
@@ -861,6 +1010,14 @@
 		$rows = 1;
 	}
 	
+	if ($confirmed > 1)
+	{
+		if (isset($_POST['match_cancel']))
+		{
+			$confirmed = (int) 0;
+		}
+	}
+	
 	if ((isset($_GET['enter']) || isset($_GET['edit']) || isset($_GET['delete'])) && ($confirmed > 1))
 	{
 		// only show a confirmation question, the matches entered in different chronological order is not too unusual and perfectly valid
@@ -1323,7 +1480,7 @@
 		$team_stats_changes[$team_id2]['old_score'] = $team2_new_score;
 		compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);
 		
-		if (isset($_GET['enter'])  && ($confirmed > 1))
+		if (isset($_GET['enter'])  && ($confirmed > 0))
 		{
 			// only one match to be entered
 			$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
@@ -1374,15 +1531,17 @@
 			show_score_changes($team_stats_changes,  array_keys($team_stats_changes));
 			
 			// &plusmn; displays a +- symbol
-			echo 'diff is &plusmn; ' . strval(abs($diff));
-			print_r($team_stats_changes);
-			
+			echo 'diff is &plusmn; ' . strval(abs($diff));			
 			
 			// do maintenance after a match has been entered
 			// a check inside the maintenance logic will make sure it will be only performed one time per day at max
 			require_once('../CMS/maintenance/index.php');
 		}
-		$site->dieAndEndPage('');
+		
+		if ($confirmed > 0)
+		{
+			$site->dieAndEndPage('');
+		}
 	}
 	
 	if ($confirmed === 1)
@@ -1472,100 +1631,18 @@
 		}
 		echo '"></div>' . "\n";
 		
+		show_form($_POST['team_id1'], $_POST['team_id2'], $_POST['team1_points'], $_POST['team2_points'], true);
 		if (isset($_GET['enter']))
-		{
-			
-			$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
-			$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
-			$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
-			{
-				// query was bad, error message was already given in $site->execute_query(...)
-				$site->dieAndEndPage('');
-			}
-			$team_name_list = Array();
-			$team_id_list = Array();
-			while($row = mysql_fetch_array($result))
-			{
-				$team_name_list[] = $row['name'];
-				$team_id_list[] = $row['id'];
-			}
-			mysql_free_result($result);
-			
-			$list_team_id_and_name = Array();
-			
-			$list_team_id_and_name[] = $team_id_list;
-			$list_team_id_and_name[] = $team_name_list;
-			
-			echo '<p><label for="visits_team_id1">First team: </label>' . "\n";
-			echo '<span><select id="visits_team_id1" name="team_id1';
-			echo '" disabled="disabled';
-			echo '">' . "\n";
-			
-			$n = ((int) count($team_id_list)) - 1;
-			for ($i = 0; $i <= $n; $i++)
-			{
-				echo '<option value="';
-				// no strval because team id 0 is reserved
-				echo $list_team_id_and_name[0][$i];
-				if (isset($_POST['team_id1']) && ((int) $list_team_id_and_name[0][$i] === ((int) $_POST['team_id1'])))
-				{
-					echo '" selected="selected';
-				}
-				echo '">' . $list_team_id_and_name[1][$i];
-				echo '</option>' . "\n";
-			}
-			
-			echo '</select></span>' . "\n";
-			echo '<label for="match_points_team1">Points: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_points_team1" name="team1_points"';
-			echo ' value="' . strval(intval($_POST['team1_points'])) . '"';
-			echo ' readonly="readonly"';
-			echo '></span></p>' . "\n\n";
-			
-			echo '<p><label for="visits_team_id2">Second team: </label>' . "\n";
-			echo '<span><select id="visits_team_id2" name="team_id2';
-			echo '" disabled="disabled';
-			echo '">' . "\n";
-			
-			$n = ((int) count($team_id_list)) - 1;
-			for ($i = 0; $i <= $n; $i++)
-			{
-				echo '<option value="';
-				// no strval because team id 0 is reserved
-				echo $list_team_id_and_name[0][$i];
-				if (isset($_POST['team_id2']) && ((int) $list_team_id_and_name[0][$i] === ((int) $_POST['team_id2'])))
-				{
-					echo '" selected="selected';
-				}
-				echo '">' . $list_team_id_and_name[1][$i];
-				echo '</option>' . "\n";
-			}
-			echo '</select></span>' . "\n";
-			
-			echo '<label for="match_points_team2">Points: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_points_team2" name="team2_points"';
-			echo ' value="' . strval(intval($_POST['team2_points'])) . '"';
-			echo ' readonly="readonly"';
-			echo '></span></p>' . "\n\n";
-			
-			echo '<p><label for="match_day">Day: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_day" name="match_day" value="';
-			echo htmlent($_POST['match_day']);
-			echo '" readonly="readonly';
-			echo '"></span></p>' . "\n\n";
-			
-			echo '<p><label for="match_time">Time: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_time" name="match_time" value="';
-			echo htmlent($_POST['match_time']);
-			echo '" readonly="readonly';
-			echo '"></span></p>' . "\n\n";
-			
-			echo '<div><input type="submit" name="match_enter_confirmed" value="Confirm to enter the new match" id="send"></div>' . "\n";
+		{			
+			echo '<div><input type="submit" name="match_enter_confirmed" value="Confirm to enter the new match" id="send">';
+			echo ' <input type="submit" name="match_cancel" value="Cancel and change match data" id="cancel">';
+			echo '</div>' . "\n";
 		}
 		if (isset($_GET['edit']))
 		{
-			echo '<div><input type="submit" name="match_edit_confirmed" value="Confirm to edit the match" id="send"></div>' . "\n";
+			echo '<div><input type="submit" name="match_edit_confirmed" value="Confirm to edit the match" id="send">';
+			echo ' <input type="submit" name="match_cancel" value="Cancel and go back to editing form" id="cancel">';
+			echo '</div>' . "\n";
 		}		
 		echo '</form>' . "\n";		
 		
@@ -1639,159 +1716,22 @@
 			
 			echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
 			
-			$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
-			$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
-			$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
-			
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (isset($_POST['team_id1']) && isset($_POST['team_id2']) && isset($_POST['team1_points']) && isset($_POST['team2_points']))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
-				$site->dieAndEndPage('');
-			}
-			
-			$rows = (int) mysql_num_rows($result);
-			
-			// only show a confirmation question, the case is not too unusual and 
-			if ($rows < 1)
-			{
-				echo '<p class="first_p">There are no teams in the database. A valid match requires at least 2 teams<p/>';
-				$site->dieAndEndPage('');
-			}
-			
-			if ($rows < 2)
-			{
-				echo '<p class="first_p">There is only 1 team in the database. A valid match requires at least 2 teams<p/>';
-				$site->dieAndEndPage('');
-			}			
-			
-			$team_name_list = Array();
-			$team_id_list = Array();
-			while($row = mysql_fetch_array($result))
-			{
-				$team_name_list[] = $row['name'];
-				$team_id_list[] = $row['id'];
-			}
-			mysql_free_result($result);
-			
-			$list_team_id_and_name = Array();
-			
-			$list_team_id_and_name[] = $team_id_list;
-			$list_team_id_and_name[] = $team_name_list;
-			
-			$n = ((int) count($team_id_list)) - 1;
-			
-			echo '<p><label for="visits_team_id1">First team: </label>' . "\n";
-			echo '<span><select id="visits_team_id1" name="team_id1';
-			if (isset($_GET['delete']))
-			{
-				echo '" disabled="disabled';
-			}
-			echo '">' . "\n";
-			
-			$n = ((int) count($team_id_list)) - 1;
-			for ($i = 0; $i <= $n; $i++)
-			{
-				echo '<option value="';
-				// no strval because team id 0 is reserved
-				echo $list_team_id_and_name[0][$i];
-				if (isset($team1_teamid) && ((int) $list_team_id_and_name[0][$i] === $team1_teamid))
-				{
-					echo '" selected="selected';
-				}
-				echo '">' . $list_team_id_and_name[1][$i];
-				echo '</option>' . "\n";
-			}
-			
-			echo '</select></span>' . "\n";
-			echo '<label for="match_points_team1">Points: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_points_team1" name="team1_points"';
-			if (isset($team1_points))
-			{
-				echo ' value="' . htmlentities($team1_points) . '"';
-			}
-			if (isset($_GET['delete']))
-			{
-				echo ' readonly="readonly"';
-			}
-			echo '></span></p>' . "\n\n";
-			
-			echo '<p><label for="visits_team_id2">Second team: </label>' . "\n";
-			echo '<span><select id="visits_team_id2" name="team_id2';
-			if (isset($_GET['delete']))
-			{
-				echo '" disabled="disabled';
-			}
-			
-			echo '">' . "\n";
-			
-			$n = ((int) count($team_id_list)) - 1;
-			for ($i = 0; $i <= $n; $i++)
-			{
-				echo '<option value="';
-				// no strval because team id 0 is reserved
-				echo $list_team_id_and_name[0][$i];
-				if (isset($team2_teamid) && ((int) $list_team_id_and_name[0][$i] === ((int) ($team2_teamid))))
-				{
-					echo '" selected="selected';
-				}
-				echo '">' . $list_team_id_and_name[1][$i];
-				echo '</option>' . "\n";
-			}
-			echo '</select></span>' . "\n";
-			
-			echo '<label for="match_points_team2">Points: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_points_team2" name="team2_points"';
-			if (isset($team2_points))
-			{
-				echo ' value="' . htmlentities($team2_points) . '"';
-			}
-			if (isset($_GET['delete']))
-			{
-				echo ' readonly="readonly"';
-			}			
-			echo '></span></p>' . "\n\n";
-			
-			echo '<p><label for="match_day">Day: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_day" name="match_day" value="';
-			if (isset($match_day))
-			{
-				echo htmlentities($match_day);
+				show_form($_POST['team_id1'], $_POST['team_id2'], $_POST['team1_points'], $_POST['team2_points'], $readonly=isset($_GET['delete']));
 			} else
 			{
-				if (isset($_POST['match_day']))
+				if (isset($team1_teamid) && isset($team2_teamid))
 				{
-					echo htmlentities($_POST['match_day']);
+					show_form($team1_teamid, $team2_teamid, $team1_points, $team2_points, $readonly=isset($_GET['delete']));
 				} else
 				{
-					echo date('Y-m-d');
+					// fill unknown values with zeros
+					// team id 0 is reseved and does not exist in db
+					show_form(0, 0, 0, 0, $readonly=isset($_GET['delete']));
 				}
 			}
-			if (isset($_GET['delete']))
-			{
-				echo '" readonly="readonly';
-			}
-			echo '"></span></p>' . "\n\n";
 			
-			echo '<p><label for="match_time">Time: </label>' . "\n";
-			echo '<span><input type="text" class="small_input_field" id="match_time" name="match_time" value="';
-			if (isset($match_time))
-			{
-				echo htmlentities($match_time);
-			} else
-			{
-				if (isset($_POST['match_time']))
-				{
-					echo htmlentities($_POST['match_time']);
-				} else
-				{
-					echo date('H:i:s');
-				}
-			}
-			if (isset($_GET['delete']))
-			{
-				echo '" readonly="readonly';
-			}
-			echo '"></span></p>' . "\n\n";
 			if (isset($_GET['enter']))
 			{
 				echo '<div><input type="submit" name="match_enter_unconfirmed" value="Enter the new match" id="send"></div>' . "\n";

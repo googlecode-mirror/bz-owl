@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-06-21 19:48:44 +0200
+# Generation Time: 2010-06-24 10:26:30 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -67,7 +67,7 @@ CREATE TABLE `matches` (
   `team2_new_score` int(11) NOT NULL DEFAULT '1200',
   PRIMARY KEY (`id`),
   KEY `timestamp` (`timestamp`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
 
 
 
@@ -164,7 +164,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -261,7 +261,7 @@ CREATE TABLE `teams_overview` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `score` int(11) NOT NULL DEFAULT '1200',
-  `activity` int(11) NOT NULL DEFAULT '0',
+  `activity` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
   `member_count` int(11) unsigned NOT NULL DEFAULT '1',
   `any_teamless_player_can_join` tinyint(1) NOT NULL DEFAULT '1',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -324,7 +324,7 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8;
 
 
 
