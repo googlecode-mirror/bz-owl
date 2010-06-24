@@ -1062,6 +1062,9 @@
 				$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $orig_timestamp, $viewerid);
 				// find out the score for team 2 like done above for team 1
 				$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $orig_timestamp, $viewerid);
+				
+				// original timestamp no longer needed
+				unset($orig_timestamp);
 			} else
 			{
 				// first get the score of team 1 at that time
