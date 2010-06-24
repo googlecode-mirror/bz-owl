@@ -1044,11 +1044,19 @@
 				$site->dieAndEndPage('Unfortunately locking the matches table failed and thus altering the list of matches was cancelled.');
 			}
 			
-			if (isset($_GET['edit']))
+			if (isset($_GET['edit']) || isset($_GET['delete']))
 			{
 				// must get original timestamp or it will access the wrong timestamp in db
 				$orig_timestamp = '';
-				$query = 'SELECT `timestamp` FROM `matches` WHERE `id`=' . sqlSafeStringQuotes((int) $_GET['edit']);
+				$query = 'SELECT `timestamp` FROM `matches` WHERE `id`=';
+				if ($_GET['edit'])
+				{
+					$query .= sqlSafeStringQuotes((int) $_GET['edit']);
+				} else
+				{
+					// deletion
+					$query .= sqlSafeStringQuotes((int) $_GET['delete']);
+				}
 				if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 				{
 					unlock_tables($site, $connection);
