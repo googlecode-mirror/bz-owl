@@ -1041,12 +1041,35 @@
 				$site->dieAndEndPage('Unfortunately locking the matches table failed and thus altering the list of matches was cancelled.');
 			}
 			
-			// first get the score of team 1 at that time
-			// remember the first team entered in the form must not be the first team in the match entry of database
-			$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $timestamp, $viewerid);
-			// find out the score for team 2 like done above for team 1
-			$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $timestamp, $viewerid);
-			// mark score might has changed for these teams
+			if (isset($_GET['edit']))
+			{
+				// must get original timestamp or it will access the wrong timestamp in db
+				$orig_timestamp = '';
+				$query = 'SELECT `timestamp` FROM `matches` WHERE `id`=' . sqlSafeStringQuotes((int) $_GET['edit']);
+				if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				{
+					unlock_tables($site, $connection);
+					$site->dieAndEndPage('Could not get timestamp of original match.');
+				}
+				while ($row = mysql_fetch_array($result))
+				{
+					$orig_timestamp = $row['timestamp'];
+				}
+				mysql_free_result($result);
+				
+				// first get the score of team 1 at that time
+				// remember the first team entered in the form must not be the first team in the match entry of database
+				$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $orig_timestamp, $viewerid);
+				// find out the score for team 2 like done above for team 1
+				$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $orig_timestamp, $viewerid);
+			} else
+			{
+				// first get the score of team 1 at that time
+				// remember the first team entered in the form must not be the first team in the match entry of database
+				$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $timestamp, $viewerid);
+				// find out the score for team 2 like done above for team 1
+				$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $timestamp, $viewerid);
+			}
 			
 			// we got the score for both team 1 and team 2 at that point
 			// thus we can enter the match at this point
