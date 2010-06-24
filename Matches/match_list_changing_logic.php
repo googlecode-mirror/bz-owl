@@ -76,7 +76,7 @@
 		// similar match entered already?
 		// strategy: ask for one match before the entered one and one after the one to be entered and do not let the database engine do the comparison
 		$query = 'SELECT `id`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points` FROM `matches`';
-		$query .= ' WHERE (`timestamp`' . sqlSafeString($comparisonOperator) . "'" . sqlSafeString($_POST['match_day']). ' ' . sqlSafeString($_POST['match_time']) . "'";
+		$query .= ' WHERE (`timestamp`' . sqlSafeString($comparisonOperator) . sqlSafeStringQuotes($_POST['match_day'] . $_POST['match_time']);
 		// sorting needed
 		$query .= ') ORDER BY `timestamp` DESC';
 		// only comparing nearest match in time
