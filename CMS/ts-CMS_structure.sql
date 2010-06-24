@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-06-24 10:26:30 +0200
+# Generation Time: 2010-06-24 15:23:41 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -58,6 +58,7 @@ DROP TABLE IF EXISTS `matches`;
 
 CREATE TABLE `matches` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `playerid` int(11) unsigned DEFAULT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `team1_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
@@ -66,8 +67,30 @@ CREATE TABLE `matches` (
   `team1_new_score` int(11) NOT NULL DEFAULT '1200',
   `team2_new_score` int(11) NOT NULL DEFAULT '1200',
   PRIMARY KEY (`id`),
-  KEY `timestamp` (`timestamp`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
+  KEY `timestamp` (`timestamp`),
+  KEY `playerid` (`playerid`),
+  CONSTRAINT `matches_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
+
+
+
+# Dump of table matches_edit_stats
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `matches_edit_stats`;
+
+CREATE TABLE `matches_edit_stats` (
+  `id` int(11) unsigned NOT NULL,
+  `playerid` int(11) unsigned DEFAULT NULL,
+  `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `team1_teamid` int(11) unsigned NOT NULL DEFAULT '0',
+  `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
+  `team1_points` int(11) NOT NULL DEFAULT '0',
+  `team2_points` int(11) NOT NULL DEFAULT '0',
+  KEY `timestamp` (`timestamp`),
+  KEY `playerid` (`playerid`),
+  CONSTRAINT `matches_edit_stats_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
 
 
 
@@ -164,7 +187,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -324,7 +347,7 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=utf8;
 
 
 

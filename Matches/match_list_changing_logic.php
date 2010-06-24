@@ -1036,7 +1036,11 @@
 			// as most of the data in table depends on each other we must not access it in a concurrent way
 			
 			// any call of unlock_tables(...) will unlock the table
-			$query = 'LOCK TABLES `matches` WRITE, `teams_overview` WRITE, `teams_profile` WRITE';
+			$query = 'LOCK TABLES `matches` WRITE,`teams_overview` WRITE, `teams_profile` WRITE';
+			if (isset($_GET['edit']))
+			{
+				$query .= ', `matches_edit_stats` WRITE';
+			}
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				echo '<a class="button" href="./">overview</a>' . "\n";
@@ -1073,9 +1077,6 @@
 				$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $orig_timestamp, $viewerid);
 				// find out the score for team 2 like done above for team 1
 				$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $orig_timestamp, $viewerid);
-				
-				// original timestamp no longer needed
-				unset($orig_timestamp);
 			} else
 			{
 				// first get the score of team 1 at that time
@@ -1094,9 +1095,9 @@
 			// insert new entry
 			if (isset($_GET['enter']))
 			{
-				$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`,';
+				$query = 'INSERT INTO `matches` (`playerid`, `timestamp`, `team1_teamid`,';
 				$query .= ' `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
-				$query .= ' VALUES (' . sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($team_id1) .', ';
+				$query .= ' VALUES (' . sqlSafeStringQuotes($viewerid) . ', ' . sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($team_id1) .', ';
 				$query .= sqlSafeStringQuotes($team_id2) . ', ' . sqlSafeStringQuotes($team1_points) . ', ' . sqlSafeStringQuotes($team2_points);
 				$query .= ', ' . sqlSafeStringQuotes($team1_new_score) . ', ' . sqlSafeStringQuotes($team2_new_score);
 				$query .= ')';
@@ -1171,16 +1172,67 @@
 			// editing means the entry in question should be updated with the data provided by request
 			if (isset($_GET['edit']))
 			{
+				$query = 'SELECT `id`,`playerid`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points`';
+				$query .= ' FROM `matches` WHERE `timestamp`=' . sqlSafeStringQuotes($orig_timestamp);
+				// original timestamp no longer needed
+				unset($orig_timestamp);
+				
+				if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				{
+					unlock_tables($site, $connection);
+					$site->dieAndEndPage('Could not get data of original match.');
+				}
+				
+				$tmp_id = 0;
+				$tmp_playerid = 0;
+				$tmp_team1_teamid = 0;
+				$tmp_team2_teamid = 0;
+				$tmp_team1_points = 0;
+				$tmp_team2_points = 0;
+				$tmp_timestamp = '';
+				while ($row = mysql_fetch_array($result))
+				{
+					$tmp_id =  $row['id'];
+					$tmp_playerid =  $row['playerid'];
+					$tmp_timestamp =  $row['timestamp'];
+					$tmp_team1_teamid =  $row['team1_teamid'];
+					$tmp_team2_teamid =  $row['team2_teamid'];
+					$tmp_team1_points =  $row['team1_points'];
+					$tmp_team2_points =  $row['team2_points'];
+				}
+				
+				// save old match into edit history table
+				$query = 'INSERT INTO `matches_edit_stats` (`id`, `playerid`, `timestamp`, `team1_teamid`,';
+				$query .= ' `team2_teamid`, `team1_points`, `team2_points`)';
+				$query .= ' VALUES (' . sqlSafeStringQuotes($tmp_id) . ', ' . sqlSafeStringQuotes($tmp_playerid) . ', '
+						. sqlSafeStringQuotes($tmp_timestamp) . ', ' . sqlSafeStringQuotes($tmp_team1_teamid) .', '
+						. sqlSafeStringQuotes($tmp_team2_teamid) . ', ' . sqlSafeStringQuotes($tmp_team1_points) . ', '
+						. sqlSafeStringQuotes($tmp_team2_points)
+						. ')';
+				unset($tmp_id);
+				unset($tmp_playerid);
+				unset($tmp_team1_teamid);
+				unset($tmp_team2_teamid);
+				unset($tmp_team1_points);
+				unset($tmp_team2_points);
+				unset($tmp_timestamp);
+				if (!($result = $site->execute_query($site->db_used_name(), 'matches_edit_stats', $query, $connection)))
+				{
+					unlock_tables($site, $connection);
+					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be entered due to a sql problem!');
+				}
+				
 				// update match table (perform the editing)
-				$query = 'UPDATE `matches` SET `timestamp`=' . "'" . sqlSafeString($timestamp) . "'";
-				$query .= ',`team1_teamid`=' . "'" . sqlSafeString($team_id1) . "'";
-				$query .= ',`team2_teamid`=' . "'" . sqlSafeString($team_id2) . "'";
-				$query .= ',`team1_points`=' . "'" . sqlSafeString($team1_points) . "'";
-				$query .= ',`team2_points`=' . "'" . sqlSafeString($team2_points) . "'";
-				$query .= ',`team1_new_score`=' . "'" . sqlSafeString($team1_new_score) . "'";
-				$query .= ',`team2_new_score`=' . "'" . sqlSafeString($team2_new_score) . "'";
+				$query = 'UPDATE `matches` SET `playerid`=' . sqlSafeStringQuotes($viewerid);
+				$query .= ',`timestamp`=' . sqlSafeStringQuotes($timestamp);
+				$query .= ',`team1_teamid`=' . sqlSafeStringQuotes($team_id1);
+				$query .= ',`team2_teamid`=' . sqlSafeStringQuotes($team_id2);
+				$query .= ',`team1_points`=' . sqlSafeStringQuotes($team1_points);
+				$query .= ',`team2_points`=' . sqlSafeStringQuotes($team2_points);
+				$query .= ',`team1_new_score`=' . sqlSafeStringQuotes($team1_new_score);
+				$query .= ',`team2_new_score`=' . sqlSafeStringQuotes($team2_new_score);
 				// use current row id to access the entry
-				$query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
+				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($match_id);
 				// only one row needs to be updated
 				$query .= ' LIMIT 1';
 				
@@ -1524,10 +1576,10 @@
 		if (isset($_GET['enter'])  && ($confirmed > 1))
 		{
 			// only one match to be entered
-			$query = 'INSERT INTO `matches` (`timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
-			$query .= ' VALUES (' . "'" . sqlSafeString($match_day . ' ' . $match_time) . "'" . ', ' . "'" . sqlSafeString($team_id1) . "'" .', ';
-			$query .= "'" . sqlSafeString($team_id2) . "'" . ', ' . "'" . sqlSafeString($team1_points) . "'" . ', ' . "'" . sqlSafeString($team2_points) . "'";
-			$query .= ', ' . "'" . sqlSafeString($team1_new_score) . "'" . ', ' . "'" . sqlSafeString($team2_new_score) . "'";
+			$query = 'INSERT INTO `matches` (`playerid`, `timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)';
+			$query .= ' VALUES (' . sqlSafeStringQuotes($viewerid) . ', ' . sqlSafeStringQuotes($match_day . ' ' . $match_time) . ', ' . sqlSafeStringQuotes($team_id1) .', ';
+			$query .= sqlSafeStringQuotes($team_id2) . ', ' . sqlSafeStringQuotes($team1_points) . ', ' . sqlSafeStringQuotes($team2_points);
+			$query .= ', ' . sqlSafeStringQuotes($team1_new_score) . ', ' . sqlSafeStringQuotes($team2_new_score);
 			$query .= ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
