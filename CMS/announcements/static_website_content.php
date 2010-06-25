@@ -52,6 +52,7 @@
 		{
 			// user looks at page in edit mode
 			echo '<p><a href="./" class="button">Original</a>' . '</p>' ."\n";
+			echo '<div class="static_page_box">' . "\n";
 		} else
 		{
 			// user looks at page in read mode
@@ -216,9 +217,9 @@
 	{
 		echo '<div class="static_page_box">' . "\n";
 		echo $buffer;
-		echo '</div>' . "\n";
 	}
 ?>
+</div>
 </div>
 </body>
 </html>
