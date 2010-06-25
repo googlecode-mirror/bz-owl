@@ -35,6 +35,6 @@
 	echo '  <link href="' . $url;
 	// Need to append file extension as only
 	// apache allows not using it by default
-	echo 'styles/' . $stylesheet . '.css"';
+	echo 'styles/' . str_replace(' ', '%20', htmlspecialchars($stylesheet)) . '.css"';
 	echo ' rel="stylesheet" type="text/css">' . "\n";
 ?>
