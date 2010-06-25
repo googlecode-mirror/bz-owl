@@ -9,6 +9,16 @@
 		$site = new siteinfo();
 	}
 	
+	function dieCustom($reason)
+	{
+		global $site;
+		
+		$site->log_error($reason);
+		echo $reason . "\n";
+		echo '</ul>' . "\n" . '</body>' . "\n" . '<html>' . "\n";
+		die();
+	}
+	
 	$unread_messages = false;
 	
 	// set the date and time

@@ -13,6 +13,7 @@
 	
 	if (strcmp($page_title, '') === 0)
 	{
+		echo '<div class="static_page_box">' . "\n";
 		$site->dieAndEndPage('Error: No page title specified!');;
 	}
 	
@@ -49,6 +50,7 @@
 	// it also helps to print out a nice message to the user
 	if ($message_mode && !$logged_in)
 	{
+		echo '<div class="static_page_box">' . "\n";
 		echo '<p>You need to login in order to view your private messages.</p>' . "\n";
 		die("\n</div>\n</body>\n</html>");
 	}
@@ -56,6 +58,7 @@
 	// any of the variables is set and the user is not logged in
 	if (((isset($_GET['add'])) || (isset($_GET['edit'])) || isset($_GET['delete'])) && (!$logged_in))
 	{
+		echo '<div class="static_page_box">' . "\n";
 		echo '<p>You need to login in order to change any content of the website.</p>' . "\n";
 		die("\n</div>\n</body>\n</html>");
 	}
@@ -245,12 +248,14 @@
 	// handle adding new item
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
+		echo '<div class="static_page_box">' . "\n";
 		require_once('add.php');
 	}
 	
 	// handle editing item
 	if ((isset($_SESSION[$entry_edit_permission]) && ($_SESSION[$entry_edit_permission])) && (isset($_GET['edit'])) && (!(isset($_GET['add']))) && (!(isset($_GET['delete']))))
 	{
+		echo '<div class="static_page_box">' . "\n";
 		require_once('edit.php');
 	}
 	

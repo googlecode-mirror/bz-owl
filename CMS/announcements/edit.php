@@ -123,7 +123,7 @@
 					$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 					if (!$result)
 					{
-						die("Query is not valid SQL.");
+						$site->dieAndEndPage();
 					}
 					
 					// read each entry, row by row

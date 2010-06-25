@@ -271,12 +271,12 @@
 				
 		function dieAndEndPage($message='')
 		{
-			// TODO: report this to admins
 			if (!(strcmp($message, '') === 0))
 			{
+				$this->log_error($message);
 				echo '<p>' . htmlent($message) . '</p>';
 			}
-			die("\n" . '</div>' . "\n" . '</body>' . "\n" . '</html>');
+			die("\n" . '</div>' . "\n" . '</div>' . "\n" . '</body>' . "\n" . '</html>');
 		}
 		
 		// add linebreaks to input, thus enable usage of multiple lines
@@ -288,6 +288,15 @@
 			} else
 			{
 				echo nl2br($text);
+			}
+		}
+		
+		function log_error($error='')
+		{
+			if (!(strcmp($error, '') === 0))
+			{
+				// non functional at the moment
+				// TODO: implement logging here!
 			}
 		}
 	}

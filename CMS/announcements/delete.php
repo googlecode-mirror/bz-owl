@@ -121,7 +121,7 @@
 				$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 				if (!$result)
 				{
-					die("Query is not valid SQL.");
+					$site->dieAndEndPage();
 				}
 				
 				$rows = mysql_num_rows($result);

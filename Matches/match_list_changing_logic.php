@@ -84,7 +84,6 @@
 		
 		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
 			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps (using operator '
 								 . sqlSafeString($comparisonOperator) . ') of matches failed.');
 		}
@@ -336,7 +335,6 @@
 		$query .= ' ORDER BY `timestamp` DESC LIMIT 0,1';
 		if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
 			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 		}
 		
@@ -475,15 +473,12 @@
 		$query = 'UNLOCK TABLES';
 		if (!($site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
 			$site->dieAndEndPage('Unfortunately unlocking tables failed. This likely leads to an access problem to database!');
 		}
 	}
 	
 	if (isset($_GET['enter']) || isset($_GET['edit']) || isset($_GET['delete']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
-		
 		if ($viewerid === 0)
 		{
 			if (isset($_GET['enter']))
@@ -847,7 +842,6 @@
 			$query = 'SELECT `timestamp` FROM `matches` WHERE `timestamp`=' . sqlSafeStringQuotes(($_POST['match_day'])  . ' ' . ($_POST['match_time']));
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps (using equal operator) of matches failed.');
 			}
 			
@@ -924,7 +918,6 @@
 			$query = 'SELECT * FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes(($_POST['match_day'])  . ' ' . ($_POST['match_time']));
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 			}
 			
@@ -1043,7 +1036,6 @@
 			}
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('Unfortunately locking the matches table failed and thus altering the list of matches was cancelled.');
 			}
@@ -1362,7 +1354,6 @@
 			$query .= ' ORDER BY `timestamp`';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 			}
@@ -1434,7 +1425,6 @@
 			$query = 'LOCK TABLES `matches` READ, `teams_overview` WRITE, `teams` WRITE;';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('Unfortunately locking the matches table failed and thus entering the match was cancelled.');
 			}
@@ -1642,7 +1632,6 @@
 		$query = 'SELECT * FROM `matches` WHERE `timestamp`>' . "'" . sqlSafeString($_POST['match_day']) . ' ' . sqlSafeString($_POST['match_time']) . "'";
 		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
 			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 		}
 		

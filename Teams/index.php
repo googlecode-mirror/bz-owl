@@ -401,6 +401,7 @@
 	if (isset($_GET['reactivate']))
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
 		
 		// no anon team deletion
 		if ($viewerid < 1)
@@ -709,6 +710,7 @@
 		if (isset($_POST['confirmed']) && ((int) $_POST['confirmed'] === 1))
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
 			
 			$new_randomkey_name = '';
 			if (isset($_POST['key_name']))
@@ -757,10 +759,12 @@
 					
 				}
 			}
-			$site->dieAndEndPage('');
+			$site->dieAndEndPage();
 		}
 		
 		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
+		
 		$query = 'SELECT `name` FROM `teams`';
 		$query .= ' WHERE `id`=' . "'" . sqlSafeString($join_team_id) . "'";
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
@@ -961,6 +965,7 @@
 		}
 		// display a form, asking for confirmation of team deletion
 		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
 		
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?delete=' . urlencode($teamid) . '">' . "\n";
 		echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
@@ -982,6 +987,8 @@
 		if ($viewerid < 1)
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
+			
 			echo '<p>You must login to edit the team page.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
@@ -1194,6 +1201,8 @@
 		}
 		
 		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
+		
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?edit=' . urlencode($teamid) . '">' . "\n";
 		echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
 		
@@ -1344,6 +1353,7 @@
 		}
 		
 		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
 		
 		$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($playerid_to_remove) . "'";
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))

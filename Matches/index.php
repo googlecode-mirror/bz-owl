@@ -96,6 +96,8 @@
 	
 	if (isset($_GET['enter']) || isset($_GET['edit']) || isset($_GET['delete']))
 	{
+		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
 		include_once('match_list_changing_logic.php');
 		// all the operations requested have been dealt with
 		$site->dieAndEndPage('');

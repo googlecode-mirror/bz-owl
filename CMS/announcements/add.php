@@ -498,7 +498,6 @@
 							
 							// reset the pointer to beginning of array
 							reset($known_recipients);
-							echo '<p><a href="./" class="button">overview</a><p>';
 							if ($message_sent)
 							{
 								echo '<p>Message was sent.</p>';
@@ -508,8 +507,7 @@
 							}
 						} else
 						{
-							echo "<p>Seems like adding entry failed.</p>";
-							echo '<p><a href="./">[overview]</a><p>' . "\n";
+							echo '<p>Seems like adding entry failed.</p>' . "\n";
 						}
 					}
 				} else
