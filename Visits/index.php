@@ -27,13 +27,13 @@
 	if ($viewerid === 0)
 	{
 		echo '<p class="first_p">You need to login in order to view the visits log!</p>';
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageTable('');
 	}
 	
 	// only allow looking when having the permission
 	if ($allow_view_user_visits === false)
 	{
-		$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . 'have no permissions to view the visits log!');
+		$site->dieAndEndPageTable('You (id=' . sqlSafeString($viewerid) . 'have no permissions to view the visits log!');
 	}
 	
 	// form letting search for ip-address or host
@@ -53,21 +53,57 @@
 	// looking for either ip-address or host?
 	echo '<div style="display:inline"><label for="visit_search_type">result type:</label> ' . "\n";
 	echo '<span><select id="visit_search_type" name="search_type">';
-	echo '<option>ip-address</option>';
-	echo '<option';
+	
+	
+	// avoid to let the user enter a custom table column at all costs
+	// only let them switch between ip-address and host search
 	
 	// search for ip-address by default
 	$search_type = 'ip-address';
+	$search_ip = true;
+	$search_host = false;
+	$search_name = false;
+	
 	if (isset($_GET['search_type']))
 	{
-		if (!(strcmp($_GET['search_type'], $search_type) === 0))
+		// not searching for ip-address
+		if (!(strcmp('ip-address', $search_type) === 0))
 		{
-			// avoid to let the user enter a custom table column at all costs
-			// only let them switch between ip-address and host search
-			echo ' selected="selected"';
+			$search_ip = false;
+			$search_host = true;
+			// not searching for ip-address
+			if (!(strcmp('host', $search_type) === 0))
+			{
+				$search_host = false;
+				$search_name = true;
+			}
 		}
 	}
+	
+	echo '<option';
+	if ($search_ip)
+	{
+		$search_type = 'ip-address';
+		echo ' selected="selected"';
+	}
+	echo '>ip-address</option>';
+	
+	echo '<option';
+	if ($search_host)
+	{
+		$search_type = 'host';
+		echo ' selected="selected"';
+	}
 	echo '>host</option>';
+	
+	echo '<option';
+	if ($search_name)
+	{
+		$search_type = 'name';
+		echo ' selected="selected"';
+	}
+	echo '>name</option>';
+	
 	echo '</select></span>';
 	
 	echo ' <label for="visit_search_result_amount">Entries:</label> ';
@@ -88,19 +124,6 @@
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		
-		// check if a different search type than the default one was used
-		$search_for_host = false;
-		if (isset($_GET['search_type']))
-		{
-			if (!(strcmp($_GET['search_type'], $search_type) === 0))
-			{
-				// avoid to let the user enter a custom table column at all costs
-				// only let them switch between ip-address and host search
-				$search_type = 'host';
-				$search_for_host = true;
-			}
-		}
-		
 		// search for nothing by default
 		$search_expression = '';
 		if (isset($_GET['search_string']))
@@ -112,10 +135,19 @@
 		
 		// get list of last 200 visits
 		$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players` ';
-		$query .= 'WHERE `visits`.`playerid`=`players`.`id` AND `visits`.`' . sqlSafeString($search_type);
-		if ($search_for_host)
+		$query .= 'WHERE `visits`.`playerid`=`players`.`id`';
+		
+		if (!($search_name))
 		{
-			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%' . "'";
+			$query .= ' AND `visits`.`' . sqlSafeString($search_type);
+		} else
+		{
+			$query .= ' AND `players`.`' . sqlSafeString($search_type);
+		}
+		
+		if ($search_name)
+		{
+			$query .= '` LIKE ' . sqlSafeStringQuotes($search_expression);
 		} else
 		{
 			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%' . "'";
@@ -137,7 +169,7 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPage('');
+			$site->dieAndEndPageTable('');
 		}
 		
 		// sadly while searching the no results case should be handled
@@ -145,7 +177,7 @@
 		{
 			mysql_free_result($result);
 			echo '<p>There were no matches for that expression in the visits log.</p>';
-			$site->dieAndEndPage('');
+			$site->dieAndEndPageTable('');
 		}
 		
 		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
@@ -173,7 +205,7 @@
 		echo '</table>' . "\n";
 		
 		// done with the search
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageTable('');
 	}
 	
 	if (isset($_GET['profile']))
@@ -186,19 +218,19 @@
 		if ($profile < 0)
 		{
 			echo '<p>You tried to view the visits log of a not existing user!</p>';
-			$site->dieAndEndPage('');
+			$site->dieAndEndPageTable('');
 		}
 		
 		if ($profile === 0)
 		{
 			echo '<p>The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
-			$site->dieAndEndPage('');
+			$site->dieAndEndPageTable('');
 		}
 		
 		$query = 'SELECT `name` FROM `players` WHERE `players`.`id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
-			$site->dieAndEndPage('<p>It seems like the name of player with id ' . sqlSafeStringQuotes(htmlent($profile)) . ' can not be accessed for an unknown reason.</p>');
+			$site->dieAndEndPageTable('<p>It seems like the name of player with id ' . sqlSafeStringQuotes(htmlent($profile)) . ' can not be accessed for an unknown reason.</p>');
 		}
 		
 		// existance test of user skipped intentionally
@@ -223,12 +255,12 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPage('');
+			$site->dieAndEndPageTable('');
 		}
 		
 		if ((int) mysql_num_rows($result) < 1)
 		{
-			$site->dieAndEndPage('There are no visits by this user (id=' . sqlSafeString(htmlent($profile)) . '). Make sure the user is not deleted.');
+			$site->dieAndEndPageTable('There are no visits by this user (id=' . sqlSafeString(htmlent($profile)) . '). Make sure the user is not deleted.');
 		}
 		
 		// format the output with a nice table
@@ -255,7 +287,7 @@
 		echo '</table>' . "\n";
 		
 		// done with the player profile
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageTable('');
 	}
 	
 	// display visits log overview
@@ -266,7 +298,7 @@
 	if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageTable('');
 	}
 	
 	// for performance reasons the case with no visits will be skipped
