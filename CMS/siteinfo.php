@@ -279,7 +279,7 @@
 			die("\n" . '</div>' . "\n" . '</div>' . "\n" . '</body>' . "\n" . '</html>');
 		}
 		
-		function dieAndEndPageTable($message='')
+		function dieAndEndPageNoBox($message='')
 		{
 			if (!(strcmp($message, '') === 0))
 			{

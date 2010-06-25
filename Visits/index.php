@@ -27,13 +27,13 @@
 	if ($viewerid === 0)
 	{
 		echo '<p class="first_p">You need to login in order to view the visits log!</p>';
-		$site->dieAndEndPageTable('');
+		$site->dieAndEndPageNoBox();
 	}
 	
 	// only allow looking when having the permission
 	if ($allow_view_user_visits === false)
 	{
-		$site->dieAndEndPageTable('You (id=' . sqlSafeString($viewerid) . 'have no permissions to view the visits log!');
+		$site->dieAndEndPageNoBox('You (id=' . sqlSafeString($viewerid) . 'have no permissions to view the visits log!');
 	}
 	
 	// form letting search for ip-address or host
@@ -59,24 +59,19 @@
 	// only let them switch between ip-address and host search
 	
 	// search for ip-address by default
-	$search_type = 'ip-address';
-	$search_ip = true;
+	$search_type = '';
+	$search_ip = false;
 	$search_host = false;
 	$search_name = false;
 	
 	if (isset($_GET['search_type']))
 	{
-		// not searching for ip-address
-		if (!(strcmp('ip-address', $search_type) === 0))
+		switch ($_GET['search_type'])
 		{
-			$search_ip = false;
-			$search_host = true;
-			// not searching for ip-address
-			if (!(strcmp('host', $search_type) === 0))
-			{
-				$search_host = false;
-				$search_name = true;
-			}
+			case 'ip-adress': $search_ip = true; break;
+			case 'host': $search_host = true; break;
+			case 'name': $search_name = true; break;
+			default: $search_ip = true;
 		}
 	}
 	
@@ -169,7 +164,7 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPageTable('');
+			$site->dieAndEndPageNoBox();
 		}
 		
 		// sadly while searching the no results case should be handled
@@ -177,7 +172,7 @@
 		{
 			mysql_free_result($result);
 			echo '<p>There were no matches for that expression in the visits log.</p>';
-			$site->dieAndEndPageTable('');
+			$site->dieAndEndPageNoBox();
 		}
 		
 		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
@@ -205,7 +200,7 @@
 		echo '</table>' . "\n";
 		
 		// done with the search
-		$site->dieAndEndPageTable('');
+		$site->dieAndEndPageNoBox('');
 	}
 	
 	if (isset($_GET['profile']))
@@ -218,19 +213,19 @@
 		if ($profile < 0)
 		{
 			echo '<p>You tried to view the visits log of a not existing user!</p>';
-			$site->dieAndEndPageTable('');
+			$site->dieAndEndPageNoBox('');
 		}
 		
 		if ($profile === 0)
 		{
 			echo '<p>The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
-			$site->dieAndEndPageTable('');
+			$site->dieAndEndPageNoBox('');
 		}
 		
 		$query = 'SELECT `name` FROM `players` WHERE `players`.`id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
-			$site->dieAndEndPageTable('<p>It seems like the name of player with id ' . sqlSafeStringQuotes(htmlent($profile)) . ' can not be accessed for an unknown reason.</p>');
+			$site->dieAndEndPageNoBox('<p>It seems like the name of player with id ' . sqlSafeStringQuotes(htmlent($profile)) . ' can not be accessed for an unknown reason.</p>');
 		}
 		
 		// existance test of user skipped intentionally
@@ -255,12 +250,12 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPageTable('');
+			$site->dieAndEndPageNoBox('');
 		}
 		
 		if ((int) mysql_num_rows($result) < 1)
 		{
-			$site->dieAndEndPageTable('There are no visits by this user (id=' . sqlSafeString(htmlent($profile)) . '). Make sure the user is not deleted.');
+			$site->dieAndEndPageNoBox('There are no visits by this user (id=' . sqlSafeString(htmlent($profile)) . '). Make sure the user is not deleted.');
 		}
 		
 		// format the output with a nice table
@@ -287,7 +282,7 @@
 		echo '</table>' . "\n";
 		
 		// done with the player profile
-		$site->dieAndEndPageTable('');
+		$site->dieAndEndPageNoBox('');
 	}
 	
 	// display visits log overview
@@ -298,7 +293,7 @@
 	if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
-		$site->dieAndEndPageTable('');
+		$site->dieAndEndPageNoBox('');
 	}
 	
 	// for performance reasons the case with no visits will be skipped
