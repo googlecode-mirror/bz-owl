@@ -36,7 +36,7 @@
 		$site->dieAndEndPageNoBox('You (id=' . sqlSafeString($viewerid) . 'have no permissions to view the visits log!');
 	}
 	
-	// form letting search for ip-address or host
+	// form letting search for ip-address, host or name
 	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
 	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./">' . "\n";
 	
@@ -50,13 +50,13 @@
 	echo '>';
 	echo '</span></div> ' . "\n";
 	
-	// looking for either ip-address or host?
+	// looking for either ip-address, host or name?
 	echo '<div style="display:inline"><label for="visit_search_type">result type:</label> ' . "\n";
 	echo '<span><select id="visit_search_type" name="search_type">';
 	
 	
 	// avoid to let the user enter a custom table column at all costs
-	// only let them switch between ip-address and host search
+	// only let them switch between ip-address, host and name search
 	
 	// search for ip-address by default
 	$search_type = '';
@@ -113,6 +113,8 @@
 	
 	echo '<div style="display:inline"> <input type="submit" name="search" value="Search" id="send"></div>' . "\n";
 	echo '</form>' . "\n";
+	
+	// end search toolbar
 	
 	// search for either ip-address or host
 	if (isset($_GET['search']))
