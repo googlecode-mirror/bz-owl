@@ -255,6 +255,11 @@
 			{
 				// cast result to int to avoid SQL injections
 				$num_results = (int) $_GET['search_result_amount'];
+				// a little try against denial of service by limiting displayed amount per page
+				if ($num_results > 3200)
+				{
+					$num_results = 3200;
+				}
 				$query .= sqlSafeString($num_results + 1);
 			} else
 			{
