@@ -218,27 +218,45 @@
 	$query .= ' ORDER BY `timestamp` DESC ';
 	// limit the output to the requested rows to speed up displaying
 	$query .= 'LIMIT ';
-	// the "LIMIT 0,200" part of query means only the first 200 entries are received
-	// the range of shown matches is set by the GET variable i
+	
 	$view_range = (int) 0;
-	if (isset($_GET['i']))
+	if (isset($_GET['search']))
 	{
-		if (((int) $_GET['i']) > 0)
+		// how many resulting rows does the user wish?
+		// assume 200 by default
+		$num_results = 200;
+		if (isset($_GET['search_result_amount']))
 		{
-			$view_range = (int) $_GET['i'];
-			$query .=  $view_range . ',';
-		} else
-		{
-			// force write 0 for value 0 (speed)
-			// and 0 for negative values (security: DBMS error handling prevention)
-			$query .= '0,';
+			if ($_GET['search_result_amount'] > 0)
+			{
+				// cast result to int to avoid SQL injections
+				$num_results = (int) $_GET['search_result_amount'];
+			}
 		}
+		$query .= ' 0,' . sqlSafeString($num_results + 1);
 	} else
 	{
-		// no special value set -> write 0 for value 0 (speed)
-		$query .= '0,';
+		// the "LIMIT 0,200" part of query means only the first 200 entries are received
+		// the range of shown matches is set by the GET variable i
+		if (isset($_GET['i']))
+		{
+			if (((int) $_GET['i']) > 0)
+			{
+				$view_range = (int) $_GET['i'];
+				$query .=  $view_range . ',';
+			} else
+			{
+				// force write 0 for value 0 (speed)
+				// and 0 for negative values (security: DBMS error handling prevention)
+				$query .= '0,';
+			}
+		} else
+		{
+			// no special value set -> write 0 for value 0 (speed)
+			$query .= '0,';
+		}
+		$query .= ((int) $view_range)+201;
 	}
-	$query .= ((int) $view_range)+201;
 	
 	if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 	{
@@ -363,7 +381,7 @@
 	// no more matches to display
 	echo '</table>' . "\n";
 	
-	// look up if next and previous buttons are needed to look at all messages in overview
+	// look up if next and previous buttons are needed to look at all matches in overview
 	if ($show_next_matches_button || ($view_range !== (int) 0))
 	{
 		// browse previous and next entries, if possible

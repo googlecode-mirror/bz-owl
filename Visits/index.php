@@ -131,7 +131,7 @@
 		$search_expression = str_replace('*', '%', $search_expression);
 		
 		// get list of last 200 visits
-		$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players` ';
+		$query = 'SELECT `visits`.`id`,`visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players` ';
 		$query .= 'WHERE `visits`.`playerid`=`players`.`id`';
 		
 		if (!($search_name))
@@ -149,60 +149,6 @@
 		{
 			$query .= '` LIKE ' . "'" . sqlSafeString($search_expression) . '%' . "'";
 		}
-		
-		// how many resulting rows does the user wish?
-		// assume 200 by default
-		$num_results = 200;
-		if (isset($_GET['search_result_amount']))
-		{
-			if ($_GET['search_result_amount'] > 0)
-			{
-				// cast result to int to avoid SQL injections
-				$num_results = (int) $_GET['search_result_amount'];
-			}
-		}
-		$query .= ' ORDER BY `visits`.`id` DESC LIMIT 0,' . sqlSafeString($num_results);
-		
-		if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
-		{
-			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPageNoBox();
-		}
-		
-		// sadly while searching the no results case should be handled
-		if ((int) mysql_num_rows($result) < 1)
-		{
-			mysql_free_result($result);
-			echo '<p>There were no matches for that expression in the visits log.</p>';
-			$site->dieAndEndPageNoBox();
-		}
-		
-		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
-		echo '<caption>Search related visits log entries</caption>' . "\n";
-		echo '<tr>' . "\n";
-		echo '	<th>Name</th>' . "\n";
-		echo '	<th>ip-address</th>' . "\n";
-		echo '	<th>host</th>' . "\n";
-		echo '	<th>login time</th>' . "\n";
-		echo '</tr>' . "\n\n";
-		
-		// print out each entry
-		while($row = mysql_fetch_array($result))
-		{
-			echo '<tr>' . "\n";
-			echo '	<td><a href="./?profile=' . htmlspecialchars($row['playerid']) . '">';
-			echo $row['name'];
-			echo '</a></td>' . "\n";
-			echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
-			echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
-			echo '	<td>' . htmlentities($row['timestamp']) . '</td>' . "\n";
-			echo '</tr>' . "\n";
-		}
-		mysql_free_result($result);
-		echo '</table>' . "\n";
-		
-		// done with the search
-		$site->dieAndEndPageNoBox('');
 	}
 	
 	if (isset($_GET['profile']))
@@ -288,23 +234,133 @@
 	}
 	
 	// display visits log overview
-		
-	// get list of last 200 visits
-	$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players`';
-	$query .= ' WHERE `visits`.`playerid`=`players`.`id` ORDER BY `visits`.`id` DESC  LIMIT 0,200';
+	
+	if (!(isset($_GET['search'])))
+	{
+		// get list of last 200 visits
+		$query = 'SELECT `visits`.`id`,`visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players`';
+		$query .= ' WHERE `visits`.`playerid`=`players`.`id`';
+	}
+	
+	// how many resulting rows does the user wish?
+	// assume 200 by default
+	$num_results = 200;
+	if (isset($_GET['search_result_amount']))
+	{
+		if ($_GET['search_result_amount'] > 0)
+		{
+			// cast result to int to avoid SQL injections
+			$num_results = (int) $_GET['search_result_amount'];
+		}
+	}
+	$query .= ' ORDER BY `visits`.`id` DESC LIMIT ';
+	
+	$view_range = (int) 0;
+	// the "LIMIT 0,200" part of query means only the first 200 entries are received
+	// the range of shown matches is set by the GET variable i
+	if (isset($_GET['i']))
+	{
+		if (((int) $_GET['i']) > 0)
+		{
+			$view_range = (int) $_GET['i'];
+			$query .=  $view_range . ',';
+		} else
+		{
+			// force write 0 for value 0 (speed)
+			// and 0 for negative values (security: DBMS error handling prevention)
+			$query .= '0,';
+		}
+	} else
+	{
+		// no special value set -> write 0 for value 0 (speed)
+		$query .= '0,';
+	}
+	if (isset($_GET['search']))
+	{
+		// how many resulting rows does the user wish?
+		// assume 200 by default
+		$num_results = 200;
+		if (isset($_GET['search_result_amount']))
+		{
+			if ($_GET['search_result_amount'] > 0)
+			{
+				// cast result to int to avoid SQL injections
+				$num_results = (int) $_GET['search_result_amount'];
+				$query .= sqlSafeString($num_results + 1);
+			} else
+			{
+				$query .= '201';
+			}
+		} else
+		{
+			$query .= '201';
+		}
+	} else
+	{
+		$query .= ((int) $view_range)+201;
+	}
+	
 	if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
-		$site->dieAndEndPageNoBox('');
+		$site->dieAndEndPageNoBox();
 	}
 	
+	if (isset($_GET['search']))
+	{
+		// sadly while searching the no results case should be handled
+		if ((int) mysql_num_rows($result) < 1)
+		{
+			mysql_free_result($result);
+			echo '<p>There were no matches for that expression in the visits log.</p>';
+			$site->dieAndEndPageNoBox();
+		}
+	}
+	$rows = (int) mysql_num_rows($result);
+	$show_next_visits_button = false;
+	// more than 200 matches
+	if ($rows > 200)
+	{
+		$show_next_visits_button = true;
+	}
 	// for performance reasons the case with no visits will be skipped
 	// in that case the table would have no entries
-	// however as someone needs to login there should be always at least one ip-address in the table
-	// except the table got deleted after someone logged in and the user then looks at the visits log
+	// keep in mind by definition there should be always at least 1 visit in the log,
+	// as long you require users to login before looking at visits log
+	unset($rows);
+	
+	$visits_list = Array (Array ());
+	// read each entry, row by row
+	while ($row = mysql_fetch_array($result))
+	{
+		$id = (int) $row['id'];
+		$visits_list[$id]['playerid'] = (int) $row['id'];
+		$visits_list[$id]['name'] = $row['name'];
+		$visits_list[$id]['ip-address'] = $row['ip-address'];
+		$visits_list[$id]['host'] = $row['host'];
+		$visits_list[$id]['timestamp'] = $row['timestamp'];
+	}
+	// query result no longer needed
+	mysql_free_result($result);
+	
+	unset($visits_list[0]);
+	// are more than 200 rows in the result?
+	if ($show_next_visits_button)
+	{
+		// only show 200 messages, not 201
+		// NOTE: array_pop would not work on a resource (e.g. $result)
+		array_pop($visits_list);
+	}
+	
 	// format the output with a nice table
 	echo "\n" . '<table id="table_team_members" class="big">' . "\n";
-	echo '<caption>Visits log of all players</caption>' . "\n";
+	if (isset($_GET['search']))
+	{
+		echo '<caption>Search related visits log entries</caption>' . "\n";
+	} else
+	{
+		echo '<caption>Visits log of all players</caption>' . "\n";
+	}
 	echo '<tr>' . "\n";
 	echo '	<th>Name</th>' . "\n";
 	echo '	<th>ip-address</th>' . "\n";
@@ -312,20 +368,45 @@
 	echo '	<th>login time</th>' . "\n";
 	echo '</tr>' . "\n\n";
 	
-	// print out each entry
-	while($row = mysql_fetch_array($result))
+//	echo '<pre>';
+//	print_r($visits_list);
+//	echo "\n" . count($visits_list);
+//	echo '</pre>';
+	// walk through the array values
+	foreach($visits_list as $visits_entry)
 	{
 		echo '<tr>' . "\n";
-		echo '	<td><a href="./?profile=' . htmlspecialchars($row['playerid']) . '">';
-		echo $row['name'];
+		echo '	<td><a href="./?profile=' . htmlspecialchars($visits_entry['playerid']) . '">';
+		echo $visits_entry['name'];
 		echo '</a></td>' . "\n";
-		echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
-		echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
-		echo '	<td>' . htmlentities($row['timestamp']) . '</td>' . "\n";
+		echo '	<td>' . htmlentities($visits_entry['ip-address']) . '</td>' . "\n";
+		echo '	<td>' . htmlentities($visits_entry['host']) . '</td>' . "\n";
+		echo '	<td>' . htmlentities($visits_entry['timestamp']) . '</td>' . "\n";
 		echo '</tr>' . "\n";
 	}
-	mysql_free_result($result);
 	echo '</table>' . "\n";
+	
+	// look up if next and previous buttons are needed to look at all messages in overview
+	if ($show_next_visits_button || ($view_range !== (int) 0))
+	{
+		// browse previous and next entries, if possible
+		echo "\n" . '<p>'  . "\n";
+		
+		if ($view_range !== (int) 0)
+		{
+			echo '	<a href="./?i=';
+			echo ((int) $view_range)-200;
+			echo '">Previous visits</a>' . "\n";
+		}
+		if ($show_next_visits_button)
+		{
+			
+			echo '	<a href="./?i=';
+			echo ((int) $view_range)+200;
+			echo '">Next visits</a>' . "\n";
+		}
+		echo '</p>' . "\n";
+	}
 ?>
 </div>
 </body>
