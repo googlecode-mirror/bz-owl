@@ -242,17 +242,6 @@
 		$query .= ' WHERE `visits`.`playerid`=`players`.`id`';
 	}
 	
-	// how many resulting rows does the user wish?
-	// assume 200 by default
-	$num_results = 200;
-	if (isset($_GET['search_result_amount']))
-	{
-		if ($_GET['search_result_amount'] > 0)
-		{
-			// cast result to int to avoid SQL injections
-			$num_results = (int) $_GET['search_result_amount'];
-		}
-	}
 	$query .= ' ORDER BY `visits`.`id` DESC LIMIT ';
 	
 	$view_range = (int) 0;
@@ -266,7 +255,7 @@
 			$query .=  $view_range . ',';
 		} else
 		{
-			// force write 0 for value 0 (speed)
+			// force write 0 for value 0 (speed saving due to no casting to string)
 			// and 0 for negative values (security: DBMS error handling prevention)
 			$query .= '0,';
 		}
@@ -318,8 +307,7 @@
 	}
 	$rows = (int) mysql_num_rows($result);
 	$show_next_visits_button = false;
-	echo 'rows: ' . $rows . ' num: ' . $num_results;
-	// more than 200 matches
+	// more than wished visits log entries per page available in total
 	if ($rows > $num_results)
 	{
 		$show_next_visits_button = true;
@@ -369,10 +357,6 @@
 	echo '	<th>login time</th>' . "\n";
 	echo '</tr>' . "\n\n";
 	
-//	echo '<pre>';
-//	print_r($visits_list);
-//	echo "\n" . count($visits_list);
-//	echo '</pre>';
 	// walk through the array values
 	foreach($visits_list as $visits_entry)
 	{

@@ -136,7 +136,7 @@
 	echo '</select></span>';
 	
 	echo ' <label for="match_search_result_amount">Entries:</label> ';
-	echo '<span><select id="match_search_result_amount" name="match_result_amount">';
+	echo '<span><select id="match_search_result_amount" name="search_result_amount">';
 	echo '<option>200</option>';
 	echo '<option>400</option>';
 	echo '<option>800</option>';
@@ -175,6 +175,11 @@
 		}
 		// people like to use * as wildcard
 		$search_expression = str_replace('*', '%', $search_expression);
+		
+		if (strcmp('', $search_expression) === 0)
+		{
+			$search_expression = '%';
+		}
 	}
 	
 	if (isset($_GET['search']))
@@ -220,42 +225,48 @@
 	$query .= 'LIMIT ';
 	
 	$view_range = (int) 0;
+	// the "LIMIT 0,200" part of query means only the first 200 entries are received
+	// the range of shown matches is set by the GET variable i
+	if (isset($_GET['i']))
+	{
+		if (((int) $_GET['i']) > 0)
+		{
+			$view_range = (int) $_GET['i'];
+			$query .=  $view_range . ',';
+		} else
+		{
+			// force write 0 for value 0 (speed saving due to no casting to string)
+			// and 0 for negative values (security: DBMS error handling prevention)
+			$query .= '0,';
+		}
+	} else
+	{
+		// no special value set -> write 0 for value 0 (speed)
+		$query .= '0,';
+	}
+	// how many resulting rows does the user wish?
+	// assume 200 by default
+	$num_results = 200;
 	if (isset($_GET['search']))
 	{
-		// how many resulting rows does the user wish?
-		// assume 200 by default
-		$num_results = 200;
 		if (isset($_GET['search_result_amount']))
 		{
 			if ($_GET['search_result_amount'] > 0)
 			{
 				// cast result to int to avoid SQL injections
 				$num_results = (int) $_GET['search_result_amount'];
-			}
-		}
-		$query .= ' 0,' . sqlSafeString($num_results + 1);
-	} else
-	{
-		// the "LIMIT 0,200" part of query means only the first 200 entries are received
-		// the range of shown matches is set by the GET variable i
-		if (isset($_GET['i']))
-		{
-			if (((int) $_GET['i']) > 0)
-			{
-				$view_range = (int) $_GET['i'];
-				$query .=  $view_range . ',';
+				$query .= sqlSafeString($num_results + 1);
 			} else
 			{
-				// force write 0 for value 0 (speed)
-				// and 0 for negative values (security: DBMS error handling prevention)
-				$query .= '0,';
+				$query .= '201';
 			}
 		} else
 		{
-			// no special value set -> write 0 for value 0 (speed)
-			$query .= '0,';
+			$query .= '201';
 		}
-		$query .= ((int) $view_range)+201;
+	} else
+	{
+		$query .= ((int) $view_range)+$num_results+1;
 	}
 	
 	if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
@@ -265,9 +276,10 @@
 	
 	$rows = (int) mysql_num_rows($result);
 	$show_next_matches_button = false;
-	if ($rows > 200)
+	// more than wished match entries per page available in total
+	if ($rows > $num_results)
 	{
-		$show_next_messages_button = true;
+		$show_next_matches_button = true;
 	}
 	if ($rows === (int) 0)
 	{
@@ -291,26 +303,26 @@
 		echo '	<th>Allowed actions</th>' . "\n";
 	}
 	echo '</tr>' . "\n\n";
+	
 	// display message overview
 	$matchid_list = Array (Array ());
 	// read each entry, row by row
-	$current_match_row = 0;
-	while($row = mysql_fetch_array($result))
+	while ($row = mysql_fetch_array($result))
 	{
-		$matchid_list[$current_match_row]['timestamp'] = $row['timestamp'];
-		$matchid_list[$current_match_row]['team1_name'] = $row['team1_name'];
-		$matchid_list[$current_match_row]['team2_name'] = $row['team2_name'];
-		$matchid_list[$current_match_row]['team1_teamid'] = $row['team1_teamid'];
-		$matchid_list[$current_match_row]['team2_teamid'] = $row['team2_teamid'];
-		$matchid_list[$current_match_row]['team1_points'] = $row['team1_points'];
-		$matchid_list[$current_match_row]['team2_points'] = $row['team2_points'];
-		$matchid_list[$current_match_row]['playerid'] = $row['playerid'];
-		$matchid_list[$current_match_row]['playername'] = $row['playername'];
-		$matchid_list[$current_match_row]['id'] = $row['id'];
-
-		$current_match_row++;
+		$id = (int) $row['id'];
+		$matchid_list[$id]['timestamp'] = $row['timestamp'];
+		$matchid_list[$id]['team1_name'] = $row['team1_name'];
+		$matchid_list[$id]['team2_name'] = $row['team2_name'];
+		$matchid_list[$id]['team1_teamid'] = $row['team1_teamid'];
+		$matchid_list[$id]['team2_teamid'] = $row['team2_teamid'];
+		$matchid_list[$id]['team1_points'] = $row['team1_points'];
+		$matchid_list[$id]['team2_points'] = $row['team2_points'];
+		$matchid_list[$id]['playerid'] = $row['playerid'];
+		$matchid_list[$id]['playername'] = $row['playername'];
+		$matchid_list[$id]['id'] = $row['id'];
 	}
-	unset($current_match_row);
+	unset($matchid_list[0]);
+	
 	// query result no longer needed
 	mysql_free_result($result);
 	
@@ -391,9 +403,10 @@
 		{
 			echo '	<a href="./?i=';
 			
-			echo ((int) $view_range)-200;
+			echo ((int) $view_range)-$num_results;
 			if (isset($_GET['search']))
 			{
+				echo '&amp;search';
 				if (isset($_GET['search_string']))
 				{
 					echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
@@ -408,16 +421,17 @@
 				}
 			}
 			
-			echo '">Previous visits</a>' . "\n";
+			echo '">Previous matches</a>' . "\n";
 		}
-		if ($show_next_visits_button)
+		if ($show_next_matches_button)
 		{
 			
 			echo '	<a href="./?i=';
 			
-			echo ((int) $view_range)+200;
+			echo ((int) $view_range)+$num_results;
 			if (isset($_GET['search']))
 			{
+				echo '&amp;search';
 				if (isset($_GET['search_string']))
 				{
 					echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
@@ -432,11 +446,11 @@
 				}
 			}
 			
-			echo '">Next visits</a>' . "\n";
+			echo '">Next matches</a>' . "\n";
 		}
 		echo '</p>' . "\n";
 	}
-	
+		
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
 		setTableUnchanged($site, $connection);
