@@ -371,7 +371,7 @@
 	}
 	echo '</table>' . "\n";
 	
-	// look up if next and previous buttons are needed to look at all messages in overview
+	// look up if next and previous buttons are needed to look at all entries in overview
 	if ($show_next_visits_button || ($view_range !== (int) 0))
 	{
 		// browse previous and next entries, if possible

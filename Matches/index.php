@@ -393,7 +393,7 @@
 	// no more matches to display
 	echo '</table>' . "\n";
 	
-	// look up if next and previous buttons are needed to look at all matches in overview
+	// look up if next and previous buttons are needed to look at all entries in overview
 	if ($show_next_matches_button || ($view_range !== (int) 0))
 	{
 		// browse previous and next entries, if possible

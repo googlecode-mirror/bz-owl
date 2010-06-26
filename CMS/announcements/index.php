@@ -315,14 +315,11 @@
 			
 			
 			// the "LIMIT 0,15" part of query means only the first fifteen entries are received
-			$result = mysql_query('SELECT * FROM ' . $table_name . ' ORDER BY id DESC LIMIT 0,15', $connection);
+			$query = 'SELECT * FROM ' . $table_name . ' ORDER BY id DESC LIMIT 0,15';
+			$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 			if (!$result)
 			{
-				if ($site->debug_sql())
-				{
-					print mysql_error();
-				}
-				die("Query is not valid SQL.");
+				$site->dieAndEndPage();
 			}
 			
 			$rows = (int) mysql_num_rows($result);

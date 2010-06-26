@@ -117,7 +117,7 @@
 			{
 				// the "LIMIT 0,1" part of query means only the first entry is received
 				// this speeds up the query as there is only one row as result anyway
-				$query = 'SELECT * FROM `' . $table_name . '` WHERE `id`=' . "'" . sqlSafeString($currentId) . "'" . ' LIMIT 0,1';
+				$query = 'SELECT * FROM `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' LIMIT 0,1';
 				$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 				if (!$result)
 				{
