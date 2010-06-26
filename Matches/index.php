@@ -186,16 +186,17 @@
 	{
 		$query = 'SELECT `matches`.`timestamp`';
 	}
-		// get name of team 1
-		$query .= ',(SELECT `name` FROM `teams` WHERE `matches`.`team1_teamid`=`teams`.`id` LIMIT 1) AS `team1_name`';
-		// get name of team 2
-		$query .= ',(SELECT `name` FROM `teams` WHERE `matches`.`team2_teamid`=`teams`.`id` LIMIT 1) AS `team2_name`';
-		// also need the id's for quick links to team profiles
-		$query .= ',`matches`.`team1_teamid`,`matches`.`team2_teamid`';
-		// the rest of the needed data
-		$query .= ',`matches`.`team1_points`,`matches`.`team2_points`,`players`.`name` AS `player_name`,`matches`.`id`';
-		// the tables in question
-		$query .= ' FROM `matches`,`players` WHERE `players`.`id`=`matches`.`playerid`';
+	// get name of team 1
+	$query .= ',(SELECT `name` FROM `teams` WHERE `matches`.`team1_teamid`=`teams`.`id` LIMIT 1) AS `team1_name`';
+	// get name of team 2
+	$query .= ',(SELECT `name` FROM `teams` WHERE `matches`.`team2_teamid`=`teams`.`id` LIMIT 1) AS `team2_name`';
+	// also need the id's for quick links to team profiles
+	$query .= ',`matches`.`team1_teamid`,`matches`.`team2_teamid`';
+	// the rest of the needed data
+	$query .= ',`matches`.`team1_points`,`matches`.`team2_points`,`matches`.`playerid`';
+	$query .= ',`players`.`name` AS `playername`,`matches`.`id`';
+	// the tables in question
+	$query .= ' FROM `matches`,`players` WHERE `players`.`id`=`matches`.`playerid`';
 	if (isset($_GET['search']))
 	{
 		// Every derived table must have its own alias
@@ -264,6 +265,7 @@
 	echo '	<th>Time</th>' . "\n";
 	echo '	<th>Teams</th>' . "\n";
 	echo '	<th>Result</th>' . "\n";
+	echo '	<th>last mod by</th>' . "\n";
 	// show edit/delete links in a new table column if user has permission to use these
 	// adding matches is not done from within the table
 	if ($allow_edit_match || $allow_delete_match)
@@ -284,7 +286,8 @@
 		$matchid_list[$current_match_row]['team2_teamid'] = $row['team2_teamid'];
 		$matchid_list[$current_match_row]['team1_points'] = $row['team1_points'];
 		$matchid_list[$current_match_row]['team2_points'] = $row['team2_points'];
-		$matchid_list[$current_match_row]['player_name'] = $row['player_name'];
+		$matchid_list[$current_match_row]['playerid'] = $row['playerid'];
+		$matchid_list[$current_match_row]['playername'] = $row['playername'];
 		$matchid_list[$current_match_row]['id'] = $row['id'];
 
 		$current_match_row++;
@@ -325,6 +328,12 @@
 		echo ' - ';
 		echo htmlentities($match_entry['team2_points']);
 		echo '</td>' . "\n";
+		
+		echo '<td>';
+		// get name of first team
+		team_name_from_id($match_entry['playerid'], $match_entry['playername']);		
+		echo '</td>' . "\n";
+
 		
 		// show allowed actions based on permissions
 		if ($allow_edit_match || $allow_delete_match)
