@@ -203,6 +203,7 @@ label.msg_ann
 input[type=text]
 {
 	width: 10cm;
+	max-width: 100%;
 	margin-bottom: 2mm;
 }
 
