@@ -213,11 +213,6 @@ input[type=text].small_input_field
 	margin-bottom: 2mm;
 }
 
-input[type=text]#msg_send_subject
-{
-	max-width: 100%;
-}
-
 input[type=text][readonly]
 {
 	background-color: #f4f4f4;
@@ -664,11 +659,6 @@ label.player_edit
 	text-align: right;
 	float: left;
 	padding: 1mm 2mm 0 0;
-}
-
-input[type=text].logo_url
-{
-	max-width: 100%;
 }
 
 textarea.player_edit
