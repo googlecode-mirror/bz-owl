@@ -275,11 +275,11 @@
 		// no special value set -> write 0 for value 0 (speed)
 		$query .= '0,';
 	}
+	// how many resulting rows does the user wish?
+	// assume 200 by default
+	$num_results = 200;
 	if (isset($_GET['search']))
 	{
-		// how many resulting rows does the user wish?
-		// assume 200 by default
-		$num_results = 200;
 		if (isset($_GET['search_result_amount']))
 		{
 			if ($_GET['search_result_amount'] > 0)
@@ -297,7 +297,7 @@
 		}
 	} else
 	{
-		$query .= ((int) $view_range)+201;
+		$query .= ((int) $view_range)+$num_results+1;
 	}
 	
 	if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
@@ -318,8 +318,9 @@
 	}
 	$rows = (int) mysql_num_rows($result);
 	$show_next_visits_button = false;
+	echo 'rows: ' . $rows . ' num: ' . $num_results;
 	// more than 200 matches
-	if ($rows > 200)
+	if ($rows > $num_results)
 	{
 		$show_next_visits_button = true;
 	}
@@ -395,14 +396,50 @@
 		if ($view_range !== (int) 0)
 		{
 			echo '	<a href="./?i=';
-			echo ((int) $view_range)-200;
+			
+			echo ((int) $view_range)-$num_results;
+			if (isset($_GET['search']))
+			{
+				echo '&amp;search';
+				if (isset($_GET['search_string']))
+				{
+					echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
+				}
+				if (isset($_GET['search_type']))
+				{
+					echo '&amp;search_type=' . htmlspecialchars($_GET['search_type']);
+				}
+				if (isset($num_results))
+				{
+					echo '&amp;search_result_amount=' . strval($num_results);
+				}
+			}
+			
 			echo '">Previous visits</a>' . "\n";
 		}
 		if ($show_next_visits_button)
 		{
 			
 			echo '	<a href="./?i=';
-			echo ((int) $view_range)+200;
+			
+			echo ((int) $view_range)+$num_results;
+			if (isset($_GET['search']))
+			{
+				echo '&amp;search';
+				if (isset($_GET['search_string']))
+				{
+					echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
+				}
+				if (isset($_GET['search_type']))
+				{
+					echo '&amp;search_type=' . htmlspecialchars($_GET['search_type']);
+				}
+				if (isset($num_results))
+				{
+					echo '&amp;search_result_amount=' . strval($num_results);
+				}
+			}
+			
 			echo '">Next visits</a>' . "\n";
 		}
 		echo '</p>' . "\n";

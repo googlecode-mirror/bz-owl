@@ -390,18 +390,52 @@
 		if ($view_range !== (int) 0)
 		{
 			echo '	<a href="./?i=';
+			
 			echo ((int) $view_range)-200;
-			echo '">Previous matches</a>' . "\n";
+			if (isset($_GET['search']))
+			{
+				if (isset($_GET['search_string']))
+				{
+					echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
+				}
+				if (isset($_GET['search_type']))
+				{
+					echo '&amp;search_type=' . htmlspecialchars($_GET['search_type']);
+				}
+				if (isset($num_results))
+				{
+					echo '&amp;search_result_amount=' . strval($num_results);
+				}
+			}
+			
+			echo '">Previous visits</a>' . "\n";
 		}
-		if ($show_next_matches_button)
+		if ($show_next_visits_button)
 		{
 			
 			echo '	<a href="./?i=';
+			
 			echo ((int) $view_range)+200;
-			echo '">Next matches</a>' . "\n";
+			if (isset($_GET['search']))
+			{
+				if (isset($_GET['search_string']))
+				{
+					echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
+				}
+				if (isset($_GET['search_type']))
+				{
+					echo '&amp;search_type=' . htmlspecialchars($_GET['search_type']);
+				}
+				if (isset($num_results))
+				{
+					echo '&amp;search_result_amount=' . strval($num_results);
+				}
+			}
+			
+			echo '">Next visits</a>' . "\n";
 		}
 		echo '</p>' . "\n";
-	}	
+	}
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
