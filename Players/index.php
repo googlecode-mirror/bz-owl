@@ -521,7 +521,7 @@
 						$tmp_name_change_requested = true;
 						if (!((int) mysql_num_rows($result) > 1))
 						{
-							while($row = mysql_fetch_array($result))
+							while ($row = mysql_fetch_array($result))
 							{
 								if (((int) $row['id']) === ((int) $profile))
 								{
@@ -553,14 +553,42 @@
 				}
 			}
 			
+			if (isset($_POST['location']))
+			{
+				$query = 'SELECT `location` FROM `players_profile` WHERE `location`=' . "'" . sqlSafeString(htmlent($_POST['callsign'])) . "'" . ' LIMIT 1';
+				if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+				{
+					$site->dieAndEndPageNoBox('Could not confirm value ' . sqlSafeStringQuotes($_POST['location']) . ' as new location.');
+				}
+				$update_location = false;
+				while ($row = mysql_fetch_array($result))
+				{
+					if (((int) $_POST['location']) === ((int) $row['location']))
+					{
+						$update_location = true;
+					}
+				}
+				if ($update_location)
+				{
+					$query = 'UPDATE `players_profile` SET `location`=' . sqlSafeStringQuotes((int) $_POST['location']);
+					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
+					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPageNoBox('Could not update value ' . sqlSafeStringQuotes($_POST['location']).' as new location for player '.sqlSafeStringQuotes($profile) . '.');
+					}
+				}
+			}
+			
+			
 			// is there a user comment?
 			if (isset($_POST['user_comment']))
 			{
 				if (!(strcmp($_POST['user_comment'], 'No profile text has yet been set up') === 0))
 				{
 					// yes there is a comment, save it!
-					$query = 'UPDATE `players_profile` SET `user_comment`=' . "'" . sqlSafeString($_POST['user_comment']) . "'";
-					$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
+					$query = 'UPDATE `players_profile` SET `user_comment`=' . sqlSafeStringQuotes($_POST['user_comment']);
+					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
 					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
@@ -631,7 +659,7 @@
 		
 		$user_comment = '';
 		$admin_comments = '';
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			$user_comment = $row['user_comment'];
 			$admin_comments = $row['admin_comments'];
@@ -653,6 +681,26 @@
 			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'.htmlent_decode($callsign).'"');
 			echo '</p>';
 		}
+		
+		// location
+		$query = 'SELECT `id`,`name` FROM `countries`';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+		{
+			$site->dieAndEndPage('Could not retrieve list of countries from database.');
+		}
+		echo '<p><label class="player_edit" for="edit_player_location">Change country: </label>';
+		echo '<select id="edit_player_location" name="location">';
+		while ($row = mysql_fetch_array($result))
+		{
+			echo '<option value="';
+			echo htmlspecialchars($row['id']);
+			echo '">';
+			echo htmlent($row['name']);
+			echo '</option>' . "\n";
+		}
+		mysql_free_result($result);
+		echo '</select>';
+		echo '</p>';
 		
 		// user comment
 		echo '<p><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
@@ -677,9 +725,9 @@
 		echo '<div><input type="submit" name="edit_user_profile_data" value="Change user profile" id="send"></div>' . "\n";
 		echo '</form>' . "\n";
 		
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageNoBox('');
 	}
-		
+	
 	// banning user section
 	if (isset($_GET['ban']))
 	{
@@ -887,7 +935,7 @@
 		$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 		$query .= ' FROM `players`, `players_profile`,`countries` WHERE `players`.`id` = `players_profile`.`playerid`';
-		$query .= 'AND `players_profile`.`location`=`countries`.`id`';
+		$query .= ' AND `players_profile`.`location`=`countries`.`id`';
 		$query .= ' AND `players`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
