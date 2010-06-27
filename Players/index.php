@@ -698,6 +698,9 @@
 			echo '<option value="';
 			echo htmlspecialchars($row['id']);
 			if ($location === ((int) $row['id']))
+			{
+				echo ' selected="selected"';
+			}
 			echo '">';
 			echo htmlent($row['name']);
 			echo '</option>' . "\n";
