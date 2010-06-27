@@ -555,7 +555,8 @@
 			
 			if (isset($_POST['location']))
 			{
-				$query = 'SELECT `location` FROM `players_profile` WHERE `location`=' . "'" . sqlSafeString(htmlent($_POST['location'])) . "'" . ' LIMIT 1';
+				$query = 'SELECT `location` FROM `players_profile` WHERE `location`=' . sqlSafeStringQuotes(htmlent($_POST['location']));
+				$query .= ' AND `playerid`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
 					$site->dieAndEndPageNoBox('Could not confirm value ' . sqlSafeStringQuotes($_POST['location']) . ' as new location.');
