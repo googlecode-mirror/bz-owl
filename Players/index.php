@@ -896,6 +896,11 @@
 			$site->dieAndEndPage('');
 		}
 		
+		if ((int) mysql_num_rows($result) < 1)
+		{
+			echo 'no row found :(';
+		}
+		
 		if ((int) mysql_num_rows($result) > 1)
 		{
 			// more than one team with the same id!
