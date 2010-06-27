@@ -555,7 +555,7 @@
 			
 			if (isset($_POST['location']))
 			{
-				$query = 'SELECT `location` FROM `players_profile` WHERE `location`=' . "'" . sqlSafeString(htmlent($_POST['callsign'])) . "'" . ' LIMIT 1';
+				$query = 'SELECT `location` FROM `players_profile` WHERE `location`=' . "'" . sqlSafeString(htmlent($_POST['location'])) . "'" . ' LIMIT 1';
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
 					$site->dieAndEndPageNoBox('Could not confirm value ' . sqlSafeStringQuotes($_POST['location']) . ' as new location.');
@@ -991,7 +991,10 @@
 			}
 			
 			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location: </span>';
-			$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row['flagfile'] . '"');
+			if (!(strcmp($row['flagfile'], '') === 0))
+			{
+				$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row['flagfile'] . '"');
+			}
 			echo '<span class="user_profile_location">' . htmlent($row['country_name']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_last_visit_description_row"><span class="user_profile_last_visit_description">last visit:</span> <span class="user_profile_last_visit">' . htmlent($row['last_visit']) . '</span></div>' . "\n";
