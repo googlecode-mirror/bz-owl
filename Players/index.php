@@ -650,7 +650,7 @@
 		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
 		
-		$query = 'SELECT `user_comment`,`admin_comments`,`logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
+		$query = 'SELECT `location`,`user_comment`,`admin_comments`,`logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 		{
@@ -658,10 +658,12 @@
 			$site->dieAndEndPage('');
 		}
 		
+		$location = '';
 		$user_comment = '';
 		$admin_comments = '';
 		while ($row = mysql_fetch_array($result))
 		{
+			$location = (int) $row['$location'];
 			$user_comment = $row['user_comment'];
 			$admin_comments = $row['admin_comments'];
 			$logo_url = $row['logo_url'];
@@ -695,6 +697,7 @@
 		{
 			echo '<option value="';
 			echo htmlspecialchars($row['id']);
+			if ($location === ((int) $row['id']))
 			echo '">';
 			echo htmlent($row['name']);
 			echo '</option>' . "\n";
