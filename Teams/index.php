@@ -1523,7 +1523,7 @@
 			echo '<th>Allowed actions</th>' . "\n";
 		}		
 		echo '</tr>' . "\n\n";
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			echo '<tr class="teams_members_overview">' . "\n";
 			echo '<td>';
@@ -1531,7 +1531,28 @@
 			$currentId = (int) $row['id'];
 			echo $currentId . '">' . ($row['name']) . '</a>';
 			echo '</td>' . "\n" . '<td>';
-			echo $row['location'];
+			$query = 'SELECT `name`, `flagfile` FROM `countries` WHERE `id`='. sqlSafeStringQuotes($row['location']);
+			if (!($result_country = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
+			$country_shown = false;
+			while ($row_country = mysql_fetch_array($result_country))
+			{
+				if (!(strcmp($row_country['flagfile'], '') === 0))
+				{
+					$country_shown = true;
+					$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row_country['flagfile'] . '"');
+				}
+				echo '<span class="user_profile_location">' . htmlent($row_country['name']) . '</span></div>' . "\n";
+			}
+			if (!$country_shown)
+			{
+				echo 'Could not find name for country with id ' . htmlent($row['country']);
+			}
+			mysql_free_result($result_country);
+			unset($row_country);
 			echo '</td>' . "\n" . '<td>';
 			if (($team_leader_id > 0) && $team_leader_id === (int) $row['id'])
 			{
