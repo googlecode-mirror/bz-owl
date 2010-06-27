@@ -562,12 +562,13 @@
 				}
 				$update_location = false;
 				while ($row = mysql_fetch_array($result))
-				{
+				{echo 'location was set to ' . $_POST['location'];
 					if (((int) $_POST['location']) === ((int) $row['location']))
 					{
 						$update_location = true;
 					}
 				}
+				mysql_free_result($result);
 				if ($update_location)
 				{
 					$query = 'UPDATE `players_profile` SET `location`=' . sqlSafeStringQuotes((int) $_POST['location']);
