@@ -1540,16 +1540,16 @@
 			$country_shown = false;
 			while ($row_country = mysql_fetch_array($result_country))
 			{
+				$country_shown = true;
 				if (!(strcmp($row_country['flagfile'], '') === 0))
 				{
-					$country_shown = true;
 					$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row_country['flagfile'] . '"');
 				}
 				echo '<span class="user_profile_location">' . htmlent($row_country['name']) . '</span></div>' . "\n";
 			}
 			if (!$country_shown)
 			{
-				echo 'Could not find name for country with id ' . htmlent($row['country']);
+				echo 'Could not find name for country with id ' . htmlent($row['location']);
 			}
 			mysql_free_result($result_country);
 			unset($row_country);
