@@ -939,7 +939,7 @@
 		$query .= ' AND `players_profile`.`location`=`countries`.`id`';
 		$query .= ' AND `players`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
+		if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile, countries', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -947,7 +947,27 @@
 		
 		if ((int) mysql_num_rows($result) < 1)
 		{
-			echo 'no row found :(';
+			echo 'It seems like the flag specified by this user does not exist.';
+			// the data we want
+			$query = 'SELECT `players`.`name`,' . sqlSafeStringQuotes('') . ' AS `country_name`,' . sqlSafeStringQuotes('') . ' AS `flagfile`';
+			$query .= ',`players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
+			// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
+			if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
+			{
+				$query .= ', `players_profile`.`admin_comments`';
+			}
+			$query .= ', `players_profile`.`logo_url`';
+			// if the player is a member of team get the corresponding team name
+			$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
+			// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
+			$query .= ' FROM `players`, `players_profile` WHERE `players`.`id` = `players_profile`.`playerid`';
+			$query .= ' AND `players`.`id`=';
+			$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
+			if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage('');
+			}
 		}
 		
 		if ((int) mysql_num_rows($result) > 1)
