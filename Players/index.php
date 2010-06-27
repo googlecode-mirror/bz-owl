@@ -882,6 +882,8 @@
 			$query .= ', `players_profile`.`admin_comments`';
 		}
 		$query .= ', `players_profile`.`logo_url`';
+		// if the player is a member of team get the corresponding team name
+		$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 		$query .= ' FROM `players`, `players_profile` WHERE `players`.`id` = `players_profile`.`playerid` AND `players`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
@@ -916,7 +918,7 @@
 											  . htmlentities($row['logo_url'])
 											  . '" style="max-width:200px; max-height:150px" alt="player logo"');
 			}
-			echo '		<span class="user_profile_name">' . ($row['name']) . '</span> ';
+			echo '		<span class="user_profile_name">' . $player_name . '</span> ';
 			if ($suspended_status === 1)
 			{
 				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";
@@ -924,6 +926,12 @@
 			if ($suspended_status > 1)
 			{
 				echo '<span class="user_description_banned">(banned)</span>' . "\n";
+			}
+			if ((int) $row['teamid'] !== 0)
+			{
+				echo '<div class="user_profile_team_name">';
+				echo 'Team: <a href="../Teams?profile=' . $row['teamid'] . '">' . $row['team_name'] . '</a>';
+				echo '</div>' . "\n";
 			}
 			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";

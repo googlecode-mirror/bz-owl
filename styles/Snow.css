@@ -472,6 +472,11 @@ span.user_description_banned
 	margin-top: -2em;
 	margin-bottom: 1em;
 }
+span.user_profile_name + div.user_profile_team_name
+{
+	margin-top: -1em;
+	margin-bottom: 1em;
+}
 
 div.user_profile_location_description_row
 {
