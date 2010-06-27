@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-06-24 15:23:41 +0200
+# Generation Time: 2010-06-27 13:31:59 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -32,6 +32,20 @@ CREATE TABLE `bans` (
 
 
 
+# Dump of table countries
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `countries`;
+
+CREATE TABLE `countries` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(40) DEFAULT NULL,
+  `flagfile` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=206 DEFAULT CHARSET=utf8;
+
+
+
 # Dump of table invitations
 # ------------------------------------------------------------
 
@@ -47,7 +61,7 @@ CREATE TABLE `invitations` (
   KEY `teamid` (`teamid`),
   CONSTRAINT `invitations_ibfk_1` FOREIGN KEY (`invited_playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `invitations_ibfk_2` FOREIGN KEY (`teamid`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -58,7 +72,7 @@ DROP TABLE IF EXISTS `matches`;
 
 CREATE TABLE `matches` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `playerid` int(11) unsigned DEFAULT NULL,
+  `playerid` int(11) unsigned NOT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `team1_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
@@ -70,7 +84,7 @@ CREATE TABLE `matches` (
   KEY `timestamp` (`timestamp`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `matches_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
 
 
 
@@ -81,7 +95,7 @@ DROP TABLE IF EXISTS `matches_edit_stats`;
 
 CREATE TABLE `matches_edit_stats` (
   `id` int(11) unsigned NOT NULL,
-  `playerid` int(11) unsigned DEFAULT NULL,
+  `playerid` int(11) unsigned NOT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `team1_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
@@ -90,7 +104,7 @@ CREATE TABLE `matches_edit_stats` (
   KEY `timestamp` (`timestamp`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `matches_edit_stats_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The match editing history';
 
 
 
@@ -187,7 +201,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -234,7 +248,7 @@ DROP TABLE IF EXISTS `players_profile`;
 CREATE TABLE `players_profile` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `playerid` int(11) unsigned NOT NULL DEFAULT '0',
-  `location` varchar(50) NOT NULL DEFAULT 'Here be dragons',
+  `location` int(11) NOT NULL DEFAULT '1',
   `user_comment` varchar(1000) NOT NULL DEFAULT '',
   `admin_comments` varchar(2000) NOT NULL DEFAULT '',
   `last_visit` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -347,7 +361,7 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=209 DEFAULT CHARSET=utf8;
 
 
 

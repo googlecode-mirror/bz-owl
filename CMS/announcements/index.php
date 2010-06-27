@@ -112,7 +112,7 @@
 			}
 			
 			// do the same for the table that connects the messages to its users
-			$query = 'SHOW TABLES LIKE ' . "'" . $table_name_msg_user_connection . "'";
+			$query = 'SHOW TABLES LIKE ' . sqlSafeStringQuotes($table_name_msg_user_connection);
 			$result = mysql_query($query, $connection);
 			$rows = mysql_num_rows($result);
 			// done

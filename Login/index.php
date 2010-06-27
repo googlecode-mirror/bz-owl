@@ -36,11 +36,11 @@
 		if (isset($internal_login_id))
 		{
 			// internal login
-			$query .= ' `id`=' . "'" . sqlSafeString($internal_login_id) . "'";
+			$query .= ' `id`=' . sqlSafeStringQuotes($internal_login_id);
 		} else
 		{
 			// external login
-			$query .= ' `external_playerid`=' . "'" . sqlSafeString($_SESSION['external_id']) . "'";
+			$query .= ' `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']);
 		}
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
@@ -138,8 +138,8 @@
 				
 				// adding player profile entry
 				$query = 'INSERT INTO `players_profile` (`playerid`, `joined`, `location`) VALUES (';
-				$query .= "'" . sqlSafeString(getUserID()) . "'" . ', ' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
-				$query .= ', ' . "'" . sqlSafeString('Here be dragons') . "'" . ')';
+				$query .= sqlSafeStringQuotes(getUserID()) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+				$query .= ', ' . sqlSafeStringQuotes('1') . ')';
 				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
 					// FIXME: report automatically

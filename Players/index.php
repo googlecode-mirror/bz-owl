@@ -875,7 +875,8 @@
 		echo '<div class="p"></div>' . "\n";
 		
 		// the data we want
-		$query = 'SELECT `players`.`name`, `players_profile`.`location`, `players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
+		$query = 'SELECT `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`';
+		$query .= ', `players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
 		// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 		if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
 		{
@@ -885,7 +886,9 @@
 		// if the player is a member of team get the corresponding team name
 		$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
-		$query .= ' FROM `players`, `players_profile` WHERE `players`.`id` = `players_profile`.`playerid` AND `players`.`id`=';
+		$query .= ' FROM `players`, `players_profile`,`countries` WHERE `players`.`id` = `players_profile`.`playerid`';
+		$query .= 'AND `players_profile`.`location`=`countries`.`id`';
+		$query .= ' AND `players`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
 		{
@@ -933,7 +936,10 @@
 				echo 'Team: <a href="../Teams?profile=' . $row['teamid'] . '">' . $row['team_name'] . '</a>';
 				echo '</div>' . "\n";
 			}
-			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location:</span> <span class="user_profile_location">' . htmlent($row['location']) . '</span></div>' . "\n";
+			
+			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location: </span>';
+			$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row['flagfile'] . '"');
+			echo '<span class="user_profile_location">' . htmlent($row['country_name']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_last_visit_description_row"><span class="user_profile_last_visit_description">last visit:</span> <span class="user_profile_last_visit">' . htmlent($row['last_visit']) . '</span></div>' . "\n";
 			echo '	</div>' . "\n";
@@ -1025,7 +1031,7 @@
 				echo '<a class="button" href="../Visits/?profile=' . htmlspecialchars($profile) . '">View visits log</a>' . "\n";
 			}
 		}
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageNoBox('');
 	}
 	
 	// display overview

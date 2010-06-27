@@ -186,6 +186,97 @@
 			global $today;
 			echo '<p>Performing maintenance...</p>';
 			
+			// flag stuff
+			$query = 'SELECT `id` FROM `countries` WHERE `id`=' . sqlSafeStringQuotes('1');
+			if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPageNoBox('Could not if country with id 0 does exist in database');
+			}
+			$insert_entry = false;
+			if (!(mysql_num_rows($result) > 0))
+			{
+				$insert_entry = true;
+			}
+			mysql_free_result($result);
+			
+			if ($insert_entry)
+			{
+				$query = 'INSERT INTO `countries` (`id`,`name`, `flagfile`) VALUES (';
+				$query .= sqlSafeStringQuotes('1') . ',';
+				$query .= sqlSafeStringQuotes('here be dragons') . ',';
+				$query .= sqlSafeStringQuotes('') . ')';
+				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					$site->dieAndEndPageNoBox('Could not insert reserved country with name ' . sqlSafeStringQuotes('here be dragons') . ' into database');
+				}
+			}
+			
+			$dir = dirname(dirname(dirname(__FILE__))) . '/Flags';
+			$countries = array();
+			if ($handle = opendir($dir))
+			{
+				while (false !== ($file = readdir($handle)))
+				{
+					if ($file != '.' && $file != '..' && $file != '.DS_Store')
+					{
+						$countries[] = $file;
+					}
+				}
+				closedir($handle);
+			}
+			foreach($countries as &$one_country)
+			{
+				$flag_name_stripped = str_replace('Flag_of_', '', $one_country);
+				$flag_name_stripped = str_replace('.png', '', $flag_name_stripped);
+				$query = 'SELECT `flagfile` FROM `countries` WHERE `name`=' . sqlSafeStringQuotes($flag_name_stripped);
+				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					$site->dieAndEndPageNoBox('Could not check if flag ' . sqlSafeStringQuotes($one_country) . ' does exist in database');
+				}
+				$update_country = false;
+				$insert_entry = false;
+				if (!(mysql_num_rows($result) > 0))
+				{
+					$update_country = true;
+					$insert_entry = true;
+				}
+				if (!$update_country)
+				{
+					while ($row = mysql_fetch_array($result))
+					{
+						if (!(strcmp($row['flagfile'], $one_country) === 0))
+						{
+							$update_country = true;
+						}
+					}
+				}
+				mysql_free_result($result);
+				
+				if ($update_country)
+				{
+					if ($insert_entry)
+					{
+						$query = 'INSERT INTO `countries` (`name`, `flagfile`) VALUES (';
+						$query .= sqlSafeStringQuotes($flag_name_stripped) . ',';
+						$query .= sqlSafeStringQuotes($one_country) . ')';
+					} else
+					{
+						$query = 'UPDATE `countries` SET `flagfile`=' . sqlSafeStringQuotes($one_country);
+					}
+					
+					// do the changes
+					if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPageNoBox('Could update or insert country entry for ' . sqlSafeStringQuotes($one_country) . ' in database.');
+					}
+				}
+			}
+			
+			
 			// date of 2 months in past will help during maintenance
 			$two_months_in_past = strtotime('-2 months');
 			$two_months_in_past = strftime('%Y-%m-%d %H:%M:%S', $two_months_in_past);

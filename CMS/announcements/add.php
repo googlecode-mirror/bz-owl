@@ -447,7 +447,7 @@
 								$query .= sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid']));
 								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
 																
-								while($row = mysql_fetch_array($result))
+								while ($row = mysql_fetch_array($result))
 								{
 									$known_recipients[] = $row['id'];
 								}

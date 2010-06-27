@@ -198,7 +198,7 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPageNoBox('');
+			$site->dieAndEndPageNoBox();
 		}
 		
 		if ((int) mysql_num_rows($result) < 1)
@@ -217,7 +217,7 @@
 		echo '</tr>' . "\n\n";
 		
 		// print out each entry
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			echo '<tr>' . "\n";
 			echo '	<td> ' . $player_name . '</td>' . "\n";
