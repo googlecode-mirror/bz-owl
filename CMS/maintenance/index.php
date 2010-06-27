@@ -219,7 +219,7 @@
 			{
 				while (false !== ($file = readdir($handle)))
 				{
-					if ($file != '.' && $file != '..' && $file != '.DS_Store')
+					if ($file != '.' && $file != '..' $file != '.svn' && $file != '.DS_Store')
 					{
 						$countries[] = $file;
 					}
@@ -230,6 +230,7 @@
 			{
 				$flag_name_stripped = str_replace('Flag_of_', '', $one_country);
 				$flag_name_stripped = str_replace('.png', '', $flag_name_stripped);
+				$flag_name_stripped = str_replace('_', '', $one_country);
 				$query = 'SELECT `flagfile` FROM `countries` WHERE `name`=' . sqlSafeStringQuotes($flag_name_stripped);
 				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 				{
