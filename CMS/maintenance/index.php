@@ -219,7 +219,7 @@
 			{
 				while (false !== ($file = readdir($handle)))
 				{
-					if ($file != '.' && $file != '..' $file != '.svn' && $file != '.DS_Store')
+					if ($file != '.' && $file != '..' && $file != '.svn' && $file != '.DS_Store')
 					{
 						$countries[] = $file;
 					}
