@@ -658,12 +658,12 @@
 			$site->dieAndEndPage('');
 		}
 		
-		$location = '';
+		$location = 0;
 		$user_comment = '';
 		$admin_comments = '';
 		while ($row = mysql_fetch_array($result))
 		{
-			$location = (int) $row['$location'];
+			$location = (int) $row['location'];
 			$user_comment = $row['user_comment'];
 			$admin_comments = $row['admin_comments'];
 			$logo_url = $row['logo_url'];
