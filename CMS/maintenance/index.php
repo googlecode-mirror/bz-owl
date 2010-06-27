@@ -265,6 +265,7 @@
 					} else
 					{
 						$query = 'UPDATE `countries` SET `flagfile`=' . sqlSafeStringQuotes($one_country);
+						$query .= 'WHERE `name`=' . sqlSafeStringQuotes($flag_name_stripped);
 					}
 					
 					// do the changes
