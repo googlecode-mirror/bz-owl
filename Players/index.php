@@ -684,7 +684,7 @@
 		}
 		
 		// location
-		$query = 'SELECT `id`,`name` FROM `countries`';
+		$query = 'SELECT `id`,`name` FROM `countries` ORDER BY `name`';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 		{
 			$site->dieAndEndPage('Could not retrieve list of countries from database.');
