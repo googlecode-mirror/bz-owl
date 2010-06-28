@@ -328,7 +328,7 @@
 	while ($row = mysql_fetch_array($result))
 	{
 		$id = (int) $row['id'];
-		$visits_list[$id]['playerid'] = (int) $row['id'];
+		$visits_list[$id]['playerid'] = (int) $row['playerid'];
 		$visits_list[$id]['name'] = $row['name'];
 		$visits_list[$id]['ip-address'] = $row['ip-address'];
 		$visits_list[$id]['host'] = $row['host'];
