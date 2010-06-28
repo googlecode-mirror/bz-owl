@@ -479,6 +479,10 @@ div.user_profile_location_description_row
 {
 	margin-bottom: 1em;
 }
+img.country_flag
+{
+	margin-bottom: -2px;
+}
 
 div.user_description
 {
