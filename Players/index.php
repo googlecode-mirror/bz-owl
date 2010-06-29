@@ -1037,7 +1037,7 @@
 				echo '<span class="no_user_comment">The user has not set up any profile text yet.</span>';
 			} else
 			{
-				$site->linebreaks(bbcode($row['user_comment']));
+				echo $site->linebreaks(bbcode($row['user_comment']));
 			}
 			echo '</span>' . "\n";
 			echo '</div>' . "\n";

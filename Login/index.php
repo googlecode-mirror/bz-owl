@@ -209,7 +209,7 @@
 			} else
 			{
 				// FIXME: should be reported to admins automatically
-				echo '<p>Finding other members who had the same name failed. This is a database problem. Please report this to an admin!</p>' . "\n";
+				$site->dieAndEndPage('Finding other members who had the same name ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . 'failed. This is a database problem. Please report this to an admin!');
 			}
 		}
 	}
@@ -313,6 +313,10 @@
 			$query .= "'" . sqlSafeString(getUserID()) . "'" . ', ' . "'" . sqlSafeString($ip_address) . "'" . ', ' . "'" . sqlSafeString($host) . "'" . ', ' . "'" . $curDate . "'" . ')';
 			$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
+	}
+	if (getUserID() > 0)
+	{
+		echo 'Your profile page can be found at <a href="../Players/?profile=' . getUserID() . '">here</a>.' . "\n";
 	}
 	$site->dieAndEndPage('');
 ?>

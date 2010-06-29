@@ -294,10 +294,10 @@
 		{
 			if (phpversion() >= ('5.3'))
 			{
-				echo nl2br($text, ($this->use_xtml()));
+				return nl2br($text, ($this->use_xtml()));
 			} else
 			{
-				echo nl2br($text);
+				return nl2br($text);
 			}
 		}
 		

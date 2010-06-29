@@ -417,13 +417,13 @@
 						if (isset($_POST['teamid']))
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
-							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString(htmlent($subject)) . "'" . ', ';
-							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString(htmlent($announcement)) . "'" . ', 1, ' . "'" . sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
+							$query .= sqlSafeStringQuotes($author) . ', ' . "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
+							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes(htmlent($announcement)) . ', 1, ' . sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid'])) . ')';
 						} else
 						{
 							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
-							$query .= "'" . sqlSafeString($author) . "'" . ', ' . "'" . $user_id . "'" . ', ' . "'" . sqlSafeString(htmlent($subject)) . "'" . ', ';
-							$query .= "'" . sqlSafeString($timestamp) . "'" . ', ' . "'" . sqlSafeString(htmlent($announcement)) . "'" . ', 0, ' . "'" . sqlSafeString(implode(' ', ($utils->getRecipientsIDs()))) . "'" . ')';
+							$query .= sqlSafeStringQuotes($author) . ', ' . "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
+							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($announcement) . ', 0, ' . sqlSafeStringQuotes(implode(' ', ($utils->getRecipientsIDs()))) . ')';
 						}
 						$message_sent = true;
 						if ($result = (@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
@@ -438,7 +438,7 @@
 							{
 								// mark the message as message sent to an entire team
 								$query = 'INSERT INTO `messages_team_connection` (`msgid`, `teamid`)';
-								$query .= ' VALUES (' . "'" . sqlSafeString($rowId) . "'" . ', ' . "'"
+								$query .= ' VALUES (' . sqlSafeStringQuotes($rowId) . ', ' . "'"
 										. sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
 								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
 								
@@ -456,7 +456,7 @@
 								{
 									// delivery to inbox of the current player in the team messaged
 									$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES (';
-									$query .= "'" . sqlSafeString($rowId) . "'" . ', ' . "'" . sqlSafeString($one_recipient) . "'" . ', 1, 0)';
+									$query .= sqlSafeStringQuotes($rowId) . ', ' . sqlSafeStringQuotes($one_recipient) . ', 1, 0)';
 									// usually the result should be freed for performance reasons but mysql does not return a resource for insert queries
 									$tmp_result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);									
 								}
@@ -466,7 +466,7 @@
 								{
 									// get unique id from the specified player name in recipient list
 									// example query: SELECT * FROM `players` WHERE `name`='ts'
-									$query = 'SELECT * FROM `players` WHERE `name`=' . "'" . sqlSafeString($one_recipient) . "'";
+									$query = 'SELECT * FROM `players` WHERE `name`=' . sqlSafeStringQuotes($one_recipient);
 									$result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection);
 									
 									// the message needs to be send to the recipients
@@ -515,12 +515,12 @@
 					if (isset ($recipients))
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
+						$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes($author) . ',' . sqlSafeStringQuotes($announcement)	 .')';
 						
 					} else
 					{
 						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . "'" . sqlSafeString($timestamp) . "'" . ',' . "'" . sqlSafeString($author) . "'" . ',' . "'" . sqlSafeString($announcement) . "'"	 .')';
+						$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes($author) . ',' . sqlSafeStringQuotes($announcement)	 .')';
 					}
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
