@@ -298,10 +298,10 @@
 			
 			// create invitation message in database
 			$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
-			$query .= '(' . "'" . sqlSafeString('league management system') . "'" . ', ' . "'" . sqlSafeString ('0'). "'";
-			$query .= ', ' . "'" . sqlSafeString(('Invitation to team ' . $team_name)) . "'" . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-			$query .= ', ' . "'" . sqlSafeString(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n" . 'The invitation will expire in 7 days.')) . "'";
-			$query .= ', ' . "'" . sqlSafeString('0') . "'" . ', ' . "'" . sqlSafeString($profile) . "'" . ')';
+			$query .= '(' . sqlSafeStringQuotes('league management system') . ', ' . sqlSafeStringQuotes ('0');
+			$query .= ', ' . sqlSafeStringQuotes(('Invitation to team ' . $team_name)) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n" . 'The invitation will expire in 7 days.'));
+			$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($profile) . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -321,9 +321,9 @@
 			
 			// send the invitation message to user
 			$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES ';
-			$query .= '(' . "'" . sqlSafeString($msgid) . "'" . ', ' . "'" . sqlSafeString ($profile). "'";
-			$query .= ', ' . "'" . sqlSafeString('1') . "'";
-			$query .= ', ' . "'" . sqlSafeString('0') . "'" . ')';
+			$query .= '(' . sqlSafeStringQuotes($msgid) . ', ' . sqlSafeStringQuotes($profile);
+			$query .= ', ' . sqlSafeStringQuotes('1');
+			$query .= ', ' . sqlSafeStringQuotes('0') . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
