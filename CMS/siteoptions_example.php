@@ -30,6 +30,26 @@
 		return true;
 	}
 	
+	function bbcode_lib_path()
+	{
+		return ((dirname(__FILE__)) . '/nbbc-1.4.4/nbbc.php');
+	}
+	
+	function bbcode_class()
+	{
+		return 'BBCode';
+	}
+	
+	function bbcode_sets_linebreaks()
+	{
+		return true;
+	}
+	
+	function bbcode_command()
+	{
+		return 'Parse';
+	}
+	
 	class pw_secret
 	{
 		function mysqlpw_secret()

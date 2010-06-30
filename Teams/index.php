@@ -86,7 +86,14 @@
 	$team_description = '(no description)';
 	if (isset($_GET['join']) || isset($_GET['edit']) || isset($_GET['profile']))
 	{
-		$query = 'SELECT `description`';
+		$query = 'SELECT ';
+		if (!(isset($_GET['edit'])))
+		{
+			$query .= '`description`';
+		} else
+		{
+			$query .= '`raw_description` AS `description`';
+		}
 		if (isset($_GET['edit']))
 		{
 			$query .= ',`logo_url`';
@@ -332,8 +339,9 @@
 			// set up team profile
 			// set the date and time (for team creation timestamp)
 			date_default_timezone_set('Europe/Berlin');
-			$query = 'INSERT INTO `teams_profile` (`teamid`, `description`, `created`) VALUES (' . sqlSafeStringQuotes($new_team_id) . ', ';
-			$query .= sqlSafeStringQuotes(bbcode($_POST['team_description'])) . ', ' . sqlSafeStringQuotes(date('Y-m-d')) . ')';
+			$query = 'INSERT INTO `teams_profile` (`teamid`, `description`, `raw_description`, `created`) VALUES (' . sqlSafeStringQuotes($new_team_id) . ', ';
+			$query .= sqlSafeStringQuotes($site->bbcode($_POST['team_description'])) . ', ' . sqlSafeStringQuotes($_POST['team_description']);
+			$query .= ', ' . sqlSafeStringQuotes(date('Y-m-d')) . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -380,7 +388,14 @@
 		
 		// team description
 		echo '<div><label for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
-		echo $team_description . '</textarea></span></div>' . "\n";
+		if (isset($team_description))
+		{
+			echo $team_description;
+		} else
+		{
+			echo 'Think of a good description';
+		}
+		echo '</textarea></span></div>' . "\n";
 		
 		// logo/avatar url
 		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
@@ -1181,7 +1196,8 @@
 			// update team description
 			if (isset($_POST['team_description']))
 			{
-				$query = 'UPDATE `teams_profile` SET `description`=' . "'" . sqlSafeString(bbcode($_POST['team_description'])) . "'";
+				$query = 'UPDATE `teams_profile` SET `description`=' . sqlSafeStringQuotes($site->bbcode($_POST['team_description']));
+				$query .= ',`raw_description`=' . sqlSafeStringQuotes($_POST['team_description']);
 				$query .= ' WHERE `teamid`=' . "'" . $teamid . "'";
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 				{
@@ -1193,7 +1209,6 @@
 			// write logo
 			writeLogo();
 			
-//			echo 'test: ' . (bbcode($_POST['team_description']));
 			echo '<p>Changes were successfully written.</p>';
 			
 			// we're done editing
@@ -1262,7 +1277,14 @@
 		
 		// team description
 		echo '<div><label for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
-		echo $team_description . '</textarea></span></div>';
+		if (isset($team_description))
+		{
+			echo $team_description;
+		} else
+		{
+			echo 'Think of a good description';
+		}
+		echo '</textarea></span></div>' . "\n";
 		
 		// logo/avatar url
 		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';

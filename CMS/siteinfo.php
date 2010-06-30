@@ -64,15 +64,7 @@
 	{
 		return html_entity_decode($string, ENT_COMPAT, 'UTF-8');
 	}
-	
-	// give ability to use a limited custom style
-	function bbcode($string)
-	{
-		// TODO: Parse bbcode!
-		// TODO: strip_tags maybe useful for sanity check at the end
-		return $string;
-	}
-	
+		
 	// set up a class for less frequently used functions
 	class siteinfo
 	{
@@ -287,6 +279,59 @@
 				echo '<p>' . htmlent($message) . '</p>';
 			}
 			die("\n". '</div>' . "\n" . '</body>' . "\n" . '</html>');
+		}
+		
+		// give ability to use a limited custom style
+		function bbcode($string)
+		{
+			// TODO: Parse bbcode!
+			// TODO: strip_tags maybe useful for sanity check at the end
+			
+			if (strcmp(bbcode_lib_path(), '') === 0)
+			{
+				// no bbcode library specified
+				return $this->linebreaks(htmlent($string));
+			}
+			// load the library
+			require_once (bbcode_lib_path());
+			
+			if (strcmp(bbcode_command(), '') === 0)
+			{
+				// no command that starts the parser
+				return $this->linebreaks(htmlent($string));
+			} else
+			{
+				$parse_command = bbcode_command();
+			}
+			
+			if (!(strcmp(bbcode_class(), '') === 0))
+			{
+				// no class specified
+				// this is no error, it only means the library stuff isn't started by a command in a class
+				$bbcode_class = bbcode_class();
+				$bbcode_instance = new $bbcode_class;
+			}
+			
+			// execute the bbcode algorithm
+			if (isset($bbcode_class))
+			{
+				if (bbcode_sets_linebreaks())
+				{
+					return $bbcode_instance->$parse_command($string);
+				} else
+				{
+					return $this->linebreaks($bbcode_instance->$parse_command($string));
+				}
+			} else
+			{
+				if (bbcode_sets_linebreaks())
+				{
+					return $parse_command($string);
+				} else
+				{
+					return $this->linebreaks($parse_command($string));
+				}
+			}
 		}
 		
 		// add linebreaks to input, thus enable usage of multiple lines

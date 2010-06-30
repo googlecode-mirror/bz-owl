@@ -6,5 +6,5 @@
 	// do the same for the siteoptions example
 	
 	// __FILE__ is a PHP 5 constant that points to the current file (in this case siteinfo.php)
-	require_once(realpath(dirname(dirname(dirname(__FILE__))) . '/siteoptions.php'));
+	require_once (realpath(dirname(dirname(dirname(__FILE__))) . '/siteoptions.php'));
 ?>

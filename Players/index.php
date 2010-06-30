@@ -588,7 +588,8 @@
 				if (!(strcmp($_POST['user_comment'], 'No profile text has yet been set up') === 0))
 				{
 					// yes there is a comment, save it!
-					$query = 'UPDATE `players_profile` SET `user_comment`=' . sqlSafeStringQuotes($_POST['user_comment']);
+					$query = 'UPDATE `players_profile` SET `user_comment`=' . sqlSafeStringQuotes($site->bbcode($_POST['user_comment']));
+					$query .= ', `raw_user_comment`=' . sqlSafeStringQuotes($_POST['user_comment']);
 					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
 					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 					{
@@ -626,8 +627,9 @@
 				// only admins can edit their comments
 				if ($allow_add_admin_comments_to_user_profile)
 				{
-					$query = 'UPDATE `players_profile` SET `admin_comments`=' . "'" . sqlSafeString($_POST['admin_comments']) . "'";
-					$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
+					$query = 'UPDATE `players_profile` SET `admin_comments`=' . sqlSafeStringQuotes($site->bbcode($_POST['admin_comments']));
+					$query .= ', `raw_admin_comments`=' . sqlSafeStringQuotes($_POST['admin_comments']);
+					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
 					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
@@ -650,7 +652,9 @@
 		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
 		
-		$query = 'SELECT `location`,`user_comment`,`admin_comments`,`logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
+		$query = 'SELECT `location`,';
+		$query .= '`raw_user_comment`,`raw_admin_comments`';
+		$query .= ',`logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 		{
@@ -664,8 +668,8 @@
 		while ($row = mysql_fetch_array($result))
 		{
 			$location = (int) $row['location'];
-			$user_comment = $row['user_comment'];
-			$admin_comments = $row['admin_comments'];
+			$user_comment = $row['raw_user_comment'];
+			$admin_comments = $row['raw_admin_comments'];
 			$logo_url = $row['logo_url'];
 		}
 		mysql_free_result($result);
@@ -712,7 +716,7 @@
 		// user comment
 		echo '<p><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
 		echo '<span><textarea class="player_edit" id="edit_user_comment" rows="10" cols="50" name="user_comment">';
-		echo bbcode($user_comment);
+		echo $user_comment;
 		echo '</textarea></span></p>';
 
 		// logo/avatar url
@@ -725,7 +729,7 @@
 		{
 			echo '<p><label class="player_edit" for="edit_admin_comments">Edit admin comments: </label>';
 			echo '<span><textarea class="player_edit" id="edit_admin_comments" rows="10" cols="50" name="admin_comments">';
-			echo bbcode($admin_comments);
+			echo $admin_comments;
 			echo '</textarea></span></p>' . "\n";
 		}
 		
@@ -1037,7 +1041,7 @@
 				echo '<span class="no_user_comment">The user has not set up any profile text yet.</span>';
 			} else
 			{
-				echo $site->linebreaks(bbcode($row['user_comment']));
+				echo $row['user_comment'];
 			}
 			echo '</span>' . "\n";
 			echo '</div>' . "\n";
@@ -1053,7 +1057,7 @@
 				{
 					echo '	<div class="user_admin_comments_area">' . "\n";
 					echo '		<div class="user_admin_comments_header_text">admin comments</div>' . "\n";
-					echo '		<div class="user_admin_comments">' . $site->linebreaks(bbcode($admin_comments)) . '</div>' . "\n";
+					echo '		<div class="user_admin_comments">' . $admin_comments . '</div>' . "\n";
 					echo '	</div>' . "\n";
 				}
 			}

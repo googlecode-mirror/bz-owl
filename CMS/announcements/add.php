@@ -555,8 +555,7 @@
 					echo '	</div>' . "\n";
 					// appending to string with . broken here, need to use seperate echo lines
 					echo '	<div class="msg_contents">';
-					// TODO: bbcode would be cool
-					echo $site->linebreaks(htmlent($announcement));
+					echo $site->linebreaks($site->bbcode($announcement));
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
 				} else

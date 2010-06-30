@@ -81,7 +81,7 @@
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
 			echo '	<div class="msg_contents">';
-			echo $site->linebreaks(htmlent($row['message']));
+			echo $site->linebreaks($site->bbcode($row['message']));
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
 		}
