@@ -230,12 +230,16 @@
 		function use_xtml()
 		{
 			// do we use xtml (->true) or html (->false)
+			if (phpversion() >= ('4.0.5'))
+			{
+				return true;
+			}
 			if (phpversion() >= ('5.3'))
 			{
 				return xhtml_on();
 			} else
 			{
-				// nl2br needs php newer or equal to 5.3
+				// nl2br needs php newer or equal to 4.0.5 to support xhtml
 				// see http://www.php.net/manual/en/function.nl2br.php
 				return false;
 			}
