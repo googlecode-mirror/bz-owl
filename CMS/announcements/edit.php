@@ -97,23 +97,28 @@
 				echo "</div>\n\n";
 				
 				// keep the information in case user confirms by using invisible form items
-				echo '<input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
 				$site->write_self_closing_tag('br');
 				echo "\n";
-				echo "<input type=\x22hidden\x22 name=\x22preview\x22 value=\x22" . '2' . "\x22><br>\n";
-				echo '<input type="hidden" name="timestamp" value="' . urlencode(htmlentities($timestamp, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
 				$site->write_self_closing_tag('br');
 				echo "\n";
-				echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"');
 				$site->write_self_closing_tag('br');
 				echo "\n";
-				echo '<input type="hidden" name="announcement" value="' . urlencode(htmlentities($announcement, ENT_COMPAT, 'UTF-8')) . '">';
+				$site->write_self_closing_tag('input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"');
+				$site->write_self_closing_tag('br');
+				echo "\n";
+				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
 				$site->write_self_closing_tag('br');
 				echo "\n";
 				
-				echo "<input type=\x22hidden\x22 name=\x22" . $randomkey_name . "\x22 value=\x22";
-				echo urlencode(($_SESSION[$randomkey_name])) . "\x22><br>\n";
-				echo "<input type=\x22submit\x22 value=\x22" . 'Confirm changes' . "\x22>\n";
+				$site->write_self_closing_tag('input type="hidden" name="' . $randomkey_name
+											  . '" value="' . urlencode(($_SESSION[$randomkey_name])) . '"')
+				$site->write_self_closing_tag('br');
+				echo "\n";
+				$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
+				echo "\n";
 			} else
 			{
 				// $previewSeen == 0 means we just decided to add something but did not fill it out yet

@@ -87,12 +87,14 @@
 	
 	// input string
 	echo '<div style="display:inline"><label for="visit_search_string">Search for:</label> ' . "\n";
-	echo '<span><input type="text" id="visit_search_string" name="search_string"';
+	echo '<span>';
 	if (isset($_GET['search']))
 	{
-		echo ' value="' . $_GET['search_string'] . '"';	
+		$site->write_self_closing_tag('input type="text" id="visit_search_string" name="search_string" value="' . $_GET['search_string'] . '"');
+	} else
+	{
+		$site->write_self_closing_tag('input type="text" id="visit_search_string" name="search_string"');
 	}
-	echo '>';
 	echo '</span></div> ' . "\n";
 	
 	// looking for either team name or time
@@ -145,7 +147,9 @@
 	echo '</select></span>';
 	echo '</div> ' . "\n";
 	
-	echo '<div style="display:inline"> <input type="submit" name="search" value="Search" id="send"></div>' . "\n";
+	echo '<div style="display:inline">';
+	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send"');
+	echo '</div>' . "\n";
 	echo '</form>' . "\n";
 	
 	// end search toolbar

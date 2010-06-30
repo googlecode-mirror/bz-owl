@@ -252,19 +252,25 @@
 							// the message actually came from a team
 							echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=team&amp;id=' . htmlent($id);
 							echo '&amp;teamid=' . urlencode($team_message_from_team_id) . '" method="post">' . "\n";
-							echo '<p><input type="submit" value="Reply to team"></p>' . "\n";
+							echo '<p>';
+							$site->write_self_closing_tag('input type="submit" value="Reply to team"');
+							echo '</p>' . "\n";
 							echo '</form>' . "\n";
 						}
 						echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=players&amp;id=' . htmlent($id);
 						echo '" method="post">' . "\n";
-						echo '<p><input type="submit" value="Reply to player(s)"></p>' . "\n";
+						echo '<p>';
+						$site->write_self_closing_tag('input type="submit" value="Reply to player(s)"');
+						echo '</p>' . "\n";
 						echo '</form>' . "\n";
 					}
 					
 					// the user might want to delete the message
 					echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?delete=' . ((int) $id) . '&amp;folder=';
 					echo $folder . '" method="post">' . "\n";
-					echo '<p><input type="submit" value="Delete this message"></p>' . "\n";
+					echo '<p>';
+					$site->write_self_closing_tag('input type="submit" value="Delete this message"');
+					echo '</p>' . "\n";
 					echo '</form>' . "\n";
 					echo '</div>' . "\n";
 					

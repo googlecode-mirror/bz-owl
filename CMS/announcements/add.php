@@ -126,29 +126,29 @@
 			if ($iteration_count > 0)
 			{
 				echo '<div class="invisi"><label class="msg_send">Send message to:</label></div>' . "\n";
-				echo '<div class="msg_send_recipient_readonly">' . "\n";
-				echo '	<input type="text" maxlength="50" name="to';
-				echo $iteration_count;
-				echo '" id="msg_send_to';
-				echo $iteration_count;
-				echo '" readonly="readonly" value="';
-				echo ($item);
-				echo '">' . "\n";
-				echo '	<input type="submit" name="remove_recipient';
-				echo $iteration_count;
-				echo '" value="-" class="msg_send_remove_recipient">' . "\n";						
+				echo '<div class="msg_send_recipient_readonly">' . "\n" . '	';
+				$site->write_self_closing_tag('input type="text" maxlength="50" name="to' . $iteration_count
+											  . '" id="msg_send_to' . $iteration_count
+											  . '" readonly="readonly" value="' . ($item)
+											  . '"');
+				echo "\n" . '	';
+				$site->write_self_closing_tag('input type="submit" name="remove_recipient' . $iteration_count
+											  . '" value="-" class="msg_send_remove_recipient">');
+				echo "\n";
 			} else
 			{
 				echo '<div><label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label></div>' . "\n";
-				echo '<div class="msg_send_recipient_readonly">' . "\n";
-				echo '	<input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="';
-				echo ($item);
-				echo '">' . "\n";
-				echo '	<input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient">' . "\n";						
+				echo '<div class="msg_send_recipient_readonly">' . "\n" . '	';
+				$site->write_self_closing_tag('input type="text" maxlength="50" name="to0" id="msg_send_to0" readonly="readonly" value="' . ($item) . '"');
+				echo "\n" . '	';
+				$site->write_self_closing_tag('input type="submit" name="remove_recipient0" value="-" class="msg_send_remove_recipient"');
+				echo "\n";
 			}
 			echo '</div>' . "\n";
 		}
-		echo '<div><input type="hidden" name="to' . ((int) $key) .	'" value="' . (htmlentities($item)) . '"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="to' . ((int) $key) .	'" value="' . (htmlentities($item)) . '"');
+		echo '</div>' . "\n";
 		$iteration_count++;
 	}
 	
@@ -396,7 +396,9 @@
 			// FIXME: move to a line between valid form start and end place
 			if ($previewSeen > 0)
 			{
-				echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlentities(($timestamp))) . '"></p>' . "\n";
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlentities(($timestamp))) . '"');
+				echo '</p>' . "\n";
 			}
 						
 			// $previewSeen === 2 means we're about to insert the data
@@ -586,7 +588,9 @@
 				if ($message_mode)
 				{
 					echo '<form class="msg_buttons" action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
-					echo '<p><input type="hidden" name="subject" value="' . (htmlent($subject)) . '"></p>' ."\n";
+					echo '<p>';
+					$site->write_self_closing_tag('input type="hidden" name="subject" value="' . (htmlent($subject)) . '"');
+					echo '</p>' ."\n";
 				} else
 				{
 					echo '<form action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
@@ -613,34 +617,51 @@
 				}
 				
 				// keep the information in case user confirms by using invisible form items
-				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"></p>' ."\n";
-				echo '<p><input type="hidden" name="preview" value="' . '2' . '"></p>' ."\n";
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
+				echo '</p>' ."\n";
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '2' . '"');
+				echo '</p>' ."\n";
 								
 				if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 				{
-					echo '<p><input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"></p>' . "\n";
+					echo '<p>';
+					$site->write_self_closing_tag('input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"');
+					echo '</p>' . "\n";
 				}
-				echo '<p><input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"></p>' . "\n";
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
+				echo '</p>' . "\n";
 				
 				
 				$new_randomkey_name = $randomkey_name . microtime();
 				$new_randomkey = $site->set_key($new_randomkey_name);
-				echo '<p><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></p>' . "\n";
-				echo '<p><input type="hidden" name="' . sqlSafeString($randomkey_name) . '" value="';
-				echo urlencode(($_SESSION[$new_randomkey_name])) . '"></p>' . "\n";
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
+				echo '</p>' . "\n";
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="' . sqlSafeString($randomkey_name) . '" value="'
+											  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+				echo '</p>' . "\n";
 				if ($message_mode)
 				{
 					if (isset($_POST['teamid']))
 					{
-						echo '<p><input type="hidden" name="teamid" value="' . htmlentities(urldecode(htmlspecialchars_decode($_POST['teamid']))) . '"></p>' . "\n";
+						echo '<p>';
+						$site->write_self_closing_tag('input type="hidden" name="teamid" value="' . htmlentities(urldecode(htmlspecialchars_decode($_POST['teamid']))) . '"');
+						echo '</p>' . "\n";
 					}
-					echo '<p>' . "\n";
-					echo '	<input type="submit" value="' . 'Send the private message' . '">' . "\n";
-					echo '	<input type="submit" name="edit_message" value="Edit message">' . "\n";
-					echo '</p>' . "\n";
+					echo '<p>' . "\n" . '	';
+					$site->write_self_closing_tag('input type="submit" value="' . 'Send the private message' . '"');
+					echo "\n" . '	';
+					$site->write_self_closing_tag('input type="submit" name="edit_message" value="Edit message"');
+					echo "\n" . '</p>' . "\n";
 				} else
 				{
-					echo '<p><input type="submit" value="' . 'Confirm changes' . '"></p>' . "\n";
+					echo '<p>';
+					$site->write_self_closing_tag('input type="submit" value="' . 'Confirm changes' . '"');
+					echo '</p>' . "\n";
 				}
 			} else
 			{
@@ -807,10 +828,11 @@
 							
 							echo "\n" . '<div>' . "\n";
 							echo '<label class="msg_send" for="msg_send_toN">Add one more recipient:</label>' . "\n";
-							echo '	<span><input type="text" id="msg_send_toN" maxlength="50" name="to';
-							// count($known_recipients) will always be higher than 0 here
-							echo count($known_recipients);
-							echo '"></span>' . "\n";
+							echo '	<span>';
+							$site->write_self_closing_tag('input type="text" id="msg_send_toN" maxlength="50" name="to'
+														  // count($known_recipients) will always be higher than 0 here
+														  . count($known_recipients) . '"');
+							echo '</span>' . "\n";
 						} else
 						{
 							if (isset($_GET['teamid']))
@@ -843,18 +865,19 @@
 								
 								echo '<div>' . "\n";
 								echo '	<label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label>' . "\n";
-								echo '	<span><input type="text" disabled="disabled" maxlength="255" name="to0" id="msg_send_to0" value="';
-								echo $team_name;
-								echo '"></span>' . "\n";
+								echo '	<span>';
+								$site->write_self_closing_tag('input type="text" disabled="disabled" maxlength="255" name="to0" id="msg_send_to0" value="'
+															  . $team_name) . '"';
+								echo '</span>' . "\n";
 							} else
 							{
 								echo '<div>';
 								echo "\n";
-								echo '	<label class="msg_send" for="msg_send_toN" id="msg_sendmsgto">Send message to:</label><span>' . "\n";
-								echo '	<input type="text" maxlength="50" name="to0" id="msg_send_toN" value="Enter one callsign here"';
-								echo ' onFocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "'" . "'" . '"';
-								echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter one callsign here' . "'" . '"';
-								echo '></span>';
+								echo '	<label class="msg_send" for="msg_send_toN" id="msg_sendmsgto">Send message to:</label><span>' . "\n" . '	';
+								$site->write_self_closing_tag('input type="text" maxlength="50" name="to0" id="msg_send_toN" value="Enter one callsign here"'
+															  . ' onFocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "'" . "'" . '"'
+															  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter one callsign here' . "'" . '"');
+								echo '</span>';
 								echo "\n";
 							}
 						}
@@ -862,17 +885,19 @@
 						// only one team per team message
 						if (!(isset($_GET['teamid'])))
 						{
-							echo '	<input type="submit" name="add_recipient" value="+" id="msg_send_add_recipient">' . "\n";
+							echo '	';
+							$site->write_self_closing_tag('input type="submit" name="add_recipient" value="+" id="msg_send_add_recipient"');
+							echo "\n";
 						}
 						echo '</div>' . "\n";
 
 						// new form begins
 						echo '<div>' . "\n";
-						echo '	<label class="msg_send" for="msg_send_subject">Subject:</label><span>' . "\n";
-						echo '	<input type="text" id="msg_send_subject" maxlength="50" name="subject" value="' . $subject . '"';
-						echo ' onFocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '"';
-						echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter subject here' . "'" . '"';
-						echo '></span>';
+						echo '	<label class="msg_send" for="msg_send_subject">Subject:</label><span>' . "\n" . '	';
+						$site->write_self_closing_tag('input type="text" id="msg_send_subject" maxlength="50" name="subject" value="' . $subject . '"'
+													  . ' onFocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '"'
+													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter subject here' . "'" . '"');
+						echo '</span>';
 						echo "\n";
 						echo '</div>' . "\n";
 					}
@@ -900,10 +925,11 @@
 					{
 						echo '<div>' . "\n";
 						echo '	<label class="msg_ann" for="msg_send_subject">Author:</label>' . "\n";
-						echo '	<span><input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . htmlent($subject) . '"';
-						echo ' onFocus="if(this.value==' . "'" . htmlent($subject) . "'" . ') this.value=' . "'" . "'" . '"';
-						echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($subject) . "'" . '"';
-						echo '></span>' . "\n";
+						echo '	<span>';
+						$site->write_self_closing_tag('input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . htmlent($subject) . '"'
+													  . ' onFocus="if(this.value==' . "'" . htmlent($subject) . "'" . ') this.value=' . "'" . "'" . '"'
+													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($subject) . "'" . '"');
+						echo '</span>' . "\n";
 						echo '</div>' . "\n";
 					} else
 					{
@@ -916,8 +942,12 @@
 						echo '<div><input type="hidden" name="teamid" value="' . htmlspecialchars(urlencode($_GET['teamid'])) . '"></div>' . "\n";
 					}
 					
-					echo '<div><input type="hidden" name="preview" value="' . '1' . '"></div>' . "\n";
-					echo '<div><input type="submit" value="Preview"></div>' . "\n";
+					echo '<div>';
+					$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '1' . '"');
+					echo '</div>' . "\n";
+					echo '<div>';
+					$site->write_self_closing_tag('input type="submit" value="Preview"');
+					echo '</div>' . "\n";
 				}
 			}
 			// if there was a form opened, close it now
