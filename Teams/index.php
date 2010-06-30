@@ -376,7 +376,7 @@
 		// team name
 		echo '<p><label for="edit_team_name">Team name: </label>' . "\n";
 		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="enter team name here" id="edit_team_name"';
-		echo ' onFocus="if(this.value==' . "'" . 'enter team name here' . "'" . ') this.value=' . "'" . "'" . '"';
+		echo ' onfocus="if(this.value==' . "'" . 'enter team name here' . "'" . ') this.value=' . "'" . "'" . '"';
 		echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'enter team name here' . "'" . '"';
 		echo '></p>' . "\n";
 		

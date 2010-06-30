@@ -875,7 +875,7 @@
 								echo "\n";
 								echo '	<label class="msg_send" for="msg_send_toN" id="msg_sendmsgto">Send message to:</label><span>' . "\n" . '	';
 								$site->write_self_closing_tag('input type="text" maxlength="50" name="to0" id="msg_send_toN" value="Enter one callsign here"'
-															  . ' onFocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "'" . "'" . '"'
+															  . ' onfocus="if(this.value==' . "'" . 'Enter one callsign here' . "'" . ') this.value=' . "'" . "'" . '"'
 															  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter one callsign here' . "'" . '"');
 								echo '</span>';
 								echo "\n";
@@ -895,7 +895,7 @@
 						echo '<div>' . "\n";
 						echo '	<label class="msg_send" for="msg_send_subject">Subject:</label><span>' . "\n" . '	';
 						$site->write_self_closing_tag('input type="text" id="msg_send_subject" maxlength="50" name="subject" value="' . $subject . '"'
-													  . ' onFocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '"'
+													  . ' onfocus="if(this.value==' . "'" . 'Enter subject here' . "'" . ') this.value=' . "''" . '"'
 													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'Enter subject here' . "'" . '"');
 						echo '</span>';
 						echo "\n";
@@ -927,7 +927,7 @@
 						echo '	<label class="msg_ann" for="msg_send_subject">Author:</label>' . "\n";
 						echo '	<span>';
 						$site->write_self_closing_tag('input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . htmlent($subject) . '"'
-													  . ' onFocus="if(this.value==' . "'" . htmlent($subject) . "'" . ') this.value=' . "'" . "'" . '"'
+													  . ' onfocus="if(this.value==' . "'" . htmlent($subject) . "'" . ') this.value=' . "'" . "'" . '"'
 													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($subject) . "'" . '"');
 						echo '</span>' . "\n";
 						echo '</div>' . "\n";
