@@ -284,9 +284,6 @@
 		// give ability to use a limited custom style
 		function bbcode($string)
 		{
-			// TODO: Parse bbcode!
-			// TODO: strip_tags maybe useful for sanity check at the end
-			
 			if (strcmp(bbcode_lib_path(), '') === 0)
 			{
 				// no bbcode library specified
