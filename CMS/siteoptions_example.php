@@ -12,7 +12,12 @@
 	
 	function xhtml_on()
 	{
-		return false;
+		// nl2br needs php newer or equal to 4.0.5 to support xhtml
+		// if php version is higher or equal to 4.0.5 but lower than 5.3
+		// then xhtml will be always on
+		// if php version is lower than 4.0.5 then xhtml will be always off
+		// see http://www.php.net/manual/en/function.nl2br.php
+		return true;
 	}
 	
 	function www_required()
