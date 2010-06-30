@@ -150,9 +150,9 @@
 			echo $row['author'];
 			if ((int) $row['author_id'] > 0)
 			{
-				'</a>' . "\n";
+				echo '</a>' . "\n";
 			}
-			//($row["author"], $currentId, $folder, $unread)) . '</td>' . "\n";
+			echo '</td>';
 			// TODO: implement class in stylesheets
 			echo '	<td class="msg_overview_subject">' . (formatOverviewText($row["subject"], $currentId, $folder, $unread)) . '</td>' . "\n";
 			// TODO: implement class in stylesheets

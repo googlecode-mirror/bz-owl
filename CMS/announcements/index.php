@@ -276,7 +276,7 @@
 		// display depends on current mode
 		if ($message_mode)
 		{
-			echo '<div class=folder_selection>' . "\n";
+			echo '<div class="folder_selection">' . "\n";
 			require_once('msgUtils.php');
 			$msgDisplay = new folderDisplay();
 			if ((strcmp($folder, 'inbox') == 0) || (strcmp($folder, '') == 0))
