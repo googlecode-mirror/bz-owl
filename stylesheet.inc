@@ -32,9 +32,13 @@
 	//host and path
 	$url = baseaddress();
 	
-	echo '  <link href="' . $url;
+	echo '	';
+	$stylesheet_written = 'link href="' . $url;
 	// Need to append file extension as only
 	// apache allows not using it by default
-	echo 'styles/' . str_replace(' ', '%20', htmlspecialchars($stylesheet)) . '.css"';
-	echo ' rel="stylesheet" type="text/css">' . "\n";
+	$stylesheet_written .= 'styles/' . str_replace(' ', '%20', htmlspecialchars($stylesheet)) . '.css"';
+	$stylesheet_written .= ' rel="stylesheet" type="text/css"';
+	
+	$site->write_self_closing_tag($stylesheet_written);
+	unset($stylesheet_written);
 ?>
