@@ -220,7 +220,7 @@
 		while ($row = mysql_fetch_array($result))
 		{
 			echo '<tr>' . "\n";
-			echo '	<td> ' . $player_name . '</td>' . "\n";
+			echo '	<td>' . $player_name . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
 			echo '	<td>' . htmlentities($row['timestamp']) . '</td>' . "\n";
