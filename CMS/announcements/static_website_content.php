@@ -25,7 +25,7 @@
 	
 	function errormsg()
 	{
-		echo '<p>You do not have the appropriate password for that user or that user does not exist.</p>' . "\n";
+		echo '<p>You do not have the permission to edit this content.</p>' . "\n";
 	}
 	
 	
@@ -51,7 +51,7 @@
 		if (isset($_GET['edit']))
 		{
 			// user looks at page in edit mode
-			echo '<p><a href="./" class="button">Original</a>' . '</p>' ."\n";
+			echo '<p><a href="./" class="button">overview</a>' . '</p>' ."\n";
 			echo '<div class="static_page_box">' . "\n";
 		} else
 		{
@@ -67,11 +67,11 @@
 		if (isset($_GET['edit']))
 		{
 			// user wants to edit the page
-			errormsg();
 			// show a button to let the user look at the page in read only mode
-			echo '<p><a href="./" class="button">Original</a>' . '</p>' ."\n";
+			echo '<p><a href="./" class="button">overview</a>' . '</p>' ."\n";
 			// stop here or the user will be able to edit the content despite he has no permission
-			$site->dieAndEndPage('');
+			errormsg();
+			$site->dieAndEndPageNoBox();
 		}
 	}
 	
@@ -163,7 +163,8 @@
 	{
 		writeContent($content, $page_title, $site, $connection);
 		echo '<p>Updating: No problems occured, changes written successfully!</p>' . "\n";
-		$buffer = $content;
+		// we are done updating, do not show the edit field again
+		$site->dieAndEndPage();
 	} else
 	{
 		$author = '';
