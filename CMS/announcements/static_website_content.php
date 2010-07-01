@@ -56,7 +56,9 @@
 		} else
 		{
 			// user looks at page in read mode
-			echo '<a href="./?edit" class="button">edit</a><br>' . "\n";
+			echo '<a href="./?edit" class="button">edit</a>' . "\n";
+			$site->write_self_closing_tag('br');
+			echo "\n";
 			$site->write_self_closing_tag('br');
 		}
 	} else
