@@ -45,9 +45,27 @@
 	// write output buffer
 	echo $output_buffer;
 	
-	echo "<!DOCTYPE HTML PUBLIC \x22-//W3C//DTD HTML 4.01//EN\x22 \x22http://www.w3.org/TR/html4/strict.dtd\x22>\n";
-	echo "<html>\n<head>\n";
-	echo "  <meta content=\x22text/html; charset=ISO-8859-1\x22 http-equiv=\x22content-type\x22>\n";
+	require_once '../CMS/siteinfo.php';
+	$site = new siteinfo();
+	
+	if ($site->use_xtml())
+	{
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' . "\n";
+		echo '     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+	} else
+	{
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"' . "\n";
+		echo '        "http://www.w3.org/TR/html4/strict.dtd">';
+	}
+	echo "\n" . '<html';
+	if ($site->use_xtml())
+	{
+		echo ' xmlns="http://www.w3.org/1999/xhtml"';
+	}
+	echo '>' . "\n";
+	echo '<head>' . "\n";
+	echo '	' . ($site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"')) . "\n";
+	
 	if (strlen($stylesheet) > 0)
 	{
 		// we have a new stylesheet chosen by user
@@ -57,13 +75,9 @@
 	} else
 	{
 		// use previously used stylesheet
-		
-		require_once '../CMS/siteinfo.php';
-		$site = new siteinfo();
-		
 		include '../stylesheet.inc';
 	}
-	?>
+?>
 <title>Config</title>
 </head>
 <body>
@@ -131,33 +145,32 @@
 	echo $url;
 ?>">
 <p>Theme:
-  <select name="stylesheet">
+	<select name="stylesheet">
 <?php
 	define ('SELECTED', ' selected="selected"');
 	
-	echo '    <option';
+	echo '		<option';
 	if (strcmp($stylesheet, 'White') == 0)
 	{
 		echo SELECTED;
 	}
 	echo '>White</option>' . "\n";
 	
-	echo '    <option';
+	echo '		<option';
 	if (strcmp($stylesheet, 'Snow') == 0)
 	{
 		echo SELECTED;
 	}
 	echo '>Snow</option>' . "\n";
-	echo '    <option';
+	echo '		<option';
 	if (strcmp($stylesheet, 'Ups Layout') == 0)
 	{
 		echo SELECTED;
 	}
 	echo '>Ups Layout</option>' . "\n";
-	
+	echo '	</select>' . "\n" . '	';
+	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
 ?>
-  </select>
-  <input type="submit" value="Submit changes">
 </p>
 </form>
 </div>
