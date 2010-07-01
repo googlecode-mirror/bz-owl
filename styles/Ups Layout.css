@@ -200,6 +200,14 @@ label.msg_ann
 	padding: 1mm 2mm 0 0;
 }
 
+label.msg_edit
+{
+	width: 4.4em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
 input[type=text]
 {
 	width: 10cm;

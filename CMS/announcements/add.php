@@ -939,7 +939,9 @@
 					
 					if (isset($_GET['teamid']))
 					{
-						echo '<div><input type="hidden" name="teamid" value="' . htmlspecialchars(urlencode($_GET['teamid'])) . '"></div>' . "\n";
+						echo '<div>' . "\n";
+						$site->write_self_closing_tag('input type="hidden" name="teamid" value="' . htmlspecialchars(urlencode($_GET['teamid'])) . '"');
+						echo "\n" . '</div>' . "\n";
 					}
 					
 					echo '<div>';

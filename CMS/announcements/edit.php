@@ -114,7 +114,7 @@
 				echo "\n";
 				
 				$site->write_self_closing_tag('input type="hidden" name="' . $randomkey_name
-											  . '" value="' . urlencode(($_SESSION[$randomkey_name])) . '"')
+											  . '" value="' . urlencode(($_SESSION[$randomkey_name])) . '"');
 				$site->write_self_closing_tag('br');
 				echo "\n";
 				$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
@@ -147,36 +147,52 @@
 					echo "<form action=\x22" . baseaddress() . $name . '/?edit=' . $currentId . "\x22 method=\x22post\x22>\n";
 					
 					// timestamp
-					print '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>';
-					echo "<tr><td style=\x22vertical-align: top;\x22>timestamp:</td><td style=\x22vertical-align: top;\x22>";
-					echo '<input name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"></input></p></td></tr>' . "\n";
-					
+					echo '<div>' . "\n";
+					echo '	<label class="msg_edit" for="msg_edit_timestamp">Timestamp:</label> ' . "\n";
+					echo '	<span>' . "\n" . '		';
+					$site->write_self_closing_tag('input type="text" id="msg_edit_timestamp" name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"');
+					echo '	</span>' . "\n";
+					echo '</div>' . "\n";
+										
 					// announcement
-					echo "<tr><td style=\x22vertical-align: top;\x22>announcement:</td><td style=\x22vertical-align: top;\x22>";
-					echo "<textarea cols=\x2275\x22 rows=\x2220\x22 name=\x22announcement\x22>" . htmlent(urldecode($announcement));
-					echo '</textarea></td></tr>' . "\n";
+					echo '<div>' . "\n";
+					echo '	<label class="msg_edit" for="msg_send_announcement">Message:</label>' . "\n";
+					echo '	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement">';
+					echo htmlent($announcement);
+					echo '</textarea></span>' . "\n";
+					echo '</div>' . "\n";
 					
 					// author
-					if ($_SESSION[$author_change_allowed])
+					if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 					{
-						echo '<tr><td style="vertical-align: top;">Author:</td><td style="vertical-align: top;">';
-						echo '<input name="author" value="' . htmlent(urldecode($author)) . '"></input>' . "\n";
-						echo '</td></tr>' . "\n";
+						echo '<div>' . "\n";
+						echo '	<label class="msg_edit" for="msg_send_subject">Author:</label>' . "\n";
+						echo '	<span>';
+						$site->write_self_closing_tag('input type="text" id="msg_send_subject" maxlength="50" name="author" value="' . htmlent($author) . '"'
+													  . ' onfocus="if(this.value==' . "'" . htmlent($author) . "'" . ') this.value=' . "'" . "'" . '"'
+													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($author) . "'" . '"');
+						echo "\n" . '</span>' . "\n";
+						echo '</div>' . "\n";
 					} else
 					{
-						echo '<input type="hidden" name="author" value="' . htmlent(urldecode($author)) . '"><br>' . "\n";
+//						// FIXME: better idea to compute just at the moment the action in form has been finally confirmed by user
+//						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"><br>' . "\n";
 					}
 					
-					echo '<input type="hidden" name="preview" value="' . '1' . '"><br>' . "\n";
-					echo '<input type="submit" value="' . 'Preview' . '">' . "\n";
-					echo '</tbody></table>' . "\n";
-					
-					// if there was a form opened, close it now
-					if (($previewSeen==0) || ($previewSeen==1))
-					{
-						echo "</form>\n";
-					}
+					echo '<div>' . "\n";
+					$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '1' . '"');
+					echo '</div>' . "\n";
+					echo '<div>' . "\n";
+					$site->write_self_closing_tag('input type="submit" value="' . 'Preview' . '"');
+					echo '</div>' . "\n";
 				}
+			}
+			
+			// if there was a form opened, close it now
+			if (($previewSeen==0) || ($previewSeen==1))
+			{
+				echo '</form>' . "\n";
+				echo '</div>' . "\n";
 			}
 		}
 	}
