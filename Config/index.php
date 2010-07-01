@@ -161,6 +161,26 @@
 </p>
 </form>
 </div>
+<?php
+	if (file_exists('../.svn/entries'))
+	{
+		$handle = fopen('../.svn/entries', 'rb');
+		$counter = 1;
+		while ($rev = fscanf($handle, "%[a-zA-Z0-9,. ]%[dir]\n%[a-zA-Z0-9,.]"))
+		{
+			$counter++;
+			
+			if ($counter > 4)
+			{
+				// Listing some of them
+				list($svn_rev) = $rev;
+				echo '<p>SVN revision: ' . $svn_rev . '</p>' . "\n";
+				break;
+			}
+		}
+		fclose($handle);
+	}
+?>
 </div>
 </body>
 </html>
