@@ -192,6 +192,7 @@
 			}
 		}
 		fclose($handle);
+		unset($counter);
 	}
 ?>
 </div>
