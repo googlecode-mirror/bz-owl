@@ -86,15 +86,16 @@
 				// FIXME: Do bb code instead of raw html
 				// FIXME: This is a lower priority problem because only a minority can edit messages
 				echo '<div class="article">' . "\n";
+				echo '<div class="article_header">' . "\n";
 				echo '<div class="timestamp">';
 				echo htmlentities($timestamp);
 				echo '</div>' . "\n";
 				echo '<div class="author"> By: ';
-				echo htmlentities($author, ENT_COMPAT, 'UTF-8');
+				echo htmlent($author);
 				echo '</div>' . "\n";
-				echo '<hr>';
-				echo htmlentities($announcement, ENT_COMPAT, 'UTF-8');
-				echo "</div>\n\n";
+				echo '</div>' . "\n";
+				echo '<p>' . htmlent($announcement) . '</p>' . "\n";
+				echo '</div>' . "\n\n";
 				
 				// keep the information in case user confirms by using invisible form items
 				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
