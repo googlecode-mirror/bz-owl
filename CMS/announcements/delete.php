@@ -96,17 +96,25 @@
 			{
 				echo '<form class="deletion_preview" action="' . baseaddress() . $site->base_name() . '/?delete=' . sqlSafeString($currentId) . '&amp;folder=';
 				echo $folder . '" method="post">' . "\n";
-				echo 'Are you sure to delete the following message? <input type="submit" value="Delete message">';
+				echo '<p>Are you sure to delete the following message? ';
+				$site->write_self_closing_tag('input type="submit" value="Delete message"');
 			} else
 			{
 				echo '<form class="deletion_preview" action="' . baseaddress() . $name . '/?delete=' . $currentId . '" method="post">' . "\n";
-				echo 'Are you sure to delete the following entry? <input type="submit" value="Delete entry">';
+				echo '<p>Are you sure to delete the following entry? ';
+				$site->write_self_closing_tag('input type="submit" value="Delete entry"');
 			}
-			echo '<input type="hidden" name="preview" value="' . '1' . '">' . "\n";
+			echo '</p>' . "\n";
+			
+			echo '<div>' . "\n";
+			$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '1' . '"');
+			echo '</div>' . "\n";
 			
 			// random key
-			echo '<input type="hidden" name="' . $randomkey_name . '" value="';
-			echo urlencode(($_SESSION[$randomkey_name])) . '">' . "\n";
+			echo '<div>' . "\n";
+			$site->write_self_closing_tag('input type="hidden" name="' . $randomkey_name . '" value="'
+										  . urlencode(($_SESSION[$randomkey_name])) . '"');
+			echo '</div>' . "\n";
 			
 			echo '</form>' . "\n";
 			if ($message_mode)
@@ -133,15 +141,16 @@
 					{
 						// display the row to the user
 						echo '<div class="article">' . "\n";
-						echo '<div class="timestamp">' . "\n";
-						printf("%s", $row["timestamp"]);
+						echo '<div class="article_header">' . "\n";
+						echo '<div class="timestamp">';
+						echo htmlent($row['timestamp']);
 						echo '</div>' . "\n";
-						echo '<div class="author">';
-						printf("By: %s", $row["author"]);
+						echo '<div class="author"> By: ';
+						echo htmlent($row['author']);
 						echo '</div>' . "\n";
-						echo '<hr>';
-						printf("<p>%s</p>\n", $row["announcement"]);
-						echo "</div>\n\n";
+						echo '</div>' . "\n";
+						echo '<p>' . htmlent($row['announcement']) . '</p>' . "\n";
+						echo '</div>' . "\n\n";
 					}
 					// done
 					mysql_free_result($result);

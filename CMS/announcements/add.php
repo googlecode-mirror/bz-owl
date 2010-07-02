@@ -342,10 +342,8 @@
 			
 			if (!$randomkeysmatch && $previewSeen > 1)
 			{
-				// give possibility to go back to main view
-				echo '<a href="./">[overview]</a>';
 				echo '<p>The magic key does not match, it looks like you came from somewhere else or your session expired.';
-				echo ' Going back to compositing mode</p>' . "\n";
+				echo ' Going back to compositing mode.</p>' . "\n";
 				$previewSeen = 0;
 			}
 			
@@ -404,6 +402,7 @@
 			// $previewSeen === 2 means we're about to insert the data
 			if ($previewSeen === 2)
 			{
+				echo '<div class="static_page_box">' . "\n";
 				if ($message_mode)
 				{
 					if ($recipients)
@@ -526,14 +525,13 @@
 					}
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
-						echo "<p>Updating: No problems occured, changes written!</p>\n";
-						echo '<p><a href="./">[overview]</a><p>' . "\n";
+						echo '<p>Updating: No problems occured, changes written!</p>' . "\n";
 					} else
 					{
-						echo "<p>Seems like adding entry failed.</p>";
-						echo '<p><a href="./">[overview]</a><p>' . "\n";
+						echo '<p>Seems like editing failed.</p>' . "\n";
 					}
 				}
+				$site->dieAndEndPage();
 			}
 			
 			
@@ -563,26 +561,15 @@
 				} else
 				{
 					echo '<div class="article">' . "\n";
-					if ($message_mode)
-					{
-						echo '<div class="to">' . "\n";
-						echo htmlent($recipients);
-					}
+					echo '<div class="article_header">' . "\n";
 					echo '<div class="timestamp">';
-					if ($message_mode)
-					{
-						// timestamp automatically generated and not set by any user
-						echo $timestamp;
-					} else
-					{
-						echo $timestamp;
-					}
+					echo $timestamp;
 					echo '</div>' . "\n";
 					echo '<div class="author"> By: ';
 					echo htmlent($author);
 					echo '</div>' . "\n";
-					echo '<hr>';
-					echo htmlent($announcement);
+					echo '</div>' . "\n";
+					echo '<p>' . htmlent($announcement) . '</p>' . "\n";
 					echo '</div>' . "\n\n";
 				}
 				if ($message_mode)
@@ -668,6 +655,7 @@
 				// $previewSeen === 0 means we just decided to add something but did not fill it out yet
 				if ($previewSeen === 0)
 				{
+					echo '<div class="static_page_box">' . "\n";
 					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add">' . "\n";
 					
 					// timestamp

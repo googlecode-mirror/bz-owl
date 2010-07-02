@@ -50,15 +50,26 @@
 			}
 			
 			// make sure the magic key matches
-			$randomkeysmatch = $site->compare_keys($randomkey_name);
-			
-			// $previewSeen == 2 means we're about to insert the data
-			if (($previewSeen==2) && $randomkeysmatch)
+			// each form has a unique id to prevent accepting the same information twice
+			// the latter could be done by users clicking on forms somewhere else
+			$new_randomkey_name = '';
+			if (isset($_POST['key_name']))
 			{
-				if (!$randomkeysmatch)
-				{
-					echo '<p>The random key did not match, it looks like you came from a different site</p>' . "\n";
-				}
+				$new_randomkey_name = html_entity_decode($_POST['key_name']);
+			}
+			$randomkeysmatch = $site->compare_keys($randomkey_name, $new_randomkey_name);
+			
+			if (!$randomkeysmatch && $previewSeen > 1)
+			{
+				echo '<p>The magic key does not match, it looks like you came from somewhere else or your session expired.';
+				echo ' Going back to compositing mode.</p>' . "\n";
+				$previewSeen = 0;
+			}
+			
+			// $previewSeen === 2 means we're about to insert the data
+			if (($previewSeen === 2) && $randomkeysmatch)
+			{
+				echo '<div class="static_page_box">' . "\n";
 				// sqlSafeString is from siteinfo.php
 				// needed to prevent SQL injections
 				// example: UPDATE news SET timestamp="tes", author="me", announcement="really" WHERE id=7
@@ -67,20 +78,22 @@
 				
 				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 				{
-					echo "Updating: No problems occured, changes written!<br><br>\n";
+					echo '<p>Updating: No problems occured, changes written!</p>' . "\n";
 				} else
 				{
-					echo "Seems like editing failed.";
+					echo '<p>Seems like editing failed.</p>' . "\n";
 				}
+				$site->dieAndEndPage();
 			}
 			
 			$pfad = (pathinfo(realpath('./')));
 			$name = $pfad['basename'];
 			
 			//\x22 == "
-			if (($previewSeen==1) && ($previewSeen!=2)){
+			if ($previewSeen === 1)
+			{
 				echo "<form action=\x22" . baseaddress() . $name . '/?edit=' . $currentId . "\x22 method=\x22post\x22>\n";
-				echo 'Preview:' . "\n";
+				echo '<p>Preview:</p>' . "\n";
 				
 				// We are doing the preview by echoing the info
 				// FIXME: Do bb code instead of raw html
@@ -88,7 +101,7 @@
 				echo '<div class="article">' . "\n";
 				echo '<div class="article_header">' . "\n";
 				echo '<div class="timestamp">';
-				echo htmlentities($timestamp);
+				echo htmlent($timestamp);
 				echo '</div>' . "\n";
 				echo '<div class="author"> By: ';
 				echo htmlent($author);
@@ -98,33 +111,48 @@
 				echo '</div>' . "\n\n";
 				
 				// keep the information in case user confirms by using invisible form items
+				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
-				$site->write_self_closing_tag('br');
-				echo "\n";
-				$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
-				$site->write_self_closing_tag('br');
-				echo "\n";
-				$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"');
-				$site->write_self_closing_tag('br');
-				echo "\n";
-				$site->write_self_closing_tag('input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"');
-				$site->write_self_closing_tag('br');
-				echo "\n";
-				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
-				$site->write_self_closing_tag('br');
-				echo "\n";
+				echo '</p>' . "\n";
 				
-				$site->write_self_closing_tag('input type="hidden" name="' . $randomkey_name
-											  . '" value="' . urlencode(($_SESSION[$randomkey_name])) . '"');
-				$site->write_self_closing_tag('br');
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
+				echo '</p>' . "\n";
+				
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"');
+				echo '</p>' . "\n";
+				
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"');
+				echo '</p>' . "\n";
+				
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
+				echo '</p>' . "\n";
+				
+				$new_randomkey_name = $randomkey_name . microtime();
+				$new_randomkey = $site->set_key($new_randomkey_name);
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
+				echo '</p>' . "\n";
+				
+				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="' . sqlSafeString($randomkey_name) . '" value="'
+											  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+				echo '</p>' . "\n";
+				
 				echo "\n";
+				echo '<p>';
 				$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
-				echo "\n";
+				echo '</p>' . "\n";
 			} else
 			{
-				// $previewSeen == 0 means we just decided to add something but did not fill it out yet
-				if ($previewSeen==0)
+				// $previewSeen === 0 means we just decided to add something but did not fill it out yet
+				if ($previewSeen === 0)
 				{
+					echo '<div class="static_page_box">' . "\n";
+					
 					$query = 'SELECT * from `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' ORDER BY id LIMIT 1';
 					$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 					if (!$result)
@@ -190,10 +218,13 @@
 			}
 			
 			// if there was a form opened, close it now
-			if (($previewSeen==0) || ($previewSeen==1))
+			if (($previewSeen == 0) || ($previewSeen === 1))
 			{
 				echo '</form>' . "\n";
-				echo '</div>' . "\n";
+				if (!($previewSeen === 1))
+				{
+					echo '</div>' . "\n";
+				}
 			}
 		}
 	}

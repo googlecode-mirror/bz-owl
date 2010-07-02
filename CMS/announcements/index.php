@@ -241,21 +241,21 @@
 		{
 			// back button might lead to the deletion form, show link to last viewed folder
 			echo '<p class="first_p"><a class="button" href="./?folder=' . htmlspecialchars($folder) . '">overview</a><p>';
+		} else
+		{
+			echo '<p class="first_p"><a class="button" href="./">overview</a></p>';
 		}
-		echo '<p class="first_p"><a class="button" href="./">overview</a></p>';
 	}
 	
 	// handle adding new item
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
-		echo '<div class="static_page_box">' . "\n";
 		require_once('add.php');
 	}
 	
 	// handle editing item
 	if ((isset($_SESSION[$entry_edit_permission]) && ($_SESSION[$entry_edit_permission])) && (isset($_GET['edit'])) && (!(isset($_GET['add']))) && (!(isset($_GET['delete']))))
 	{
-		echo '<div class="static_page_box">' . "\n";
 		require_once('edit.php');
 	}
 	
@@ -344,7 +344,7 @@
 				}
 				echo '<div class="article">' . "\n";
 				echo '<div class="article_header">' . "\n";
-				echo '<div class="timestamp">' . "\n";
+				echo '<div class="timestamp">';
 				printf("%s", htmlentities($row["timestamp"]));
 				echo '</div>' . "\n";
 				echo '<div class="author">';
