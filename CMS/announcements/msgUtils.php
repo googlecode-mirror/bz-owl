@@ -159,24 +159,23 @@
 			echo '	<td class="msg_overview_timestamp">' . $row["timestamp"] . '</td>' . "\n";
 			
 			echo '	<td class="msg_overview_recipients">';
-			if (!(strcmp($folder, 'inbox') == 0))
+			
+			// save the recipients as an array
+			$recipients = explode(' ', $row['recipients']);
+			
+			//print_r($recipients);
+			// TODO: implement class msg_overview_recipients in stylesheets
+			if (strcmp('0', $row['from_team']) == 0)
 			{
-				// save the recipients as an array
-				$recipients = explode(' ', $row['recipients']);
-				
-				//print_r($recipients);
-				// TODO: implement class msg_overview_recipients in stylesheets
-				if (strcmp('0', $row['from_team']) == 0)
-				{
-					// message has one or more players as recipient(s)
-					array_walk($recipients, 'find_recipient_player', $connection);
-				} else
-				{
-					// message has one or more teams as recipient(s)
-					array_walk($recipients, 'find_recipient_team', $connection);
-				}
-				echo (implode('<span class="msg_recipient_seperator">, </span>', $recipients));
+				// message has one or more players as recipient(s)
+				array_walk($recipients, 'find_recipient_player', $connection);
+			} else
+			{
+				// message has one or more teams as recipient(s)
+				array_walk($recipients, 'find_recipient_team', $connection);
 			}
+			echo (implode('<span class="msg_recipient_seperator">, </span>', $recipients));
+			
 			echo '</td>' . "\n";
 			echo '</tr>' . "\n\n";
 			
@@ -352,11 +351,7 @@
 					echo '	<th>Author</th>' . "\n";
 					echo '	<th>Subject</th>' . "\n";
 					echo '	<th>Date</th>' . "\n";
-					if (!(strcmp($folder, 'inbox') === 0))
-					{
-						// user is not looking not at inbox
-						echo '	<th>Recipient(s)</th>' . "\n";
-					}
+					echo '	<th>Recipient(s)</th>' . "\n";
 					echo '</tr>' . "\n\n";
 					
 					// walk through the array values
