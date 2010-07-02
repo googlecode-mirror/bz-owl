@@ -153,7 +153,7 @@
 	
 	if (isset($_GET['profile']))
 	{
-		$profile = $_GET['profile'];
+		$profile = (int) $_GET['profile'];
 		
 		// need an overview button to enable navigation within the page
 		echo '<a class="button" href="./">overview</a>' . "\n";
@@ -190,58 +190,23 @@
 		mysql_free_result($result);
 		
 		// collect visits list of that player
-		// example query: SELECT `ip-address`, `host` FROM `visits` WHERE `playerid`='16'
-		$query = 'SELECT `ip-address`, `host`, `timestamp` FROM `visits` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
-		// only get first 200 entries by default
-		$query .= ' ORDER BY `id` DESC ';
-		$query .= ' LIMIT 0,200';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
-		{
-			// query was bad, error message was already given in $site->execute_query(...)
-			$site->dieAndEndPageNoBox();
-		}
-		
-		if ((int) mysql_num_rows($result) < 1)
-		{
-			$site->dieAndEndPageNoBox('There are no visits by this user (id=' . sqlSafeString(htmlent($profile)) . '). Make sure the user is not deleted.');
-		}
-		
-		// format the output with a nice table
-		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
-		echo '<caption>Visits log of player ' . $player_name . '</caption>' . "\n";
-		echo '<tr>' . "\n";
-		echo '	<th>Name</th>' . "\n";
-		echo '	<th>ip-address</th>' . "\n";
-		echo '	<th>host</th>' . "\n";
-		echo '	<th>login time</th>' . "\n";
-		echo '</tr>' . "\n\n";
-		
-		// print out each entry
-		while ($row = mysql_fetch_array($result))
-		{
-			echo '<tr>' . "\n";
-			echo '	<td>' . $player_name . '</td>' . "\n";
-			echo '	<td>' . htmlentities($row['ip-address']) . '</td>' . "\n";
-			echo '	<td>' . htmlentities($row['host']) . '</td>' . "\n";
-			echo '	<td>' . htmlentities($row['timestamp']) . '</td>' . "\n";
-			echo '</tr>' . "\n";
-		}
-		mysql_free_result($result);
-		echo '</table>' . "\n";
-		
-		// done with the player profile
-		$site->dieAndEndPageNoBox('');
+		// example query: SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp`
+		//				  FROM `visits`,`players` WHERE `visits`.`playerid`='16' AND `players`.`id`='16'
+		//				  ORDER BY `visits`.`id` DESC LIMIT 0,201
+		$query = 'SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp` FROM `visits`,`players` WHERE `visits`.`playerid`=' . sqlSafeStringQuotes($profile) . ' AND `players`.`id`=' . sqlSafeStringQuotes($profile);
 	}
 	
 	// display visits log overview
 	
-	if (!(isset($_GET['search'])))
+	if (!(isset($_GET['profile'])))
 	{
-		// get list of last 200 visits
-		$query = 'SELECT `visits`.`id`,`visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players`';
-		$query .= ' WHERE `visits`.`playerid`=`players`.`id`';
+		if (!(isset($_GET['search'])))
+		{
+			// get list of last 200 visits
+			$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players`';
+			$query .= ' WHERE `visits`.`playerid`=`players`.`id`';
+		}
 	}
-	
 	$query .= ' ORDER BY `visits`.`id` DESC LIMIT ';
 	
 	$view_range = (int) 0;
@@ -325,19 +290,26 @@
 	
 	$visits_list = Array (Array ());
 	// read each entry, row by row
+	$id = 0;
 	while ($row = mysql_fetch_array($result))
 	{
-		$id = (int) $row['id'];
-		$visits_list[$id]['playerid'] = (int) $row['playerid'];
+		if (!(isset($_GET['profile'])))
+		{
+			$visits_list[$id]['playerid'] = (int) $row['playerid'];
+		} else
+		{
+			$visits_list[$id]['playerid'] = $profile;
+		}
 		$visits_list[$id]['name'] = $row['name'];
 		$visits_list[$id]['ip-address'] = $row['ip-address'];
 		$visits_list[$id]['host'] = $row['host'];
 		$visits_list[$id]['timestamp'] = $row['timestamp'];
+		$id++;
 	}
+	unset($id);
 	// query result no longer needed
 	mysql_free_result($result);
 	
-	unset($visits_list[0]);
 	// are more than 200 rows in the result?
 	if ($show_next_visits_button)
 	{
@@ -366,12 +338,12 @@
 	foreach($visits_list as $visits_entry)
 	{
 		echo '<tr>' . "\n";
-		echo '	<td><a href="./?profile=' . htmlspecialchars($visits_entry['playerid']) . '">';
+		echo '	<td><a href="./?profile=' . strval($visits_entry['playerid']) . '">';
 		echo $visits_entry['name'];
 		echo '</a></td>' . "\n";
-		echo '	<td>' . htmlentities($visits_entry['ip-address']) . '</td>' . "\n";
-		echo '	<td>' . htmlentities($visits_entry['host']) . '</td>' . "\n";
-		echo '	<td>' . htmlentities($visits_entry['timestamp']) . '</td>' . "\n";
+		echo '	<td>' . htmlent($visits_entry['ip-address']) . '</td>' . "\n";
+		echo '	<td>' . htmlent($visits_entry['host']) . '</td>' . "\n";
+		echo '	<td>' . htmlent($visits_entry['timestamp']) . '</td>' . "\n";
 		echo '</tr>' . "\n";
 	}
 	echo '</table>' . "\n";
