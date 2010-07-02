@@ -1685,6 +1685,7 @@
 			
 			// do maintenance after a match has been entered
 			// a check inside the maintenance logic will make sure it will be only performed one time per day at max
+			unlock_tables();
 			require_once('../CMS/maintenance/index.php');
 		}
 		
