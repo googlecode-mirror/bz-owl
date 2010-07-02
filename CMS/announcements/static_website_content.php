@@ -37,7 +37,7 @@
 	// set their values in case the POST variables are set
 	if (isset($_POST["preview"]))
 	{
-		$previewSeen = $_POST['preview'];
+		$previewSeen = (int) $_POST['preview'];
 	}
 	if (isset($_POST['News']))
 	{
@@ -100,7 +100,7 @@
 		// initialise return variable so any returned value will be always in a defined state
 		$content = '<p class="first_p">No content available yet.</p>';
 		
-		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . "'" . sqlSafeString($page_title) . "'" . ' LIMIT 1';
+		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
@@ -121,7 +121,18 @@
 	
 	function writeContent (&$content, $page_title, $site, $connection)
 	{
-		$query = 'SELECT `id` FROM `static_pages` WHERE `page_name`=' . "'" . sqlSafeString($page_title) . "'" . ' LIMIT 1';
+		if (strcmp($content, '') === 0)
+		{
+			// empty content
+			$query = 'DELETE FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
+			if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
+			{
+				$site->dieAndEndPage('An error occured deleting content for page ' . $page_title . '!');
+			}
+			return;
+		}
+		
+		$query = 'SELECT `id` FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
@@ -158,8 +169,7 @@
 		}
 	}
 	
-	
-	if ($previewSeen==2)
+	if ($previewSeen === 2)
 	{
 		writeContent($content, $page_title, $site, $connection);
 		echo '<p>Updating: No problems occured, changes written successfully!</p>' . "\n";
@@ -167,12 +177,15 @@
 		$site->dieAndEndPage();
 	} else
 	{
-		$author = '';
-		$last_modified = '';
-		
-		$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
+		if ($previewSeen < 1)
+		{
+			$author = '';
+			$last_modified = '';
+			
+			$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
+		}
 	}
-	
+		
 	if (isset($_GET['edit']))
 	{
 		echo '<form action="./?edit" method="post" accept-charset="utf-8">' . "\n";
@@ -186,7 +199,7 @@
 									  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
 		echo '</div>' . "\n";
 		
-		if (($previewSeen==1) && ($previewSeen!==2))
+		if ($previewSeen === 1)
 		{
 			echo '<p>Preview:</p>' . "\n";
 			echo '<div>';
