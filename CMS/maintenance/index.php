@@ -228,7 +228,7 @@
 			if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 			{
 				unlock_tables_maint();
-				$site->dieAndEndPageNoBox('Could not if country with id 0 does exist in database');
+				$site->dieAndEndPageNoBox('Could not find out if country with id 1 does exist in database');
 			}
 			$insert_entry = false;
 			if (!(mysql_num_rows($result) > 0))
