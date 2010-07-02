@@ -42,6 +42,7 @@
 	
 	$query = 'LOCK TABLES `misc_data` WRITE, `teams` WRITE, `teams_overview` WRITE, `teams_permissions` WRITE, `teams_profile` WRITE';
 	$query .= ', `players` WRITE, `players_profile` WRITE, `visits` WRITE, `messages_users_connection` WRITE, `messages_storage` WRITE';
+	$query .= ', `countries` WRITE';
 	if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
 	{
 		unlock_tables_maint();
