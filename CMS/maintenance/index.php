@@ -16,6 +16,43 @@
 		$connection = $site->connect_to_db();
 	}
 	
+	function unlock_tables_maint()
+	{
+		global $site;
+		global $connection;
+		
+		global $tables_locked;
+		
+		$query = 'UNLOCK TABLES';
+		if (!($site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+		{
+			$site->dieAndEndPage('Unfortunately unlocking tables failed. This likely leads to an access problem to database!');
+		}
+		$query = 'COMMIT';
+		if (!($site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+		{
+			$site->dieAndEndPage('Unfortunately committing changes failed!');
+		}
+		$query = 'SET AUTOCOMMIT = 1';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+		{
+			$site->dieAndEndPage('Trying to activate autocommit failed.');
+		}		
+	}
+	
+	$query = 'LOCK TABLES `misc_data` WRITE, `teams` WRITE, `teams_overview` WRITE, `teams_permissions` WRITE, `teams_profile` WRITE';
+	$query .= ', `players` WRITE, `players_profile` WRITE, `visits` WRITE, `messages_users_connection` WRITE, `messages_storage` WRITE';
+	if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+	{
+		unlock_tables_maint();
+		$site->dieAndEndPage('Unfortunately locking the matches table failed and thus entering the match was cancelled.');
+	}
+	$query = 'SET AUTOCOMMIT = 0';
+	if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+	{
+		unlock_tables_maint();
+		$site->dieAndEndPage('Trying to deactivate autocommit failed.');
+	}
 	
 	// find out when last maintenance happened
 	$last_maintenance = '00.00.0000';
@@ -23,7 +60,7 @@
 	// execute query
 	if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 	{
-		// query was bad, error message was already given in $site->execute_query(...)
+		unlock_tables_maint();
 		$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
 	}
 	
@@ -35,7 +72,7 @@
 		// execute query
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			unlock_tables_maint();
 			$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
 		}
 	} else
@@ -72,7 +109,7 @@
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of teams with deleted not equal 2 (2 means deleted team) failed.');
 			}
 			
@@ -107,7 +144,7 @@
 				// execute query
 				if (!($result_matches = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
+					unlock_tables_maint();
 					$site->dieAndEndPage('MAINTENANCE ERROR: getting list of recent matches from teams failed.');
 				}
 				
@@ -174,8 +211,8 @@
 					$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($curTeam) . "'";
 					if (!($result_update = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
-						$site->dieAndEndPage('');
+						unlock_tables_maint();
+						$site->dieAndEndPage();
 					}
 				}
 			}
@@ -190,7 +227,7 @@
 			$query = 'SELECT `id` FROM `countries` WHERE `id`=' . sqlSafeStringQuotes('1');
 			if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				unlock_tables_maint();
 				$site->dieAndEndPageNoBox('Could not if country with id 0 does exist in database');
 			}
 			$insert_entry = false;
@@ -208,7 +245,7 @@
 				$query .= sqlSafeStringQuotes('') . ')';
 				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
+					unlock_tables_maint();
 					$site->dieAndEndPageNoBox('Could not insert reserved country with name ' . sqlSafeStringQuotes('here be dragons') . ' into database');
 				}
 			}
@@ -234,7 +271,7 @@
 				$query = 'SELECT `flagfile` FROM `countries` WHERE `name`=' . sqlSafeStringQuotes($flag_name_stripped);
 				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
+					unlock_tables_maint();
 					$site->dieAndEndPageNoBox('Could not check if flag ' . sqlSafeStringQuotes($one_country) . ' does exist in database');
 				}
 				$update_country = false;
@@ -272,7 +309,7 @@
 					// do the changes
 					if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
+						unlock_tables_maint();
 						$site->dieAndEndPageNoBox('Could update or insert country entry for ' . sqlSafeStringQuotes($one_country) . ' in database.');
 					}
 				}
@@ -300,7 +337,7 @@
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of 2 months long inactive players failed.');
 			}
 			
@@ -337,7 +374,7 @@
 				// execute query
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
+					unlock_tables_maint();
 					$site->dieAndEndPage('MAINTENANCE ERROR: getting private msgid list of inactive players failed.');
 				}
 				
@@ -361,7 +398,7 @@
 					$query .= ' LIMIT 1';
 					if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
+						unlock_tables_maint();
 						$site->dieAndEndPage('MAINTENANCE ERROR: finding out whether actual private messages can be deleted failed.');
 					}
 					$rows = (int) mysql_num_rows($result);
@@ -390,7 +427,7 @@
 				// execute query
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
+					unlock_tables_maint();
 					$site->dieAndEndPage('MAINTENANCE ERROR: finding out if inactive player was leader of a team failed.');
 				}
 				
@@ -431,9 +468,10 @@
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
 			}
+			unlock_tables_maint();
 			$site->dieAndEndPage();
 		}
 	}
