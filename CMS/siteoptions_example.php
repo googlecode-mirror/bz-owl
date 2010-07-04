@@ -37,12 +37,12 @@
 	
 	function bbcode_lib_path()
 	{
-		return ((dirname(__FILE__)) . '/nbbc-1.4.4/nbbc.php');
+		return ((dirname(__FILE__)) . '/nbbc-wrapper.php');
 	}
 	
 	function bbcode_class()
 	{
-		return 'BBCode';
+		return 'wrapper';
 	}
 	
 	function bbcode_sets_linebreaks()
