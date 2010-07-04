@@ -90,7 +90,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_change_debug_sql();
 		
 		// permissions for news page
-		allow_set_different_news_author();
+//		allow_set_different_news_author();
 		allow_add_news();
 		allow_edit_news();
 		allow_delete_news();
@@ -115,9 +115,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_edit_any_user_profile();
 		allow_add_admin_comments_to_user_profile();
 		allow_ban_any_user();
-		
-		// visits log permissions
-		allow_view_user_visits();
 		
 		// match permissions
 		allow_add_match();
