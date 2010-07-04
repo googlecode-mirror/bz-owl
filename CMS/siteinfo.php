@@ -68,10 +68,6 @@
 	// set up a class for less frequently used functions
 	class siteinfo
 	{
-		var $siteinfo_use_mysql_news = false;
-		// not allowed syntax..but keep this in mind, it's defined in the siteoptions.php file
-		//var $xhtml_on = xhtml_on();
-		
 		function use_mysql_news()
 		{
 			return $this->siteinfo_use_mysql_news;
