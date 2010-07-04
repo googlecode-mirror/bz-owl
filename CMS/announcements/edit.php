@@ -97,8 +97,6 @@
 				echo '<p>Preview:</p>' . "\n";
 				
 				// We are doing the preview by echoing the info
-				// FIXME: Do bb code instead of raw html
-				// FIXME: This is a lower priority problem because only a minority can edit messages
 				echo '<div class="article">' . "\n";
 				echo '<div class="article_header">' . "\n";
 				echo '<div class="timestamp">';
@@ -203,10 +201,6 @@
 													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($author) . "'" . '"');
 						echo "\n" . '</span>' . "\n";
 						echo '</div>' . "\n";
-					} else
-					{
-//						// FIXME: better idea to compute just at the moment the action in form has been finally confirmed by user
-//						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"><br>' . "\n";
 					}
 					
 					echo '<div>' . "\n";

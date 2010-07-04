@@ -911,10 +911,6 @@
 													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($subject) . "'" . '"');
 						echo '</span>' . "\n";
 						echo '</div>' . "\n";
-					} else
-					{
-//						// FIXME: better idea to compute just at the moment the action in form has been finally confirmed by user
-//						echo '<input type="hidden" name="author" value="' . urlencode(htmlentities($author, ENT_COMPAT, 'UTF-8')) . '"><br>' . "\n";
 					}
 					
 					if (isset($_GET['teamid']))
