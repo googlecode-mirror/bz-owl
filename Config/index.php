@@ -194,6 +194,31 @@
 		fclose($handle);
 		unset($counter);
 	}
+	
+	// create a new cURL resource
+	$ch = curl_init();
+	
+	// set URL and other appropriate options
+	curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value=1194222222');
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	
+	// grab URL and pass it to the browser
+	$output = curl_exec($ch);
+	
+	// close cURL resource, and free up system resources
+	curl_close($ch);
+	
+	$successfull = substr($output, 0, 9);
+	echo $successfull . '<br />' . "\n";
+	
+	if (strcmp($successfull, 'SUCCESS: ') === 0)
+	{
+		echo substr($output, 9) . '<br />' . "\n";
+	} else
+	{
+		echo 'An error encountered. The error message is ' . $output . '<br />' . "\n";
+	}
 ?>
 </div>
 </body>
