@@ -325,7 +325,13 @@
 		echo '<caption>Search related visits log entries</caption>' . "\n";
 	} else
 	{
-		echo '<caption>Visits log of all players</caption>' . "\n";
+		if (isset($_GET['profile']))
+		{
+			echo '<caption>Visits log of this player</caption>' . "\n";
+		} else
+		{
+			echo '<caption>Visits log of all players</caption>' . "\n";
+		}
 	}
 	echo '<tr>' . "\n";
 	echo '	<th>Name</th>' . "\n";
@@ -338,7 +344,14 @@
 	foreach($visits_list as $visits_entry)
 	{
 		echo '<tr>' . "\n";
-		echo '	<td><a href="./?profile=' . strval($visits_entry['playerid']) . '">';
+		echo '	<td>';
+		if (!isset($_GET['profile']))
+		{
+			echo '<a href="./?profile=' . strval($visits_entry['playerid']) . '">';
+		} else
+		{
+			echo '<a href="../Players/?profile=' . strval($visits_entry['playerid']) . '">';
+		}
 		echo $visits_entry['name'];
 		echo '</a></td>' . "\n";
 		echo '	<td>' . htmlent($visits_entry['ip-address']) . '</td>' . "\n";

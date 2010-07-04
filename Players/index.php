@@ -17,7 +17,7 @@
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		if (!isset($_GET['profile']))
 		{
-			echo '<a class="button" href="./?profile=' . strval($profile) . '">back to player profile</a>' . "\n";
+			echo '<a class="button" href="./?profile=' . strval($profile) . '">back to user profile</a>' . "\n";
 		}
 	}
 	
@@ -650,7 +650,6 @@
 			}
 			
 			echo '<p>The player profile has been updated successfully.</p>' . "\n";
-			echo '<a class="button" href="./?profile=' . htmlspecialchars($profile) . '">Back to the user profile</a>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
