@@ -245,15 +245,9 @@
 				{
 					$num_results = 3200;
 				}
-				$query .= sqlSafeString($num_results + 1);
-			} else
-			{
-				$query .= '201';
 			}
-		} else
-		{
-			$query .= '201';
 		}
+		$query .= sqlSafeString($num_results + 1);
 	} else
 	{
 		$query .= ((int) $view_range)+$num_results+1;
@@ -288,7 +282,7 @@
 	// as long you require users to login before looking at visits log
 	unset($rows);
 	
-	$visits_list = Array (Array ());
+	$visits_list = array (array ());
 	// read each entry, row by row
 	$id = 0;
 	while ($row = mysql_fetch_array($result))

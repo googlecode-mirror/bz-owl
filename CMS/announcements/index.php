@@ -315,7 +315,51 @@
 			
 			
 			// the "LIMIT 0,15" part of query means only the first fifteen entries are received
-			$query = 'SELECT * FROM ' . $table_name . ' ORDER BY id DESC LIMIT 0,15';
+			$query = 'SELECT * FROM ' . $table_name . ' ORDER BY id DESC LIMIT ';
+			$view_range = (int) 0;
+			// the "LIMIT 0,15" part of query means only the first 15 entries are received
+			// the range of shown matches is set by the GET variable i
+			if (isset($_GET['i']))
+			{
+				if (((int) $_GET['i']) > 0)
+				{
+					$view_range = (int) $_GET['i'];
+					$query .=  $view_range . ',';
+				} else
+				{
+					// force write 0 for value 0 (speed saving due to no casting to string)
+					// and 0 for negative values (security: DBMS error handling prevention)
+					$query .= '0,';
+				}
+			} else
+			{
+				// no special value set -> write 0 for value 0 (speed)
+				$query .= '0,';
+			}
+			// how many resulting rows does the user wish?
+			// assume 200 by default
+			$num_results = 15;
+			if (isset($_GET['search']))
+			{
+				if (isset($_GET['search_result_amount']))
+				{
+					if ($_GET['search_result_amount'] > 0)
+					{
+						// cast result to int to avoid SQL injections
+						$num_results = (int) $_GET['search_result_amount'];
+						// a little try against denial of service by limiting displayed amount per page
+						if ($num_results > 3200)
+						{
+							$num_results = 3200;
+						}
+					}
+				}
+				$query .= sqlSafeString($num_results + 1);
+			} else
+			{
+				$query .= ((int) $view_range)+$num_results+1;
+			}
+			
 			$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 			if (!$result)
 			{
@@ -323,45 +367,115 @@
 			}
 			
 			$rows = (int) mysql_num_rows($result);
+			$show_next_visits_button = false;
 			if ($rows === 0)
 			{
 				echo '<p class="first_p">No entries made yet.</p>' . "\n";
 				$site-dieAndEndPage('');
 			}
-			
-			// read each entry, row by row
-			while($row = mysql_fetch_array($result))
+			// more than wished announcements per page available in total
+			if ($rows > $num_results)
 			{
-				if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
-				{
-					$currentId = $row["id"];
-					echo '<a href="./?edit=' . $currentId . '">[edit]</a>' . "\n";
-				}
-				if ((isset($_SESSION[$entry_delete_permission])) && ($_SESSION[$entry_delete_permission]))
-				{
-					$currentId = $row["id"];
-					echo '<a href="./?delete=' . $currentId . '">[delete]</a>' . "\n";
-				}
-				echo '<div class="article">' . "\n";
-				echo '<div class="article_header">' . "\n";
-				echo '<div class="timestamp">';
-				printf("%s", htmlentities($row["timestamp"]));
-				echo '</div>' . "\n";
-				echo '<div class="author">';
-				printf("By: %s", htmlent($row["author"]));
-				echo '</div>' . "\n";
-				echo '</div>' . "\n";
-				echo '<p>';
-				echo $site->linebreaks(htmlent($row['announcement']));
-				echo '</p>' . "\n";
-				echo "</div>\n\n";
-				$site->write_self_closing_tag('br');
+				$show_next_visits_button = true;
 			}
-			// done
+			unset($rows);
+			
+			$current_row = 0;
+			// read each entry, row by row
+			while ($row = mysql_fetch_array($result))
+			{
+				if ($current_row < $num_results)
+				{
+					if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
+					{
+						$currentId = $row["id"];
+						echo '<a href="./?edit=' . $currentId . '">[edit]</a>' . "\n";
+					}
+					if ((isset($_SESSION[$entry_delete_permission])) && ($_SESSION[$entry_delete_permission]))
+					{
+						$currentId = $row["id"];
+						echo '<a href="./?delete=' . $currentId . '">[delete]</a>' . "\n";
+					}
+					echo '<div class="article">' . "\n";
+					echo '<div class="article_header">' . "\n";
+					echo '<div class="timestamp">';
+					printf("%s", htmlentities($row["timestamp"]));
+					echo '</div>' . "\n";
+					echo '<div class="author">';
+					printf("By: %s", htmlent($row["author"]));
+					echo '</div>' . "\n";
+					echo '</div>' . "\n";
+					echo '<p>';
+					echo $site->linebreaks(htmlent($row['announcement']));
+					echo '</p>' . "\n";
+					echo "</div>\n\n";
+					$site->write_self_closing_tag('br');
+					$current_row++;
+				}
+			}
+			// query result no longer needed
 			mysql_free_result($result);
+			unset($current_row);
+			
+			// look up if next and previous buttons are needed to look at all entries in overview
+			if ($show_next_visits_button || ($view_range !== (int) 0))
+			{
+				// browse previous and next entries, if possible
+				echo "\n" . '<p>'  . "\n";
+				
+				if ($view_range !== (int) 0)
+				{
+					echo '	<a href="./?i=';
+					
+					echo ((int) $view_range)-$num_results;
+					if (isset($_GET['search']))
+					{
+						echo '&amp;search';
+						if (isset($_GET['search_string']))
+						{
+							echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
+						}
+						if (isset($_GET['search_type']))
+						{
+							echo '&amp;search_type=' . htmlspecialchars($_GET['search_type']);
+						}
+						if (isset($num_results))
+						{
+							echo '&amp;search_result_amount=' . strval($num_results);
+						}
+					}
+					
+					echo '">Previous visits</a>' . "\n";
+				}
+				if ($show_next_visits_button)
+				{
+					
+					echo '	<a href="./?i=';
+					
+					echo ((int) $view_range)+$num_results;
+					if (isset($_GET['search']))
+					{
+						echo '&amp;search';
+						if (isset($_GET['search_string']))
+						{
+							echo '&amp;search_string=' . htmlspecialchars($_GET['search_string']);
+						}
+						if (isset($_GET['search_type']))
+						{
+							echo '&amp;search_type=' . htmlspecialchars($_GET['search_type']);
+						}
+						if (isset($num_results))
+						{
+							echo '&amp;search_result_amount=' . strval($num_results);
+						}
+					}
+					
+					echo '">Next visits</a>' . "\n";
+				}
+				echo '</p>' . "\n";
+			}
 		}
 	}
-	mysql_close($connection);
 ?>
 
 </div>
