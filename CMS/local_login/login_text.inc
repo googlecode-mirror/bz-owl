@@ -1,6 +1,6 @@
 <?php
 	require_once '../CMS/navi.inc';
-	
+	echo '<div class="static_page_box">' . "\n";
 	if ((isset($_SESSION['user_logged_in'])) &&	($_SESSION['user_logged_in']))
 	{
 		echo 'already logged in';

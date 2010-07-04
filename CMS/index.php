@@ -52,9 +52,10 @@
 	
 	if ((strcmp($output, '') == 0) && (isset($_SESSION['user_logged_in'])) && $_SESSION['user_logged_in'])
 	{
-		require_once '../CMS/navi.inc'; 
+		require_once '../CMS/navi.inc';
+		echo '<div class="static_page_box">' . "\n";
 		echo '<p class="first_p">Login was already successful.</p>' . "\n";
-		$site->dieAndEndPage('');
+		$site->dieAndEndPage();
 	}
 	
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))

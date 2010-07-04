@@ -30,17 +30,13 @@
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 	{
 		// is the user already registered at this site?
-		$query = 'SELECT `id`, `suspended` FROM `players` WHERE';
-		// local login will define external_playerid to be 0
-		if (isset($internal_login_id))
+		$query = 'SELECT `id`, ';
+		// only need an external login id in case an external login was performed by the viewing player
+		if (isset($external_login_id))
 		{
-			// internal login
-			$query .= ' `id`=' . sqlSafeStringQuotes($internal_login_id);
-		} else
-		{
-			// external login
-			$query .= ' `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']);
+			$query .= ' `external_playerid`, ';
 		}
+		$query .= '`suspended` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -51,12 +47,44 @@
 		
 		$rows_num_accounts = (int) mysql_num_rows($result);
 		$suspended_mode = 0;
-		while($row = mysql_fetch_array($result))
+		// find out if a username got locked before doing updates
+		// e.g. inappropriate username got renamed by admins
+		// and then someone else tries to join using this username, 
+		// causing a reset of the other username to be reset to the inappropriate one
+		while ($row = mysql_fetch_array($result))
 		{
-			$_SESSION['viewerid'] = (int) $row['id'];
+			if (isset($internal_login_id))
+			{
+				if (!($internal_login_id === 0))
+				{
+					$_SESSION['viewerid'] = (int) $row['id'];
+				}
+			} else
+			{
+				if (strcmp($_SESSION['external_id'], $row['external_playerid']) === 0)
+				{
+					$_SESSION['viewerid'] = (int) $row['id'];
+				} else
+				{
+					$_SESSION['viewerid'] = (int) 0;
+				}
+			}
 			$suspended_mode = (int) $row['suspended'];
 		}
 		mysql_free_result($result);
+		
+		if (((int) $_SESSION['viewerid'] === (int) 0)
+			&& ($suspended_mode > (int) 1))
+		{
+			$_SESSION['user_logged_in'] = false;
+			echo '<p>There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!</p>';
+			$site->dieAndEndPage();
+		}
+		// dealing only with the current player from this point on
+		
+		// cache this variable to speed up further access to the value
+		$user_id = getUserID();
+		
 		
 		// suspended mode:
 		// 0 describes an active account
@@ -65,11 +93,11 @@
 		// 3 describes that the owner of that account should be banned from the entire site, if possible
 		if ($suspended_mode === (int) 1)
 		{
-			$query = 'UPDATE `players` SET `suspended`=' . "'" . sqlSafeString('0') . "'";
-			$query .= ' WHERE `id`=' . "'" . sqlSafeString(getUserID()) . "'";
+			$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes('0');
+			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
-				$site->dieAndEndPage('Could not reactivate deleted account with id ' . sqlSafeString(getUserID()) . '.');
+				$site->dieAndEndPage('Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.');
 			}
 			$suspended_mode = (int) 0;
 		}
@@ -89,8 +117,9 @@
 			}
 			echo "\n";
 			// skip updates if the user has a disabled login or is banned (inappropriate callsign for instance)
-			$site->dieAndEndPage('');
+			$site->dieAndEndPage();
 		}
+		unset($suspended_mode);
 		
 		require_once '../CMS/navi.inc';
 		if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
@@ -103,7 +132,7 @@
 				$query .= sqlSafeStringQuotes($_SESSION['external_id']) . ', ' . "'" . '0' . "'" . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) .')';
 				if ($insert_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection))
 				{
-					$query = 'SELECT `id` FROM `players` WHERE `external_playerid`=' . "'" . sqlSafeString($_SESSION['external_id']) . "'";
+					$query = 'SELECT `id` FROM `players` WHERE `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']);
 					if ($id_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection))
 					{
 						$rows = mysql_num_rows($id_result);
@@ -111,10 +140,59 @@
 						{
 							$_SESSION['viewerid'] = (int) $row['id'];
 						}
+						mysql_free_result($id_result);
 						if ($rows === 1)
 						{
 							// user inserted without problems
 							echo '<p>You have been added to the list of players at this site. Thanks for visiting our site.</p>';
+							
+							// write welcome mail!
+							
+							// lock messages_storage because of mysql_insert_id() usage
+							$query = 'LOCK TABLES `messages_storage` WRITE';
+							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+							{
+								// query was bad, error message was already given in $site->execute_query(...)
+								$site->dieAndEndPage();
+							}
+							
+							// create the welcome message in database
+							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
+							$query .= '(' . sqlSafeStringQuotes('league management system') . ', ' . sqlSafeStringQuotes ('0');
+							$query .= ', ' . sqlSafeStringQuotes('Welcome!') . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+							$query .= ', ' . sqlSafeStringQuotes('Welcome and thanks for registering at this website!' . "\n"
+																 . 'In the FAQ are the most important informations about organising and playin matches'
+																 . "\n\n" .
+																 'See you on the battlefield.');
+							$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($profile) . ')';
+							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+							{
+								// query was bad, error message was already given in $site->execute_query(...)
+								$site->dieAndEndPage();
+							}
+							
+							// get the msgid generated from database
+							$msgid = mysql_insert_id($connection);
+							
+							// unlock messages_storage because mysql_insert_id() was used and is no longer needed
+							$query = 'UNLOCK TABLES';
+							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+							{
+								// query was bad, error message was already given in $site->execute_query(...)
+								$site->dieAndEndPage();
+							}
+							// send the invitation message to user
+							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES ';
+							$query .= '(' . sqlSafeStringQuotes($msgid) . ', ' . sqlSafeStringQuotes($profile);
+							$query .= ', ' . sqlSafeStringQuotes('1');
+							$query .= ', ' . sqlSafeStringQuotes('0') . ')';
+							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
+							{
+								// query was bad, error message was already given in $site->execute_query(...)
+								$site->dieAndEndPage();
+							}
+							
+							// message sent
 						} else
 						{
 							// FIXME: report automatically to admins
@@ -123,7 +201,6 @@
 							echo 'Please try again later.</p>' . "\n";
 							echo '<p>If the problem persists please tell an admin</p>';
 						}
-						mysql_free_result($id_result);
 					}
 				} else
 				{
@@ -137,7 +214,7 @@
 				
 				// adding player profile entry
 				$query = 'INSERT INTO `players_profile` (`playerid`, `joined`, `location`) VALUES (';
-				$query .= sqlSafeStringQuotes(getUserID()) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+				$query .= sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 				$query .= ', ' . sqlSafeStringQuotes('1') . ')';
 				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
@@ -233,7 +310,7 @@
 		$query = 'UPDATE `players_profile` SET `last_visit`=' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
 		if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
 		{
-			$query .= ' WHERE `playerid`=' . "'" . sqlSafeString(getUserID()) . "'";
+			$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";
 		} else
 		{
 			$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($internal_login_id) . "'";
@@ -267,7 +344,7 @@
 		// use the resulting data
 		if ($onlineUsers)
 		{
-			$query = 'SELECT * FROM `online_users` WHERE `playerid`=' . "'" . sqlSafeString(getUserID()) . "'";
+			$query = 'SELECT * FROM `online_users` WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";
 			$result = mysql_query($query, $connection);
 			$rows = mysql_num_rows($result);
 			// done
@@ -277,7 +354,7 @@
 			if ($rows > 0)
 			{
 				// already logged in
-				$query = 'DELETE FROM `online_users` WHERE `playerid`=' . "'" . sqlSafeString(getUserID()) . "'";
+				$query = 'DELETE FROM `online_users` WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";
 				// ignore result
 				$result = mysql_query($query, $connection);
 				if (!($result))
@@ -288,13 +365,13 @@
 			
 			// insert logged in user into online_users table
 			$query = 'INSERT INTO `online_users` (`playerid`, `username`, `last_activity`) Values';
-			$query .= '(' . sqlSafeStringQuotes(getUserID()) . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ', ' . $curDate . ')';	
+			$query .= '(' . sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ', ' . $curDate . ')';	
 			$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
 			
 			// do maintenance in case a user still belongs to a deleted team (database problem)
 			$query = 'SELECT `teams_overview`.`deleted` FROM `teams_overview`, `players` WHERE `teams_overview`.`teamid`=`players`.`teamid` AND `players`.`id`=';
-			$query .= "'" . sqlSafeString(getUserID()) . "'";
-			$query .= ' AND `teams_overview`.`deleted`>' . "'" . sqlSafeString('2') . "'";
+			$query .= sqlSafeStringQuotes($user_id);
+			$query .= ' AND `teams_overview`.`deleted`>' . sqlSafeStringQuotes('2');
 			// only the player that just wants to log-in is dealt with
 			$query .= ' LIMIT 1';
 			if ($result = $site->execute_query($site->db_used_name(), 'teams_overview, players', $query, $connection))
@@ -305,8 +382,8 @@
 					{
 						// mark who was where, to easily restore an unwanted team deletion
 						$query = 'UPDATE `players` SET `last_teamid`=`players`.`teamid`';
-						$query .= ', `teamid`=' . "'" . sqlSafeString('0') . "'";
-						$query .= ' WHERE `id`=' . "'" . sqlSafeString(getUserID()) . "'";
+						$query .= ', `teamid`=' . sqlSafeStringQuotes('0');
+						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
 						$site->execute_query($site->db_used_name(), 'players', $query, $connection);
 					}
 				}
@@ -322,13 +399,15 @@
 				$ip_address .= ' (forwarded for: ' . getenv('HTTP_X_FORWARDED_FOR') . ')';
 			}
 			$query = 'INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`) VALUES (';
-			$query .= sqlSafeStringQuotes(getUserID()) . ', ' . sqlSafeStringQuotes($ip_address) . ', ' . sqlSafeStringQuotes($host) . ', ' . $curDate . ')';
+			$query .= sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes($ip_address) . ', ' . sqlSafeStringQuotes($host) . ', ' . $curDate . ')';
 			$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
 	}
+	
+	// $user_id is not set in case no login/registration was performed
 	if (getUserID() > 0)
 	{
-		echo 'Your profile page can be found at <a href="../Players/?profile=' . getUserID() . '">here</a>.' . "\n";
+		echo 'Your profile page can be found at <a href="../Players/?profile=' . $user_id . '">here</a>.' . "\n";
 	}
-	$site->dieAndEndPage('');
+	$site->dieAndEndPage();
 ?>
