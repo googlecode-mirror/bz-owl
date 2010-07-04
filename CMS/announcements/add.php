@@ -513,16 +513,8 @@
 					}
 				} else
 				{
-					if (isset ($recipients))
-					{
-						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes($author) . ',' . sqlSafeStringQuotes($announcement)	 .')';
-						
-					} else
-					{
-						$query = 'INSERT INTO ' . $table_name . ' (timestamp, author, announcement) VALUES (';
-						$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes($author) . ',' . sqlSafeStringQuotes($announcement)	 .')';
-					}
+					$query = 'INSERT INTO `' . $table_name . '` (`timestamp`, `author`, `announcement`, `raw_announcement`) VALUES (';
+					$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes($author) . ',' . sqlSafeStringQuotes($site->bbcode($announcement)) . ',' . sqlSafeStringQuotes($announcement) .')';
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
 						echo '<p>Updating: No problems occured, changes written!</p>' . "\n";
@@ -569,7 +561,7 @@
 					echo htmlent($author);
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
-					echo '<p>' . htmlent($announcement) . '</p>' . "\n";
+					echo '<p>' . $site->bbcode($announcement) . '</p>' . "\n";
 					echo '</div>' . "\n\n";
 				}
 				if ($message_mode)

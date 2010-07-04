@@ -72,9 +72,10 @@
 				echo '<div class="static_page_box">' . "\n";
 				// sqlSafeString is from siteinfo.php
 				// needed to prevent SQL injections
-				// example: UPDATE news SET timestamp="tes", author="me", announcement="really" WHERE id=7
-				$query = 'UPDATE ' . $table_name . ' SET timestamp="' . sqlSafeString($timestamp) . '", author="' . sqlSafeString($author);
-				$query = $query . '", announcement="' . sqlSafeString($announcement) . '" WHERE id=' . sqlSafeString($currentId);
+				// example: UPDATE `news` SET `timestamp`="tes", `author`="me", `announcement`="<b>really</b>", `raw_announcement`='[b]really[/b]' WHERE id=7
+				$query = 'UPDATE `' . $table_name . '` SET `timestamp`="' . sqlSafeString($timestamp) . '", `author`="' . sqlSafeString($author);
+				$query .= '", `announcement`="' . sqlSafeString($site->bbcode($announcement)) . '", `raw_announcement`="' . sqlSafeString($announcement);
+				$query .= '" WHERE id=' . sqlSafeString($currentId);
 				
 				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 				{
@@ -107,7 +108,7 @@
 				echo htmlent($author);
 				echo '</div>' . "\n";
 				echo '</div>' . "\n";
-				echo '<p>' . htmlent($announcement) . '</p>' . "\n";
+				echo '<p>' . $site->bbcode($announcement) . '</p>' . "\n";
 				echo '</div>' . "\n\n";
 				
 				// keep the information in case user confirms by using invisible form items
@@ -153,7 +154,7 @@
 				{
 					echo '<div class="static_page_box">' . "\n";
 					
-					$query = 'SELECT * from `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' ORDER BY id LIMIT 1';
+					$query = 'SELECT `timestamp`,`author`,`raw_announcement` from `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' ORDER BY id LIMIT 1';
 					$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 					if (!$result)
 					{
@@ -165,9 +166,9 @@
 					{
 						// overwrite each variable at first request of editing
 						// these values come right from the database so perform no sanity checks
-						$timestamp = $row["timestamp"];
-						$author = $row["author"];
-						$announcement = $row["announcement"];
+						$timestamp = $row['timestamp'];
+						$author = $row['author'];
+						$announcement = $row['raw_announcement'];
 					}
 					// done
 					mysql_free_result($result);

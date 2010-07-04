@@ -149,7 +149,7 @@
 						echo htmlent($row['author']);
 						echo '</div>' . "\n";
 						echo '</div>' . "\n";
-						echo '<p>' . htmlent($row['announcement']) . '</p>' . "\n";
+						echo '<p>' . $row['announcement'] . '</p>' . "\n";
 						echo '</div>' . "\n\n";
 					}
 					// done

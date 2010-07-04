@@ -315,7 +315,7 @@
 			
 			
 			// the "LIMIT 0,15" part of query means only the first fifteen entries are received
-			$query = 'SELECT * FROM ' . $table_name . ' ORDER BY id DESC LIMIT ';
+			$query = 'SELECT * FROM `' . $table_name . '` ORDER BY id DESC LIMIT ';
 			$view_range = (int) 0;
 			// the "LIMIT 0,15" part of query means only the first 15 entries are received
 			// the range of shown matches is set by the GET variable i
@@ -406,7 +406,7 @@
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
 					echo '<p>';
-					echo $site->linebreaks(htmlent($row['announcement']));
+					echo $row['announcement'];
 					echo '</p>' . "\n";
 					echo "</div>\n\n";
 					$site->write_self_closing_tag('br');
