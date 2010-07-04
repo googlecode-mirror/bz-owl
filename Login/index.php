@@ -195,21 +195,23 @@
 							// message sent
 						} else
 						{
-							// FIXME: report automatically to admins
+							$_SESSION['user_logged_in'] = false;
 							$_SESSION['viewerid'] = -1;
-							echo '<p>Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. ';
-							echo 'Please try again later.</p>' . "\n";
-							echo '<p>If the problem persists please tell an admin</p>';
+							$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. '
+												 . ' Please try again later.</p>' . "\n"
+												 . '<p>If the problem persists please tell an admin');
 						}
 					}
 				} else
 				{
-					// apologise, the user is new and we all like newbies
-					// FIXME: report automatically to admins
+					$_SESSION['user_logged_in'] = false;
 					$_SESSION['viewerid'] = -1;
-					echo '<p>Unfortunately there seems to be a database problem and thus you can not be added to the list of players at this site. ';
-					echo 'Please try again later.</p>' . "\n";
-					echo '<p>If the problem persists please tell an admin</p>';
+					// apologise, the user is new and we all like newbies
+					$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus you (id='
+										 . htmlent($user_id)
+										 . ') can not be added to the list of players at this site. '
+										 . 'Please try again later.</p>' . "\n"
+										 . '<p>If the problem persists please report it to an admin');
 				}
 				
 				// adding player profile entry
@@ -218,9 +220,11 @@
 				$query .= ', ' . sqlSafeStringQuotes('1') . ')';
 				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
-					// FIXME: report automatically
-					echo '<p>Unfortunately there seems to be a database problem and thus creating your profile page failed. ';
-					echo '<p>Please report this to admins</p>';
+					$_SESSION['user_logged_in'] = false;
+					$_SESSION['viewerid'] = -1;
+					$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus creating your profile page (id='
+										 . htmlent($user_id)
+										 . ') failed. Please report this to admins.');
 				}
 			} else
 			{
@@ -231,8 +235,11 @@
 				$query .= ' LIMIT 1';
 				if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
-					echo '<p>Unfortunately there seems to be a database problem which prevents the system from updating your callsign.';
-					echo ' Please report this to an admin.</p>';
+					$_SESSION['user_logged_in'] = false;
+					$_SESSION['viewerid'] = -1;
+					$site->dieAndEndPage('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
+										. htmlent($user_id)
+										. '). Please report this to an admin.</p>');
 				}
 			}
 		}
@@ -295,7 +302,8 @@
 				}
 			} else
 			{
-				// FIXME: should be reported to admins automatically
+				$_SESSION['user_logged_in'] = false;
+				$_SESSION['viewerid'] = -1;
 				$site->dieAndEndPage('Finding other members who had the same name '
 									 . sqlSafeStringQuotes(htmlent($_SESSION['username']))
 									 . 'failed. This is a database problem. Please report this to an admin!');
