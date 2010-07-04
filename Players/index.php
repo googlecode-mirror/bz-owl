@@ -10,6 +10,17 @@
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require realpath('../CMS/navi.inc');
 	
+	function show_overview_and_profile_button()
+	{
+		global $profile;
+		
+		echo '<a class="button" href="./">overview</a>' . "\n";
+		if (!isset($_GET['profile']))
+		{
+			echo '<a class="button" href="./?profile=' . strval($profile) . '">back to player profile</a>' . "\n";
+		}
+	}
+	
 	if (!isset($site))
 	{
 		$site = new siteinfo();
@@ -46,9 +57,9 @@
 	{
 		if ($viewerid < 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			show_overview_and_profile_button();
 			echo '<p>You must login to change any player data.</p>' . "\n";
-			$site->dieAndEndPage('');
+			$site->dieAndEndPage();
 		}
 	}
 	
@@ -72,7 +83,7 @@
 		
 		if ($profile === 0)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			show_overview_and_profile_button();
 			echo '<p>The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
@@ -81,7 +92,7 @@
 		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			show_overview_and_profile_button();
 			$site->dieAndEndPage('It seems like the player profile can not be accessed for an unknown reason.');
 		}
 		
@@ -99,7 +110,7 @@
 		if ($rows === 0)
 		{
 			// someone tried to view the profile of a non existing user
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			show_overview_and_profile_button();
 			echo '<p>This user does not exist.</p>';
 			$site->dieAndEndPage('');
 		}
@@ -129,7 +140,7 @@
 		}
 		mysql_free_result($result);
 		
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		show_overview_and_profile_button();
 		
 		if ($suspended_status > 0)
 		{
@@ -168,7 +179,7 @@
 			// if more than one team exists for a given id then it is no user error but a database problem
 			if ($rows > (int) 1)
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
+				show_overview_and_profile_button();
 				$site->dieAndEndPage('There is more than one team with the id ' . sqlSafeString($teamid) . ' in the database! This is a database problem, please report it to admins!');
 			}
 			
@@ -433,7 +444,7 @@
 		// edit profile page
 		$profile = (int) $_GET['edit'];
 		
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		show_overview_and_profile_button();
 		
 		if ($profile === 0)
 		{
@@ -787,7 +798,7 @@
 		if (isset($_POST['confirmed']) && ((int) $_POST['confirmed'] === (int) 1))
 		{
 			// show possiblity to go fast back to registered user overview
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			show_overview_and_profile_button();
 			
 			// validate random key
 			$new_randomkey_name = '';
@@ -906,7 +917,7 @@
 	// user profile
 	if (isset($_GET['profile']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		show_overview_and_profile_button();
 		
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
