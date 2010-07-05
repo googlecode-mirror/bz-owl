@@ -713,7 +713,7 @@
 			echo htmlspecialchars($row['id']);
 			if ($location === ((int) $row['id']))
 			{
-				echo ' selected="selected"';
+				echo '" selected="selected';
 			}
 			echo '">';
 			echo htmlent($row['name']);
