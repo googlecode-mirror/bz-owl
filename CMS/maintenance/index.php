@@ -434,11 +434,11 @@
 				
 				// walk through results
 				$member_count_modified = false;
-				while($row = mysql_fetch_array($result))
+				while ($row = mysql_fetch_array($result))
 				{
 					// set the leader to 0 (no player)
-					$query = 'Update `teams` SET `leader_playerid`=' . "'" . sqlSafeString('0') . "'";
-					$query .= ' WHERE `leader_playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+					$query = 'Update `teams` SET `leader_playerid`=' . sqlSafeStringQuotes('0');
+					$query .= ' WHERE `leader_playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 					// execute query, ignore result
 					@$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
 					
@@ -462,6 +462,97 @@
 					$this->cleanup_teams($site, $connection, $two_months_in_past);
 				}
 			}
+			
+			// update activity data
+			$num_active_teams = 0;
+			// find out the number of active teams
+			$query = 'SELECT COUNT(*) AS `num_teams` FROM `teams_overview` WHERE `deleted`<>' . sqlSafeStringQuotes('2');
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			{
+				unlock_tables_maint();
+				$site->dieAndEndPage('MAINTENANCE ERROR: could not find out number of active teams.');
+			}
+			while ($row = mysql_fetch_array($result))
+			{
+				$num_active_teams = (int) $row['num_teams'] -1;
+			}
+			
+			$query = 'SELECT `teamid` FROM `teams_overview` WHERE `deleted`<>' . sqlSafeStringQuotes('2');
+			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			{
+				unlock_tables_maint();
+				$site->dieAndEndPage('MAINTENANCE ERROR: could not find out id list of active teams.');
+			}
+			$teamid = array();
+			while ($row = mysql_fetch_array($result))
+			{
+				$teamid[] = (int) $row['teamid'];
+			}
+			mysql_free_result($result);
+			
+			$team_activity45 = array();
+			$timestamp = strtotime('-45 days');
+			$timestamp = strftime('%Y-%m-%d %H:%M:%S', $timestamp);
+			// find out how many matches each team did play
+			for ($i = 0; $i <= $num_active_teams; $i++)
+			{
+				$query = 'SELECT COUNT(*) as `num_matches` FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes($timestamp);
+				$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ')';
+				// execute query
+				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				{
+					unlock_tables_maint();
+					$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id ' . $teamid[$i] . ' played in the last 45 days');
+				}
+				while ($row = mysql_fetch_array($result))
+				{
+					$team_activity45[$i] = intval($row['num_matches']);
+				}
+				
+				$team_activity45[$i] = ($team_activity45[$i] / 45);
+				$team_activity45[$i] = number_format($team_activity45[$i], 2, '.', '');
+			}
+			print_r($team_activity45);
+			
+			// english notation without thousands seperator
+			
+			$team_activity90 = array();
+			$timestamp = strtotime('-90 days');
+			$timestamp = strftime('%Y-%m-%d %H:%M:%S', $timestamp);
+			// find out how many matches each team did play
+			for ($i = 0; $i <= $num_active_teams; $i++)
+			{
+				$query = 'SELECT COUNT(*) as `num_matches` FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes($timestamp);
+				$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ')';
+				// execute query
+				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				{
+					unlock_tables_maint();
+					$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id ' . $teamid[$i] . ' played in the last 90 days');
+				}
+				while ($row = mysql_fetch_array($result))
+				{
+					$team_activity90[$i] = intval($row['num_matches']);
+				}
+				
+				$team_activity90[$i] = ($team_activity90[$i] / 90);
+				$team_activity90[$i] = number_format($team_activity90[$i], 2, '.', '');
+			}
+			
+			for ($i = 0; $i <= $num_active_teams; $i++)
+			{
+				$team_activity45[$i] .= ' (' . $team_activity90[$i] . ')';
+				
+				// update activity entry
+				$query = 'Update `teams_overview` SET `activity`=' . sqlSafeStringQuotes($team_activity45[$i]);
+				$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid[$i]);
+				// execute query, ignore result
+				@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+			}
+			unset($teamid);
+			unset($team_activity45);
+			unset($team_activity90);
+			
 			echo '<p>Maintenance performed successfully.</p>';
 			
 			// update maintenance date
