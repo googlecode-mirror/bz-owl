@@ -1722,9 +1722,9 @@
 		}
 		
 		// list the non deleted teams
-		// example query: SELECT `teamid`,`name`, `score`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
+		// example query: SELECT `teamid`,`name`, `score`, `member_count`,`activity`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
 		// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
-		$query = 'SELECT `teamid`,`name`, `score`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
+		$query = 'SELECT `teamid`,`name`, `score`,`activity`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
 		$query .= 'WHERE `teams`.`id` = `teams_overview`.`teamid`';
 		$query .= ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'";
 		$query .= ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')';
@@ -1743,6 +1743,7 @@
 			echo '	<th>Name</th>' . "\n";
 			echo '	<th>Score</th>' . "\n";
 			echo '	<th>Number of members</th>' . "\n";
+			echo '	<th>Activity</th>' . "\n";
 			
 			if ($player_teamless)
 			{
@@ -1765,6 +1766,7 @@
 				}
 				echo '	<td>' . $row['score'] . '</td>' . "\n";
 				echo '	<td>' . $row['member_count'] . '</td>' . "\n";
+				echo '	<td>' . $row['activity'] . '</td>' . "\n";
 				if (($viewerid > 0) && ((int) $row['any_teamless_player_can_join'] === 1))
 				{					
 					// take care of potential database problems
