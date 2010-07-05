@@ -1742,7 +1742,7 @@
 			echo '<tr>' . "\n";
 			echo '	<th>Name</th>' . "\n";
 			echo '	<th>Score</th>' . "\n";
-			echo '	<th>Number of members</th>' . "\n";
+			echo '	<th>Members</th>' . "\n";
 			echo '	<th>Activity</th>' . "\n";
 			
 			if ($player_teamless)
