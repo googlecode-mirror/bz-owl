@@ -415,7 +415,7 @@
 	// $user_id is not set in case no login/registration was performed
 	if (getUserID() > 0)
 	{
-		echo 'Your profile page can be found at <a href="../Players/?profile=' . $user_id . '">here</a>.' . "\n";
+		echo 'Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.' . "\n";
 	}
 	$site->dieAndEndPage();
 ?>
