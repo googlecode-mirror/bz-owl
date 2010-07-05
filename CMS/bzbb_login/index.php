@@ -148,7 +148,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			
 			if (isset($site))
 			{
-				$site->dieAndEndPage($error_msg);
+				$site->dieAndEndPageNoBox($error_msg);
 			} else
 			{
 				die($error_msg);
