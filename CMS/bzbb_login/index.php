@@ -164,7 +164,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		// login did not work, removing permissions not necessary as additional permissions where never granted
 		// after permissions were removed at the beginning of the file
 		require_once '../CMS/navi.inc';
-		echo '<div class="static_page_box">' . "\n";
 		echo '<p class="first_p">Error: The returned values could not be validated!</p>' . "\n";
 	}
 }
