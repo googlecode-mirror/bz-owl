@@ -1135,26 +1135,24 @@
 	
 	// get all data at once instead of many small queries -> a lot more efficient
 	// example query:
-	// SELECT DISTINCT `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,
-	// IF (`players`.`teamid`<>'0',`teams`.`name`,'') AS `team_name` FROM `players`,`teams`
-	// WHERE `suspended`<>'1' AND IF (`players`.`teamid`<>'0', `players`.`teamid`=`teams`.`id`,'1')
-	// ORDER BY `players`.`teamid`, `players`.`name`
-	// SELECT DISTINCT: No double entries
-	$query = 'SELECT DISTINCT';
+	// SELECT `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,
+	// IF (`players`.`teamid`<>'0',(SELECT `teams`.`name` FROM `teams`
+	// WHERE `teams`.`id`=`players`.`teamid` LIMIT 1),'(teamless)') AS `team_name`,
+	// `players_profile`.`joined` FROM `players`,`players_profile`
+	// WHERE `players`.`suspended`<>'1' AND `players_profile`.`playerid`=`players`.`id`
+	// ORDER BY `players`.`teamid`, `players`.`name`;
+	$query = 'SELECT ';
 	// the needed values
 	$query .= ' `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,';
 	// team name only available if player belongs to a team
-	$query .= 'IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') .',`teams`.`name`,' . sqlSafeStringQuotes('') . ') AS `team_name`';
+	$query .= 'IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid` LIMIT 1),';
+	$query .= sqlSafeStringQuotes('(teamless)') . ') AS `team_name`';
 	// player first joined date
 	$query .= ',`players_profile`.`joined`';
 	// tables involved
-	$query .= ' FROM `players`,`teams`,`players_profile`';
+	$query .= ' FROM `players`,`players_profile`';
 	// do not display deleted players during maintenance
 	$query .= ' WHERE `suspended`<>' . "'" . sqlSafeString('1') . "'";
-	// can only require players`.`teamid`=`teams`.`id` in case player belongs to a team
-	$query .= ' AND IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') .', `players`.`teamid`=`teams`.`id`,';
-	// force an output value otherwise
-	$query .= sqlSafeStringQuotes('1') .')';
 	// the profile id of the player must match the actual player id (profile must belong to the same player)
 	$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
 	// sort the result
