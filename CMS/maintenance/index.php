@@ -512,10 +512,7 @@
 				$team_activity45[$i] = ($team_activity45[$i] / 45);
 				$team_activity45[$i] = number_format($team_activity45[$i], 2, '.', '');
 			}
-			print_r($team_activity45);
-			
-			// english notation without thousands seperator
-			
+						
 			$team_activity90 = array();
 			$timestamp = strtotime('-90 days');
 			$timestamp = strftime('%Y-%m-%d %H:%M:%S', $timestamp);

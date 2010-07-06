@@ -51,10 +51,15 @@
 		// e.g. inappropriate username got renamed by admins
 		// and then someone else tries to join using this username, 
 		// causing a reset of the other username to be reset to the inappropriate one
+		$convert_to_external_login = false;
 		while ($row = mysql_fetch_array($result))
 		{
 			$_SESSION['viewerid'] = (int) $row['id'];
 			$suspended_mode = (int) $row['suspended'];
+			if (strcmp(($row['external_playerid']), '') === 0)
+			{
+				$convert_to_external_login = true;
+			}
 		}
 		mysql_free_result($result);
 		
@@ -215,8 +220,9 @@
 			{
 				// user is not new, update his callsign with new callsign supplied from login
 				$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']));
-				if (isset($external_login_id))
+				if ($convert_to_external_login && (isset($external_login_id)))
 				{
+					// external_playerid was empty, set it to the external value
 					$query .= ', `external_playerid`=' . sqlSafeStringQuotes($external_login_id);
 				}
 				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);

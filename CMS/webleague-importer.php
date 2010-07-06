@@ -1,4 +1,5 @@
 <?php
+	set_time_limit(0);
 	ini_set ('session.use_trans_sid', 0);
 	ini_set ('session.name', 'SID');
 	ini_set('session.gc_maxlifetime', '7200');
@@ -62,45 +63,64 @@
 //		@$site->execute_query($site->db_used_name(), 'all!', $one_call, $connection);
 //	}
 	
+	// players
 	$query = 'SELECT * FROM `l_player`';
-	if (!($result = @$site->execute_query($db_to_be_imported, 'players', $query, $connection)))
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_player', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
 		$site->dieAndEndPage('');
 	}
 	// 0 means active player
 	$suspended_status = 0;
+	$deleted_players = array(array());
+	$index_num = 1;
+	$players = array();
 	while ($row = mysql_fetch_array($result))
 	{
+		$current_name = '(no name)';
 		// skip deleted users as they can be several times in the db
-		if (!(strcmp($row['status'], 'deleted') === 0))
+		// player got deleted, keep track of him
+		if (!(strcmp(substr($row['callsign'],-10), ' (DELETED)') === 0))
+		{
+			$current_name = htmlent($row['callsign']);
+		} else
+		{
+			$current_name = htmlent(substr($row['callsign'],0,-10));
+		}
+		
+		// is user already added to db?
+		// callsigns are case treated insensitive
+		if (!isset($players[strtolower($current_name)]))
 		{
 			$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`suspended`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes($row['team'])
-					  . ',' . sqlSafeStringQuotes($row['callsign']) . ',' . sqlSafeStringQuotes($suspended_status)
+					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($row['team'])
+					  . ',' . sqlSafeStringQuotes($current_name) . ',' . sqlSafeStringQuotes($suspended_status)
 					  . ')');
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+			$site->execute_query($site->db_used_name(), 'players', $query, $connection);
 			
 			$query = ('INSERT INTO `players_profile` (`playerid`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes($row['comment'])
+					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($row['comment'])
 					  . ',' . sqlSafeStringQuotes($row['comment']) . ',' . sqlSafeStringQuotes($row['created'])
 					  . ',' . sqlSafeStringQuotes($row['last_login']) . ',' . sqlSafeStringQuotes($row['logo'])
 					  . ')');
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
-			
-			
-			
-			echo '<br />';
 		}
+		$deleted_players[$row['id']]['callsign'] = $current_name;
+		
+		// mark the user has been added to db
+		// callsigns are case treated insensitive
+		$players[strtolower($current_name)] = true;
+		
+		$index_num++;
 	}
 	mysql_free_result($result);
 	
 	$query = 'SELECT * FROM `l_team`';
-	if (!($result = @$site->execute_query($db_to_be_imported, 'players', $query, $connection)))
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
 		$site->dieAndEndPage('');
@@ -109,16 +129,22 @@
 	{
 		$query = ('INSERT INTO `teams` (`id`,`name`,`leader_playerid`)'
 				  . ' VALUES '
-				  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes($row['name'])
-				  . ',' . sqlSafeStringQuotes($row['leader'])
-				  . ')');
+				  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes(htmlent($row['name'])));
+				  if (isset($deleted_players[$row['leader']]) && (isset($deleted_players[$row['leader']]['callsign'])))
+				  {
+					  $query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[($row['leader'])]['callsign']) . ')';
+				  } else
+				  {
+					  $query .= ',' . sqlSafeStringQuotes('0');
+				  }
+				  $query .= ')';
 		// execute query, ignore result
 		@$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
 		
 		$activity_status = 1;
-		if (!(strcmp($row['active'], 'yes') === 0))
+		if (strcmp($row['status'], 'deleted') === 0)
 		{
-			$activity_status = 0;
+			$activity_status = 2;
 		}
 		$query = ('INSERT INTO `teams_overview` (`teamid`,`score`,`member_count`,`any_teamless_player_can_join`,`deleted`)'
 				  . ' VALUES '
@@ -211,8 +237,67 @@
 				   . ')');
 		// execute query, ignore result
 		@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
-		
-		echo '<br />';
 	}
 	mysql_free_result($result);
+	
+	echo '<pre>';
+	print_r($deleted_players);
+	echo '</pre>';
+	
+	// matches
+	$query = 'SELECT * FROM `bzl_match`';
+	if (!($result = @$site->execute_query($db_to_be_imported, 'players', $query, $connection)))
+	{
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('');
+	}
+	// 0 means active player
+	$suspended_status = 0;
+	while ($row = mysql_fetch_array($result))
+	{
+		$query = ('INSERT INTO `matches` (`id`,`playerid`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points`,`team1_new_score`,`team2_new_score`)'
+				  . ' VALUES '
+				  . '(' . sqlSafeStringQuotes($row['id']));
+		if (strcmp($row['idedit'],'') === 0)
+		{
+			// was player deleted?
+			if (isset($deleted_players[$row['identer']]))
+			{
+				// grab id from database to ensure no foreign key constraint gets violated
+				$query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['identer']]['callsign']) . ')';
+			} else
+			{
+				$query .= ',' . sqlSafeStringQuotes($row['identer']);
+			}
+		} else
+		{
+			// was player deleted?
+			if (isset($deleted_players[$row['idedit']]))
+			{
+				// grab id from database to ensure no foreign key constraint gets violated
+				$query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['idedit']]['callsign']) . ')';
+			} else
+			{
+				$query .= ',' . sqlSafeStringQuotes($row['idedit']);
+			}
+		}
+		if (strcmp($row['tsedit'],'') === 0)
+		{
+			$query .= ',' . sqlSafeStringQuotes($row['tsenter']);
+		} else
+		{
+			$query .= ',' . sqlSafeStringQuotes($row['tsedit']);
+		}
+		$query .= (',' . sqlSafeStringQuotes($row['team1']) . ',' . sqlSafeStringQuotes($row['team2'])
+				   . ',' . sqlSafeStringQuotes($row['score1']) . ',' . sqlSafeStringQuotes($row['score2'])
+				   . ',' . sqlSafeStringQuotes($row['newrankt1']) . ',' . sqlSafeStringQuotes($row['newrankt2'])
+				   . ')');
+		// execute query, ignore result
+		@$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+	}
+	mysql_free_result($result);
+	
+	// do maintenance after importing the database to clean it
+	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
+	require_once('../CMS/maintenance/index.php');
 ?>

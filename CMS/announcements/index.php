@@ -370,8 +370,9 @@
 			$show_next_visits_button = false;
 			if ($rows === 0)
 			{
+				echo '<div class="static_page_box">' . "\n";
 				echo '<p class="first_p">No entries made yet.</p>' . "\n";
-				$site-dieAndEndPage('');
+				$site->dieAndEndPage();
 			}
 			// more than wished announcements per page available in total
 			if ($rows > $num_results)
