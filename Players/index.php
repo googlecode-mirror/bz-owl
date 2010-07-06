@@ -134,7 +134,7 @@
 		}
 		
 		$suspended_status = 1;
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			$suspended_status = (int) $row['suspended'];
 		}
@@ -945,7 +945,7 @@
 		
 		// the data we want
 		$query = 'SELECT `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`';
-		$query .= ', `players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
+		$query .= ', `players_profile`.`last_login`,`players_profile`.`joined`, `players_profile`.`user_comment`';
 		// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 		if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
 		{
@@ -970,7 +970,7 @@
 			echo 'It seems like the flag specified by this user does not exist.';
 			// the data we want
 			$query = 'SELECT `players`.`name`,' . sqlSafeStringQuotes('') . ' AS `country_name`,' . sqlSafeStringQuotes('') . ' AS `flagfile`';
-			$query .= ',`players_profile`.`last_visit`,`players_profile`.`joined`, `players_profile`.`user_comment`';
+			$query .= ',`players_profile`.`last_login`,`players_profile`.`joined`, `players_profile`.`user_comment`';
 			// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 			if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
 			{
@@ -1038,7 +1038,7 @@
 			}
 			echo '<span class="user_profile_location">' . htmlent($row['country_name']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
-			echo '		<div class="user_profile_last_visit_description_row"><span class="user_profile_last_visit_description">last visit:</span> <span class="user_profile_last_visit">' . htmlent($row['last_visit']) . '</span></div>' . "\n";
+			echo '		<div class="user_profile_last_login_description_row"><span class="user_profile_last_login_description">last login:</span> <span class="user_profile_last_login">' . htmlent($row['last_login']) . '</span></div>' . "\n";
 			echo '	</div>' . "\n";
 			echo '</div>' . "\n";
 			

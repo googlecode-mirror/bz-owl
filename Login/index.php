@@ -53,22 +53,7 @@
 		// causing a reset of the other username to be reset to the inappropriate one
 		while ($row = mysql_fetch_array($result))
 		{
-			if (isset($internal_login_id))
-			{
-				if (!($internal_login_id === 0))
-				{
-					$_SESSION['viewerid'] = (int) $row['id'];
-				}
-			} else
-			{
-				if (strcmp($_SESSION['external_id'], $row['external_playerid']) === 0)
-				{
-					$_SESSION['viewerid'] = (int) $row['id'];
-				} else
-				{
-					$_SESSION['viewerid'] = (int) 0;
-				}
-			}
+			$_SESSION['viewerid'] = (int) $row['id'];
 			$suspended_mode = (int) $row['suspended'];
 		}
 		mysql_free_result($result);
@@ -230,7 +215,11 @@
 			{
 				// user is not new, update his callsign with new callsign supplied from login
 				$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']));
-				$query .= ' WHERE `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']);
+				if (isset($external_login_id))
+				{
+					$query .= ', `external_playerid`=' . sqlSafeStringQuotes($external_login_id);
+				}
+				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
 				// each user has only one entry in the database
 				$query .= ' LIMIT 1';
 				if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -312,10 +301,10 @@
 	}
 	
 	
-	if ((isset($_SESSION['external_login']) && ($_SESSION['external_login'])) || (isset($internal_login_id)))
+	if (isset($_SESSION['user_logged_in']) && ($_SESSION['user_logged_in']))
 	{
-		// update last visited entry
-		$query = 'UPDATE `players_profile` SET `last_visit`=' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
+		// update last login entry
+		$query = 'UPDATE `players_profile` SET `last_login`=' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
 		if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
 		{
 			$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";

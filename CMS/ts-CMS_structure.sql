@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-07-04 22:47:49 +0200
+# Generation Time: 2010-07-06 20:04:52 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -204,7 +204,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -256,9 +256,9 @@ CREATE TABLE `players_profile` (
   `raw_user_comment` varchar(1000) NOT NULL DEFAULT '',
   `admin_comments` mediumtext NOT NULL,
   `raw_admin_comments` mediumtext NOT NULL,
-  `last_visit` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `logo_url` varchar(200) DEFAULT NULL,
   `joined` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_login` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `logo_url` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='the players profile data';
 
@@ -303,7 +303,7 @@ CREATE TABLE `teams_overview` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `score` int(11) NOT NULL DEFAULT '1200',
-  `activity` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
+  `activity` varchar(20) NOT NULL DEFAULT '0.00 (0.00)',
   `member_count` int(11) unsigned NOT NULL DEFAULT '1',
   `any_teamless_player_can_join` tinyint(1) NOT NULL DEFAULT '1',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -367,7 +367,7 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8;
 
 
 

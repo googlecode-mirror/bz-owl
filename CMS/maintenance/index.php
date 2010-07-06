@@ -333,7 +333,7 @@
 			$query .= ' WHERE `players`.`teamid`=' . sqlSafeStringQuotes('0');
 			$query .= 'AND `players`.`suspended`=' . sqlSafeStringQuotes('0');
 			$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
-			$query .= 'AND `players_profile`.`last_visit`<' . sqlSafeStringQuotes($two_months_in_past);
+			$query .= 'AND `players_profile`.`last_login`<' . sqlSafeStringQuotes($two_months_in_past);
 			
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
