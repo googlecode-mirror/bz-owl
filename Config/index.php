@@ -163,11 +163,11 @@
 	}
 	echo '>Snow</option>' . "\n";
 	echo '		<option';
-	if (strcmp($stylesheet, 'Ups Layout') == 0)
+	if (strcmp($stylesheet, 'Eierschale') == 0)
 	{
 		echo SELECTED;
 	}
-	echo '>Ups Layout</option>' . "\n";
+	echo '>Eierschale</option>' . "\n";
 	echo '	</select>' . "\n" . '	';
 	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
 ?>

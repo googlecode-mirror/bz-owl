@@ -4,7 +4,7 @@
 		define("default_stylesheet", 'White');
 	} else
 	{
-		define("default_stylesheet", 'Ups Layout');
+		define("default_stylesheet", 'Eierschale');
 	}
 	
 	$stylesheet = default_stylesheet;

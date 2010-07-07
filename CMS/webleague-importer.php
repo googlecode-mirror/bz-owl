@@ -100,9 +100,28 @@
 		// callsigns are case treated insensitive
 		if (!isset($players[strtolower($current_name)]))
 		{
+			$query = 'SELECT `team`,`last_login`,`comment`,`logo` FROM `l_player` WHERE `l_player`.`callsign`=' . sqlSafeStringQuotes($current_name) . ' LIMIT 1';
+			if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+			{
+				// query was bad, error message was already given in $site->execute_query(...)
+				$site->dieAndEndPage();
+			}
+			$last_login = '';
+			$team = (int) 0;
+			$comment = '';
+			$logo = '';
+			while ($tmp_row = mysql_fetch_array($tmp_result))
+			{
+				$last_login = $tmp_row['last_login'];
+				$team = $tmp_row['team'];
+				$comment = $tmp_row['comment'];
+				$logo = $tmp_row['logo'];
+			}
+			mysql_free_result($tmp_result);
+			
 			$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`suspended`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($row['team'])
+					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($team)
 					  . ',' . sqlSafeStringQuotes($current_name) . ',' . sqlSafeStringQuotes($suspended_status)
 					  . ')');
 			// execute query, ignore result
@@ -110,9 +129,9 @@
 			
 			$query = ('INSERT INTO `players_profile` (`playerid`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes(utf8_encode($row['comment']))
-					  . ',' . sqlSafeStringQuotes(utf8_encode($row['comment'])) . ',' . sqlSafeStringQuotes($row['created'])
-					  . ',' . sqlSafeStringQuotes($row['last_login']) . ',' . sqlSafeStringQuotes($row['logo'])
+					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes(utf8_encode($comment))
+					  . ',' . sqlSafeStringQuotes(utf8_encode($comment)) . ',' . sqlSafeStringQuotes($row['created'])
+					  . ',' . sqlSafeStringQuotes($last_login) . ',' . sqlSafeStringQuotes($logo)
 					  . ')');
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
