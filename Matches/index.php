@@ -68,7 +68,12 @@
 	
 	function team_name_from_id($id, $name)
 	{
-		echo '<a href="../Teams?profile=' . ((int) $id) . '">' . $name . '</a>';
+		echo '<a href="../Teams/?profile=' . ((int) $id) . '">' . $name . '</a>';
+	}
+	
+	function player_name_from_id($id, $name)
+	{
+		echo '<a href="../Players/?profile=' . ((int) $id) . '">' . $name . '</a>';
 	}
 	
 	if (isset($_GET['enter']) || isset($_GET['edit']) || isset($_GET['delete']))
@@ -370,7 +375,7 @@
 		
 		echo '<td>';
 		// get name of first team
-		team_name_from_id($match_entry['playerid'], $match_entry['playername']);		
+		player_name_from_id($match_entry['playerid'], $match_entry['playername']);		
 		echo '</td>' . "\n";
 
 		
