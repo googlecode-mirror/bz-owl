@@ -67,7 +67,7 @@
 //	}
 	
 	// players
-	$query = 'SELECT `callsign`,`created` FROM `l_player` ORDER BY `id`';
+	$query = 'SELECT `id`,`callsign`,`created` FROM `l_player` ORDER BY `id`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_player', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
