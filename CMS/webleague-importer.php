@@ -293,9 +293,54 @@
 				   . ',' . sqlSafeStringQuotes($row['newrankt1']) . ',' . sqlSafeStringQuotes($row['newrankt2'])
 				   . ')');
 		// execute query, ignore result
-		@$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+		@$site->execute_query($site->db_used_name(), 'matches', $query, $connection);
 	}
 	mysql_free_result($result);
+	
+	$query = 'SELECT * FROM `l_message`';
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	{
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('');
+	}
+	while ($row = mysql_fetch_array($result))
+	{
+		$query = ('INSERT INTO `messages_storage` (`id`,`author`,`author_id`,`subject`,`timestamp`,`message`,`from_team`,`recipients`)'
+				  . ' VALUES '
+				  . '(' . sqlSafeStringQuotes($row['msgid'])
+				  . ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign'])
+				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']) . ')'
+				  . ',' . sqlSafeStringQuotes(htmlent($row['subject']))
+				  . ',' . sqlSafeStringQuotes($row['datesent'])
+				  . ',' . sqlSafeStringQuotes($row['msg']));
+		if (strcmp($row['team'], 'no') === 0)
+		{
+			$query .= ',' . sqlSafeStringQuotes('0');
+		} else
+		{
+			$query .= ',' . sqlSafeStringQuotes('1');
+		}
+		$query .= ',' . sqlSafeStringQuotes($row['toid']) . ')';
+		// execute query, ignore result
+		@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
+		
+//		if (strcmp($row['team'], 'no') === 0)
+//		{
+		$query = ('INSERT INTO `messages_users_connection` (`msgid`,`playerid`,`in_inbox`,`in_outbox`,`msg_unread`)'
+				  . ' VALUES '
+				  . '(' . sqlSafeStringQuotes($row['msgid'])
+				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']) . ')'
+				  // all messages only in inbox
+				  . ',' . sqlSafeStringQuotes('1')
+				  . ',' . sqlSafeStringQuotes('0')
+				  // mark all messages as already read
+				  . ',' . sqlSafeStringQuotes('0')
+				  . ')');
+		
+		// execute query, ignore result
+		@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+//		}
+	}
 	
 	// do maintenance after importing the database to clean it
 	// a check inside the maintenance logic will make sure it will be only performed one time per day at max

@@ -847,7 +847,7 @@
 								echo '	<label class="msg_send" for="msg_send_to0" id="msg_sendmsgto">Send message to:</label>' . "\n";
 								echo '	<span>';
 								$site->write_self_closing_tag('input type="text" disabled="disabled" maxlength="255" name="to0" id="msg_send_to0" value="'
-															  . $team_name) . '"';
+															  . $team_name . '"');
 								echo '</span>' . "\n";
 							} else
 							{
