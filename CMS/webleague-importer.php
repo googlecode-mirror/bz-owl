@@ -324,8 +324,14 @@
 		{
 			$query .= ',0';
 		}
-		$query .= (',' . sqlSafeStringQuotes(utf8_encode(htmlentities($row['subject'], ENT_QUOTES, 'ISO-8859-1')))
-				  . ',' . sqlSafeStringQuotes($row['datesent'])
+		if (strcmp($row['subject'], '') === 0)
+		{
+			$query .= ',' . sqlSafeStringQuotes('Enter subject here');
+		} else
+		{
+			$query .= ',' . sqlSafeStringQuotes(utf8_encode(htmlentities($row['subject'], ENT_QUOTES, 'ISO-8859-1')));
+		}
+		$query .=. ',' . sqlSafeStringQuotes($row['datesent'])
 				  . ',' . sqlSafeStringQuotes(utf8_encode($row['msg'])));
 //		if (strcmp($row['team'], 'no') === 0)
 //		{

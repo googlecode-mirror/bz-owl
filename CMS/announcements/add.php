@@ -688,7 +688,7 @@
 									$tmp_recipients .= $row['author_id'];
 									// add a 'Re: ' before the subject if there is none already
 									// like in email
-									if (strncmp('Re: ', 'r', 3) === 0)
+									if (strncmp('Re: ', $row['subject'], 3) === 0)
 									{
 										$subject = $row['subject'];
 									} else
