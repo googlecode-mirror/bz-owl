@@ -75,8 +75,8 @@
 			echo '<div class="msg_view_full">' . "\n";
 			
 			echo '	<div class="msg_header_full">' . "\n";
-			echo '		<span class="msg_subject">' .  $row["subject"] . '</span>' . "\n";
-			echo '		<span class="msg_author"> by ' .  htmlent($row["author"]) . '</span>' . "\n";
+			echo '		<span class="msg_subject">' .  $row['subject'] . '</span>' . "\n";
+			echo '		<span class="msg_author"> by ' .  htmlent($row['author']) . '</span>' . "\n";
 			echo '		<span class="msg_timestamp"> at ' .	 htmlent($row['timestamp']) . '</span>' . "\n";
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
@@ -91,8 +91,8 @@
 		if (!($folder === NULL) && (!(strcmp($folder, 'outbox') === 0)))
 		{
 			// mark the message as unread
-			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_unread`=' . "'";
-			$query .= sqlSafeString(0) . "'" . ' WHERE `msgid`=' . "'" . sqlSafeString((int) $id) . "'";
+			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_unread`=';
+			$query .= sqlSafeStringQuotes(0) . ' WHERE `msgid`=' . sqlSafeStringQuotes((int) $id);
 			$query .= ' AND `in_' . $folder . '`=' . "'" . '1' . "'";
 			// silently ignore the result, it's not a resource anyway so it can't even be dropped
 			$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
@@ -126,7 +126,7 @@
 		// Are there messages to display so we need an overview at all?
 		$user_id = (sqlSafeString((int) $item));
 		$query = 'SELECT * FROM `messages_storage`, `messages_users_connection` WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`';
-		$query .= ' AND `messages_storage`.`id`=' . "'" . sqlSafeString($user_id) . "'" . ' AND `' . $box_name	.'`=' . "'" . '1' . "'";
+		$query .= ' AND `messages_storage`.`id`=' . sqlSafeStringQuotes($user_id) . ' AND `' . $box_name	.'`=' . "'" . '1' . "'";
 		$query .= ' ORDER BY `messages_storage`.`id` LIMIT 0,1';
 		$result = @mysql_query($query, $connection);
 		

@@ -22,7 +22,7 @@
 	{
 		// use sqlSafeString and append quotes before and after the result
 		return ("'" . sqlSafeString($param) . "'");
-	}	
+	}
 	
 	// check siteoptions_path_example.php and follow the instructions there
 	require_once('siteoptions_path.php');
@@ -213,12 +213,18 @@
 		function mobile_version()
 		{
 			// this switch should be used sparingly and only in cases where content would not fit on the display
-			$browser = $_SERVER['HTTP_USER_AGENT'];
-			if (preg_match("/.(Mobile|mobile)/", $browser))
+			if (isset($_SERVER['HTTP_USER_AGENT']))
 			{
-				// mobile browser
-				return true;
-			} else {
+			$browser = $_SERVER['HTTP_USER_AGENT'];
+				if (preg_match("/.(Mobile|mobile)/", $browser))
+				{
+					// mobile browser
+					return true;
+				} else {
+					return false;
+				}
+			} else
+			{
 				return false;
 			}
 		}

@@ -20,6 +20,9 @@
 	
 	$db_to_be_imported = 'bzleague_guleague';
 	
+	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET latin1 COLLATE latin1_swedish_ci';
+	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
+	
 //	$file = dirname(__FILE__) . '/ts-CMS_structure.sql';
 //	if (file_exists($file) && is_readable($file))
 //	{
@@ -64,7 +67,7 @@
 //	}
 	
 	// players
-	$query = 'SELECT * FROM `l_player`';
+	$query = 'SELECT * FROM `l_player` ORDER BY `id`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_player', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
@@ -73,6 +76,11 @@
 	// 0 means active player
 	$suspended_status = 0;
 	$deleted_players = array(array());
+	
+	// DUMMY player
+	$deleted_players['0']['callsign'] = 'CTF League System';
+	$deleted_players['0']['dummy'] = true;
+	
 	$index_num = 1;
 	$players = array();
 	while ($row = mysql_fetch_array($result))
@@ -119,7 +127,7 @@
 	}
 	mysql_free_result($result);
 	
-	$query = 'SELECT * FROM `l_team`';
+	$query = 'SELECT * FROM `l_team` ORDER BY `created`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
@@ -130,7 +138,7 @@
 		$query = ('INSERT INTO `teams` (`id`,`name`,`leader_playerid`)'
 				  . ' VALUES '
 				  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes(htmlent($row['name'])));
-				  if (isset($deleted_players[$row['leader']]) && (isset($deleted_players[$row['leader']]['callsign'])))
+				  if (isset($deleted_players[$row['leader']]) && (isset($deleted_players[$row['leader']]['callsign'])) && (!isset($deleted_players[$row['leader']]['dummy'])))
 				  {
 					  $query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[($row['leader'])]['callsign']) . ')';
 				  } else
@@ -245,7 +253,7 @@
 	echo '</pre>';
 	
 	// matches
-	$query = 'SELECT * FROM `bzl_match`';
+	$query = 'SELECT * FROM `bzl_match` ORDER BY `id`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'players', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
@@ -297,7 +305,7 @@
 	}
 	mysql_free_result($result);
 	
-	$query = 'SELECT * FROM `l_message`';
+	$query = 'SELECT * FROM `l_message` ORDER BY `datesent`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
@@ -308,28 +316,34 @@
 		$query = ('INSERT INTO `messages_storage` (`id`,`author`,`author_id`,`subject`,`timestamp`,`message`,`from_team`,`recipients`)'
 				  . ' VALUES '
 				  . '(' . sqlSafeStringQuotes($row['msgid'])
-				  . ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign'])
-				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']) . ')'
-				  . ',' . sqlSafeStringQuotes(htmlent($row['subject']))
-				  . ',' . sqlSafeStringQuotes($row['datesent'])
-				  . ',' . sqlSafeStringQuotes($row['msg']));
-		if (strcmp($row['team'], 'no') === 0)
+				  . ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']));
+		if ((int) $row['fromid'] > 0)
 		{
-			$query .= ',' . sqlSafeStringQuotes('0');
+			$query .=  ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']) . ')';
 		} else
 		{
-			$query .= ',' . sqlSafeStringQuotes('1');
+			$query .= ',0';
 		}
-		$query .= ',' . sqlSafeStringQuotes($row['toid']) . ')';
+		$query .= (',' . sqlSafeStringQuotes(htmlent($row['subject']))
+				  . ',' . sqlSafeStringQuotes($row['datesent'])
+				  . ',' . sqlSafeStringQuotes($row['msg']));
+//		if (strcmp($row['team'], 'no') === 0)
+//		{
+//			$query .= ',' . sqlSafeStringQuotes('0');
+//		} else
+//		{
+//			$query .= ',' . sqlSafeStringQuotes('1');
+//		}
+		// the messages are sent multiple times in practice
+		$query .= ',' . sqlSafeStringQuotes('0');
+		$query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['toid']]['callsign']) . '))';
 		// execute query, ignore result
 		@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
 		
-//		if (strcmp($row['team'], 'no') === 0)
-//		{
 		$query = ('INSERT INTO `messages_users_connection` (`msgid`,`playerid`,`in_inbox`,`in_outbox`,`msg_unread`)'
 				  . ' VALUES '
 				  . '(' . sqlSafeStringQuotes($row['msgid'])
-				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']) . ')'
+				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['toid']]['callsign']) . ')'
 				  // all messages only in inbox
 				  . ',' . sqlSafeStringQuotes('1')
 				  . ',' . sqlSafeStringQuotes('0')
@@ -339,10 +353,19 @@
 		
 		// execute query, ignore result
 		@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
-//		}
 	}
+	
+	// convert messages to UTF-8
+	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci';
+	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
+	
+	
+	
 	
 	// do maintenance after importing the database to clean it
 	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
 	require_once('../CMS/maintenance/index.php');
+	
+	// done
+	// (should take about 30 minutes to import the data)
 ?>
