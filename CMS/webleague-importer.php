@@ -20,9 +20,9 @@
 	
 	$db_to_be_imported = 'bzleague_guleague';
 	
-	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET latin1 COLLATE latin1_swedish_ci';
-	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
-	
+//	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET latin1 COLLATE latin1_swedish_ci';
+//	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
+//	
 //	$file = dirname(__FILE__) . '/ts-CMS_structure.sql';
 //	if (file_exists($file) && is_readable($file))
 //	{
@@ -110,8 +110,8 @@
 			
 			$query = ('INSERT INTO `players_profile` (`playerid`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($row['comment'])
-					  . ',' . sqlSafeStringQuotes($row['comment']) . ',' . sqlSafeStringQuotes($row['created'])
+					  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes(utf8_encode($row['comment']))
+					  . ',' . sqlSafeStringQuotes(utf8_encode($row['comment'])) . ',' . sqlSafeStringQuotes($row['created'])
 					  . ',' . sqlSafeStringQuotes($row['last_login']) . ',' . sqlSafeStringQuotes($row['logo'])
 					  . ')');
 			// execute query, ignore result
@@ -240,7 +240,7 @@
 		}
 		mysql_free_result($tmp_result);	
 		
-		$query .= (',' . sqlSafeStringQuotes($row['comment']) . ',' . sqlSafeStringQuotes($row['comment'])
+		$query .= (',' . sqlSafeStringQuotes(utf8_encode($row['comment'])) . ',' . sqlSafeStringQuotes(utf8_encode($row['comment']))
 				   . ',' . sqlSafeStringQuotes($row['logo']) . ',' . sqlSafeStringQuotes($row['created'])
 				   . ')');
 		// execute query, ignore result
@@ -324,9 +324,9 @@
 		{
 			$query .= ',0';
 		}
-		$query .= (',' . sqlSafeStringQuotes(htmlent($row['subject']))
+		$query .= (',' . sqlSafeStringQuotes(utf8_encode(htmlentities($row['subject'], ENT_QUOTES, 'ISO-8859-1')))
 				  . ',' . sqlSafeStringQuotes($row['datesent'])
-				  . ',' . sqlSafeStringQuotes($row['msg']));
+				  . ',' . sqlSafeStringQuotes(utf8_encode($row['msg'])));
 //		if (strcmp($row['team'], 'no') === 0)
 //		{
 //			$query .= ',' . sqlSafeStringQuotes('0');
@@ -355,9 +355,9 @@
 		@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 	}
 	
-	// convert messages to UTF-8
-	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci';
-	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
+//	// convert messages to UTF-8
+//	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci';
+//	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
 	
 	
 	
