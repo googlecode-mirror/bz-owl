@@ -403,6 +403,33 @@
 	}
 	
 	
+	// visits log
+	$query = 'SELECT * FROM `bzl_visit` ORDER BY `ts`';
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	{
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('');
+	}
+	// use lookup array to save some dns lookups
+	while ($row = mysql_fetch_array($result))
+	{
+		// webleague can have funny entries with pid being 0!
+		if ((int) $row['pid'] > 0)
+		{
+			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`)'
+					  . ' VALUES '
+					  . '(' . sqlSafeStringQuotes($deleted_players[$row['pid']]['id'])
+					  . ',' . sqlSafeStringQuotes($row['ip'])
+					  // set host to empty and update it in the background afterwards
+					  . ',' . sqlSafeStringQuotes('')
+					  . ',' . sqlSafeStringQuotes($row['ts'])
+					  . ')');
+			// execute query, ignore result
+			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+		}
+	}
+	
+	
 	// news entries
 	$query = 'SELECT * FROM `bzl_news` ORDER BY `newsdate`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
@@ -443,32 +470,6 @@
 		@$site->execute_query($site->db_used_name(), 'bans', $query, $connection);
 	}
 	
-	
-	// visits log
-	$query = 'SELECT * FROM `bzl_visit` ORDER BY `ts`';
-	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
-	{
-		// query was bad, error message was already given in $site->execute_query(...)
-		$site->dieAndEndPage('');
-	}
-	// use lookup array to save some dns lookups
-	while ($row = mysql_fetch_array($result))
-	{
-		// webleague can have funny entries with pid being 0!
-		if ((int) $row['pid'] > 0)
-		{
-			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`)'
-					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($deleted_players[$row['pid']]['id'])
-					  . ',' . sqlSafeStringQuotes($row['ip'])
-					  // set host to empty and update it in the background afterwards
-					  . ',' . sqlSafeStringQuotes('')
-					  . ',' . sqlSafeStringQuotes($row['ts'])
-					  . ')');
-			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
-		}
-	}
 	
 	// do maintenance after importing the database to clean it
 	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
