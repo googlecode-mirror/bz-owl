@@ -478,7 +478,7 @@
 	
 	// visits log host entry completer
 	$query = 'SELECT `id`,`ip-address` FROM `visits` WHERE `host`=' . sqlSafeStringQuotes('');
-	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	if (!($result = @$site->execute_query($site->db_used_name(), 'l_team', $query, $connection)))
 	{
 		$site->dieAndEndPage('Could not get list of entries where hostname is empty');
 	}
@@ -486,18 +486,14 @@
 	$host = array(array());
 	while ($row = mysql_fetch_array($result))
 	{
-		// webleague can have funny entries with pid being 0!
-		if ((int) $row['pid'] > 0)
+		if (!isset($host[$row['ip']]))
 		{
-			if (!isset($host[$row['ip']]))
-			{
-				$host[$row['ip']] = gethostbyaddr($row['ip']);
-			}
-			$query = ('UPDATE `visits` SET `host`='
-					  . sqlSafeStringQuotes($host[$row['ip']]));
-			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+			$host[$row['ip']] = gethostbyaddr($row['ip']);
 		}
+		$query = ('UPDATE `visits` SET `host`='
+				  . sqlSafeStringQuotes($host[$row['ip']]));
+		// execute query, ignore result
+		@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 	}
 	unset($host);
 	
