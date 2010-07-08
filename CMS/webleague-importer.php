@@ -442,7 +442,7 @@
 		$query = ('INSERT INTO `news` (`timestamp`,`author`,`announcement`,`raw_announcement`)'
 				  . ' VALUES '
 				  . '(' . sqlSafeStringQuotes($row['newsdate'])
-				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($row['authorname']) . ' LIMIT 1)'
+				  . ',' . sqlSafeStringQuotes($row['authorname'])
 				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
 				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
 				  . ')');
@@ -462,7 +462,7 @@
 		$query = ('INSERT INTO `bans` (`timestamp`,`author`,`announcement`,`raw_announcement`)'
 				  . ' VALUES '
 				  . '(' . sqlSafeStringQuotes($row['newsdate'])
-				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($row['authorname']) . ' LIMIT 1)'
+				  . ',' . sqlSafeStringQuotes($row['authorname'])
 				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
 				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
 				  . ')');
