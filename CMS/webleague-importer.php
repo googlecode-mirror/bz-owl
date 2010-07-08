@@ -452,6 +452,36 @@
 		$site->dieAndEndPage('');
 	}
 	// use lookup array to save some dns lookups
+	while ($row = mysql_fetch_array($result))
+	{
+		// webleague can have funny entries with pid being 0!
+		if ((int) $row['pid'] > 0)
+		{
+			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`)'
+					  . ' VALUES '
+					  . '(' . sqlSafeStringQuotes($deleted_players[$row['pid']]['id'])
+					  . ',' . sqlSafeStringQuotes($row['ip'])
+					  // set host to empty and update it in the background afterwards
+					  . ',' . sqlSafeStringQuotes('')
+					  . ',' . sqlSafeStringQuotes($row['ts'])
+					  . ')');
+			// execute query, ignore result
+			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+		}
+	}
+	
+	// do maintenance after importing the database to clean it
+	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
+	require_once('../CMS/maintenance/index.php');
+	
+	
+	// visits log host entry completer
+	$query = 'SELECT `id`,`ip-address` FROM `visits` WHERE `host`=' . sqlSafeStringQuotes('');
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	{
+		$site->dieAndEndPage('Could not get list of entries where hostname is empty');
+	}
+	// use lookup array to save some dns lookups
 	$host = array(array());
 	while ($row = mysql_fetch_array($result))
 	{
@@ -462,22 +492,13 @@
 			{
 				$host[$row['ip']] = gethostbyaddr($row['ip']);
 			}
-			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`)'
-					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($deleted_players[$row['pid']]['id'])
-					  . ',' . sqlSafeStringQuotes($row['ip'])
-					  . ',' . sqlSafeStringQuotes($host[$row['ip']])
-					  . ',' . sqlSafeStringQuotes($row['ts'])
-					  . ')');
+			$query = ('UPDATE `visits` SET `host`='
+					  . ',' . sqlSafeStringQuotes($host[$row['ip']]));
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
 	}
 	unset($host);
-	
-	// do maintenance after importing the database to clean it
-	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
-	require_once('../CMS/maintenance/index.php');
 	
 	// done
 	// (should take about 30 minutes to import the data)
