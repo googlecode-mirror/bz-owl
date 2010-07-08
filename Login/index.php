@@ -397,13 +397,14 @@
 			// insert to the visits log of the player
 			$ip_address = getenv('REMOTE_ADDR');
 			$host = gethostbyaddr($ip_address);
-			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`,`forwarded_for`) VALUES ('
+			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`forwarded_for`,`timestamp`) VALUES ('
 					  . sqlSafeStringQuotes($user_id)
 					  . ', ' . sqlSafeStringQuotes(htmlent($ip_address))
 					  . ', ' . sqlSafeStringQuotes(htmlent($host))
-					  . ', ' . $curDate .
 					  // try to detect original ip-address in case proxies are used
-					  ',' . sqlSafeStringQuotes(htmlent(getenv('HTTP_X_FORWARDED_FOR'))) . ')');
+					  . ',' . sqlSafeStringQuotes(htmlent(getenv('HTTP_X_FORWARDED_FOR')))
+					  . ', ' . $curDate
+					  . ')');
 			$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
 	}
