@@ -486,7 +486,7 @@
 	$host = array(array());
 	while ($row = mysql_fetch_array($result))
 	{
-		if (!isset($host[$row['ip']]))
+		if (!isset($host[$row['ip-address']]))
 		{
 			$host[$row['ip']] = gethostbyaddr($row['ip']);
 		}
