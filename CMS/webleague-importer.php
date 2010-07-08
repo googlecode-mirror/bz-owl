@@ -494,7 +494,7 @@
 				$host[$row['ip']] = gethostbyaddr($row['ip']);
 			}
 			$query = ('UPDATE `visits` SET `host`='
-					  . ',' . sqlSafeStringQuotes($host[$row['ip']]));
+					  . sqlSafeStringQuotes($host[$row['ip']]));
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
