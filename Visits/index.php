@@ -47,6 +47,10 @@
 	{
 		echo ' value="' . $_GET['search_string'] . '"';	
 	}
+	if ($site->use_xtml())
+	{
+		echo ' /';
+	}
 	echo '>';
 	echo '</span></div> ' . "\n";
 	
@@ -62,6 +66,7 @@
 	$search_type = '';
 	$search_ip = false;
 	$search_host = false;
+	$search_forwarded_for = false;
 	$search_name = false;
 	
 	if (isset($_GET['search_type']))
@@ -70,6 +75,7 @@
 		{
 			case 'ip-adress': $search_ip = true; break;
 			case 'host': $search_host = true; break;
+			case 'forwarded_for': $search_forwarded_for = true; break;
 			case 'name': $search_name = true; break;
 			default: $search_ip = true;
 		}
@@ -92,6 +98,14 @@
 	echo '>host</option>';
 	
 	echo '<option';
+	if ($search_forwarded_for)
+	{
+		$search_type = 'forwarded_for';
+		echo ' selected="selected"';
+	}
+	echo ' value="forwarded_for">forwarded for</option>';
+	
+	echo '<option';
 	if ($search_name)
 	{
 		$search_type = 'name';
@@ -111,7 +125,9 @@
 	echo '</select></span>';
 	echo '</div> ' . "\n";
 	
-	echo '<div style="display:inline"> <input type="submit" name="search" value="Search" id="send"></div>' . "\n";
+	echo '<div style="display:inline">';
+	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send"');
+	echo '</div>' . "\n";
 	echo '</form>' . "\n";
 	
 	// end search toolbar
@@ -131,7 +147,7 @@
 		$search_expression = str_replace('*', '%', $search_expression);
 		
 		// get list of last 200 visits
-		$query = 'SELECT `visits`.`id`,`visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players` ';
+		$query = 'SELECT `visits`.`id`,`visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp`,`visits`.`forwarded_for` FROM `visits`,`players` ';
 		$query .= 'WHERE `visits`.`playerid`=`players`.`id`';
 		
 		if (!($search_name))
@@ -193,7 +209,7 @@
 		// example query: SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp`
 		//				  FROM `visits`,`players` WHERE `visits`.`playerid`='16' AND `players`.`id`='16'
 		//				  ORDER BY `visits`.`id` DESC LIMIT 0,201
-		$query = 'SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp` FROM `visits`,`players` WHERE `visits`.`playerid`=' . sqlSafeStringQuotes($profile) . ' AND `players`.`id`=' . sqlSafeStringQuotes($profile);
+		$query = 'SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp`,`visits`.`forwarded_for` FROM `visits`,`players` WHERE `visits`.`playerid`=' . sqlSafeStringQuotes($profile) . ' AND `players`.`id`=' . sqlSafeStringQuotes($profile);
 	}
 	
 	// display visits log overview
@@ -203,7 +219,7 @@
 		if (!(isset($_GET['search'])))
 		{
 			// get list of last 200 visits
-			$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp` FROM `visits`,`players`';
+			$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp`,`visits`.`forwarded_for` FROM `visits`,`players`';
 			$query .= ' WHERE `visits`.`playerid`=`players`.`id`';
 		}
 	}
@@ -298,6 +314,7 @@
 		$visits_list[$id]['ip-address'] = $row['ip-address'];
 		$visits_list[$id]['host'] = $row['host'];
 		$visits_list[$id]['timestamp'] = $row['timestamp'];
+		$visits_list[$id]['forwarded_for'] = $row['forwarded_for'];
 		$id++;
 	}
 	unset($id);
@@ -332,6 +349,7 @@
 	echo '	<th>ip-address</th>' . "\n";
 	echo '	<th>host</th>' . "\n";
 	echo '	<th>login time</th>' . "\n";
+	echo '	<th>forwarded for</th>' . "\n";
 	echo '</tr>' . "\n\n";
 	
 	// walk through the array values
@@ -348,9 +366,10 @@
 		}
 		echo $visits_entry['name'];
 		echo '</a></td>' . "\n";
-		echo '	<td>' . htmlent($visits_entry['ip-address']) . '</td>' . "\n";
-		echo '	<td>' . htmlent($visits_entry['host']) . '</td>' . "\n";
-		echo '	<td>' . htmlent($visits_entry['timestamp']) . '</td>' . "\n";
+		echo '	<td>' . $visits_entry['ip-address'] . '</td>' . "\n";
+		echo '	<td>' . $visits_entry['host'] . '</td>' . "\n";
+		echo '	<td>' . $visits_entry['timestamp'] . '</td>' . "\n";
+		echo '	<td>' . $visits_entry['forwarded_for'] . '</td>' . "\n";
 		echo '</tr>' . "\n";
 	}
 	echo '</table>' . "\n";

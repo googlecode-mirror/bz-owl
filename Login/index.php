@@ -63,7 +63,7 @@
 		}
 		mysql_free_result($result);
 		
-		if (((int) $_SESSION['viewerid'] === (int) 0)
+		if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
 			&& ($suspended_mode > (int) 1))
 		{
 			$_SESSION['user_logged_in'] = false;
@@ -131,6 +131,7 @@
 							$_SESSION['viewerid'] = (int) $row['id'];
 						}
 						mysql_free_result($id_result);
+						$user_id = getUserID();
 						if ($rows === 1)
 						{
 							// user inserted without problems
@@ -151,10 +152,10 @@
 							$query .= '(' . sqlSafeStringQuotes('league management system') . ', ' . sqlSafeStringQuotes ('0');
 							$query .= ', ' . sqlSafeStringQuotes('Welcome!') . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 							$query .= ', ' . sqlSafeStringQuotes('Welcome and thanks for registering at this website!' . "\n"
-																 . 'In the FAQ are the most important informations about organising and playin matches'
+																 . 'In the FAQ you can find the most important informations about organising and playin matches.'
 																 . "\n\n" .
 																 'See you on the battlefield.');
-							$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($profile) . ')';
+							$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($user_id) . ')';
 							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
@@ -173,7 +174,7 @@
 							}
 							// send the invitation message to user
 							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES ';
-							$query .= '(' . sqlSafeStringQuotes($msgid) . ', ' . sqlSafeStringQuotes($profile);
+							$query .= '(' . sqlSafeStringQuotes($msgid) . ', ' . sqlSafeStringQuotes($user_id);
 							$query .= ', ' . sqlSafeStringQuotes('1');
 							$query .= ', ' . sqlSafeStringQuotes('0') . ')';
 							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
@@ -396,13 +397,13 @@
 			// insert to the visits log of the player
 			$ip_address = getenv('REMOTE_ADDR');
 			$host = gethostbyaddr($ip_address);
-			// try to detect original ip-address in case proxies are used
-			if (!(strcmp(getenv('HTTP_X_FORWARDED_FOR'), '') === 0))
-			{
-				$ip_address .= ' (forwarded for: ' . getenv('HTTP_X_FORWARDED_FOR') . ')';
-			}
-			$query = 'INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`) VALUES (';
-			$query .= sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes($ip_address) . ', ' . sqlSafeStringQuotes($host) . ', ' . $curDate . ')';
+			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`,`forwarded_for`) VALUES ('
+					  . sqlSafeStringQuotes($user_id)
+					  . ', ' . sqlSafeStringQuotes(htmlent($ip_address))
+					  . ', ' . sqlSafeStringQuotes(htmlent($host))
+					  . ', ' . $curDate .
+					  // try to detect original ip-address in case proxies are used
+					  ',' . sqlSafeStringQuotes(htmlent(getenv('HTTP_X_FORWARDED_FOR'))) . ')');
 			$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
 	}

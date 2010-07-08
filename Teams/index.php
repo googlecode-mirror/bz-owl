@@ -1735,6 +1735,7 @@
 			if ($rows === 0)
 			{
 				echo '<p>There are no teams in the database.</p>';
+				$site->dieAndEndPageNoBox();
 			}
 			
 			echo '<table id="table_team_members" class="big">' . "\n";

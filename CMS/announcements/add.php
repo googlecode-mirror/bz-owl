@@ -936,7 +936,7 @@
 				// end form
 				echo "</form>\n";
 			}
-			if ($previewSeen===1)
+			if ($previewSeen < 2)
 			{
 				echo '</div>' . "\n\n"; 
 			}

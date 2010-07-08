@@ -232,13 +232,13 @@
 		function use_xtml()
 		{
 			// do we use xtml (->true) or html (->false)
-			if (phpversion() >= ('4.0.5'))
-			{
-				return true;
-			}
 			if (phpversion() >= ('5.3'))
 			{
 				return xhtml_on();
+			}
+			if (phpversion() >= ('4.0.5'))
+			{
+				return true;
 			} else
 			{
 				// nl2br needs php newer or equal to 4.0.5 to support xhtml

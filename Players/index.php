@@ -1128,7 +1128,7 @@
 				echo '<a class="button" href="../Visits/?profile=' . htmlspecialchars($profile) . '">View visits log</a>' . "\n";
 			}
 		}
-		$site->dieAndEndPageNoBox('');
+		$site->dieAndEndPageNoBox();
 	}
 	
 	// display overview
@@ -1159,6 +1159,13 @@
 	$query .= ' ORDER BY `players`.`teamid`, `players`.`name`';
 	if ($result = @$site->execute_query($site->db_used_name(), 'players, teams', $query, $connection))
 	{
+		$rows = (int) mysql_num_rows($result);
+		if ($rows === 0)
+		{
+			echo '<p>There are no players in the database.</p>';
+			$site->dieAndEndPageNoBox();
+		}
+		
 		// unfortunately as the list is sorted by teamid and name we need to keep track of teamid changes
 		$teamid = (int) -1;
 		echo '<table id="table_players_overview" class="big">' . "\n";

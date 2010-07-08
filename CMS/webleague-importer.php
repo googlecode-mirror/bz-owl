@@ -20,9 +20,8 @@
 	
 	$db_to_be_imported = 'bzleague_guleague';
 	
-//	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET latin1 COLLATE latin1_swedish_ci';
-//	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
-//	
+	// this code does not work because the order of statements in the dump
+	// cause the relations set up being violated
 //	$file = dirname(__FILE__) . '/ts-CMS_structure.sql';
 //	if (file_exists($file) && is_readable($file))
 //	{
@@ -65,6 +64,7 @@
 //	{
 //		@$site->execute_query($site->db_used_name(), 'all!', $one_call, $connection);
 //	}
+	
 	
 	// players
 	$query = 'SELECT `id`,`callsign`,`created` FROM `l_player` ORDER BY `id`';
@@ -146,6 +146,29 @@
 	}
 	mysql_free_result($result);
 	
+	// build a lookup table to avoid millions of select id from players where name=bla
+	foreach($deleted_players AS &$deleted_player)
+	{
+		$query = 'SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_player['callsign']);
+		if (!($result = @$site->execute_query($site->db_used_name(), 'l_player', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
+		}
+		while ($row = mysql_fetch_array($result))
+		{
+			$deleted_player['id'] = (int) $row['id'];
+		}
+		mysql_free_result($result);
+	}
+	unset($deleted_player);
+	
+	echo '<pre>';
+	print_r($deleted_players);
+	echo '</pre>';
+	
+	
+	// teams
 	$query = 'SELECT * FROM `l_team` ORDER BY `created`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
 	{
@@ -159,7 +182,7 @@
 				  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes(htmlent($row['name'])));
 				  if (isset($deleted_players[$row['leader']]) && (isset($deleted_players[$row['leader']]['callsign'])) && (!isset($deleted_players[$row['leader']]['dummy'])))
 				  {
-					  $query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[($row['leader'])]['callsign']) . ')';
+					  $query .= ',' . sqlSafeStringQuotes($deleted_players[($row['leader'])]['id']);
 				  } else
 				  {
 					  $query .= ',' . sqlSafeStringQuotes('0');
@@ -267,10 +290,6 @@
 	}
 	mysql_free_result($result);
 	
-	echo '<pre>';
-	print_r($deleted_players);
-	echo '</pre>';
-	
 	// matches
 	$query = 'SELECT * FROM `bzl_match` ORDER BY `id`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'players', $query, $connection)))
@@ -291,7 +310,7 @@
 			if (isset($deleted_players[$row['identer']]))
 			{
 				// grab id from database to ensure no foreign key constraint gets violated
-				$query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['identer']]['callsign']) . ')';
+				$query .= ',' . sqlSafeStringQuotes($deleted_players[$row['identer']]['id']);
 			} else
 			{
 				$query .= ',' . sqlSafeStringQuotes($row['identer']);
@@ -302,7 +321,7 @@
 			if (isset($deleted_players[$row['idedit']]))
 			{
 				// grab id from database to ensure no foreign key constraint gets violated
-				$query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['idedit']]['callsign']) . ')';
+				$query .= ',' . sqlSafeStringQuotes($deleted_players[$row['idedit']]['id']);
 			} else
 			{
 				$query .= ',' . sqlSafeStringQuotes($row['idedit']);
@@ -324,6 +343,8 @@
 	}
 	mysql_free_result($result);
 	
+	
+	// private messages
 	$query = 'SELECT * FROM `l_message` ORDER BY `datesent`';
 	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
 	{
@@ -338,7 +359,7 @@
 				  . ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']));
 		if ((int) $row['fromid'] > 0)
 		{
-			$query .=  ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']) . ')';
+			$query .=  ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['id']);
 		} else
 		{
 			$query .= ',0';
@@ -361,14 +382,14 @@
 //		}
 		// the messages are sent multiple times in practice
 		$query .= ',' . sqlSafeStringQuotes('0');
-		$query .= ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['toid']]['callsign']) . '))';
+		$query .= ',' . sqlSafeStringQuotes($deleted_players[$row['toid']]['id']) . ')';
 		// execute query, ignore result
 		@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
 		
 		$query = ('INSERT INTO `messages_users_connection` (`msgid`,`playerid`,`in_inbox`,`in_outbox`,`msg_unread`)'
 				  . ' VALUES '
 				  . '(' . sqlSafeStringQuotes($row['msgid'])
-				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_players[$row['toid']]['callsign']) . ')'
+				  . ',' . sqlSafeStringQuotes($deleted_players[$row['toid']]['id'])
 				  // all messages only in inbox
 				  . ',' . sqlSafeStringQuotes('1')
 				  . ',' . sqlSafeStringQuotes('0')
@@ -380,11 +401,30 @@
 		@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 	}
 	
-//	// convert messages to UTF-8
-//	$query = 'ALTER TABLE `messages_storage` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci';
-//	@$site->execute_query($site->db_used_name(), 'all', $query, $connection);
 	
 	
+	// visits log
+	$query = 'SELECT * FROM `bzl_visit` ORDER BY `ts`';
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	{
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('');
+	}
+	while ($row = mysql_fetch_array($result))
+	{
+		// webleague can have funny entries with pid being 0!
+		if ((int) $row['pid'] > 0)
+		{
+			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`timestamp`)'
+					  . ' VALUES '
+					  . '(' . sqlSafeStringQuotes($deleted_players[$row['pid']]['id'])
+					  . ',' . sqlSafeStringQuotes($row['ip'])
+					  . ',' . sqlSafeStringQuotes($row['ts'])
+					  . ')');
+			// execute query, ignore result
+			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+		}
+	}
 	
 	
 	// do maintenance after importing the database to clean it
