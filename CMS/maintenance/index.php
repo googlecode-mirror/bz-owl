@@ -561,7 +561,7 @@
 				$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
 			}
 			unlock_tables_maint();
-			$site->dieAndEndPage();
+			// do not die in maintenance, let the caller do the job
 		}
 	}
 ?>
