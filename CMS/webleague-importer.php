@@ -114,7 +114,7 @@
 			{
 				$last_login = $tmp_row['last_login'];
 				$team = $tmp_row['team'];
-				$comment = $tmp_row['comment'];
+				$comment = $site->linebreaks($tmp_row['comment']);
 				$logo = $tmp_row['logo'];
 			}
 			mysql_free_result($tmp_result);
@@ -282,7 +282,8 @@
 		}
 		mysql_free_result($tmp_result);	
 		
-		$query .= (',' . sqlSafeStringQuotes(utf8_encode($row['comment'])) . ',' . sqlSafeStringQuotes(utf8_encode($row['comment']))
+		$query .= (',' . sqlSafeStringQuotes($site->linebreaks(utf8_encode($row['comment'])))
+				   . ',' . sqlSafeStringQuotes($site->linebreaks(utf8_encode($row['comment'])))
 				   . ',' . sqlSafeStringQuotes($row['logo']) . ',' . sqlSafeStringQuotes($row['created'])
 				   . ')');
 		// execute query, ignore result
@@ -402,6 +403,46 @@
 	}
 	
 	
+	// news entries
+	$query = 'SELECT * FROM `bzl_news` ORDER BY `newsdate`';
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	{
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('');
+	}
+	while ($row = mysql_fetch_array($result))
+	{
+		$query = ('INSERT INTO `news` (`timestamp`,`author`,`announcement`,`raw_announcement`)'
+				  . ' VALUES '
+				  . '(' . sqlSafeStringQuotes($row['newsdate'])
+				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($row['authorname']) . ' LIMIT 1)'
+				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
+				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
+				  . ')');
+		// execute query, ignore result
+		@$site->execute_query($site->db_used_name(), 'news', $query, $connection);
+	}
+	
+	// ban entries
+	$query = 'SELECT * FROM `bzl_shame` ORDER BY `newsdate`';
+	if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+	{
+		// query was bad, error message was already given in $site->execute_query(...)
+		$site->dieAndEndPage('');
+	}
+	while ($row = mysql_fetch_array($result))
+	{
+		$query = ('INSERT INTO `bans` (`timestamp`,`author`,`announcement`,`raw_announcement`)'
+				  . ' VALUES '
+				  . '(' . sqlSafeStringQuotes($row['newsdate'])
+				  . ',(SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($row['authorname']) . ' LIMIT 1)'
+				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
+				  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
+				  . ')');
+		// execute query, ignore result
+		@$site->execute_query($site->db_used_name(), 'bans', $query, $connection);
+	}
+	
 	
 	// visits log
 	$query = 'SELECT * FROM `bzl_visit` ORDER BY `ts`';
@@ -410,22 +451,29 @@
 		// query was bad, error message was already given in $site->execute_query(...)
 		$site->dieAndEndPage('');
 	}
+	// use lookup array to save some dns lookups
+	$host = array(array());
 	while ($row = mysql_fetch_array($result))
 	{
 		// webleague can have funny entries with pid being 0!
 		if ((int) $row['pid'] > 0)
 		{
-			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`timestamp`)'
+			if (!isset($host[$row['ip']]))
+			{
+				$host[$row['ip']] = gethostbyaddr($row['ip']);
+			}
+			$query = ('INSERT INTO `visits` (`playerid`,`ip-address`,`host`,`timestamp`)'
 					  . ' VALUES '
 					  . '(' . sqlSafeStringQuotes($deleted_players[$row['pid']]['id'])
 					  . ',' . sqlSafeStringQuotes($row['ip'])
+					  . ',' . sqlSafeStringQuotes($host[$row['ip']])
 					  . ',' . sqlSafeStringQuotes($row['ts'])
 					  . ')');
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 		}
 	}
-	
+	unset($host);
 	
 	// do maintenance after importing the database to clean it
 	// a check inside the maintenance logic will make sure it will be only performed one time per day at max

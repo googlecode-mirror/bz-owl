@@ -446,7 +446,7 @@
 						}
 					}
 					
-					echo '">Previous visits</a>' . "\n";
+					echo '">Previous announcements</a>' . "\n";
 				}
 				if ($show_next_visits_button)
 				{
@@ -471,7 +471,7 @@
 						}
 					}
 					
-					echo '">Next visits</a>' . "\n";
+					echo '">Next announcements</a>' . "\n";
 				}
 				echo '</p>' . "\n";
 			}
