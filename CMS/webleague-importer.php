@@ -488,10 +488,10 @@
 	{
 		if (!isset($host[$row['ip-address']]))
 		{
-			$host[$row['ip']] = gethostbyaddr($row['ip']);
+			$host[$row['ip-address']] = gethostbyaddr($row['ip-address']);
 		}
 		$query = ('UPDATE `visits` SET `host`='
-				  . sqlSafeStringQuotes($host[$row['ip']]));
+				  . sqlSafeStringQuotes($host[$row['ip-address']]));
 		// execute query, ignore result
 		@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 	}
