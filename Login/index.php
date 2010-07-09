@@ -292,14 +292,30 @@
 											 . htmlent($user_id)
 											 . '). Please report this to an admin.');
 					}
-					echo '<p>Your account has been updated to allow the use of an external login.</p>' . "\n";
+					echo '<p>Congratulations, you enabled ';
+					if (isset($_SESSION['bzid']) && isset($_SESSION['username']))
+					{
+						echo 'bzbb logins';
+					} else
+					{
+						echo 'external logins';
+					}
+					echo ' for this account.</p>' . "\n";
 				} else
 				{
 					// local login tried but external login forced in settings
 					if (isset($internal_login_id) && $site->convert_users_to_external_login()
 						&& $site->force_external_login_when_trying_local_login())
 					{
-						echo '<p>Your account has already been converted to use an external playerid</p>' . "\n";
+						echo '<p><span class="unread_messages">The hoster of this website has disabled local logins. You should login using your ';
+						if (isset($_SESSION['bzid']) && isset($_SESSION['username']))
+						{
+							echo 'bzbb account';
+						} else
+						{
+							echo 'external login';
+						}
+						echo '.</span></p>' . "\n";
 						$_SESSION['user_logged_in'] = false;
 						$_SESSION['viewerid'] = -1;
 						$site->dieAndEndPage();

@@ -26,8 +26,9 @@
 		if (($lenLogin > 50) || ($lenLogin < 1))
 		{
 			require_once '../CMS/navi.inc';
+			echo '<div class="static_page_box">' . "\n";
 			echo '<p class="first_p">User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.</p>' . "\n";
-			$site->dieAndEndPage('');
+			$site->dieAndEndPage();
 		}
 		
 		// get player id
@@ -39,6 +40,7 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
 			require_once '../CMS/navi.inc';
+			echo '<div class="static_page_box">' . "\n";
 			// query failed
 			$site->dieAndEndPage(('Could not get id for name ' . sqlSafeString($loginname)));
 		}
@@ -60,6 +62,7 @@
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players_passwords', $query, $connection)))
 		{
 			require_once '../CMS/navi.inc';
+			echo '<div class="static_page_box">' . "\n";
 			// query failed
 			$site->dieAndEndPage(('Could not get password for player with id ' . sqlSafeString($playerid)));
 		}
@@ -86,8 +89,9 @@
 			if (($lenPw < 10) || ($lenPw > 32))
 			{
 				require_once '../CMS/navi.inc';
+				echo '<div class="static_page_box">' . "\n";
 				echo '<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.</p>' . "\n";
-				$site->dieAndEndPage('');
+				$site->dieAndEndPage();
 			}
 		} else
 		{
@@ -99,8 +103,9 @@
 		{
 			// TODO: automatically log these cases and lock account for some hours after several unsuccessful tries
 			require_once '../CMS/navi.inc';
+			echo '<div class="static_page_box">' . "\n";
 			echo '<p class="first_p">Your password does not match the stored password.</p>' . "\n";
-			$site->dieAndEndPage('');
+			$site->dieAndEndPage();
 		}
 		
 		// sanity checks passed -> login successful
@@ -115,6 +120,7 @@
 		allow_delete_messages();
 		
 		require_once '../CMS/navi.inc';
+		echo '<div class="static_page_box">' . "\n";
 		echo '<p class="first_p">Local login information validated.</p>' . "\n";
 	}
 ?>
