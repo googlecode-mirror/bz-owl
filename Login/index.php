@@ -293,33 +293,31 @@
 											 . '). Please report this to an admin.');
 					}
 					echo '<p>Congratulations, you enabled ';
-					if (isset($_SESSION['bzid']) && isset($_SESSION['username']))
+					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						echo 'bzbb logins';
+						echo 'the bzbb login';
 					} else
 					{
 						echo 'external logins';
 					}
 					echo ' for this account.</p>' . "\n";
-				} else
+				}
+				
+				// local login tried but external login forced in settings
+				if (isset($internal_login_id) && $site->force_external_login_when_trying_local_login())
 				{
-					// local login tried but external login forced in settings
-					if (isset($internal_login_id) && $site->convert_users_to_external_login()
-						&& $site->force_external_login_when_trying_local_login())
+					echo '<p><span class="unread_messages">The hoster of this website has disabled local logins. You should login using your ';
+					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						echo '<p><span class="unread_messages">The hoster of this website has disabled local logins. You should login using your ';
-						if (isset($_SESSION['bzid']) && isset($_SESSION['username']))
-						{
-							echo 'bzbb account';
-						} else
-						{
-							echo 'external login';
-						}
-						echo '.</span></p>' . "\n";
-						$_SESSION['user_logged_in'] = false;
-						$_SESSION['viewerid'] = -1;
-						$site->dieAndEndPage();
+						echo 'bzbb account';
+					} else
+					{
+						echo 'external login';
 					}
+					echo '.</span></p>' . "\n";
+					$_SESSION['user_logged_in'] = false;
+					$_SESSION['viewerid'] = -1;
+					$site->dieAndEndPage();
 				}
 			}
 		}

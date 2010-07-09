@@ -65,7 +65,11 @@
 		@mysql_query($query, $connection);
 		
 		// are there unread messages?
-		$query = 'SELECT `id` FROM `messages_users_connection` WHERE `msg_unread`=' . "'" . '1' . "'" . ' AND `playerid`=' . "'" . sqlSafeString(getUserID()) . "'"; 
+		// are there unread messages?
+		$query = ('SELECT `id` FROM `messages_users_connection` WHERE `msg_unread`='
+				  . "'" . '1' . "'"
+				  . ' AND `playerid`=' . sqlSafeStringQuotes(getUserID())
+				  . ' LIMIT 1');
 		$result = @mysql_query($query, $connection);
 		$rows = (int) @mysql_num_rows($result);
 		if ($rows > 0)

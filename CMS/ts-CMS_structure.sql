@@ -3,8 +3,8 @@
 # http://code.google.com/p/sequel-pro
 #
 # Host: localhost (MySQL 5.1.48)
-# Database: testdb
-# Generation Time: 2010-07-09 18:46:28 +0200
+# Database: ts-CMS
+# Generation Time: 2010-07-09 23:36:01 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -29,7 +29,7 @@ CREATE TABLE `bans` (
   `announcement` text,
   `raw_announcement` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
 
 
 
@@ -44,7 +44,7 @@ CREATE TABLE `countries` (
   `flagfile` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=408 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=611 DEFAULT CHARSET=utf8;
 
 
 
@@ -160,9 +160,10 @@ CREATE TABLE `messages_users_connection` (
   PRIMARY KEY (`id`),
   KEY `msgid` (`msgid`),
   KEY `playerid` (`playerid`),
+  KEY `msg_unread` (`msg_unread`),
   CONSTRAINT `messages_users_connection_ibfk_2` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `messages_users_connection_ibfk_3` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=118035 DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
+) ENGINE=InnoDB AUTO_INCREMENT=235998 DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
 
 
 
@@ -189,7 +190,7 @@ CREATE TABLE `news` (
   `announcement` text,
   `raw_announcement` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=135 DEFAULT CHARSET=utf8;
 
 
 
@@ -206,7 +207,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -241,7 +242,7 @@ CREATE TABLE `players_passwords` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `players_passwords_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2558 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5115 DEFAULT CHARSET=utf8;
 
 
 
@@ -262,7 +263,7 @@ CREATE TABLE `players_profile` (
   `last_login` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `logo_url` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2558 DEFAULT CHARSET=utf8 COMMENT='the players profile data';
+) ENGINE=InnoDB AUTO_INCREMENT=5115 DEFAULT CHARSET=utf8 COMMENT='the players profile data';
 
 
 
@@ -312,7 +313,7 @@ CREATE TABLE `teams_overview` (
   PRIMARY KEY (`id`),
   KEY `teamid` (`teamid`),
   CONSTRAINT `teams_overview_ibfk_1` FOREIGN KEY (`teamid`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=339 DEFAULT CHARSET=utf8 COMMENT='deleted: 0 new; 1 active; 2 deleted; 3 re-activated';
+) ENGINE=InnoDB AUTO_INCREMENT=677 DEFAULT CHARSET=utf8 COMMENT='deleted: 0 new; 1 active; 2 deleted; 3 re-activated';
 
 
 
@@ -351,7 +352,7 @@ CREATE TABLE `teams_profile` (
   PRIMARY KEY (`id`),
   KEY `teamid` (`teamid`),
   CONSTRAINT `teams_profile_ibfk_1` FOREIGN KEY (`teamid`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=339 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=677 DEFAULT CHARSET=utf8;
 
 
 
@@ -372,7 +373,7 @@ CREATE TABLE `visits` (
   KEY `ip-address` (`ip-address`),
   KEY `host` (`host`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=257141 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=514279 DEFAULT CHARSET=utf8;
 
 
 
