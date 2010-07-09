@@ -33,7 +33,7 @@
 	// only allow looking when having the permission
 	if ($allow_view_user_visits === false)
 	{
-		$site->dieAndEndPageNoBox('You (id=' . sqlSafeString($viewerid) . 'have no permissions to view the visits log!');
+		$site->dieAndEndPageNoBox('You (id=' . sqlSafeString($viewerid) . ') have no permissions to view the visits log!');
 	}
 	
 	// form letting search for ip-address, host or name
