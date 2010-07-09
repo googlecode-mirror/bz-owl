@@ -378,4 +378,12 @@
 			}
 		}
 	}
+	
+	class db_import
+	{
+		function db_import_name()
+		{
+			return database_to_be_imported();
+		}
+	}
 ?>

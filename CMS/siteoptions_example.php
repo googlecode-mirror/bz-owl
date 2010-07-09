@@ -10,6 +10,11 @@
 		return '/~spiele/league_svn/ts/';
 	}
 	
+	function database_to_be_imported()
+	{
+		return 'bzleague_guleague';
+	}
+	
 	function convert_users_to_external_login_if_no_external_login_id_set()
 	{
 		return true;

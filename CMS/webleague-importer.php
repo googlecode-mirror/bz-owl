@@ -18,7 +18,8 @@
 	$randomkey_name = 'randomkey_user';
 	$viewerid = (int) getUserID();
 	
-	$db_to_be_imported = 'bzleague_guleague';
+	$db_from = new db_import;
+	$db_to_be_imported = $db_from->db_import_name();
 	
 //	this code does not work because the order of statements in the dump
 //	cause the relations set up being violated
@@ -394,7 +395,7 @@
 		{
 			$query = ('INSERT INTO `messages_storage` (`id`,`author_id`,`subject`,`timestamp`,`message`,`from_team`,`recipients`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($row['msgid'])
+					  . '(' . sqlSafeStringQuotes($row['msgid']));
 			if ((int) $row['fromid'] > 0)
 			{
 				$query .=  ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['id']);
