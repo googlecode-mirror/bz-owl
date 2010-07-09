@@ -75,12 +75,12 @@
 		mysql_free_result($result);
 	}
 	
-	define ('BASISPFAD', baseaddress());
+	define ('BASEPATH', baseaddress());
 	
-	function schreibeVerweis($verzeichnis, $titel)
+	function writeLink($verzeichnis, $titel)
 	{
 		echo '<li><a href="';
-		echo (BASISPFAD . $verzeichnis . '/">' . $titel . '</a></li>' . "\n");
+		echo (BASEPATH . $verzeichnis . '/">' . $titel . '</a></li>' . "\n");
 	}
 	
 	$name = $site->base_name();
@@ -95,7 +95,7 @@
 			echo '<li>Login</li>' . "\n";
 		} else
 		{
-			schreibeVerweis('Login', 'Login');
+			writeLink('Login', 'Login');
 		}
 	}
 	
@@ -104,7 +104,7 @@
 		echo '<li>Home</li>' . "\n";
 	} else
 	{
-		echo "<li><a href=\x22" . BASISPFAD . "\x22>Home</a></li>\n";
+		echo "<li><a href=\x22" . BASEPATH . "\x22>Home</a></li>\n";
 	}
 	
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
@@ -116,10 +116,10 @@
 		{
 			if ($unread_messages)
 			{
-				schreibeVerweis('Messages', '<span class="unread_messages">Mail</span>');
+				writeLink('Messages', '<span class="unread_messages">Mail</span>');
 			} else
 			{
-				echo schreibeVerweis('Messages', 'Mail');
+				echo writeLink('Messages', 'Mail');
 			}
 		}
 	}
@@ -129,7 +129,7 @@
 		echo '<li>News</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('News', 'News');
+		writeLink('News', 'News');
 	}
 	
 	if (strcmp($name, 'Matches') == 0)
@@ -137,7 +137,7 @@
 		echo '<li>Matches</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Matches', 'Matches');
+		writeLink('Matches', 'Matches');
 	}
 	
 	if (strcmp($name, 'Teams') == 0)
@@ -145,7 +145,7 @@
 		echo '<li>Teams</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Teams', 'Teams');
+		writeLink('Teams', 'Teams');
 	}
 	
 	if (strcmp($name, 'Players') == 0)
@@ -153,7 +153,7 @@
 		echo '<li>Players</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Players', 'Players');
+		writeLink('Players', 'Players');
 	}
 	
 	if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
@@ -163,7 +163,7 @@
 			echo '<li>Visits</li>' . "\n";
 		} else
 		{
-			echo schreibeVerweis('Visits', 'Visits');
+			echo writeLink('Visits', 'Visits');
 		}
 	}
 	
@@ -172,7 +172,7 @@
 		echo '<li>Rules</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Rules', 'Rules');
+		writeLink('Rules', 'Rules');
 	}
 	
 	if (strcmp($name, 'FAQ') == 0)
@@ -180,7 +180,7 @@
 		echo '<li>FAQ</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('FAQ', 'FAQ');
+		writeLink('FAQ', 'FAQ');
 	}
 	
 	if (strcmp($name, 'Links') == 0)
@@ -188,7 +188,7 @@
 		echo '<li>Links</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Links', 'Links');
+		writeLink('Links', 'Links');
 	}
 	
 	if (strcmp($name, 'Contact') == 0)
@@ -196,7 +196,7 @@
 		echo '<li>Contact</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Contact', 'Contact');
+		writeLink('Contact', 'Contact');
 	}
 	
 	if (strcmp($name, 'Bans') == 0)
@@ -204,7 +204,7 @@
 		echo '<li>Bans</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Bans', 'Bans');
+		writeLink('Bans', 'Bans');
 	}
 	
 //	if (strcmp($name, 'Server') == 0)
@@ -212,7 +212,7 @@
 //		echo '<li>Bans</li>' . "\n";
 //	} else
 //	{
-//		schreibeVerweis('Servertracker', 'Server');
+//		writeLink('Servertracker', 'Server');
 //	}
 
 	
@@ -221,7 +221,7 @@
 		echo '<li>Config</li>' . "\n";
 	} else
 	{
-		schreibeVerweis('Config', 'Config');
+		writeLink('Config', 'Config');
 	}
 ?>
 </ul>

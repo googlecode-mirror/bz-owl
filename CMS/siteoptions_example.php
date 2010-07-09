@@ -10,6 +10,28 @@
 		return '/~spiele/league_svn/ts/';
 	}
 	
+	function convert_users_to_external_login_if_no_external_login_id_set()
+	{
+		return true;
+	}
+	
+	function force_external_login_only()
+	{
+		return true;
+	}
+	
+	// make posts anonymous
+	function force_username(&$section)
+	{
+		if (strcmp($section, 'bans') === 0)
+		{
+			return 'GU League admins';
+		} else
+		{
+			return '';
+		}
+	}
+	
 	function xhtml_on()
 	{
 		// nl2br needs php newer or equal to 4.0.5 to support xhtml

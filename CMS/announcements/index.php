@@ -403,7 +403,24 @@
 					printf("%s", htmlentities($row["timestamp"]));
 					echo '</div>' . "\n";
 					echo '<div class="author">';
-					printf("By: %s", htmlent($row["author"]));
+					echo 'By: ';
+					$author = $site->forced_author($table_name);
+					if (!(strcmp($author, '') === 0))
+					{
+						echo $author;
+						// show the author to the ones who can add, edit or delete entries
+						if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission]))
+							|| ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
+							|| ((isset($_SESSION[$entry_delete_permission])) && ($_SESSION[$entry_delete_permission])))
+						{
+							echo ' (' . $row["author"] . ')';
+						}
+							
+					} else
+					{
+						echo $row["author"];
+						echo 'wwww';
+					}
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
 					echo '<p>';

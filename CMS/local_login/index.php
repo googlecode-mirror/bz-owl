@@ -52,7 +52,7 @@
 		mysql_free_result($result);
 		
 		// get password from database in order to compare it with the user entered password
-		$query = 'SELECT `password`, `password_md5_encoded` FROM `players_passwords` WHERE `playerid`=' . "'" . sqlSafeString($playerid) . "'";
+		$query = 'SELECT `password`, `password_encoding` FROM `players_passwords` WHERE `playerid`=' . sqlSafeStringQuotes($playerid);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
 		
@@ -70,7 +70,7 @@
 		$password_database = '';
 		while($row = mysql_fetch_array($result))
 		{
-			if (((int) $row['password_md5_encoded']) === 1)
+			if (strcmp($row['password_encoding'],'md5') === 0)
 			{
 				$password_md5_encoded = true;
 			}
@@ -115,6 +115,6 @@
 		allow_delete_messages();
 		
 		require_once '../CMS/navi.inc';
-		echo '<p class="first_p">Local login successful.</p>' . "\n";
+		echo '<p class="first_p">Local login information validated.</p>' . "\n";
 	}
 ?>

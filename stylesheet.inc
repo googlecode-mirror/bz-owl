@@ -1,4 +1,10 @@
 <?php
+	if (!isset($site))
+	{
+		require_once 'CMS/siteinfo.php';
+		$site = new siteinfo();
+	}
+	
 	if ($site->mobile_version())
 	{
 		define("default_stylesheet", 'White');
@@ -28,7 +34,6 @@
 		$stylesheet = default_stylesheet;
 	}
 	
-	require_once 'CMS/siteinfo.php';
 	//host and path
 	$url = baseaddress();
 	

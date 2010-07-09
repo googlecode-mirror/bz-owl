@@ -27,15 +27,22 @@
 	}
 	unset($auth_performed);
 	
+	// in no case an empty username is allowed
+	if (isset($_SESSION['username']) && (strlen($_SESSION['username']) < 2))
+	{
+		echo '<p>Any username is required to be at least 2 chars long</p>';
+		$_SESSION['user_logged_in'] = false;
+		$_SESSION['viewerid'] = -1;
+		$site->dieAndEndPage();
+	}
+	
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 	{
 		// is the user already registered at this site?
 		$query = 'SELECT `id`, ';
 		// only need an external login id in case an external login was performed by the viewing player
-		if (isset($external_login_id))
-		{
-			$query .= ' `external_playerid`, ';
-		}
+		// but look it up to find out if user is global login enabled
+		$query .= ' `external_playerid`, ';
 		$query .= '`suspended` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
@@ -58,15 +65,25 @@
 			$suspended_mode = (int) $row['suspended'];
 			if (strcmp(($row['external_playerid']), '') === 0)
 			{
-				$convert_to_external_login = true;
+				$convert_to_external_login = $site->convert_users_to_external_login();
 			}
 		}
 		mysql_free_result($result);
+		
+		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
+		{
+			echo '<p>The account you tried to login to does not support external logins. You may convert the account first by using your local login.</p>' . "\n";
+			echo '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.</p>' . "\n";
+			$_SESSION['user_logged_in'] = false;
+			$_SESSION['viewerid'] = -1;
+			$site->dieAndEndPage();
+		}
 		
 		if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
 			&& ($suspended_mode > (int) 1))
 		{
 			$_SESSION['user_logged_in'] = false;
+			$_SESSION['viewerid'] = -1;
 			echo '<p>There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!</p>';
 			$site->dieAndEndPage();
 		}
@@ -219,13 +236,8 @@
 				}
 			} else
 			{
-				// user is not new, update his callsign with new callsign supplied from login
+				// user is not new, update his callsign with new callsign supplied from external login
 				$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']));
-				if ($convert_to_external_login && (isset($external_login_id)))
-				{
-					// external_playerid was empty, set it to the external value
-					$query .= ', `external_playerid`=' . sqlSafeStringQuotes($external_login_id);
-				}
 				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
 				// each user has only one entry in the database
 				$query .= ' LIMIT 1';
@@ -236,6 +248,62 @@
 					$site->dieAndEndPage('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
 										. htmlent($user_id)
 										. '). Please report this to an admin.</p>');
+				}
+			}
+		} else
+		{
+			// local login
+			if (isset($internal_login_id))
+			{
+				if (isset($convert_to_external_login) && $convert_to_external_login)
+				{
+					// user is not new, update his callsign with new external playerid supplied from login
+					$query = 'UPDATE `players` SET';
+					// external_playerid was empty, set it to the external value obtained by bzidtools
+					// create a new cURL resource
+					$ch = curl_init();
+					
+					// set URL and other appropriate options
+					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=id&value=' . sqlSafeString($_SESSION['username']));
+					curl_setopt($ch, CURLOPT_HEADER, 0);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					
+					// grab URL and pass it to the browser
+					$output = curl_exec($ch);
+					
+					// close cURL resource, and free up system resources
+					curl_close($ch);
+					
+					// update the entry with the result from the bzidtools2.php script
+					if ((strlen($output) > 9) && (strcmp(substr($output, 0, 9), 'SUCCESS: ') === 0))
+					{
+						// example query: UPDATE `players` SET `external_playerid`='external_id' WHERE `id`='internal_id';
+						$query = 'UPDATE `players` SET `external_playerid`=' . sqlSafeStringQuotes(htmlent(substr($output, 9)));
+					}
+					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($internal_login_id);
+					// each user has only one entry in the database
+					$query .= ' LIMIT 1';
+					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					{
+						$_SESSION['user_logged_in'] = false;
+						$_SESSION['viewerid'] = -1;
+						$site->dieAndEndPage('Unfortunately there seems to be a database problem'
+											 . ' which prevents the system from setting your external playerid (id='
+											 . htmlent($user_id)
+											 . '). Please report this to an admin.');
+					}
+					echo '<p>Your account has been updated to allow the use of an external login.</p>' . "\n";
+				} else
+				{
+					// local login tried but external login forced in settings
+					if (isset($internal_login_id) && $site->convert_users_to_external_login()
+						&& $site->force_external_login_when_trying_local_login())
+					{
+						echo '<p>Your account has already been converted to use an external playerid</p>' . "\n";
+						$_SESSION['user_logged_in'] = false;
+						$_SESSION['viewerid'] = -1;
+						$site->dieAndEndPage();
+					}
 				}
 			}
 		}
@@ -265,7 +333,7 @@
 					$ch = curl_init();
 					
 					// set URL and other appropriate options
-					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value=' . sqlSafeStringQuotes((int) $row['external_playerid']));
+					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value=' . sqlSafeString((int) $row['external_playerid']));
 					curl_setopt($ch, CURLOPT_HEADER, 0);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 					
@@ -276,13 +344,13 @@
 					curl_close($ch);
 					
 					// update the entry with the result from the bzidtools2.php script
-					if (strcmp(substr($output, 0, 9), 'SUCCESS: ') === 0)
+					if ((strlen($output) > 10) && (strcmp(substr($output, 0, 9), 'SUCCESS: ') === 0))
 					{
-						// example query: UPDATE `players` SET `name`='moep' WHERE `external_playerid`='1885';
+						// example query: UPDATE `players` SET `name`='moep' WHERE `external_playerid`='external_id';
 						$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent(substr($output, 9)));
 					} else
 					{
-						// example query: UPDATE `players` SET `name`='moep ERROR: SELECT username_clean FROM bzbb3_users WHERE user_id=uidhere' WHERE `external_playerid`='1885';
+						// example query: UPDATE `players` SET `name`='moep ERROR: SELECT username_clean FROM bzbb3_users WHERE user_id=uidhere' WHERE `external_playerid`='external_id';
 						$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']) . ' ' . htmlent($output));
 					}
 					$query .= ' WHERE `external_playerid`=' . sqlSafeStringQuotes((int) $row['bzid']);
@@ -311,13 +379,13 @@
 	if (isset($_SESSION['user_logged_in']) && ($_SESSION['user_logged_in']))
 	{
 		// update last login entry
-		$query = 'UPDATE `players_profile` SET `last_login`=' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
+		$query = 'UPDATE `players_profile` SET `last_login`=' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 		if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
 		{
-			$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";
+			$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($user_id);
 		} else
 		{
-			$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($internal_login_id) . "'";
+			$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($internal_login_id);
 		}
 		// only one user account needs to be updated
 		$query .= ' LIMIT 1';
@@ -348,7 +416,7 @@
 		// use the resulting data
 		if ($onlineUsers)
 		{
-			$query = 'SELECT * FROM `online_users` WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";
+			$query = 'SELECT * FROM `online_users` WHERE `playerid`=' . sqlSafeStringQuotes($user_id);
 			$result = mysql_query($query, $connection);
 			$rows = mysql_num_rows($result);
 			// done
@@ -358,7 +426,7 @@
 			if ($rows > 0)
 			{
 				// already logged in
-				$query = 'DELETE FROM `online_users` WHERE `playerid`=' . "'" . sqlSafeString($user_id) . "'";
+				$query = 'DELETE FROM `online_users` WHERE `playerid`=' . sqlSafeStringQuotes($user_id);
 				// ignore result
 				$result = mysql_query($query, $connection);
 				if (!($result))
@@ -412,7 +480,8 @@
 	// $user_id is not set in case no login/registration was performed
 	if (getUserID() > 0)
 	{
-		echo 'Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.' . "\n";
+		echo '<p>Login was successful</p>' . "\n";
+		echo '<p>Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.</p>' . "\n";
 	}
 	$site->dieAndEndPage();
 ?>

@@ -514,7 +514,7 @@
 				} else
 				{
 					$query = 'INSERT INTO `' . $table_name . '` (`timestamp`, `author`, `announcement`, `raw_announcement`) VALUES (';
-					$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes($author) . ',' . sqlSafeStringQuotes($site->bbcode($announcement)) . ',' . sqlSafeStringQuotes($announcement) .')';
+					$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes(htmlent($author)) . ',' . sqlSafeStringQuotes($site->bbcode($announcement)) . ',' . sqlSafeStringQuotes($announcement) .')';
 					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 					{
 						echo '<p>Updating: No problems occured, changes written!</p>' . "\n";

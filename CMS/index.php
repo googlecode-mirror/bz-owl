@@ -60,9 +60,13 @@
 	
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
-		if (isset($module['bzbb']) && ($module['bzbb']))
+		// user explicitly does not want an external login and confirmed it already
+		if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 		{
-			include_once 'bzbb_login/login_text.inc';
+			if (isset($module['bzbb']) && ($module['bzbb']))
+			{
+				include_once 'bzbb_login/login_text.inc';
+			}
 		}
 		
 		if (isset($module['local']) && ($module['local']))

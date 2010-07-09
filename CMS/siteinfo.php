@@ -178,6 +178,21 @@
 			return $result;
 		}
 		
+		function convert_users_to_external_login()
+		{
+			return convert_users_to_external_login_if_no_external_login_id_set();
+		}
+		
+		function force_external_login_when_trying_local_login()
+		{
+			return force_external_login_only();
+		}
+		
+		function forced_author($section)
+		{
+			return force_username($section);
+		}
+		
 		function set_key($randomkey_name)
 		{
 			// this should be good enough as all we need is something that can not be guessed without much tries
