@@ -56,22 +56,18 @@
 		$item = $result_team;
 	}
 	
-	function displayMessage($id, $site, $connection, $folder)
+	function displayMessage(&$result, &$team_message_from_team_id)
 	{
+		global $site;
+		global $connection;
+		global $folder;
+		global $id;
+		
 		// display a single message (either in inbox or outbox) in all its glory
-		
-		// example query: SELECT * FROM `messages_storage` WHERE `id`='5'
-		$query = 'SELECT * FROM `messages_storage` WHERE `id`=';
-		$query .= "'" . sqlSafeString((int) $id) . "'";
-		$result = $site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
-		
-		if ((int) mysql_num_rows($result) > 1)
-		{
-			die('There can not be more than 1 message viewed at the same time on the same page.');
-		}
-		
 		while($row = mysql_fetch_array($result))
 		{
+			$team_message_from_team_id = $row['recipients'];
+			
 			echo '<div class="msg_view_full">' . "\n";
 			
 			echo '	<div class="msg_header_full">' . "\n";
@@ -85,7 +81,6 @@
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
 		}
-		mysql_free_result($result);
 		
 		// folder is NULL in case a message is either being deleted or being sent
 		if (!($folder === NULL) && (!(strcmp($folder, 'outbox') === 0)))
@@ -100,35 +95,14 @@
 	}
 	
 	// read the array using helper function
-	function displayMessageSummary($item, $key, $connection)
+	function displayMessageSummary(&$result)
 	{
-		// variable folder lost --> have to restore
-		// FIXME: find out if better way, like sharing variable in class, is possible!
+		global $site;
+		global $connection;
+		global $folder;
+		global $user_id;
 		
-		$folder = '';
-		if (isset($_GET['folder']))
-		{
-			$folder = $_GET['folder'];
-		}
-		
-		// default folder is inbox
-		if (strcmp($folder, '') == 0)
-		{
-			$folder = 'inbox';
-		}
-		if (!(strcmp($folder, 'inbox') === 0))
-		{
-			$folder = 'outbox';
-		}
 		$box_name = sqlSafeString('in_' . $folder);
-		
-		// TODO: needs to be outside of this function
-		// Are there messages to display so we need an overview at all?
-		$user_id = (sqlSafeString((int) $item));
-		$query = 'SELECT * FROM `messages_storage`, `messages_users_connection` WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`';
-		$query .= ' AND `messages_storage`.`id`=' . sqlSafeStringQuotes($user_id) . ' AND `' . $box_name	.'`=' . "'" . '1' . "'";
-		$query .= ' ORDER BY `messages_storage`.`id` LIMIT 0,1';
-		$result = @mysql_query($query, $connection);
 		
 		// read each entry, row by row
 		while($row = mysql_fetch_array($result))
@@ -214,38 +188,34 @@
 				
 				// make sure the one who wants to read the message has actually permission to read it
 				// example query: SELECT * FROM `messages_users_connection` WHERE `msgid`='2' AND `playerid`='1194' AND `in_inbox`='1' ORDER BY id LIMIT 0,1'
-				$query = 'SELECT * FROM `messages_users_connection` WHERE `msgid`=';
-				$query .= "'" . $id . "'" . ' AND `playerid`=';
-				$query .= "'" . $user_id . "'" . ' AND `' . $box_name  .'`=' . "'" . '1' . "'" . ' ORDER BY id ';
-				// the "LIMIT 0,1" part of query means only the first entry is received
-				$query .= 'LIMIT 0,1';
+				$query = ('SELECT `subject`'
+						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
+						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
+						  . ',`author_id`,`timestamp`,`message`,`messages_storage`.`from_team`,`messages_storage`.`recipients`'
+						  . ' FROM `messages_storage`,`messages_users_connection`'
+						  . ' WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`'
+						  . ' AND `messages_users_connection`.`playerid`=' . sqlSafeStringQuotes($user_id)
+						  . ' AND `messages_users_connection`.`' . sqlSafeString($box_name)  .'`=' . sqlSafeStringQuotes('1')
+						  . ' AND `messages_storage`.`id`=' . sqlSafeStringQuotes($id)
+						  // we need only 1 entry to know if the message does not exist
+						  // or if there are no permissions to view the message
+						  // but we do not know which one of both is exactly not fulfilled
+						  . ' LIMIT 1');
 				
 				$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 				$rows = (int) mysql_num_rows($result);
-				mysql_free_result($result);
 				if ($rows === 1)
 				{
 					echo '<div class="msg_area">';
+					// message came from a team?
+					$team_message_from_team_id = false;
 					// display the message chosen by user
-					displayMessage($id, $site, $connection, $folder);
-					
+					displayMessage($result, $team_message_from_team_id);
+					mysql_free_result($result);
 					echo '<div class="msg_view_button_list">' . "\n";
 					// if the message is in inbox the user might want to reply to the message
 					if (strcmp($folder, 'inbox') === 0)
 					{
-						// message came from a team?
-						$query = 'SELECT `from_team`,`recipients` FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes(htmlent($id));
-						$query .= ' LIMIT 1';
-						$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
-						$team_message_from_team_id = false;
-						while($row = mysql_fetch_array($result))
-						{
-							if ((int) $row['from_team'] > 0)
-							{
-								$team_message_from_team_id = $row['recipients'];
-							}
-						}
-						mysql_free_result($result);
 						if ($team_message_from_team_id)
 						{
 							// the message actually came from a team
@@ -276,15 +246,26 @@
 					echo '</div>' . "\n";
 				} else
 				{
-					echo 'You have no permission to view the message';
-					// TODO: silently report the incident to admins
+					echo '<p>You have either no permission to view the message or the message does not exist</p>';
 				}
 				
 			} else
 			{
 				// show the overview
-				$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `playerid`=';
-				$query .= "'" . $user_id . "'" . ' AND `' . $box_name  .'`=' . "'" . '1' . "'" . ' ORDER BY id ';
+				$query = ('SELECT `messages_users_connection`.`msgid`'
+						  . ',`messages_storage`.`author_id`'
+						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
+						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
+						  . ',`messages_users_connection`.`msg_unread`'
+						  . ',`messages_storage`.`subject`'
+						  . ',`messages_storage`.`timestamp`'
+						  . ',`messages_storage`.`from_team`'
+						  . ',`messages_storage`.`recipients`'
+						  . ' FROM `messages_users_connection`,`messages_storage`'
+						  . ' WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`'
+						  . ' AND `messages_users_connection`.`playerid`=' . sqlSafeStringQuotes($user_id)
+						  . ' AND `' . $box_name . '`=' . sqlSafeStringQuotes('1')
+						  . ' ORDER BY `messages_users_connection`.`id` ');
 				// newest messages first please
 				$query .= 'DESC ';
 				// limit the output to the requested rows to speed up displaying
@@ -325,26 +306,7 @@
 					mysql_free_result($result);
 				} else
 				{
-					// display message overview
-					$msgid_list = Array ();
-					// read each entry, row by row
-					while($row = mysql_fetch_array($result))
-					{
-						$msgid_list[] = $row['msgid'];
-					}
-					// query results are no longer needed
-					mysql_free_result($result);
-					
-					// are more than 200 rows in the result?
-					if ($show_next_messages_button)
-					{
-						// only show 200 messages, not 201
-						// NOTE: array_pop would not work on a resource (e.g. $result)
-						array_pop($msgid_list);
-					}
-					
 					// table of messages
-					// FIXME: Implement class in stylesheet
 					echo "\n" . '<table id="table_msg_overview" class="big">' . "\n";
 					echo '<caption>Messages in ' . $folder . '</caption>' . "\n";
 					echo '<tr>' . "\n";
@@ -354,8 +316,8 @@
 					echo '	<th>Recipient(s)</th>' . "\n";
 					echo '</tr>' . "\n\n";
 					
-					// walk through the array values
-					array_walk($msgid_list, 'displayMessageSummary', $connection);
+					// display message overview
+					displayMessageSummary($result);
 					
 					echo '</table>' . "\n";
 					// look up if next and previous buttons are needed to look at all messages in overview

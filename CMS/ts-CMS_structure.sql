@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: testdb
-# Generation Time: 2010-07-09 12:25:48 +0200
+# Generation Time: 2010-07-09 18:46:28 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -117,15 +117,15 @@ DROP TABLE IF EXISTS `messages_storage`;
 
 CREATE TABLE `messages_storage` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `author` varchar(255) NOT NULL,
   `author_id` int(11) unsigned NOT NULL,
   `subject` varchar(50) NOT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `message` varchar(2000) NOT NULL,
   `from_team` tinyint(1) unsigned NOT NULL,
   `recipients` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=379650 DEFAULT CHARSET=utf8 COMMENT='The message storage';
+  PRIMARY KEY (`id`),
+  KEY `author_id` (`author_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=379654 DEFAULT CHARSET=utf8 COMMENT='The message storage';
 
 
 
@@ -139,7 +139,7 @@ CREATE TABLE `messages_team_connection` (
   `msgid` int(11) unsigned NOT NULL,
   `teamid` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 
 
@@ -152,15 +152,17 @@ CREATE TABLE `messages_users_connection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `msgid` int(11) unsigned NOT NULL,
   `playerid` int(11) unsigned NOT NULL,
-  `in_inbox` tinyint(1) NOT NULL,
-  `in_outbox` tinyint(1) NOT NULL,
-  `msg_unread` tinyint(1) NOT NULL DEFAULT '1',
+  `in_inbox` tinyint(1) unsigned NOT NULL,
+  `in_outbox` tinyint(1) unsigned NOT NULL,
+  `msg_unread` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `msg_replied_team` tinyint(1) unsigned DEFAULT '0',
+  `msg_replied_to_msgid` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `msgid` (`msgid`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `messages_users_connection_ibfk_2` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `messages_users_connection_ibfk_3` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=117964 DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
+) ENGINE=InnoDB AUTO_INCREMENT=118035 DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
 
 
 
@@ -204,7 +206,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -370,7 +372,7 @@ CREATE TABLE `visits` (
   KEY `ip-address` (`ip-address`),
   KEY `host` (`host`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=257139 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=257141 DEFAULT CHARSET=utf8;
 
 
 

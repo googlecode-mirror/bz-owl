@@ -193,6 +193,11 @@
 			return force_username($section);
 		}
 		
+		function displayed_system_username()
+		{
+			return system_username();
+		}
+		
 		function set_key($randomkey_name)
 		{
 			// this should be good enough as all we need is something that can not be guessed without much tries

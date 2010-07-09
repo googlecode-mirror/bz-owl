@@ -66,7 +66,7 @@
 						echo '<p>This message was owned by only one player. Deleting the actual message now.</p>';
 					}
 					// example query: DELETE FROM `messages_storage` WHERE `id`='11'
-					$query = 'DELETE FROM `messages_storage` WHERE `id`=' . "'" . sqlSafeString($currentId) . "'";
+					$query = 'DELETE FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes($currentId);
 					$result = $site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
 					if ($result)
 					{

@@ -407,8 +407,8 @@
 				{
 					if ($recipients)
 					{
-						// example query: INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) 
-						// VALUES ('ts', '1194', 'test2', '2009-11-10 23:15:00', 'guildo hat euch lieb', '0', '16 17')
+						// example query: INSERT INTO `messages_storage` (author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) 
+						// VALUES ('1194', 'test2', '2009-11-10 23:15:00', 'guildo hat euch lieb', '0', '16 17')
 						$user_id = 0;
 						if (getUserID() > 0)
 						{
@@ -417,13 +417,13 @@
 						
 						if (isset($_POST['teamid']))
 						{
-							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
-							$query .= sqlSafeStringQuotes($author) . ', ' . "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
+							$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
+							$query .= "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
 							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes(htmlent($announcement)) . ', 1, ' . sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid'])) . ')';
 						} else
 						{
-							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
-							$query .= sqlSafeStringQuotes($author) . ', ' . "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
+							$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
+							$query .= "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
 							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($announcement) . ', 0, ' . sqlSafeStringQuotes(implode(' ', ($utils->getRecipientsIDs()))) . ')';
 						}
 						$message_sent = true;
@@ -456,8 +456,18 @@
 								foreach ($known_recipients as $one_recipient)
 								{
 									// delivery to inbox of the current player in the team messaged
-									$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES (';
-									$query .= sqlSafeStringQuotes($rowId) . ', ' . sqlSafeStringQuotes($one_recipient) . ', 1, 0)';
+									$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`';
+									if (isset($_GET['id']) && ((int) $_GET['id'] > 0))
+									{
+										$query .= ',`msg_replied_to_msgid`';
+									}
+									$query .= ') VALUES (';
+									$query .= sqlSafeStringQuotes($rowId) . ', ' . sqlSafeStringQuotes($one_recipient) . ', 1, 0';
+									if (isset($_GET['id']) && ((int) $_GET['id'] > 0))
+									{
+										$query .= ', ' . ((int) $_GET['id']);
+									}
+									$query .= ')';
 									// usually the result should be freed for performance reasons but mysql does not return a resource for insert queries
 									$tmp_result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);									
 								}
@@ -488,8 +498,39 @@
 							// put the message into the outbox of the user
 							// mark it as read because the user already saw the preview when compositing the message
 							// example query: INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_unread`) VALUES ('2', '1194', 0, 1, 0)
-							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_unread`) VALUES (';
-							$query .= "'" . $rowId . "'" . ', ' . "'" . $user_id . "'" . ', 0, 1, 0)';
+							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_unread`';
+							if (isset($_GET['reply']))
+							{
+								if (strcmp($_GET['reply'], 'team') === 0)
+								{
+									if (isset($_GET['teamid']) && ((int) $_GET['teamid'] > 0))
+									{
+										$query .=  ',`msg_replied_team`';
+									}
+								}
+							}
+							if (isset($_GET['id']) && ((int) $_GET['id'] > 0))
+							{
+								$query .= ',`msg_replied_to_msgid`';
+							}
+							$query .= ') VALUES (';
+							$query .= "'" . $rowId . "'" . ', ' . "'" . $user_id . "'" . ', 0, 1, 0';
+							if (isset($_GET['reply']))
+							{
+								if (strcmp($_GET['reply'], 'team') === 0)
+								{
+									if (isset($_GET['teamid']) && ((int) $_GET['teamid'] > 0))
+									{
+										$query .= ', 1';
+									}
+								}
+								
+							}
+							if (isset($_GET['id']) && ((int) $_GET['id'] > 0))
+							{
+								$query .= ', ' . ((int) $_GET['id']);
+							}
+							$query .= ')';
 							// immediately free the result for performance reasons
 							$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 							if (!($result))
@@ -566,7 +607,29 @@
 				}
 				if ($message_mode)
 				{
-					echo '<form class="msg_buttons" action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
+					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add';
+					if (isset($_GET['reply']))
+					{
+						echo '&amp;';
+						if (strcmp($_GET['reply'], 'players') === 0)
+						{
+							echo 'reply=players';
+						} else
+						{
+							echo 'reply=team';
+						}
+					}
+					if (isset($_GET['id']) && ((int) $_GET['id'] > 0))
+					{
+						echo '&amp;id=' . $_GET['id'];
+					}
+					if (isset($_GET['teamid']) && ((int) $_GET['teamid'] > 0))
+					{
+						
+						echo '&amp;teamid=' . $_GET['teamid'];
+					}
+					echo '">' . "\n";
+					
 					echo '<p>';
 					$site->write_self_closing_tag('input type="hidden" name="subject" value="' . (htmlent($subject)) . '"');
 					echo '</p>' ."\n";
@@ -592,7 +655,9 @@
 					}
 				} else
 				{
-					echo '<p><input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"></p>' . "\n";
+					echo '<p>' . "\n";
+					$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"');
+					echo '</p>' . "\n";
 				}
 				
 				// keep the information in case user confirms by using invisible form items
@@ -648,7 +713,28 @@
 				if ($previewSeen === 0)
 				{
 					echo '<div class="static_page_box">' . "\n";
-					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add">' . "\n";
+					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add';
+					if (isset($_GET['reply']))
+					{
+						echo '&amp;';
+						if (strcmp($_GET['reply'], 'players') === 0)
+						{
+							echo 'reply=players';
+						} else
+						{
+							echo 'reply=team';
+						}
+					}
+					if (isset($_GET['id']) && ((int) $_GET['id'] > 0))
+					{
+						echo '&amp;id=' . $_GET['id'];
+					}
+					if (isset($_GET['teamid']) && ((int) $_GET['teamid'] > 0))
+					{
+
+						echo '&amp;teamid=' . $_GET['teamid'];
+					}
+					echo '">' . "\n";
 					
 					// timestamp
 					if ($allow_different_timestamp)

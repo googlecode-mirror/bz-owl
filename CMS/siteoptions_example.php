@@ -32,6 +32,12 @@
 		}
 	}
 	
+	// the name displayed in mails sent by the system
+	function system_username()
+	{
+		return 'CTF League System';
+	}
+	
 	function xhtml_on()
 	{
 		// nl2br needs php newer or equal to 4.0.5 to support xhtml

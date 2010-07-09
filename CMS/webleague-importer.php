@@ -392,10 +392,9 @@
 		}
 		while ($row = mysql_fetch_array($result))
 		{
-			$query = ('INSERT INTO `messages_storage` (`id`,`author`,`author_id`,`subject`,`timestamp`,`message`,`from_team`,`recipients`)'
+			$query = ('INSERT INTO `messages_storage` (`id`,`author_id`,`subject`,`timestamp`,`message`,`from_team`,`recipients`)'
 					  . ' VALUES '
 					  . '(' . sqlSafeStringQuotes($row['msgid'])
-					  . ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['callsign']));
 			if ((int) $row['fromid'] > 0)
 			{
 				$query .=  ',' . sqlSafeStringQuotes($deleted_players[$row['fromid']]['id']);
