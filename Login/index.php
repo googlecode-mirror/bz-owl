@@ -212,8 +212,8 @@
 							}
 							
 							// create the welcome message in database
-							$query = 'INSERT INTO `messages_storage` (`author`, `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
-							$query .= '(' . sqlSafeStringQuotes('league management system') . ', ' . sqlSafeStringQuotes ('0');
+							$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
+							$query .= '(' . sqlSafeStringQuotes ('0');
 							$query .= ', ' . sqlSafeStringQuotes('Welcome!') . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 							$query .= ', ' . sqlSafeStringQuotes('Welcome and thanks for registering at this website!' . "\n"
 																 . 'In the FAQ you can find the most important informations about organising and playin matches.'

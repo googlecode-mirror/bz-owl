@@ -35,6 +35,10 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	$reply = (member_of_groups($info, $args[1], $groups));
 	if ((isset($reply)) & ($reply === true))
 	{
+		if ($site->debug_sql())
+		{
+			echo 'gu league admin';
+		}
 		// GU-LEAGUE.ADMINS group
 		$_SESSION['username'] = $args[1];
 		$_SESSION['bzid'] = $external_login_id;
@@ -80,6 +84,10 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	$reply = (member_of_groups($info, $args[1], $groups));
 	if ((isset($reply)) & ($reply === true))
 	{
+		if ($site->debug_sql())
+		{
+			echo 'ts.admin';
+		}
 		// TS.ADMIN group
 		$_SESSION['username'] = $args[1];
 		$_SESSION['bzid'] = bzid($info, $args[1]);
