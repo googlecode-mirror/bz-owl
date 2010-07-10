@@ -437,16 +437,10 @@
 														
 							if (isset($_POST['teamid']))
 							{
-								// mark the message as message sent to an entire team
-								$query = 'INSERT INTO `messages_team_connection` (`msgid`, `teamid`)';
-								$query .= ' VALUES (' . sqlSafeStringQuotes($rowId) . ', ' . "'"
-										. sqlSafeString((int) htmlspecialchars_decode($_POST['teamid'])) . "'" . ')';
-								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
-								
 								$known_recipients = array();
 								$query = 'SELECT `id` FROM `players` WHERE `teamid`=';
 								$query .= sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid']));
-								$result = @$site->execute_query($site->db_used_name(), 'messages_team_connection', $query, $connection);
+								$result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection);
 																
 								while ($row = mysql_fetch_array($result))
 								{

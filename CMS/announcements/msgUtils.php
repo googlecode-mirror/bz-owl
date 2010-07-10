@@ -56,17 +56,16 @@
 		$item = $result_team;
 	}
 	
-	function displayMessage(&$result, &$team_message_from_team_id)
+	function displayMessage(&$result, &$team_message_from_team_id, &$id)
 	{
 		global $site;
 		global $connection;
 		global $folder;
-		global $id;
 		
 		// display a single message (either in inbox or outbox) in all its glory
 		while($row = mysql_fetch_array($result))
 		{
-			$team_message_from_team_id = $row['recipients'];
+			$team_message_from_team_id = $row['from_team'];
 			
 			echo '<div class="msg_view_full">' . "\n";
 			
@@ -87,7 +86,7 @@
 		{
 			// mark the message as unread
 			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_unread`=';
-			$query .= sqlSafeStringQuotes(0) . ' WHERE `msgid`=' . sqlSafeStringQuotes((int) $id);
+			$query .= sqlSafeStringQuotes(0) . ' WHERE `msgid`=' . sqlSafeStringQuotes($id);
 			$query .= ' AND `in_' . $folder . '`=' . "'" . '1' . "'";
 			// silently ignore the result, it's not a resource anyway so it can't even be dropped
 			$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
@@ -180,12 +179,11 @@
 			
 			if (isset($_GET['view']))
 			{
-				// display a certain message
-				
 				// sanity checks needed before displaying
 				// make sure the id is an int
 				$id = (int) sqlSafeString($_GET['view']);
 				
+				// display a certain message
 				// make sure the one who wants to read the message has actually permission to read it
 				$query = ('SELECT `subject`'
 						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
@@ -209,7 +207,7 @@
 					// message came from a team?
 					$team_message_from_team_id = false;
 					// display the message chosen by user
-					displayMessage($result, $team_message_from_team_id);
+					displayMessage($result, $team_message_from_team_id, $id);
 					mysql_free_result($result);
 					echo '<div class="msg_view_button_list">' . "\n";
 					// if the message is in inbox the user might want to reply to the message

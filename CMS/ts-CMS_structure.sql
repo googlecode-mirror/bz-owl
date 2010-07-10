@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-07-09 23:36:01 +0200
+# Generation Time: 2010-07-10 10:54:13 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -125,21 +125,7 @@ CREATE TABLE `messages_storage` (
   `recipients` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `author_id` (`author_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=379654 DEFAULT CHARSET=utf8 COMMENT='The message storage';
-
-
-
-# Dump of table messages_team_connection
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `messages_team_connection`;
-
-CREATE TABLE `messages_team_connection` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `msgid` int(11) unsigned NOT NULL,
-  `teamid` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=379651 DEFAULT CHARSET=utf8 COMMENT='The message storage';
 
 
 
@@ -163,7 +149,7 @@ CREATE TABLE `messages_users_connection` (
   KEY `msg_unread` (`msg_unread`),
   CONSTRAINT `messages_users_connection_ibfk_2` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `messages_users_connection_ibfk_3` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=235998 DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
+) ENGINE=InnoDB AUTO_INCREMENT=236016 DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
 
 
 
@@ -207,7 +193,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -373,7 +359,7 @@ CREATE TABLE `visits` (
   KEY `ip-address` (`ip-address`),
   KEY `host` (`host`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=514279 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=514281 DEFAULT CHARSET=utf8;
 
 
 
