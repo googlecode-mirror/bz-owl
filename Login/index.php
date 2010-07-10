@@ -14,7 +14,7 @@
 	require '../CMS/index.php';
 	
 	// buffer can now be written
-	echo $output;
+//	echo $output;
 	
 	function die_with_no_login($message='', &$logged_string='')
 	{
@@ -25,10 +25,10 @@
 		
 		require_once '../CMS/navi.inc';
 		echo '<div class="static_page_box">' . "\n";
-//		$output_buffer .= ob_get_contents();
-//		ob_end_clean();
-//		// write output buffer
-//		echo $output_buffer;
+		$output_buffer .= ob_get_contents();
+		ob_end_clean();
+		// write output buffer
+		echo $output_buffer;
 		if (strlen($message) > 0)
 		{
 			echo '<p class="first_p">' . $message . '</p>' . "\n";
@@ -104,8 +104,29 @@
 		
 		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
 		{
-			$msg = 'The account you tried to login to does not support external logins. You may convert the account first by using your local login.</p>' . "\n";
+			$msg = 'The account you tried to login to does not support ';
+			if (isset($module['bzbb']) && ($module['bzbb']))
+			{
+				$msg .= 'the bzbb login';
+			} else
+			{
+				$msg .= 'external logins';
+			}
+			$msg .= '. You may convert the account first by using your local login.</p>' . "\n";
 			$msg .= '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.' . "\n";
+			$output_buffer2 = '<p>';
+			ob_start();
+			if (isset($module['bzbb']) && ($module['bzbb']))
+			{
+				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert legacy account to allow bzbb login"');
+			} else
+			{
+				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert user to external login"');
+			}
+			$output_buffer2 .= ob_get_contents();
+			ob_end_clean();
+			// write output buffer
+			$msg .= $output_buffer2 . '</p>' . "\n";
 			die_with_no_login($msg);
 		}
 		

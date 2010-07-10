@@ -136,6 +136,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			unset($external_login_id);
 			
 			require_once '../CMS/navi.inc';
+			echo '<div class="static_page_box">' . "\n";
 			$error_msg = '';
 			if (isset($_SESSION['bzid']))
 			{
@@ -147,7 +148,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			
 			if (isset($site))
 			{
-				$site->dieAndEndPageNoBox($error_msg);
+				$site->dieAndEndPage($error_msg);
 			} else
 			{
 				die($error_msg);
@@ -163,7 +164,16 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		// login did not work, removing permissions not necessary as additional permissions where never granted
 		// after permissions were removed at the beginning of the file
 		require_once '../CMS/navi.inc';
-		echo '<p class="first_p">Error: The returned values could not be validated!</p>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
+		$error_msg = '<p class="first_p">Error: The returned values could not be validated!</p>' . "\n";
+		$error_msg .= '<p>Please <a href="./">try again</a>.</p>' . "\n";
+		if (isset($site))
+		{
+			$site->dieAndEndPage($error_msg);
+		} else
+		{
+			die($error_msg);
+		}
 	}
 }
 ?>

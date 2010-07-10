@@ -292,7 +292,7 @@
 			if (!(strcmp($message, '') === 0))
 			{
 				$this->log_error($message);
-				echo '<p>' . htmlent($message) . '</p>';
+				echo '<p>' . $message . '</p>';
 			}
 			die("\n" . '</div>' . "\n" . '</div>' . "\n" . '</body>' . "\n" . '</html>');
 		}
@@ -302,7 +302,7 @@
 			if (!(strcmp($message, '') === 0))
 			{
 				$this->log_error($message);
-				echo '<p>' . htmlent($message) . '</p>';
+				echo '<p>' . $message . '</p>';
 			}
 			die("\n". '</div>' . "\n" . '</body>' . "\n" . '</html>');
 		}
