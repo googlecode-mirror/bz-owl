@@ -410,14 +410,18 @@
 			{
 				$query .= ',' . sqlSafeStringQuotes(utf8_encode(htmlentities($row['subject'], ENT_QUOTES, 'ISO-8859-1')));
 			}
-			if (intval($row['htmlok'] === 1))
+			$query .= ',' . sqlSafeStringQuotes($row['datesent']);
+			
+			$msg = utf8_encode($row['msg']);
+			if (strcmp($row['htmlok'], '1') === 0)
 			{
-				$query .= (',' . sqlSafeStringQuotes($row['datesent'])
-						   . ',' . sqlSafeStringQuotes(strip_tags(utf8_encode($row['msg']))));
+				$msg = str_replace('&nbsp;', ' ', $msg);
+				$msg = str_replace('<br>', ' ', $msg);
+				$msg = str_replace('<BR>', ' ', $msg);
+				$query .= ',' . sqlSafeStringQuotes(strip_tags($msg));
 			} else
 			{
-				$query .= (',' . sqlSafeStringQuotes($row['datesent'])
-						   . ',' . sqlSafeStringQuotes(utf8_encode($row['msg'])));
+				$query .= ',' . sqlSafeStringQuotes($msg);
 			}
 			//		if (strcmp($row['team'], 'no') === 0)
 			//		{
