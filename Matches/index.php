@@ -142,13 +142,57 @@
 	
 	echo '</select></span>';
 	
+	// how many resulting rows does the user wish?
+	// assume 200 by default
+	$num_results = 200;
+	if (isset($_GET['search']))
+	{
+		if (isset($_GET['search_result_amount']))
+		{
+			if ($_GET['search_result_amount'] > 0)
+			{
+				// cast result to int to avoid SQL injections
+				$num_results = (int) $_GET['search_result_amount'];
+				// a little try against denial of service by limiting displayed amount per page
+				if ($num_results > 3200)
+				{
+					$num_results = 3200;
+				}
+			}
+		}
+	}
 	echo ' <label for="match_search_result_amount">Entries:</label> ';
 	echo '<span><select id="match_search_result_amount" name="search_result_amount">';
-	echo '<option>200</option>';
-	echo '<option>400</option>';
-	echo '<option>800</option>';
-	echo '<option>1600</option>';
-	echo '<option>3200</option>';
+	echo '<option';
+	if ($num_results === 200)
+	{
+		echo ' selected="selected"';
+	}
+	echo '>200</option>';
+	echo '<option';
+	if ($num_results === 400)
+	{
+		echo ' selected="selected"';
+	}
+	echo '>400</option>';
+	echo '<option';
+	if ($num_results === 800)
+	{
+		echo ' selected="selected"';
+	}
+	echo '>800</option>';
+	echo '<option';
+	if ($num_results === 1600)
+	{
+		echo ' selected="selected"';
+	}
+	echo '>1600</option>';
+	echo '<option';
+	if ($num_results === 3200)
+	{
+		echo ' selected="selected"';
+	}
+	echo '>3200</option>';
 	echo '</select></span>';
 	echo '</div> ' . "\n";
 	
@@ -253,35 +297,8 @@
 		// no special value set -> write 0 for value 0 (speed)
 		$query .= '0,';
 	}
-	// how many resulting rows does the user wish?
-	// assume 200 by default
-	$num_results = 200;
-	if (isset($_GET['search']))
-	{
-		if (isset($_GET['search_result_amount']))
-		{
-			if ($_GET['search_result_amount'] > 0)
-			{
-				// cast result to int to avoid SQL injections
-				$num_results = (int) $_GET['search_result_amount'];
-				// a little try against denial of service by limiting displayed amount per page
-				if ($num_results > 3200)
-				{
-					$num_results = 3200;
-				}
-				$query .= sqlSafeString($num_results + 1);
-			} else
-			{
-				$query .= '201';
-			}
-		} else
-		{
-			$query .= '201';
-		}
-	} else
-	{
-		$query .= ((int) $view_range)+$num_results+1;
-	}
+	// limit the number of displayed rows regarding the user's wish
+	$query .= sqlSafeString($num_results + 1);
 	
 	if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 	{

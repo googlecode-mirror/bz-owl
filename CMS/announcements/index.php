@@ -354,11 +354,9 @@
 						}
 					}
 				}
-				$query .= sqlSafeString($num_results + 1);
-			} else
-			{
-				$query .= ((int) $view_range)+$num_results+1;
 			}
+			$query .= sqlSafeString($num_results + 1);
+
 			
 			$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 			if (!$result)
@@ -419,7 +417,6 @@
 					} else
 					{
 						echo $row["author"];
-						echo 'wwww';
 					}
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";

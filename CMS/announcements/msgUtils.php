@@ -187,7 +187,6 @@
 				$id = (int) sqlSafeString($_GET['view']);
 				
 				// make sure the one who wants to read the message has actually permission to read it
-				// example query: SELECT * FROM `messages_users_connection` WHERE `msgid`='2' AND `playerid`='1194' AND `in_inbox`='1' ORDER BY id LIMIT 0,1'
 				$query = ('SELECT `subject`'
 						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
 						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
@@ -290,7 +289,7 @@
 					// no special value set -> write 0 for value 0 (speed)
 					$query .= '0,';
 				}
-				$query .= ((int) $view_range)+201;
+				$query .= 201;
 				
 				$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 				
