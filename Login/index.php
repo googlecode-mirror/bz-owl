@@ -9,7 +9,41 @@
 	$path = (pathinfo(realpath('./')));
 	$display_page_title = $path['basename'];
 	
+	$output_buffer = '';
+	ob_start();
 	require '../CMS/index.php';
+	
+	// buffer can now be written
+	echo $output;
+	
+	function die_with_no_login($message='', &$logged_string='')
+	{
+		global $site;
+		
+		$_SESSION['user_logged_in'] = false;
+		$_SESSION['viewerid'] = -1;
+		
+		require_once '../CMS/navi.inc';
+		echo '<div class="static_page_box">' . "\n";
+//		$output_buffer .= ob_get_contents();
+//		ob_end_clean();
+//		// write output buffer
+//		echo $output_buffer;
+		if (strlen($message) > 0)
+		{
+			echo '<p class="first_p">' . $message . '</p>' . "\n";
+		}
+		
+		if (strcmp($message, $logged_string) === 0)
+		{
+			// message already shown
+			$site->dieAndEndPage();
+		} else
+		{
+			// message not shown yet
+			$site->dieAndEndPage($logged_string);
+		}
+	}
 	
 	// set the date and time
 	date_default_timezone_set('Europe/Berlin');
@@ -22,7 +56,8 @@
 		$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 		if (!$result = $site->execute_query($site->db_used_name(), 'invitations', $query, $connection))
 		{
-			$site->dieAndEndPage('Could not delete expired invitations.');
+			$msg = 'Could not delete expired invitations.';
+			die_with_no_login($msg, $msg);
 		}
 	}
 	unset($auth_performed);
@@ -30,10 +65,7 @@
 	// in no case an empty username is allowed
 	if (isset($_SESSION['username']) && (strlen($_SESSION['username']) < 2))
 	{
-		echo '<p>Any username is required to be at least 2 chars long</p>';
-		$_SESSION['user_logged_in'] = false;
-		$_SESSION['viewerid'] = -1;
-		$site->dieAndEndPage();
+		die_with_no_login('<p>Any username is required to be at least 2 chars long</p>');
 	}
 	
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
@@ -48,8 +80,8 @@
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
-			require_once '../CMS/navi.inc';
-			$site->dieAndEndPage('Could not get account data for external_playerid ' . sqlSafeString($_SESSION['external_id']) . '.');
+			$msg = ('Could not get account data for external_playerid ' . sqlSafeString($_SESSION['external_id']) . '.');
+			die_with_no_login($msg, $msg);
 		}
 		
 		$rows_num_accounts = (int) mysql_num_rows($result);
@@ -72,20 +104,16 @@
 		
 		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
 		{
-			echo '<p>The account you tried to login to does not support external logins. You may convert the account first by using your local login.</p>' . "\n";
-			echo '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.</p>' . "\n";
-			$_SESSION['user_logged_in'] = false;
-			$_SESSION['viewerid'] = -1;
-			$site->dieAndEndPage();
+			$msg = 'The account you tried to login to does not support external logins. You may convert the account first by using your local login.</p>' . "\n";
+			$msg .= '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.' . "\n";
+			die_with_no_login($msg);
 		}
 		
 		if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
 			&& ($suspended_mode > (int) 1))
 		{
-			$_SESSION['user_logged_in'] = false;
-			$_SESSION['viewerid'] = -1;
-			echo '<p>There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!</p>';
-			$site->dieAndEndPage();
+			$msg = 'There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!';
+			die_with_no_login($msg);
 		}
 		// dealing only with the current player from this point on
 		
@@ -104,31 +132,28 @@
 			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
-				$site->dieAndEndPage('Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.');
+				$msg = 'Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.';
+				die_with_no_login($msg, $msg);
 			}
 			$suspended_mode = (int) 0;
 		}
 		if ($suspended_mode > (int) 1)
 		{
-			// remove the logged in flag
-			$_SESSION['user_logged_in'] = false;
-			require_once '../CMS/navi.inc';
+			$msg = '';
 			if ($suspended_mode === (int) 2)
 			{
-				echo '<p>Login for this account was disabled by admins.</p>';
+				$msg .= 'Login for this account was disabled by admins.';
 			}
 			if ($suspended_mode === (int) 3)
 			{
 				// FIXME: BAN FOR REAL!!!!
-				echo '<p>Admins specified you should be banned from the entire site.</p>';
+				$msg .=  'Admins specified you should be banned from the entire site.';
 			}
-			echo "\n";
 			// skip updates if the user has a disabled login or is banned (inappropriate callsign for instance)
-			$site->dieAndEndPage();
+			die_with_no_login($msg);
 		}
 		unset($suspended_mode);
 		
-		require_once '../CMS/navi.inc';
 		if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
 		{
 			if ($rows_num_accounts === 0)
@@ -161,7 +186,8 @@
 							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
-								$site->dieAndEndPage();
+								$msg = 'Could not lock the messages_storage table.';
+								die_with_no_login($msg);
 							}
 							
 							// create the welcome message in database
@@ -176,7 +202,8 @@
 							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
-								$site->dieAndEndPage();
+								$msg = 'Could not create the welcome mail.';
+								die_with_no_login($msg);
 							}
 							
 							// get the msgid generated from database
@@ -187,7 +214,8 @@
 							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
-								$site->dieAndEndPage();
+								$msg = 'Could not unlock the messages_storage table.';
+								die_with_no_login($msg);
 							}
 							// send the invitation message to user
 							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES ';
@@ -197,29 +225,28 @@
 							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
-								$site->dieAndEndPage();
+								$msg = 'Could not send the welcome mail.';
+								die_with_no_login($msg);
 							}
 							
 							// message sent
 						} else
 						{
-							$_SESSION['user_logged_in'] = false;
-							$_SESSION['viewerid'] = -1;
-							$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. '
+							$msg = ('Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. '
 												 . ' Please try again later.</p>' . "\n"
 												 . '<p>If the problem persists please tell an admin');
+							die_with_no_login($msg, $msg);
 						}
 					}
 				} else
 				{
-					$_SESSION['user_logged_in'] = false;
-					$_SESSION['viewerid'] = -1;
 					// apologise, the user is new and we all like newbies
-					$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus you (id='
+					$msg = ('Unfortunately there seems to be a database problem and thus you (id='
 										 . htmlent($user_id)
 										 . ') can not be added to the list of players at this site. '
 										 . 'Please try again later.</p>' . "\n"
 										 . '<p>If the problem persists please report it to an admin');
+					die_with_no_login($msg, $msg);
 				}
 				
 				// adding player profile entry
@@ -228,11 +255,10 @@
 				$query .= ', ' . sqlSafeStringQuotes('1') . ')';
 				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
-					$_SESSION['user_logged_in'] = false;
-					$_SESSION['viewerid'] = -1;
-					$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus creating your profile page (id='
+					$msg = ('Unfortunately there seems to be a database problem and thus creating your profile page (id='
 										 . htmlent($user_id)
 										 . ') failed. Please report this to admins.');
+					die_with_no_login($msg, $msg);
 				}
 			} else
 			{
@@ -243,11 +269,10 @@
 				$query .= ' LIMIT 1';
 				if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
-					$_SESSION['user_logged_in'] = false;
-					$_SESSION['viewerid'] = -1;
-					$site->dieAndEndPage('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
+					$msg = ('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
 										. htmlent($user_id)
 										. '). Please report this to an admin.</p>');
+					die_with_no_login($msg, $msg);
 				}
 			}
 		} else
@@ -255,10 +280,11 @@
 			// local login
 			if (isset($internal_login_id))
 			{
+				$msg = '';
 				if (isset($convert_to_external_login) && $convert_to_external_login)
 				{
 					// user is not new, update his callsign with new external playerid supplied from login
-					$query = 'UPDATE `players` SET';
+					
 					// external_playerid was empty, set it to the external value obtained by bzidtools
 					// create a new cURL resource
 					$ch = curl_init();
@@ -285,40 +311,42 @@
 					$query .= ' LIMIT 1';
 					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
-						$_SESSION['user_logged_in'] = false;
-						$_SESSION['viewerid'] = -1;
-						$site->dieAndEndPage('Unfortunately there seems to be a database problem'
+						$msg = ('Unfortunately there seems to be a database problem'
 											 . ' which prevents the system from setting your external playerid (id='
 											 . htmlent($user_id)
 											 . '). Please report this to an admin.');
+						die_with_no_login($msg, $msg);
 					}
-					echo '<p>Congratulations, you enabled ';
+					$msg .= 'Congratulations, you enabled ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						echo 'the bzbb login';
+						$msg .= 'the bzbb login';
 					} else
 					{
-						echo 'external logins';
+						$msg .= 'external logins';
 					}
-					echo ' for this account.</p>' . "\n";
+					$msg .= ' for this account.' . "\n";
 				}
 				
 				// local login tried but external login forced in settings
 				if (isset($internal_login_id) && $site->force_external_login_when_trying_local_login())
 				{
-					echo '<p><span class="unread_messages">The hoster of this website has disabled local logins. You should login using your <a href="./">';
+					if (strlen($msg) > 0)
+					{
+						$msg .= '</p><p>';
+					}
+					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should login using your <a href="./">';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						echo 'bzbb account';
+						$msg .= 'bzbb account';
 					} else
 					{
-						echo 'external login';
+						$msg .= 'external login';
 					}
-					echo '</a>.</span></p>' . "\n";
-					$_SESSION['user_logged_in'] = false;
-					$_SESSION['viewerid'] = -1;
-					$site->dieAndEndPage();
+					$msg .= '</a>.</span>' . "\n";
+					die_with_no_login($msg);
 				}
+				echo $msg;
 			}
 		}
 		
@@ -372,19 +400,19 @@
 					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
 						// trying to update the players old callsign failed
-						$site->dieAndEndPage('Unfortunately there seems to be a database problem which prevents the system from updating the old callsign of another user.'
+						$msg = ('Unfortunately there seems to be a database problem which prevents the system from updating the old callsign of another user.'
 											 . ' However you curently own that callsign so now there will be two users with the callsign in the table and people will'
 											 . 'have problems to distinguish you two!</p>'
 											 . '<p>Please report this to an admin.');
+						die_with_no_login($msg, $msg);
 					}
 				}
 			} else
 			{
-				$_SESSION['user_logged_in'] = false;
-				$_SESSION['viewerid'] = -1;
-				$site->dieAndEndPage('Finding other members who had the same name '
+				$msg = ('Finding other members who had the same name '
 									 . sqlSafeStringQuotes(htmlent($_SESSION['username']))
 									 . 'failed. This is a database problem. Please report this to an admin!');
+				die_with_no_login($msg, $msg);
 			}
 		}
 	}
@@ -445,7 +473,8 @@
 				$result = mysql_query($query, $connection);
 				if (!($result))
 				{
-					die('Could not remove already logged in user from online user table. Database broken?');
+					$msg = 'Could not remove already logged in user from online user table. Database broken?';
+					die_with_no_login($msg, $msg);
 				}
 			}
 			
@@ -494,8 +523,18 @@
 	// $user_id is not set in case no login/registration was performed
 	if (getUserID() > 0)
 	{
-		echo '<p>Login was successful</p>' . "\n";
+		require_once '../CMS/navi.inc';
+		echo '<div class="static_page_box">' . "\n";
+		echo '<p class="first_p">Login was successful!</p>' . "\n";
 		echo '<p>Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.</p>' . "\n";
 	}
-	$site->dieAndEndPage();
+	
+	$output_buffer .= ob_get_contents();
+	ob_end_clean();
+	// write output buffer
+	echo $output_buffer;
 ?>
+</div>
+</div>
+</body>
+</html>

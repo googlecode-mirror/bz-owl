@@ -119,8 +119,10 @@
 		allow_add_messages();
 		allow_delete_messages();
 		
-		require_once '../CMS/navi.inc';
-		echo '<div class="static_page_box">' . "\n";
-		echo '<p class="first_p">Local login information validated.</p>' . "\n";
+//		require_once '../CMS/navi.inc';
+//		echo '<div class="static_page_box">' . "\n";
+		
+		// username and password did match but there might be circumstances
+		// where the caller decides the login was not successful, though
 	}
 ?>

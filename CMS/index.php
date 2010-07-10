@@ -17,24 +17,21 @@
 	
 	$auth_performed = false;
 	
+	ob_start();
+
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
 		// load modules to check input and buffer output
 		// the buffer is neccessary because the modules might need to set cookies for instance
 		if (isset($module['bzbb']) && ($module['bzbb']))
 		{
-			ob_start();
 			include_once 'bzbb_login/index.php';
-			$output .= ob_get_contents();
-			ob_end_clean();
 		}
 		
 		if (isset($module['local']) && ($module['local']))
 		{
 			ob_start();
 			include_once 'local_login/index.php';
-			$output .= ob_get_contents();
-			ob_end_clean();
 		}
 		
 		if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
@@ -43,17 +40,14 @@
 		}
 	}
 	
-	
-	if (!(strcmp($output, '') == 0))
-	{
-		// buffer can now be written
-		echo $output;
-	}
-	
-	if ((strcmp($output, '') == 0) && (isset($_SESSION['user_logged_in'])) && $_SESSION['user_logged_in'])
+	if (!$auth_performed && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
 		require_once '../CMS/navi.inc';
 		echo '<div class="static_page_box">' . "\n";
+		$output_buffer .= ob_get_contents();
+		ob_end_clean();
+		// write output buffer
+		echo $output_buffer;
 		echo '<p class="first_p">Login was already successful.</p>' . "\n";
 		$site->dieAndEndPage();
 	}

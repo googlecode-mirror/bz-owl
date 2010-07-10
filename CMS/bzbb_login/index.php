@@ -124,8 +124,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
-		require_once '../CMS/navi.inc';;
-		
 		if (isset($_SESSION['bzid']) && ((!strcmp($_SESSION['bzid'], '-1') == 0) || !(strcmp($_SESSION['bzid'], '0') == 0)))
 		{
 			$_SESSION['external_id'] = $_SESSION['bzid'];
@@ -137,6 +135,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			no_permissions();
 			unset($external_login_id);
 			
+			require_once '../CMS/navi.inc';
 			$error_msg = '';
 			if (isset($_SESSION['bzid']))
 			{
@@ -157,8 +156,8 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		
 		$_SESSION['external_login'] = true;
 		$external_login_id = $_SESSION['external_id'];
-		echo '<div class="static_page_box">' . "\n";
-		echo '<p class="first_p">Login information validated!</p>' . "\n";
+//		echo '<div class="static_page_box">' . "\n";
+//		echo '<p class="first_p">Login information validated!</p>' . "\n";
 	} else
 	{
 		// login did not work, removing permissions not necessary as additional permissions where never granted

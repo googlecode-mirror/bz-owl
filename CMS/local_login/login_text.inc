@@ -36,7 +36,7 @@
 			require_once '../CMS/login_module_list.php';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
-				echo '<strong><span class="unread_messages">Before you continue make absolutely sure your account here and the bzbb account have exactly the same username or you will give someone else access to your account and that access can never be revoked.</span></strong></p><p>';
+				echo '<strong><span class="unread_messages">Before you continue make absolutely sure your account here and the bzbb account have exactly the same username or you will give someone else access to your account and that access can never be revoked.</span></strong></p>';
 			}
 		}	
 
