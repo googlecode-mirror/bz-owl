@@ -253,7 +253,9 @@
 		// example query: SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp`
 		//				  FROM `visits`,`players` WHERE `visits`.`playerid`='16' AND `players`.`id`='16'
 		//				  ORDER BY `visits`.`id` DESC LIMIT 0,201
-		$query = 'SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp`,`visits`.`forwarded_for` FROM `visits`,`players` WHERE `visits`.`playerid`=' . sqlSafeStringQuotes($profile) . ' AND `players`.`id`=' . sqlSafeStringQuotes($profile);
+		$query = ('SELECT `players`.`name`,`visits`.`ip-address`, `visits`.`host`, `visits`.`timestamp`,`visits`.`forwarded_for`'
+				  . ' FROM `visits`,`players` WHERE `visits`.`playerid`='
+				  . sqlSafeStringQuotes($profile) . ' AND `players`.`id`=' . sqlSafeStringQuotes($profile));
 	}
 	
 	// display visits log overview
@@ -263,8 +265,10 @@
 		if (!(isset($_GET['search'])))
 		{
 			// get list of last 200 visits
-			$query = 'SELECT `visits`.`playerid`,`players`.`name`,`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp`,`visits`.`forwarded_for` FROM `visits`,`players`';
-			$query .= ' WHERE `visits`.`playerid`=`players`.`id`';
+			$query = ('SELECT `visits`.`playerid`,'
+					  . '(SELECT `name` FROM `players` WHERE `id`=`visits`.`playerid`) AS `name`,'
+					  . '`visits`.`ip-address`,`visits`.`host`,`visits`.`timestamp`,`visits`.`forwarded_for`'
+					  . ' FROM `visits`');
 		}
 	}
 	$query .= ' ORDER BY `visits`.`id` DESC LIMIT ';
