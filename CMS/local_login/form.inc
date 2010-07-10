@@ -3,7 +3,7 @@
 	echo '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
 	echo '<div class="p">Name:</div>' . "\n";
 	echo '<p class="first_p">' . "\n";
-	$site->write_self_closing_tag('input type="text" name="loginname" value="" maxlength="300"');
+	$site->write_self_closing_tag('input type="text" class="small_input_field" name="loginname" value="" maxlength="300"');
 	echo '</p>' . "\n";
 	
 	echo '<div class="p">Password:</div>' . "\n";
