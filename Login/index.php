@@ -306,7 +306,7 @@
 				// local login tried but external login forced in settings
 				if (isset($internal_login_id) && $site->force_external_login_when_trying_local_login())
 				{
-					echo '<p><span class="unread_messages">The hoster of this website has disabled local logins. You should login using your ';
+					echo '<p><span class="unread_messages">The hoster of this website has disabled local logins. You should login using your <a href="./">';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
 						echo 'bzbb account';
@@ -314,7 +314,7 @@
 					{
 						echo 'external login';
 					}
-					echo '.</span></p>' . "\n";
+					echo '</a>.</span></p>' . "\n";
 					$_SESSION['user_logged_in'] = false;
 					$_SESSION['viewerid'] = -1;
 					$site->dieAndEndPage();

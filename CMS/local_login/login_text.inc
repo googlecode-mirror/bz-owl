@@ -12,10 +12,9 @@
 		echo '<p class="first_p">' . "\n";
 		if ($site->force_external_login_when_trying_local_login())
 		{
-			require_once '../CMS/login_module_list.php';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
-				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert legacy account to use a bzbb account with same username"');
+				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert legacy account to allow bzbb login"');
 			} else
 			{
 				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert user to external login"');
