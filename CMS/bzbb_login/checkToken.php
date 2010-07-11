@@ -13,15 +13,16 @@
 		
 		//Trim the last 6 characters, which are "%0D%0A", off of the last group
 		$group_list=substr($group_list, 0, strlen($group_list)-6);
-		// $reply=file_get_contents(''.$list_server.'?action=CHECKTOKENS&checktokens='.urlencode($callsign).'%3D'.$token.''.$group_list.'');
+		
+		// use cURL to get the remote content
 		$ch = curl_init();
 		
 		// set URL and other appropriate options
-		curl_setopt($ch, CURLOPT_URL, ($list_server.'?action=CHECKTOKENS&checktokens='.urlencode($callsign).'%3D'.$token.''.$group_list));
+		curl_setopt($ch, CURLOPT_URL, ($list_server.'?action=CHECKTOKENS&checktokens='.urlencode($callsign).'%3D'.$token.$group_list));
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
-		// grab URL and pass it to the browser
+		// grab URL
 		$reply = curl_exec($ch);
 		
 		// close cURL resource, and free up system resources
@@ -32,7 +33,8 @@
 //		echo '</pre>';
 		return $reply;
 	}
-
+	
+	// this returns true if someone is member of ALL groups specified
 	function member_of_groups($reply, $callsign, $groups=array())
 	{
 		// make sure the user is in at least one group
