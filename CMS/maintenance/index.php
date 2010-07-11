@@ -408,15 +408,15 @@
 					if ($rows < ((int) 1))
 					{
 						// delete actual message
-						$query = 'DELETE FROM `messages_storage` WHERE `id`=' . "'" . sqlSafeString($msgid) . "'";
+						$query = 'DELETE FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes($msgid);
 						@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);								
 					}
 				}
 				unset($msgid);
 				
 				// mark account as deleted
-				$query = 'UPDATE `players` SET `suspended`=' . "'" . sqlSafeString('1') . "'";
-				$query .= ' WHERE `id`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+				$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes('1');
+				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($one_inactive_player);
 				// and again only one player needs to be updated
 				$query .= ' LIMIT 1';
 				@$site->execute_query($site->db_used_name(), 'players', $query, $connection);
