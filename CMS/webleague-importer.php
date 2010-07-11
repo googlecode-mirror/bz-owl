@@ -624,7 +624,7 @@
 	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
 	require_once('../CMS/maintenance/index.php');
 	
-	resolve_visits_log_hosts();
+//	resolve_visits_log_hosts();
 	
 	// done
 	// (should take about 5 minutes to import the data, excluding the very long time for host lookup)
