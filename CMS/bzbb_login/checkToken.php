@@ -36,7 +36,7 @@
 	function member_of_groups($reply, $callsign, $groups=array())
 	{
 		// make sure the user is in at least one group
-		if (count($groups) < 0)
+		if (count($groups) < 1)
 		{
 			// return false to avoid giving permissions that should not be given
 			// one does not want to know if a user is in no group so expect a user mistake
