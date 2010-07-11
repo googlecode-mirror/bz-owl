@@ -32,12 +32,14 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_delete_messages();
 	}
 	
-	$reply = (member_of_groups($info, $args[1], $groups));
+	// test only for GU-LEAGUE.ADMINS group
+	$groups_test = array_slice($groups, 1, 1);
+	$reply = (member_of_groups($info, $args[1], $groups_test));
 	if ((isset($reply)) & ($reply === true))
 	{
 		if ($site->debug_sql())
 		{
-			echo 'gu league admin';
+			echo '<p>gu league admin detected</p>';
 		}
 		// GU-LEAGUE.ADMINS group
 		$_SESSION['username'] = $args[1];
@@ -79,14 +81,14 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_delete_match();
 	}
 	
-	// remove first group
-	$groups = array_slice($groups, 1);
-	$reply = (member_of_groups($info, $args[1], $groups));
+	// test only for TS.ADMIN group
+	$groups_test = array_slice($groups, -1, 1);
+	$reply = (member_of_groups($info, $args[1], $groups_test));
 	if ((isset($reply)) & ($reply === true))
 	{
 		if ($site->debug_sql())
 		{
-			echo 'ts.admin';
+			echo '<p>ts.admin detected</p>';
 		}
 		// TS.ADMIN group
 		$_SESSION['username'] = $args[1];

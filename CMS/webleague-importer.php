@@ -201,7 +201,7 @@
 		{
 			$query = ('INSERT INTO `teams` (`id`,`name`,`leader_playerid`)'
 					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes(htmlent($row['name'])));
+					  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes(utf8_encode(htmlentities($row['name'], ENT_QUOTES, 'ISO-8859-1'))));
 			if (isset($deleted_players[$row['leader']]) && (isset($deleted_players[$row['leader']]['callsign'])) && (!isset($deleted_players[$row['leader']]['dummy'])))
 			{
 				$query .= ',' . sqlSafeStringQuotes($deleted_players[($row['leader'])]['id']);

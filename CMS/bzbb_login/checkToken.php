@@ -7,7 +7,9 @@
 		
 		$group_list='&groups=';
 		foreach($groups as $group)
-		$group_list.="$group%0D%0A";
+		{
+			$group_list.="$group%0D%0A";
+		}
 		
 		//Trim the last 6 characters, which are "%0D%0A", off of the last group
 		$group_list=substr($group_list, 0, strlen($group_list)-6);
@@ -30,17 +32,42 @@
 //		echo '</pre>';
 		return $reply;
 	}
-	
+
 	function member_of_groups($reply, $callsign, $groups=array())
 	{
-		if ( ($x = strpos($reply, "TOKGOOD: $callsign")) !== false)
+		// make sure the user is in at least one group
+		if (count($groups) < 0)
 		{
-			// make sure the user is in at least one group
-			if (count($groups)>0 && $reply{$x + strlen("TOKGOOD: $callsign")}!=':')
+			// return false to avoid giving permissions that should not be given
+			// one does not want to know if a user is in no group so expect a user mistake
+			return false;
+		}
+		$group_count = count($groups);
+		
+		if ( ($x = strpos($reply, 'TOKGOOD: ' . $callsign)) !== false)
+		{
+			$group_list = '';
+			foreach($groups as $group)
 			{
-				return false;
+                $group_list .= ':' . $group;
 			}
-			return true;
+			$groupsearch = substr($reply, $x+8+strlen($callsign));
+			$groupsearch = explode(' ', $groupsearch);
+			$groupsearch = $groupsearch[0];
+			
+			foreach($groups as $group)
+			{
+				$pos = strpos($groupsearch, (':' . $group));
+                if (($pos !== false) && ($pos > 0))
+				{
+					$group_count--;
+				}
+				
+				if ($group_count < 1)
+				{
+					return true;
+				}
+			}
 		}
 		return false;
 	}

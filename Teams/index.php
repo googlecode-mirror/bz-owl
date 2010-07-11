@@ -433,9 +433,10 @@
 		
 		// get a full list of deleted teams
 		// teams_overview.deleted: 0 new; 1 active; 2 deleted; 3 revived
-		$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
-		$query .= ' WHERE (`teams_overview`.`deleted`=' . "'" . sqlSafeString('2') . "'";
-		$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`)';
+		$query = ('SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`'
+				  . ' WHERE (`teams_overview`.`deleted`=' . sqlSafeStringQuotes('2')
+				  . ' AND `teams`.`id`=`teams_overview`.`teamid`)'
+				  . ' ORDER BY `teams`.`name`');
 		if (!($result_teams = @$site->execute_query($site->db_used_name(), 'teams, teams_overview', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -450,9 +451,10 @@
 		
 		// get a full list of teamless, not deleted players
 		// suspended: 0 active; 1 maint-deleted; 2 disabled; 3 banned
-		$query = 'SELECT `id`,`name` FROM `players`';
-		$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString('0') . "'";
-		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'" . ')';
+		$query = ('SELECT `id`,`name` FROM `players`'
+				  . ' WHERE (`teamid`=' . sqlSafeStringQuotes('0')
+				  . ' AND `suspended`<>' . sqlSafeStringQuotes('1') . ')'
+				  . ' ORDER BY `name`');
 		if (!($result_players = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
