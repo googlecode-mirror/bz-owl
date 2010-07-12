@@ -308,7 +308,7 @@
 			
 			
 			// create invitation message in database
-			$query = 'INSERT INTO `messages_storage` `author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
+			$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
 			$query .= '(' . sqlSafeStringQuotes ('0');
 			$query .= ', ' . sqlSafeStringQuotes(('Invitation to team ' . $team_name)) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n" . 'The invitation will expire in 7 days.'));

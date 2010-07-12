@@ -1639,29 +1639,10 @@
 		mysql_free_result($result);
 		
 		echo '</table>' . "\n";
+		$site->write_self_closing_tag('br');
 		
 		
-		
-		// show last entered matches
-		// first find out permissions of currently viewing player
-		$allow_edit_match = false;
-		if (isset($_SESSION['allow_edit_match']))
-		{
-			if (($_SESSION['allow_edit_match']) === true)
-			{
-				$allow_edit_match = true;
-			}
-		}
-		
-		$allow_delete_match = false;
-		if (isset($_SESSION['allow_delete_match']))
-		{
-			if (($_SESSION['allow_delete_match']) === true)
-			{
-				$allow_delete_match = true;
-			}
-		}
-		
+		// show last entered matches		
 		// get match data
 		// sort the data by id to find out if abusers entered data a loong time in the past
 		$query = ('SELECT `timestamp`,`team1_teamid`,`team2_teamid`,'
@@ -1678,75 +1659,101 @@
 			$site->dieAndEndPage();
 		}
 		
-		// display the table
-		echo '<table id="table_matches_played" class="big">' . "\n";
-		echo '<caption>Last entered matches</caption>' . "\n";
-		echo '<tr>' . "\n";
-		echo '	<th>Time</th>' . "\n";
-		echo '	<th>Teams</th>' . "\n";
-		echo '	<th>Result</th>' . "\n";
-		echo '	<th>last mod by</th>' . "\n";
-		// show edit/delete links in a new table column if user has permission to use these
-		// adding matches is not done from within the table
-		if ($allow_edit_match || $allow_delete_match)
+		
+		if ((int) mysql_num_rows($result) === 0)
 		{
-			echo '	<th>Allowed actions</th>' . "\n";
-		}
-		echo '</tr>' . "\n\n";
-		while ($row = mysql_fetch_array($result))
+			echo '<p>This team has played no matches yet.</p>';
+		} else
 		{
-			echo '<tr class="matches_overview">' . "\n";
-			echo '<td>';
-			echo $row['timestamp'];
-			echo '</td>' . "\n" . '<td>';
-			
-			// get name of first team
-			echo '<a href="../Teams/?profile=' . ((int) $row['team1_teamid']) . '">' . $row['team1_name'] . '</a>';
-			
-			// seperator showing that opponent team will be named soon
-			echo ' - ';
-			
-			// get name of second team
-			echo '<a href="../Teams/?profile=' . ((int) $row['team2_teamid']) . '">' . $row['team2_name'] . '</a>';
-			
-			// done with the table field, go to next field
-			echo '</td>' . "\n" . '<td>';
-			
-			echo htmlentities($row['team1_points']);
-			echo ' - ';
-			echo htmlentities($row['team2_points']);
-			echo '</td>' . "\n";
-			
-			echo '<td>';
-			// get name of player that made last change
-			echo '<a href="../Players/?profile=' . ((int) $row['playerid']) . '">' . $row['playername'] . '</a>';
-			echo '</td>' . "\n";
-			
-			
-			// show allowed actions based on permissions
-			if ($allow_edit_match || $allow_delete_match)
+			// first find out permissions of currently viewing player
+			$allow_edit_match = false;
+			if (isset($_SESSION['allow_edit_match']))
 			{
-				echo '<td>';
-				if ($allow_edit_match)
+				if (($_SESSION['allow_edit_match']) === true)
 				{
-					echo '<a class="button" href="./?edit=' . htmlspecialchars($row['id']) . '">Edit match result</a>';
+					$allow_edit_match = true;
 				}
-				if ($allow_edit_match && $allow_delete_match)
-				{
-					echo ' ';
-				}
-				if ($allow_edit_match)
-				{
-					echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a>';
-				}
-				echo '</td>' . "\n";
 			}
 			
+			$allow_delete_match = false;
+			if (isset($_SESSION['allow_delete_match']))
+			{
+				if (($_SESSION['allow_delete_match']) === true)
+				{
+					$allow_delete_match = true;
+				}
+			}
+			
+			// display the table
+			echo '<table id="table_matches_played" class="big">' . "\n";
+			echo '<caption>Last entered matches</caption>' . "\n";
+			echo '<tr>' . "\n";
+			echo '	<th>Time</th>' . "\n";
+			echo '	<th>Teams</th>' . "\n";
+			echo '	<th>Result</th>' . "\n";
+			echo '	<th>last mod by</th>' . "\n";
+			// show edit/delete links in a new table column if user has permission to use these
+			// adding matches is not done from within the table
+			if ($allow_edit_match || $allow_delete_match)
+			{
+				echo '	<th>Allowed actions</th>' . "\n";
+			}
 			echo '</tr>' . "\n\n";
+			while ($row = mysql_fetch_array($result))
+			{
+				echo '<tr class="matches_overview">' . "\n";
+				echo '<td>';
+				echo $row['timestamp'];
+				echo '</td>' . "\n" . '<td>';
+				
+				// get name of first team
+				echo '<a href="../Teams/?profile=' . ((int) $row['team1_teamid']) . '">' . $row['team1_name'] . '</a>';
+				
+				// seperator showing that opponent team will be named soon
+				echo ' - ';
+				
+				// get name of second team
+				echo '<a href="../Teams/?profile=' . ((int) $row['team2_teamid']) . '">' . $row['team2_name'] . '</a>';
+				
+				// done with the table field, go to next field
+				echo '</td>' . "\n" . '<td>';
+				
+				echo htmlentities($row['team1_points']);
+				echo ' - ';
+				echo htmlentities($row['team2_points']);
+				echo '</td>' . "\n";
+				
+				echo '<td>';
+				// get name of player that made last change
+				echo '<a href="../Players/?profile=' . ((int) $row['playerid']) . '">' . $row['playername'] . '</a>';
+				echo '</td>' . "\n";
+				
+				
+				// show allowed actions based on permissions
+				if ($allow_edit_match || $allow_delete_match)
+				{
+					echo '<td>';
+					if ($allow_edit_match)
+					{
+						echo '<a class="button" href="./?edit=' . htmlspecialchars($row['id']) . '">Edit match result</a>';
+					}
+					if ($allow_edit_match && $allow_delete_match)
+					{
+						echo ' ';
+					}
+					if ($allow_edit_match)
+					{
+						echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a>';
+					}
+					echo '</td>' . "\n";
+				}
+				
+				echo '</tr>' . "\n\n";
+			}
+			mysql_free_result($result);
+			// no more matches to display
+			echo '</table>' . "\n";
 		}
-		mysql_free_result($result);
-		// no more matches to display
-		echo '</table>' . "\n";
 		
 		// show pending invitations
 		if (($team_leader_id > 0) && $viewerid === $team_leader_id || $allow_invite_in_any_team)

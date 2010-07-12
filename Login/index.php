@@ -104,7 +104,8 @@
 		
 		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
 		{
-			$msg = 'The account you tried to login to does not support ';
+			$msg = '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
+			$msg .= 'The account you tried to login to does not support ';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
 				$msg .= 'the bzbb login';
@@ -127,6 +128,7 @@
 			ob_end_clean();
 			// write output buffer
 			$msg .= $output_buffer2 . '</p>' . "\n";
+			$msg .= '</form>';
 			die_with_no_login($msg);
 		}
 		
