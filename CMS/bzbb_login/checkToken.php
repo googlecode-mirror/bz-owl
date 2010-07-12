@@ -1,98 +1,103 @@
 <?php
-	// returns TRUE if user is a member of ANY of the specified groups
-	// sample reply ... MSG: checktoken callsign=menotume, ip=, token=1279306227  group=gu.league TOKGOOD: menotume:gu.league BZID: 262
-	function validate_token ($token, $callsign, $groups=array())
-	{
-		$list_server='http://my.bzflag.org/db/';
-		
-		$group_list='&groups=';
-		foreach($groups as $group)
-		{
-			$group_list.="$group%0D%0A";
-		}
-		
-		//Trim the last 6 characters, which are "%0D%0A", off of the last group
-		$group_list=substr($group_list, 0, strlen($group_list)-6);
-		
-		// use cURL to get the remote content
-		$ch = curl_init();
-		
-		// set URL and other appropriate options
-		curl_setopt($ch, CURLOPT_URL, ($list_server.'?action=CHECKTOKENS&checktokens='.urlencode($callsign).'%3D'.$token.$group_list));
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		
-		// grab URL
-		$reply = curl_exec($ch);
-		
-		// close cURL resource, and free up system resources
-		curl_close($ch);
-		
-//		echo '<pre>';
-//		print_r($reply);
-//		echo '</pre>';
-		return $reply;
-	}
-	
-	// this returns true if someone is member of ALL groups specified
-	function member_of_groups($reply, $callsign, $groups=array())
-	{
-		// make sure the user is in at least one group
-		if (count($groups) < 1)
-		{
-			// return false to avoid giving permissions that should not be given
-			// one does not want to know if a user is in no group so expect a user mistake
-			return false;
-		}
-		$group_count = count($groups);
-		
-		if ( ($x = strpos($reply, 'TOKGOOD: ' . $callsign)) !== false)
-		{
-			$group_list = '';
-			foreach($groups as $group)
-			{
-                $group_list .= ':' . $group;
-			}
-			$groupsearch = substr($reply, $x+8+strlen($callsign));
-			$groupsearch = explode(' ', $groupsearch);
-			$groupsearch = $groupsearch[0];
-			
-			foreach($groups as $group)
-			{
-				$pos = strpos($groupsearch, (':' . $group));
-                if (($pos !== false) && ($pos > 0))
-				{
-					$group_count--;
-				}
-				
-				if ($group_count < 1)
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	function login_successful($reply, $callsign)
-	{
-		if ( ($x = strpos($reply, "TOKGOOD: $callsign")) !== false)
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	function bzid($reply, $callsign)
-	{
-		if ( ( ($x = strpos($reply, "TOKGOOD: $callsign")) !== false) && ($x = strrpos($reply, "BZID: ")) !== false)
-		{
-			// strrpos with multiple chars as search string requires PHP 5 or later
-			$number_of_trimmed_chars_at_end = ((-1) * (strlen($callsign) +1));
-			// cast to int to prevent SQL injections
-			return (int) (substr($reply, $x+6, $number_of_trimmed_chars_at_end));
-		}
-		// return -1 on error
-		return -1;
-	}
+
+// This function will check a username and token returned by the bzflag
+// weblogin page at http://my.bzflag.org/weblogin.php?action=weblogin. You can use
+// this URL to ask a user for his bzflag global login. Your page needs to pass
+// in an URL paramater to the weblogin that contains your URL to be called with
+// the username and token. This allows your site to use the same usernames and
+// passwords as the forums with out having to worry about being accused of
+// stealing passwords. The URL paramater can have the keys %TOKEN% and
+// %USERNAME% that will be replaced with the real username and token when the
+// URL is called. For example:
+//
+// http://my.bzflag.org/weblogin.php?action=weblogin&url=http://www.mysite.com/mydir/login.php?token=%TOKEN%&username=%USERNAME%
+//
+// NOTE: The URL passed MUST be URL encoded.  The example above shows the URL
+// in plain text to make it clearer what is happening.
+//
+// This would call mysite.com with the token and username passed in as
+// paramaters after the user has given the page a valid username and password.
+//
+// This function should be used after you get the info from the login callback,
+// to verify that it is a valid token, and to test which groups the user is a
+// member of.
+//
+// Sites MUST redirect the user to the login form. Sites that send the login
+// info from any other form will automaticly be rejected. The aim of this
+// service to to show the user that login info is being sent to bzflag.org.
+//
+// Sites can send a CSS file to us, using the 'css' paramater to tweak the 
+// look of the login page to better match the site that is calling it.
+//
+// TODO: Add some error handling/reporting
+
+function validate_token($token, $username, $groups = array(), $checkIP = true)
+{
+  // We should probably do a little more error checking here and
+  // provide an error return code (define constants?)
+  if (isset($token, $username) && strlen($token) > 0 && strlen($username) > 0)
+  {
+    $listserver = Array();
+
+    // First off, start with the base URL
+    $listserver['url'] = 'http://my.bzflag.org/db/';
+    // Add on the action and the username
+    $listserver['url'] .= '?action=CHECKTOKENS&checktokens='.urlencode($username);
+    // Make sure we match the IP address of the user
+    if ($checkIP) $listserver['url'] .= '@'.$_SERVER['REMOTE_ADDR'];
+    // Add the token
+    $listserver['url'] .= '%3D'.$token;
+    // If use have groups to check, add those now
+    if (is_array($groups) && sizeof($groups) > 0)
+      $listserver['url'] .= '&groups='.implode("%0D%0A", $groups);
+
+    // Run the web query and trim the result
+    // An alternative to this method would be to use cURL
+    $listserver['reply'] = trim(file_get_contents($listserver['url']));
+
+  //EXAMPLE TOKGOOD RESPONSE
+  /*
+  MSG: checktoken callsign=SuperAdmin, ip=, token=1234567890  group=SUPER.ADMIN group=SUPER.COP group=SUPER.OWNER
+  TOKGOOD: SuperAdmin:SUPER.ADMIN:SUPER.OWNER
+  BZID: 123456 SuperAdmin
+  */
+
+    // Fix up the line endings just in case
+    $listserver['reply'] = str_replace("\r\n", "\n", $listserver['reply']);
+    $listserver['reply'] = str_replace("\r", "\n", $listserver['reply']);
+    $listserver['reply'] = explode("\n", $listserver['reply']);
+
+    // Grab the groups they are in, and their BZID
+    foreach ($listserver['reply'] as $line)
+    {
+      if (substr($line, 0, strlen('TOKGOOD: ')) == 'TOKGOOD: ')
+      {
+        if (strpos($line, ':', strlen('TOKGOOD: ')) == FALSE) continue;
+        $listserver['groups'] = explode(':', substr($line, strpos($line, ':', strlen('TOKGOOD: '))+1 ));
+      }
+      else if (substr($line, 0, strlen('BZID: ')) == 'BZID: ')
+      {
+        list($listserver['bzid'],$listserver['username']) = explode(' ', substr($line, strlen('BZID: ')), 2);
+      }
+    }
+
+    if (isset($listserver['bzid']) && is_numeric($listserver['bzid']))
+    {
+      $return['username'] = $listserver['username'];
+      $return['bzid'] = $listserver['bzid'];
+
+      if (isset($listserver['groups']) && sizeof($listserver['groups']) > 0)
+      {
+        $return['groups'] = $listserver['groups'];
+      }
+      else
+      {
+        $return['groups'] = Array();
+      }
+
+      return $return;
+    }
+  } // if (isset($token, $username))
+} // validate_token(...)
+
 ?>

@@ -624,9 +624,13 @@
 	// a check inside the maintenance logic will make sure it will be only performed one time per day at max
 	require_once('../CMS/maintenance/index.php');
 	
+	// (should take about 3 minutes to import the data until this point)
+	// disable this when not doing the final import because this last step would take 90 minutes
 //	resolve_visits_log_hosts();
 	
 	// done
-	// (should take about 5 minutes to import the data, excluding the very long time for host lookup)
-	echo '<p>Import finished!</p>' . "\n";
-	?>
+?>
+<p>Import finished!</p>
+</div>
+</body>
+</html>

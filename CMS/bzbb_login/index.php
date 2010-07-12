@@ -6,45 +6,66 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	// initialise permissions
 	no_permissions();
-
+	
 	// groups used for permissions
 	// each group can use the fine grained permission system
 	$groups = Array ('VERIFIED','GU-LEAGUE.ADMINS', 'TS.ADMIN');
 	$args = explode (',', urldecode($_GET['bzbbauth']));
 	// $args[0] is token, $args[1] is callsign
-	$info = validate_token ($args[0], $args[1], $groups);
-	// print_r($info);
-	// $info set -> list server was reached
-	
-	// invalid bzid should be -1
-	if (login_successful($info, $args[1]))
+	if (!$info = validate_token ($args[0], $args[1], $groups, false))
 	{
-		// VERIFIED group
-		
-		// since we use a global login for auth any user should be in that group
-		$_SESSION['username'] = $args[1];
-		$external_login_id = bzid($info, $args[1]);
-		$_SESSION['bzid'] = $external_login_id;
-		$_SESSION['user_logged_in'] = true;
-		
-		// permissions for private messages
-		allow_add_messages();
-		allow_delete_messages();
+		// login did not work, removing permissions not necessary as additional permissions where never granted
+		// after permissions were removed at the beginning of the file
+		require_once '../CMS/navi.inc';
+		echo '<div class="static_page_box">' . "\n";
+		$error_msg = '<p class="first_p">Login failed: The returned values could not be validated! You may check your username and password.</p>' . "\n";
+		$error_msg .= '<p>Please <a href="./">try again</a>.</p>' . "\n";
+		if (isset($site))
+		{
+			$site->dieAndEndPage($error_msg);
+		} else
+		{
+			die($error_msg);
+		}
 	}
 	
+	// NOTE: invalid bzid should be set to -1
+	
+	// assume user is in the
+	// VERIFIED group
+	// because login worked
+		
+	// since we use a global login for auth any user should be in that group
+	$_SESSION['username'] = $args[1];
+	$external_login_id = $info['bzid'];
+	$_SESSION['bzid'] = $external_login_id;
+	$_SESSION['user_logged_in'] = true;
+	
+	// permissions for private messages
+	allow_add_messages();
+	allow_delete_messages();
+	//	}
+	
 	// test only for GU-LEAGUE.ADMINS group
-	$groups_test = array_slice($groups, 1, 1);
-	$reply = (member_of_groups($info, $args[1], $groups_test));
-	if ((isset($reply)) & ($reply === true))
+	$group_test = array_slice($groups, 1, 1);
+	$in_group = false;
+	foreach ($info['groups'] as $one_group)
+	{
+		// case insensitive comparison
+		if (strcasecmp($one_group, $group_test[0]) === 0)
+		{
+			$in_group = true;
+			break;
+		}
+	}
+	
+	if ($in_group === true)
 	{
 		if ($site->debug_sql())
 		{
 			echo '<p>gu league admin detected</p>';
 		}
 		// GU-LEAGUE.ADMINS group
-		$_SESSION['username'] = $args[1];
-		$_SESSION['bzid'] = $external_login_id;
-		$_SESSION['user_logged_in'] = true;
 		$_SESSION['IsAdmin'] = true;
 		
 		// can change debug sql setting
@@ -83,17 +104,22 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	// test only for TS.ADMIN group
 	$groups_test = array_slice($groups, -1, 1);
-	$reply = (member_of_groups($info, $args[1], $groups_test));
-	if ((isset($reply)) & ($reply === true))
+	foreach ($info['groups'] as $one_group)
+	{
+		// case insensitive comparison
+		if (strcasecmp($one_group, $group_test[0]) === 0)
+		{
+			$in_group = true;
+			break;
+		}
+	}
+	if ($in_group === true)
 	{
 		if ($site->debug_sql())
 		{
 			echo '<p>ts.admin detected</p>';
 		}
 		// TS.ADMIN group
-		$_SESSION['username'] = $args[1];
-		$_SESSION['bzid'] = bzid($info, $args[1]);
-		$_SESSION['user_logged_in'] = true;
 		$_SESSION['IsAdmin'] = true;
 		
 		// can change debug sql setting
@@ -137,53 +163,12 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		if (isset($_SESSION['bzid']) && ((!strcmp($_SESSION['bzid'], '-1') == 0) || !(strcmp($_SESSION['bzid'], '0') == 0)))
 		{
 			$_SESSION['external_id'] = $_SESSION['bzid'];
-		} else
-		{
-			// getting bzid failed
-			// or conflicts with reserved values
-			// thus take away all permissions again
-			no_permissions();
-			unset($external_login_id);
-			
-			require_once '../CMS/navi.inc';
-			echo '<div class="static_page_box">' . "\n";
-			$error_msg = '';
-			if (isset($_SESSION['bzid']))
-			{
-				$error_msg = 'Your bzid ' . htmlentities($_SESSION['bzid']) . 'conflicted with a reserved value and thus login failed!';
-			} else
-			{
-				$error_msg = 'Login worked but no bzid could be retrieved for your account and thus login failed!';
-			}
-			
-			if (isset($site))
-			{
-				$site->dieAndEndPage($error_msg);
-			} else
-			{
-				die($error_msg);
-			}
 		}
 		
 		$_SESSION['external_login'] = true;
 		$external_login_id = $_SESSION['external_id'];
 //		echo '<div class="static_page_box">' . "\n";
 //		echo '<p class="first_p">Login information validated!</p>' . "\n";
-	} else
-	{
-		// login did not work, removing permissions not necessary as additional permissions where never granted
-		// after permissions were removed at the beginning of the file
-		require_once '../CMS/navi.inc';
-		echo '<div class="static_page_box">' . "\n";
-		$error_msg = '<p class="first_p">Error: The returned values could not be validated!</p>' . "\n";
-		$error_msg .= '<p>Please <a href="./">try again</a>.</p>' . "\n";
-		if (isset($site))
-		{
-			$site->dieAndEndPage($error_msg);
-		} else
-		{
-			die($error_msg);
-		}
 	}
 }
 ?>
