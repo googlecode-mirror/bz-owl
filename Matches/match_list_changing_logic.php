@@ -453,19 +453,23 @@
 		
 		for ($i = 0; $i <= $n_teams; $i++)
 		{
-			echo '<tr class="table_scores_changed_overview">' . "\n";
-			echo '	<td class="table_scores_changed_overview_name">';
-			echo '<a href="../Teams/?profile=' . htmlspecialchars($keys[$i]) . '">';
-			echo strval($team_stats_changes[$keys[$i]]['name']);
-			echo '</a>';
-			echo '</td>' . "\n";
-			echo '	<td class="table_scores_changed_overview_score_before">';
-			echo strval($team_stats_changes[$keys[$i]]['old_score']);
-			echo '</td>' . "\n";
-			echo '	<td class="table_scores_changed_overview_score_after">';
-			echo strval($team_stats_changes[$keys[$i]]['new_score']);
-			echo '</td>' . "\n";
-			echo '</tr>' . "\n";
+			// entries with no changed scores were deleted without re-indexing using unset
+			if (isset($team_stats_changes[$i]))
+			{
+				echo '<tr class="table_scores_changed_overview">' . "\n";
+				echo '	<td class="table_scores_changed_overview_name">';
+				echo '<a href="../Teams/?profile=' . htmlspecialchars($keys[$i]) . '">';
+				echo strval($team_stats_changes[$keys[$i]]['name']);
+				echo '</a>';
+				echo '</td>' . "\n";
+				echo '	<td class="table_scores_changed_overview_score_before">';
+				echo strval($team_stats_changes[$keys[$i]]['old_score']);
+				echo '</td>' . "\n";
+				echo '	<td class="table_scores_changed_overview_score_after">';
+				echo strval($team_stats_changes[$keys[$i]]['new_score']);
+				echo '</td>' . "\n";
+				echo '</tr>' . "\n";
+			}
 		}
 		
 		echo '</table>' . "\n";
@@ -1501,15 +1505,14 @@
 			// find out which team's have new scores
 			$teams = array_keys($team_stats_changes);
 			$query .= ' WHERE (';
-			$n_teams = ((int) count($teams)) - 1;
+			$n_teams = ((int) count($teams)) - 2;
 			for ($i = 0; $i <= $n_teams; $i++)
 			{
 				$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
-				if ($i <= ($n_teams - 1))
-				{
-					$query .= ' OR ';
-				}
 			}
+			$query .= ' OR ';
+			$n_teams++;
+			$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$n_teams]);
 			$query .= ') AND `teams_overview`.`teamid`=`teams`.`id`';
 			
 			// execute the query if there are teams scores to be updated
@@ -1540,7 +1543,7 @@
 				$query = 'UPDATE `teams_overview` SET `score`=';
 				$query .= sqlSafeStringQuotes($new_score);
 				// use current row id to access the entry
-				$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($row['teamid']) . "'";
+				$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($row['teamid']);
 				// only one row is updated per loop iteration
 				$query .= ' LIMIT 1';
 				if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
@@ -1567,7 +1570,6 @@
 				} else
 				{
 					$one_or_more_teams_have_changed_score = true;
-					$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
 				}
 			}
 			

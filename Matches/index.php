@@ -39,7 +39,7 @@
 		{
 			$allow_delete_match = true;
 		}
-	}	
+	}
 
 	
 	function get_table_checksum($site, $connection)

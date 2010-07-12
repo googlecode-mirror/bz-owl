@@ -1526,16 +1526,17 @@
 			$site->dieAndEndPage('This team was deleted.');
 		}
 		
+		
+		// show the members of team!
 		// example query: SELECT `players`.`id`, `name`, `location`
 		// FROM `players`, `players_profile` WHERE `players`.`teamid`='1' AND `players`.`id`=`players_profile`.`playerid`
-		$query = 'SELECT `players`.`id`, `name`, `location` FROM `players`, `players_profile` WHERE `players`.`teamid`=' . "'" . sqlSafeString($profile) . "'";
+		$query = 'SELECT `players`.`id`, `name`, `location` FROM `players`, `players_profile` WHERE `players`.`teamid`=' . sqlSafeStringQuotes($profile);
 		$query .= '  AND `players`.`id`=`players_profile`.`playerid`';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
 		}
-				
 		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
 		echo '<caption>Members of team ' . $team_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
@@ -1569,7 +1570,7 @@
 				{
 					$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row_country['flagfile'] . '"');
 				}
-				echo '<span class="user_profile_location">' . htmlent($row_country['name']) . '</span></div>' . "\n";
+				echo '<span class="user_profile_location">' . htmlent($row_country['name']) . '</span>' . "\n";
 			}
 			if (!$country_shown)
 			{
@@ -1610,7 +1611,7 @@
 				
 				// find out if viewer belongs to the team
 				$user_belongs_to_the_viewed_team = false;
-				$query = 'SELECT `teamid` FROM `players` WHERE `id`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 0,1';
+				$query = 'SELECT `teamid` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($viewerid) . ' LIMIT 1';
 				// debug output at this point would break the html definition thus execute the query silently
 				if (!($team_origin_of_viewer = @$site->execute_silent_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 				{
@@ -1638,7 +1639,116 @@
 		mysql_free_result($result);
 		
 		echo '</table>' . "\n";
-
+		
+		
+		
+		// show last entered matches
+		// first find out permissions of currently viewing player
+		$allow_edit_match = false;
+		if (isset($_SESSION['allow_edit_match']))
+		{
+			if (($_SESSION['allow_edit_match']) === true)
+			{
+				$allow_edit_match = true;
+			}
+		}
+		
+		$allow_delete_match = false;
+		if (isset($_SESSION['allow_delete_match']))
+		{
+			if (($_SESSION['allow_delete_match']) === true)
+			{
+				$allow_delete_match = true;
+			}
+		}
+		
+		// get match data
+		// sort the data by id to find out if abusers entered data a loong time in the past
+		$query = ('SELECT `timestamp`,`team1_teamid`,`team2_teamid`,'
+				  . '(SELECT `name` FROM `teams` WHERE `id`=`team1_teamid`) AS `team1_name`'
+				  . ',(SELECT `name` FROM `teams` WHERE `id`=`team2_teamid`) AS `team2_name`'
+				  . ',`team1_points`,`team2_points`,`playerid`'
+				  . ',(SELECT `players`.`name` FROM `players` WHERE `players`.`id`=`matches`.`playerid`) AS `playername`,`matches`.`id`'
+				  . ' FROM `matches` WHERE `matches`.`team1_teamid`=' . sqlSafeStringQuotes($profile)
+				  . ' OR `matches`.`team1_teamid`=' . sqlSafeStringQuotes($profile)
+				  . ' ORDER BY `id` DESC LIMIT 0,10');
+		if (!($result = @$site->execute_query($site->db_used_name(), 'matches (subquery players)', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage();
+		}
+		
+		// display the table
+		echo '<table id="table_matches_played" class="big">' . "\n";
+		echo '<caption>Last entered matches</caption>' . "\n";
+		echo '<tr>' . "\n";
+		echo '	<th>Time</th>' . "\n";
+		echo '	<th>Teams</th>' . "\n";
+		echo '	<th>Result</th>' . "\n";
+		echo '	<th>last mod by</th>' . "\n";
+		// show edit/delete links in a new table column if user has permission to use these
+		// adding matches is not done from within the table
+		if ($allow_edit_match || $allow_delete_match)
+		{
+			echo '	<th>Allowed actions</th>' . "\n";
+		}
+		echo '</tr>' . "\n\n";
+		while ($row = mysql_fetch_array($result))
+		{
+			echo '<tr class="matches_overview">' . "\n";
+			echo '<td>';
+			echo $row['timestamp'];
+			echo '</td>' . "\n" . '<td>';
+			
+			// get name of first team
+			echo '<a href="../Teams/?profile=' . ((int) $row['team1_teamid']) . '">' . $row['team1_name'] . '</a>';
+			
+			// seperator showing that opponent team will be named soon
+			echo ' - ';
+			
+			// get name of second team
+			echo '<a href="../Teams/?profile=' . ((int) $row['team2_teamid']) . '">' . $row['team2_name'] . '</a>';
+			
+			// done with the table field, go to next field
+			echo '</td>' . "\n" . '<td>';
+			
+			echo htmlentities($row['team1_points']);
+			echo ' - ';
+			echo htmlentities($row['team2_points']);
+			echo '</td>' . "\n";
+			
+			echo '<td>';
+			// get name of player that made last change
+			echo '<a href="../Players/?profile=' . ((int) $row['playerid']) . '">' . $row['playername'] . '</a>';
+			echo '</td>' . "\n";
+			
+			
+			// show allowed actions based on permissions
+			if ($allow_edit_match || $allow_delete_match)
+			{
+				echo '<td>';
+				if ($allow_edit_match)
+				{
+					echo '<a class="button" href="./?edit=' . htmlspecialchars($row['id']) . '">Edit match result</a>';
+				}
+				if ($allow_edit_match && $allow_delete_match)
+				{
+					echo ' ';
+				}
+				if ($allow_edit_match)
+				{
+					echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a>';
+				}
+				echo '</td>' . "\n";
+			}
+			
+			echo '</tr>' . "\n\n";
+		}
+		mysql_free_result($result);
+		// no more matches to display
+		echo '</table>' . "\n";
+		
+		// show pending invitations
 		if (($team_leader_id > 0) && $viewerid === $team_leader_id || $allow_invite_in_any_team)
 		{
 			$query = 'SELECT `invited_playerid`, `expiration` FROM `invitations` WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
