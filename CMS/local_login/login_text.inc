@@ -1,10 +1,17 @@
 <?php
-	require_once '../CMS/navi.inc';
-	if ((isset($_SESSION['user_logged_in'])) &&	($_SESSION['user_logged_in']))
+	if (!isset($account_needs_to_be_converted) || !($account_needs_to_be_converted))
 	{
-		echo 'already logged in';
-		die();
+		require_once '../CMS/navi.inc';
+		
+		if ((isset($_SESSION['user_logged_in'])) &&	($_SESSION['user_logged_in']))
+		{
+			echo 'already logged in';
+			die();
+		}
 	}
+	
+	$db_imported = new db_import;
+	$account_old_website = htmlent($db_imported->old_website());
 	
 	if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 	{
@@ -12,13 +19,7 @@
 		echo '<p class="first_p">' . "\n";
 		if ($site->force_external_login_when_trying_local_login())
 		{
-			if (isset($module['bzbb']) && ($module['bzbb']))
-			{
-				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert legacy account to allow bzbb login"');
-			} else
-			{
-				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert user to external login"');
-			}
+			$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert account from ' . $account_old_website . ' to be used with new website"');
 		} else
 		{
 			$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Local login"');
@@ -36,13 +37,11 @@
 			require_once '../CMS/login_module_list.php';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
-				echo '<strong><span class="unread_messages">Before you continue make absolutely sure your account here and the bzbb account have exactly the same username or you will give someone else access to your account and that access can never be revoked.</span></strong></p>';
+				echo '<strong><span class="unread_messages">Before you continue make absolutely sure your account here and the forum account have exactly the same username or you will give someone else access to your account and that access can never be revoked.</span></strong></p>';
 			}
-		}	
-
-//		echo '<strong>Never enter any login information from a different website at the following form!</strong>';
-//		echo ' The following form is only there to use your local registration and does only serve local registration purposes.</p>';
-		echo '<p><strong>It is strongly discouraged to enter any global login information below.</strong></p>';
+		}
+		
+		echo '<p>Enter login data from <strong>' . $account_old_website . '</strong> here!</p>';
 		echo "\n";
 		require_once 'form.inc';
 		echo '<p>Note: Only global login has the ability to allow more than standard permissions at the moment.</p>' . "\n";

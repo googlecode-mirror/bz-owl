@@ -385,5 +385,9 @@
 		{
 			return database_to_be_imported();
 		}
+		function old_website()
+		{
+			return old_website_name();
+		}
 	}
 ?>

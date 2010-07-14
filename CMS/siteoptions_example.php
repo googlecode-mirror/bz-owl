@@ -14,6 +14,10 @@
 	{
 		return 'bzleague_guleague';
 	}
+	function old_website_name()
+	{
+		return 'gu.bzleague.com';
+	}
 	
 	function convert_users_to_external_login_if_no_external_login_id_set()
 	{

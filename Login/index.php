@@ -108,27 +108,22 @@
 			$msg .= 'The account you tried to login to does not support ';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
-				$msg .= 'the bzbb login';
+				$msg .= 'the forum login';
 			} else
 			{
 				$msg .= 'external logins';
 			}
 			$msg .= '. You may convert the account first by using your local login.</p>' . "\n";
 			$msg .= '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.' . "\n";
-			$output_buffer2 = '<p>';
+			
+			$output_buffer2 = '';
 			ob_start();
-			if (isset($module['bzbb']) && ($module['bzbb']))
-			{
-				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert legacy account to allow bzbb login"');
-			} else
-			{
-				$site->write_self_closing_tag('input type="submit" name="local_login_wanted" value="Convert user to external login"');
-			}
-			$output_buffer2 .= ob_get_contents();
+			$account_needs_to_be_converted = true;
+			include_once('../CMS/local_login/login_text.inc');
+			// write output buffer to message and clean buffer
+			$msg .= ob_get_clean() . "\n";
 			ob_end_clean();
-			// write output buffer
-			$msg .= $output_buffer2 . '</p>' . "\n";
-			$msg .= '</form>';
+			
 			die_with_no_login($msg);
 		}
 		
@@ -343,7 +338,7 @@
 					$msg .= 'Congratulations, you enabled ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						$msg .= 'the bzbb login';
+						$msg .= 'the forum (global) login';
 					} else
 					{
 						$msg .= 'external logins';
@@ -361,7 +356,7 @@
 					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should login using your <a href="./">';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						$msg .= 'bzbb account';
+						$msg .= 'forum account';
 					} else
 					{
 						$msg .= 'external login';
