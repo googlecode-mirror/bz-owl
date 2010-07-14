@@ -1857,81 +1857,145 @@
 				$site->dieAndEndPageNoBox();
 			}
 			
-			echo '<table id="table_team_members" class="big">' . "\n";
-			echo '<caption>List of teams</caption>' . "\n";
-			echo '<tr>' . "\n";
-			echo '	<th>Name</th>' . "\n";
-			echo '	<th>Score</th>' . "\n";
-			echo '	<th>Members</th>' . "\n";
-			echo '	<th>Activity</th>' . "\n";
-			
-			if ($player_teamless)
+			function display_teams($table_title, &$teams, &$invited_to_teams)
 			{
-				echo '	<th>Allowed actions</th>' . "\n";
-			}
-			
-			echo '</tr>' . "\n";
-
-			while($row = mysql_fetch_array($result))
-			{
-				echo '<tr class="teams_overview">' . "\n";
-				echo '	<td><a href="./?profile=' . $row['teamid'] . '">';
-				// team name empty?
-				if (strcmp(($row['name']), '') === 0)
+				global $site;
+				global $connection;
+				global $viewerid;
+				global $player_teamless;
+				
+				// id's have to be unique
+				// append table name with lowercase
+				$table_id = 'table_team_members_' . strtolower($table_title);
+				// convert spaces to underscore
+				$table_id = str_replace(' ', '_', $table_id);
+				// use generated id
+				echo '<table id="' . $table_id . '" class="big">' . "\n";
+				// id no longer needed
+				unset($table_id);
+				
+				echo '<caption>' . $table_title . '</caption>' . "\n";
+				echo '<tr>' . "\n";
+				echo '	<th>Name</th>' . "\n";
+				echo '	<th>Score</th>' . "\n";
+				echo '	<th>Members</th>' . "\n";
+				echo '	<th>Activity</th>' . "\n";
+				if ($player_teamless)
 				{
-					echo '(unnamed team)';
-				} else
-				{
-					echo $row['name'] . '</a></td>' . "\n";
-				}
-				echo '	<td>' . $row['score'] . '</td>' . "\n";
-				echo '	<td>' . $row['member_count'] . '</td>' . "\n";
-				echo '	<td>' . $row['activity'] . '</td>' . "\n";
-				if (($viewerid > 0) && ((int) $row['any_teamless_player_can_join'] === 1))
-				{					
-					// take care of potential database problems
-					if ($player_teamless)
-					{
-						echo '	<td><a class="button" href="./?join=' . $row['teamid'] . '">Join team</a></td>' . "\n";
-					}
-				}
-				else
-				{
-					// display empty row so there is always the same number of columns within a table
-					if ($player_teamless)
-					{
-						// is the player invited to the team?
-						$query = 'SELECT `id` FROM `invitations` WHERE `invited_playerid`=' . "'" . sqlSafeString($viewerid) . "'";
-						// the current team in the list
-						$query .= ' AND `teamid`=' . "'" . sqlSafeString($row['teamid']) . "'";
-						// is the invitation expired?
-						$query .= ' AND expiration>' . "'" . sqlSafeString(date('Y-m-d H:i:s')) . "'";
-						// there should be only one invitation
-						// FIXME: enforce that there will be only one invitation in the player list source code
-						$query .= ' LIMIT 1';
-						if (!($invited_result = @$site->execute_query($site->db_used_name(), 'invitations', $query, $connection)))
-						{
-							// query was bad, error message was already given in $site->execute_query(...)
-							$site->dieAndEndPage('');
-						}
-						
-						$rows = (int) mysql_num_rows($invited_result);
-						mysql_free_result($invited_result);
-						if ($rows > 0)
-						{
-							echo '	<td><a class="button" href="./?join=' . $row['teamid'] . '">Join team using invite</a></td>' . "\n";
-						} else
-						{
-							echo '	<td></td>' . "\n";
-						}
-					}
+					echo '	<th>Allowed actions</th>' . "\n";
 				}
 				echo '</tr>' . "\n";
+				
+				foreach ($teams as &$team)
+				{					
+					echo '<tr class="teams_overview">' . "\n";
+					echo '	<td><a href="./?profile=' . $team['teamid'] . '">';
+					// team name empty?
+					if (strcmp(($team['name']), '') === 0)
+					{
+						echo '(unnamed team)';
+					} else
+					{
+						echo $team['name'] . '</a></td>' . "\n";
+					}
+					echo '	<td>' . $team['score'] . '</td>' . "\n";
+					echo '	<td>' . $team['member_count'] . '</td>' . "\n";
+					echo '	<td>' . $team['activity'] . '</td>' . "\n";
+					if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
+					{					
+						// take care of potential database problems
+						if ($player_teamless)
+						{
+							echo '	<td><a class="button" href="./?join=' . $team['teamid'] . '">Join team</a></td>' . "\n";
+						}
+					}
+					else
+					{
+						// display empty row so there is always the same number of columns within a table
+						if ($player_teamless)
+						{
+							if (in_array($team['teamid'],$invited_to_teams))
+							{
+								echo '	<td><a class="button" href="./?join=' . $team['teamid'] . '">Join team using invite</a></td>' . "\n";
+							} else
+							{
+								echo '	<td></td>' . "\n";
+							}
+						}
+					}
+					echo '</tr>' . "\n";
+				}
+				unset($team);
+				// no more players left to display
+				echo '</table>' . "\n";
 			}
-			// no more players left to display
-			echo '</table>' . "\n";
+			
+			$active_teams = array(array());
+			$inactive_teams = array(array());
+			while ($row = mysql_fetch_array($result))
+			{
+				// classify team as active (at least 1 match in last 45 days) or not
+				if (strcmp(substr($row['activity'],0,4), '0.00') === 0)
+				{
+					// inactive team
+					$inactive_teams[$row['teamid']]['teamid'] = $row['teamid'];
+					$inactive_teams[$row['teamid']]['name'] = $row['name'];
+					$inactive_teams[$row['teamid']]['score'] = $row['score'];
+					$inactive_teams[$row['teamid']]['member_count'] = $row['member_count'];
+					$inactive_teams[$row['teamid']]['activity'] = $row['activity'];
+					$inactive_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
+
+				} else
+				{
+					// active team
+					$active_teams[$row['teamid']]['teamid'] = $row['teamid'];
+					$active_teams[$row['teamid']]['name'] = $row['name'];
+					$active_teams[$row['teamid']]['score'] = $row['score'];
+					$active_teams[$row['teamid']]['member_count'] = $row['member_count'];
+					$active_teams[$row['teamid']]['activity'] = $row['activity'];
+					$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
+				}
+			}
+			mysql_free_result($result);
+			
+			$invited_to_teams = array();
+			if ($player_teamless)
+			{
+				// is the player invited to the team?
+				$query = 'SELECT `teamid` FROM `invitations` WHERE `invited_playerid`=' . sqlSafeStringQuotes($viewerid);
+				// is the invitation expired?
+				$query .= ' AND expiration>' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+				// there should be only one invitation
+				// FIXME: enforce that there will be only one invitation in the player list source code
+				$query .= ' LIMIT 1';
+				if (!($result = @$site->execute_query($site->db_used_name(), 'invitations', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					$site->dieAndEndPage('');
+				}
+				
+				$rows = (int) mysql_num_rows($result);
+				if ($rows > 0)
+				{
+					while ($row = mysql_fetch_array($result))
+					{
+						$invited_to_teams[] = (int) $row['teamid'];
+					}
+				}
+				mysql_free_result($result);
+			}
+			
+			// first entry is always empty
+			unset($active_teams[0]);
+			unset($inactive_teams[0]);
+			
+			// display the teams, beginning with active ones
+			display_teams('Active teams',$active_teams, $invited_to_teams);
+			unset($active_teams);
+			$site->write_self_closing_tag('br');
+			display_teams('Inactive teams',$inactive_teams, $invited_to_teams);
+			unset($inactive_teams);
 		}
-		mysql_free_result($result);
 	}
 ?>
 
