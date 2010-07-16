@@ -58,6 +58,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			break;
 		}
 	}
+	unset($one_group);
 	
 	if ($in_group === true)
 	{
@@ -103,7 +104,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	}
 	
 	// test only for TS.ADMIN group
-	$groups_test = array_slice($groups, -1, 1);
+	$group_test = array_slice($groups, -1, 1);
 	foreach ($info['groups'] as $one_group)
 	{
 		// case insensitive comparison
