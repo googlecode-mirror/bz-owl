@@ -100,7 +100,7 @@
 		$rows = (int) mysql_num_rows($result);
 		if ($rows === 1)
 		{
-			while($row = mysql_fetch_array($result))
+			while ($row = mysql_fetch_array($result))
 			{
 				$suspended_status = (int) $row['suspended'];
 			}
@@ -252,7 +252,6 @@
 				}
 			}
 			
-			// FIXME: INSERT INVITATION CODE HERE!!!
 			if ($invited_to_team < 1)
 			{
 				$site->dieAndEndPage('You do not have permission to invite players to a team!');
@@ -695,7 +694,8 @@
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
 			echo '<p><label class="player_edit" for="edit_player_name">Change callsign: </label>';
-			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'.htmlent_decode($callsign).'"');
+			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'
+										  . htmlent_decode($callsign) . '"');
 			echo '</p>';
 		}
 		
@@ -897,7 +897,8 @@
 		echo '</select></span></p>' . "\n";			
 		
 		// send button
-		echo '<div class="edit_user_suspended_status_send"><input type="submit" name="edit_user_suspended_status" value="Set new user suspended status" id="send"></div>' . "\n";
+		echo '<div class="edit_user_suspended_status_send">';
+		echo '<input type="submit" name="edit_user_suspended_status" value="Set new user suspended status" id="send"></div>' . "\n";
 		
 		// random key fun to prevent automated sending by visiting a page
 		$new_randomkey_name = $randomkey_name . microtime();
@@ -953,7 +954,8 @@
 		}
 		$query .= ', `players_profile`.`logo_url`';
 		// if the player is a member of team get the corresponding team name
-		$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
+		$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',';
+		$query .= '(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 		$query .= ' FROM `players`, `players_profile`,`countries` WHERE `players`.`id` = `players_profile`.`playerid`';
 		$query .= ' AND `players_profile`.`location`=`countries`.`id`';
@@ -978,7 +980,8 @@
 			}
 			$query .= ', `players_profile`.`logo_url`';
 			// if the player is a member of team get the corresponding team name
-			$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
+			$query .= ',`players`.`teamid`,IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',';
+			$query .= '(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid`),' . "''" . ') AS `team_name`';
 			// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 			$query .= ' FROM `players`, `players_profile` WHERE `players`.`id` = `players_profile`.`playerid`';
 			$query .= ' AND `players`.`id`=';
@@ -994,7 +997,8 @@
 		{
 			// more than one team with the same id!
 			// this should never happen
-			$site->dieAndEndPage('There was more than one user with that id (' . sqlSafeString($profile) . '). This is a database error, please report it to admins.');
+			$site->dieAndEndPage('There was more than one user with that id ('
+								 . sqlSafeString($profile) . '). This is a database error, please report it to admins.');
 		}
 		
 		$player_name = '';
@@ -1133,6 +1137,138 @@
 	
 	// display overview
 	
+	// form letting search for team name or time
+	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
+	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./">' . "\n";
+	
+	// input string
+	echo '<div style="display:inline"><label for="player_search_string">Search for:</label> ' . "\n";
+	echo '<span>';
+	if (isset($_GET['search']))
+	{
+		$site->write_self_closing_tag('input type="text" id="player_search_string" name="search_string" value="' . $_GET['search_string'] . '"');
+	} else
+	{
+		$site->write_self_closing_tag('input type="text" id="player_search_string" name="search_string"');
+	}
+	echo '</span></div> ' . "\n";
+	
+	// looking for either team name or time
+	echo '<div style="display:inline"><label for="player_search_type">sort by:</label> ' . "\n";
+	echo '<span><select id="player_search_type" name="search_type">';
+	
+	$search_string = '';
+	if (isset($_GET['search_string']))
+	{
+		$search_string = $_GET['search_string'];
+		$search_string = str_replace('*', '%', $search_string);
+		if (!(strcmp(substr($search_string, -1), '%') === 0))
+		{
+			$search_string .= '%';
+		}
+	}
+	
+	// avoid to let the user enter a custom table column at all costs
+	// only let them switch between team name and time search
+	
+	// search for team name by default
+	$search_sort = '';
+	$search_team_sort = false;
+	$search_joined_sort = false;
+	$search_player_sort = false;
+	if (isset($_GET['search_type']))
+	{
+		switch ($_GET['search_type'])
+		{
+			case 'player': $search_player_sort = true; break;
+			case 'team': $search_team_sort = true; break;
+			case 'joined': $search_joined_sort = true; break;
+			default: $search_team_sort = true;
+		}
+	}
+	
+	echo '<option';
+	if ($search_player_sort)
+	{
+		$search_sort = 'player';
+		echo ' selected="selected"';
+	}
+	echo ' value="player"';
+	echo '>player name</option>';
+	
+	echo '<option';
+	if ($search_team_sort)
+	{
+		$search_sort = 'team';
+		echo ' selected="selected"';
+	}
+	echo ' value="team"';
+	echo '>team name</option>';
+	
+	echo '<option';
+	if ($search_joined_sort)
+	{
+		$search_sort = 'time';
+		echo ' selected="selected"';
+	}
+	echo '>joined</option>';
+	
+	echo '</select></span>';
+	
+	echo ' <label for="player_search_result_included">Entries:</label> ';
+	echo '<span><select id="player_search_result_included" name="search_result_included">';
+	
+	// search for all players by default
+	$search_type = '';
+	$search_all = false;
+	$search_team = false;
+	$search_teamless = false;
+	if (isset($_GET['search_result_included']))
+	{
+		switch ($_GET['search_result_included'])
+		{
+			case 'player': $search_player = true; break;
+			case 'team': $search_team = true; break;
+			case 'teamless': $search_teamless = true; break;
+			default: $search_all = true;
+		}
+	}
+	
+	echo '<option';
+	if ($search_all)
+	{
+		$search_type = 'all';
+		echo ' selected="selected"';
+	}
+	echo '>all</option>';
+	
+	echo '<option';
+	if ($search_team)
+	{
+		$search_type = 'team';
+		echo ' selected="selected"';
+	}
+	echo ' value="team"';
+	echo '>team members</option>';
+	
+	echo '<option';
+	if ($search_teamless)
+	{
+		$search_type = 'teamless';
+		echo ' selected="selected"';
+	}
+	echo '>teamless</option>';
+	
+	echo '</select></span>';
+	echo '</div> ' . "\n";
+	
+	echo '<div style="display:inline">';
+	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send"');
+	echo '</div>' . "\n";
+	echo '</form>' . "\n";
+	
+	// end display toolbar
+	
 	// get all data at once instead of many small queries -> a lot more efficient
 	// example query:
 	// SELECT `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,
@@ -1145,24 +1281,58 @@
 	// the needed values
 	$query .= ' `players`.`id`,`players`.`teamid`,`players`.`name` AS `player_name`,';
 	// team name only available if player belongs to a team
-	$query .= 'IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid` LIMIT 1),';
-	$query .= sqlSafeStringQuotes('(teamless)') . ') AS `team_name`';
+	if ($search_teamless)
+	{
+		$query .= sqlSafeStringQuotes('(teamless)') . ' AS `team_name`';
+	} elseif ($search_team)
+	{
+		$query .= '(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid` LIMIT 1) AS `team_name`';
+	} else
+	{
+		$query .= 'IF (`players`.`teamid`<>' . sqlSafeStringQuotes('0') . ',(SELECT `teams`.`name` FROM `teams` WHERE `teams`.`id`=`players`.`teamid` LIMIT 1),';
+		$query .= sqlSafeStringQuotes('(teamless)') . ') AS `team_name`';
+	}
 	// player first joined date
 	$query .= ',`players_profile`.`joined`';
 	// tables involved
 	$query .= ' FROM `players`,`players_profile`';
 	// do not display deleted players during maintenance
-	$query .= ' WHERE `suspended`<>' . "'" . sqlSafeString('1') . "'";
+	$query .= ' WHERE `players`.`suspended`<>' . sqlSafeStringQuotes('1');
+	if ($search_teamless)
+	{
+		$query .= ' AND `players`.`teamid`=' . sqlSafeStringQuotes('0');
+	} elseif ($search_team)
+	{
+		$query .= ' AND `players`.`teamid`<>' . sqlSafeStringQuotes('0');
+	}
+	if (isset($_GET['search_string']) && !(strcmp($search_string, '') === 0))
+	{
+		$query .= ' AND `players`.`name` LIKE ' . sqlSafeStringQuotes($search_string);
+	}
 	// the profile id of the player must match the actual player id (profile must belong to the same player)
 	$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
 	// sort the result
-	$query .= ' ORDER BY `players`.`teamid`, `players`.`name`';
+	if ($search_player_sort)
+	{
+		$query .= ' ORDER BY `players`.`name`, `team_name`';
+	} elseif ($search_joined_sort)
+	{
+		$query .= ' ORDER BY `players_profile`.`joined`, `team_name`, `players`.`name`';
+	} else
+	{
+		$query .= ' ORDER BY `team_name`, `players`.`name`';
+	}
 	if ($result = @$site->execute_query($site->db_used_name(), 'players, teams', $query, $connection))
 	{
 		$rows = (int) mysql_num_rows($result);
 		if ($rows === 0)
 		{
-			echo '<p>There are no players in the database.</p>';
+			echo '<p>There are no ';
+			if (isset($_GET['search']))
+			{
+				echo 'such ';
+			}
+			echo 'players in the database.</p>';
 			$site->dieAndEndPageNoBox();
 		}
 		

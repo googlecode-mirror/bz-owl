@@ -91,20 +91,20 @@
 	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline"><label for="visit_search_string">Search for:</label> ' . "\n";
+	echo '<div style="display:inline"><label for="match_search_string">Search for:</label> ' . "\n";
 	echo '<span>';
 	if (isset($_GET['search']))
 	{
-		$site->write_self_closing_tag('input type="text" id="visit_search_string" name="search_string" value="' . $_GET['search_string'] . '"');
+		$site->write_self_closing_tag('input type="text" id="match_search_string" name="search_string" value="' . $_GET['search_string'] . '"');
 	} else
 	{
-		$site->write_self_closing_tag('input type="text" id="visit_search_string" name="search_string"');
+		$site->write_self_closing_tag('input type="text" id="match_search_string" name="search_string"');
 	}
 	echo '</span></div> ' . "\n";
 	
 	// looking for either team name or time
-	echo '<div style="display:inline"><label for="visit_search_type">result type:</label> ' . "\n";
-	echo '<span><select id="visit_search_type" name="search_type">';
+	echo '<div style="display:inline"><label for="match_search_type">result type:</label> ' . "\n";
+	echo '<span><select id="match_search_type" name="search_type">';
 	
 	// avoid to let the user enter a custom table column at all costs
 	// only let them switch between team name and time search
