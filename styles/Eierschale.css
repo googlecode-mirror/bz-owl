@@ -72,6 +72,7 @@ table.big caption
 th
 {
 	height: 1.5em;
+	max-width: 80%;
 }
 
 table.big tbody
@@ -81,6 +82,11 @@ table.big tbody
 	margin-left: 1em;
 	overflow: auto;
 	margin-right: 1em;
+}
+
+table.big td
+{
+	min-width: 12em;
 }
 
 /* even table rows */
