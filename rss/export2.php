@@ -10,7 +10,7 @@
 	
 	// display teams
 	$query = ('SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`'
-			  . ' WHERE `teams_overview`.`teamid`=`teams`.`id` AND `teams_overview`.`deleted`<'
+			  . ' WHERE `teams_overview`.`teamid`=`teams`.`id` AND `teams_overview`.`deleted`<>'
 			  . sqlSafeStringQuotes(2));
 	if (!($result = @$site->execute_silent_query($site->db_used_name(), 'teams,teams_overview', $query, $connection)))
 	{
