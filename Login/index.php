@@ -353,13 +353,15 @@
 					{
 						$msg .= '</p><p>';
 					}
-					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should login using your <a href="./">';
+					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should login using your ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						$msg .= 'forum account';
+						$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
+						$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
+						$msg .= '">my.bzflag.org account';
 					} else
 					{
-						$msg .= 'external login';
+						$msg .= '<a href="./">external login';
 					}
 					$msg .= '</a>.</span>' . "\n";
 					die_with_no_login($msg);

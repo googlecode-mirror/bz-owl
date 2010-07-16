@@ -137,7 +137,7 @@
 		}
 	}
 ?>
-<p>Please note: Stylesheets are not finalised yet. Snow and White were designed for mobile devices in particular, the other ones are in flux at the moment.</p>
+<p>Special thanks: Upsetter</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	
 	// the address depends on where the file resides
