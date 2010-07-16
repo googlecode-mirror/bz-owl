@@ -137,7 +137,7 @@
 		}
 	}
 ?>
-<p>Special thanks: Upsetter</p>
+<p>Special thanks: Upsetter and zaphod for a lot of input, especially zaphod for the logo; brad for hosting and svn repository.</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	
 	// the address depends on where the file resides
