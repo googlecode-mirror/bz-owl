@@ -63,6 +63,10 @@
 			}
 		}
 		
+		echo '<strong>or</strong>';
+		$site->write_self_closing_tag('br');
+		$site->write_self_closing_tag('br');
+		
 		if (isset($module['local']) && ($module['local']))
 		{
 			include_once 'local_login/login_text.inc';
