@@ -7,14 +7,19 @@
 	$file = (dirname(__FILE__)) . '/maintenance.txt';
 	
 	// siteinfo class used all the time
-	require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
-	$site = new siteinfo();
+	if (!(isset($site)))
+	{
+		require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
+		$site = new siteinfo();
+	}
 	
 	if (!(isset($connection)))
 	{
 		// database connection is used during maintenance
 		$connection = $site->connect_to_db();
 	}
+	
+	$settings = new maintenance_settings;
 	
 	function unlock_tables_maint()
 	{
@@ -100,13 +105,21 @@
 	
 	// set up a class to have a unique namespace
 	class maintenance
-	{
+	{		
 		function cleanup_teams($site, $connection, $two_months_in_past)
 		{
+			global $settings;
+			
 			// teams cleanup
+			if ($settings->maintain_inactive_teams())
+			{
+				// in settings it was specified not to maintain inactive teams
+				return;
+			}
+			
 			
 			$query = 'SELECT `teamid`, `member_count`, `deleted` FROM `teams_overview`';
-			$query .= ' WHERE `deleted`<>' . "'" . sqlSafeString('2') . "'";
+			$query .= ' WHERE `deleted`<>' . sqlSafeStringQuotes('2');
 			// execute query
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
@@ -120,7 +133,7 @@
 			$six_months_in_past = strftime('%Y-%m-%d %H:%M:%S', $six_months_in_past);			
 			
 			// walk through results
-			while($row = mysql_fetch_array($result))
+			while ($row = mysql_fetch_array($result))
 			{
 				// the id of current team investigated
 				$curTeam = $row['teamid'];
@@ -132,14 +145,14 @@
 				if ((int) $row['deleted'] === 3)
 				{
 					// re-activated team from admins will only last 2 months without matching
-					$query .= ' WHERE `timestamp`>' . "'" . sqlSafeString($two_months_in_past) . "'";
+					$query .= ' WHERE `timestamp`>' . sqlSafeStringQuotes($two_months_in_past);
 				} else
 				{
 					// team marked as active (deleted === 1) has 6 months to match before being deleted
-					$query .= ' WHERE `timestamp`>' . "'" . sqlSafeString($six_months_in_past) . "'";
+					$query .= ' WHERE `timestamp`>' . sqlSafeStringQuotes($six_months_in_past);
 				}
-				$query .= ' AND (`team1_teamid`=' . "'" . sqlSafeString($curTeam) . "'";
-				$query .= ' OR `team2_teamid`=' . "'" . sqlSafeString($curTeam) . "'" . ')';
+				$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($curTeam);
+				$query .= ' OR `team2_teamid`=' . sqlSafeStringQuotes($curTeam) . ')';
 				// only one match is sufficient to be considered active
 				$query .= ' LIMIT 1';
 				// execute query
@@ -152,12 +165,38 @@
 				// mark the team as inactive by default
 				$cur_team_active = false;
 				// walk through results
-				while($row_matches = mysql_fetch_array($result_matches))
+				while ($row_matches = mysql_fetch_array($result_matches))
 				{
 					// now we know the current team is active
 					$cur_team_active = true;
 				}
 				mysql_free_result($result_matches);
+				
+				if (!$cur_team_active && !$settings->maintain_inactive_teams_with_active_players())
+				{
+					$query = ('SELECT `players`.`id` AS `active_player`'
+							  . ' FROM `players`,`players_profile`'
+							  . ' WHERE `teamid` = ' . sqlSafeStringQuotes($curTeam)
+							  . ' AND `players_profile`.`last_login`>' . sqlSafeStringQuotes($six_months_in_past)
+							  . ' AND `players`.`id`=`players_profile`.`playerid`'
+							  // only 1 active player is enough not to deactivate the team
+							  . ' LIMIT 1');
+					// execute query
+					if (!($result_active_players = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+					{
+						unlock_tables_maint();
+						$site->dieAndEndPage('MAINTENANCE ERROR: getting list of recent logged in player from team'
+											 . sqlSafeStringQuotes($curTeam)
+											 . ' failed.');
+					}
+					if ((int) mysql_num_rows($result_active_players) > 0)
+					{
+						// at least one player logged in during the last 6 months
+						// in settings it was specified to count the current team as active then
+						$cur_team_active = true;
+					}
+					mysql_free_result($result_active_players);
+				}
 				
 				if (((int) $row['member_count']) === 0)
 				{
@@ -221,6 +260,7 @@
 		
 		function do_maintenance($site, $connection)
 		{
+			global $settings;
 			global $today;
 			echo '<p>Performing maintenance...</p>';
 			
@@ -247,7 +287,9 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 				{
 					unlock_tables_maint();
-					$site->dieAndEndPageNoBox('Could not insert reserved country with name ' . sqlSafeStringQuotes('here be dragons') . ' into database');
+					$site->dieAndEndPageNoBox('Could not insert reserved country with name '
+											  . sqlSafeStringQuotes('here be dragons')
+											  . ' into database');
 				}
 			}
 			
@@ -273,7 +315,9 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 				{
 					unlock_tables_maint();
-					$site->dieAndEndPageNoBox('Could not check if flag ' . sqlSafeStringQuotes($one_country) . ' does exist in database');
+					$site->dieAndEndPageNoBox('Could not check if flag '
+											  . sqlSafeStringQuotes($one_country)
+											  . ' does exist in database');
 				}
 				$update_country = false;
 				$insert_entry = false;
@@ -311,7 +355,9 @@
 					if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
 					{
 						unlock_tables_maint();
-						$site->dieAndEndPageNoBox('Could update or insert country entry for ' . sqlSafeStringQuotes($one_country) . ' in database.');
+						$site->dieAndEndPageNoBox('Could update or insert country entry for '
+												  . sqlSafeStringQuotes($one_country)
+												  . ' in database.');
 					}
 				}
 			}
@@ -371,7 +417,7 @@
 				// private messages connection
 				
 				// get msgid first!
-				$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+				$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				// execute query
 				if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
 				{
@@ -387,14 +433,14 @@
 				mysql_free_result($result);				
 				
 				// now delete the connection to mailbox
-				$query = 'DELETE FROM `messages_users_connection` WHERE `playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+				$query = 'DELETE FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);				
 				
 				// delete private messages itself, in case no one else has the message in mailbox
 				foreach ($msg_list as $msgid)
 				{
-					$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `msgid`=' . "'" . sqlSafeString($msgid) . "'";
-					$query .= ' AND `playerid`<>' . "'" . sqlSafeString($one_inactive_player) . "'";
+					$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `msgid`=' . sqlSafeStringQuotes($msgid);
+					$query .= ' AND `playerid`<>' . sqlSafeStringQuotes($one_inactive_player);
 					// we only need to know whether there is more than zero rows the result of query
 					$query .= ' LIMIT 1';
 					if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
@@ -422,7 +468,7 @@
 				@$site->execute_query($site->db_used_name(), 'players', $query, $connection);
 				
 				// FIXME: if user marked deleted check if he was leader of a team
-				$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+				$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				// only one player was changed and thus only one team at maximum needs to be updated
 				$query .= ' LIMIT 1';
 				// execute query
@@ -502,7 +548,9 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 				{
 					unlock_tables_maint();
-					$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id ' . $teamid[$i] . ' played in the last 45 days');
+					$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id '
+										 . $teamid[$i]
+										 . ' played in the last 45 days');
 				}
 				while ($row = mysql_fetch_array($result))
 				{
@@ -525,7 +573,9 @@
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 				{
 					unlock_tables_maint();
-					$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id ' . $teamid[$i] . ' played in the last 90 days');
+					$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id '
+										 . $teamid[$i]
+										 . ' played in the last 90 days');
 				}
 				while ($row = mysql_fetch_array($result))
 				{

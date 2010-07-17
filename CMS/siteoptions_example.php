@@ -104,4 +104,17 @@
 			return 'insert mysql user name here';
 		}
 	}
+	
+	function maintain_inactive_teams()
+	{
+		// remove or deactivate teams that do not match anymore?
+		return true;
+	}
+	
+	function maintain_inactive_teams_with_active_players()
+	{
+		// players from inactive team do login but they do not match
+		// remove or deactive the teams with active players?
+		return false;
+	}
 ?>

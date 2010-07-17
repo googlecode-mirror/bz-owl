@@ -27,7 +27,7 @@ table caption
 
 table.big td
 {
-	min-width: 12em;
+	min-width: 10em;
 }
 
 /* even table rows */

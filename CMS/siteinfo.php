@@ -390,4 +390,17 @@
 			return old_website_name();
 		}
 	}
+	
+	class maintenance_settings
+	{
+		function maintain_teams_not_matching_anymore()
+		{
+			return maintain_inactive_teams();
+		}
+		
+		function maintain_teams_not_matching_anymore_players_still_loggin_in()
+		{
+			return maintain_inactive_teams_with_active_players();
+		}
+	}
 ?>
