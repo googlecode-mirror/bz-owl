@@ -208,8 +208,8 @@
 			
 			// only teamless players can create a new team
 			$query = 'SELECT `teamid` FROM `players` WHERE `id`=';
-			$query .= "'" . sqlSafeString($viewerid) . "'";
-			$query .= ' AND `teamid`=' . "'" . '0' . "'" . ' LIMIT 0,1';
+			$query .= sqlSafeStringQuotes($viewerid);
+			$query .= ' AND `teamid`=' . "'" . '0' . "'" . ' LIMIT 1';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players, teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -243,7 +243,7 @@
 			}
 			
 			// is the team name already used?
-			$query = 'SELECT `name` FROM `teams` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['edit_team_name'])) . "'" . ' LIMIT 1';
+			$query = 'SELECT `name` FROM `teams` WHERE `name`=' . sqlSafeStringQuotes(htmlent($_POST['edit_team_name'])) . ' LIMIT 1';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -286,7 +286,7 @@
 			mysql_free_result($result);
 			
 			// create the team itself
-			$query = 'INSERT INTO `teams` (`name`, `leader_playerid`) VALUES (' . "'" . sqlSafeString($_POST['edit_team_name']) . "'" . ', ' . "'" . sqlSafeString($viewerid) . "'" . ')';
+			$query = 'INSERT INTO `teams` (`name`, `leader_playerid`) VALUES (' . sqlSafeStringQuotes($_POST['edit_team_name']) . ', ' . sqlSafeStringQuotes($viewerid) . ')';
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -898,7 +898,11 @@
 		
 		if (!($team_leader_id === $viewerid) && !$can_delete_any_team)
 		{
-			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') attempted to delete a team (id=' . sqlSafeString($teamid) . ') without having permission to do that.');
+			$site->dieAndEndPage('You (id='
+								 . sqlSafeString($viewerid)
+								 . ') attempted to delete a team (id='
+								 . sqlSafeString($teamid)
+								 . ') without having permission to do that.');
 		}
 		
 		if (isset($_POST['confirmed']))

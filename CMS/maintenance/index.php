@@ -111,9 +111,10 @@
 			global $settings;
 			
 			// teams cleanup
-			if ($settings->maintain_inactive_teams())
+			if ($settings->maintain_teams_not_matching_anymore())
 			{
 				// in settings it was specified not to maintain inactive teams
+				echo '<p>Skipped maintaining inactive teams!</p>';
 				return;
 			}
 			
@@ -172,7 +173,7 @@
 				}
 				mysql_free_result($result_matches);
 				
-				if (!$cur_team_active && !$settings->maintain_inactive_teams_with_active_players())
+				if (!$cur_team_active && !$settings->maintain_teams_not_matching_anymore_players_still_loggin_in())
 				{
 					$query = ('SELECT `players`.`id` AS `active_player`'
 							  . ' FROM `players`,`players_profile`'
@@ -402,16 +403,16 @@
 				// delete account data:
 				
 				// user entered comments
-				$query = 'UPDATE `players_profile` SET user_comment=' . "'" . "'";
+				$query = 'UPDATE `players_profile` SET `user_comment`=' . "'" . "'";
 				$query .= ', logo_url=' . "'" . "'";
-				$query .= ' WHERE `playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+				$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				// only one player needs to be updated
 				$query .= ' LIMIT 1';
 				// execute query, ignore result
 				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
 				
 				// visits log (ip-addresses and host data)
-				$query = 'DELETE FROM `visits` WHERE `playerid`=' . "'" . sqlSafeString($one_inactive_player) . "'";
+				$query = 'DELETE FROM `visits` WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
 				
 				// private messages connection

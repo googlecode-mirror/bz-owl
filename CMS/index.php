@@ -63,9 +63,15 @@
 			}
 		}
 		
-		echo '<strong>or</strong>';
-		$site->write_self_closing_tag('br');
-		$site->write_self_closing_tag('br');
+		if (!( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) ))
+		{
+			if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
+			{
+				echo '<strong>or</strong>';
+				$site->write_self_closing_tag('br');
+				$site->write_self_closing_tag('br');
+			}
+		}
 		
 		if (isset($module['local']) && ($module['local']))
 		{

@@ -13,8 +13,6 @@
 	ob_start();
 	require '../CMS/index.php';
 	
-	// buffer can now be written
-//	echo $output;
 	
 	function die_with_no_login($message='', &$logged_string='')
 	{
@@ -176,7 +174,8 @@
 		{
 			if ($rows_num_accounts === 0)
 			{
-				echo '<p class="first_p">Adding user to database…</p>' . "\n";
+				$msg = '';
+				$msg .= '<p class="first_p">Adding user to database…</p>' . "\n";
 				// example query: INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES('1194', '0', 'ts')
 				$query = 'INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES(';
 				$query .= sqlSafeStringQuotes($_SESSION['external_id']) . ', ' . "'" . '0' . "'" . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) .')';
@@ -195,7 +194,7 @@
 						if ($rows === 1)
 						{
 							// user inserted without problems
-							echo '<p>You have been added to the list of players at this site. Thanks for visiting our site.</p>';
+							$msg .= '<p>You have been added to the list of players at this site. Thanks for visiting our site.</p>';
 							
 							// write welcome mail!
 							
@@ -338,10 +337,7 @@
 					$msg .= 'Congratulations, you enabled ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						$db_imported = new db_import;
-						$account_old_website = htmlent($db_imported->old_website());
-						unset($db_imported);
-						$msg .= 'the ' . $account_old_website . ' (global) login';
+						$msg .= 'the my.bzflag.org/bb/ (global) login';
 					} else
 					{
 						$msg .= 'external logins';
