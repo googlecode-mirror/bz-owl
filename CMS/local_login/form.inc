@@ -16,7 +16,13 @@
 	echo '</div>' . "\n";
 	
 	echo '<div>' . "\n";
-	$site->write_self_closing_tag('input type="submit" value="Login"');
+	if ($site->force_external_login_when_trying_local_login())
+	{
+		$site->write_self_closing_tag('input type="submit" value="Update"');
+	} else
+	{
+		$site->write_self_closing_tag('input type="submit" value="Login"');
+	}
 	echo '</div>' . "\n";
 ?>
 </form>

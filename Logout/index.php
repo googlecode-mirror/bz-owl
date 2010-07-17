@@ -32,7 +32,7 @@
 	// use the resulting data
 	if ($onlineUsers && (getUserID() > 0))
 	{
-		$query = 'DELETE FROM `online_users` WHERE playerid=' . "'" . sqlSafeString(getUserID()) . "'";
+		$query = 'DELETE FROM `online_users` WHERE playerid=' . sqlSafeStringQuotes(getUserID());
 		@$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
 	}
 	// stop buffering

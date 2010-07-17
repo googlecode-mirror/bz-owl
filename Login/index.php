@@ -338,7 +338,10 @@
 					$msg .= 'Congratulations, you enabled ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
-						$msg .= 'the forum (global) login';
+						$db_imported = new db_import;
+						$account_old_website = htmlent($db_imported->old_website());
+						unset($db_imported);
+						$msg .= 'the ' . $account_old_website . ' (global) login';
 					} else
 					{
 						$msg .= 'external logins';
@@ -353,15 +356,15 @@
 					{
 						$msg .= '</p><p>';
 					}
-					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should login using your ';
+					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
 						$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 						$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
-						$msg .= '">my.bzflag.org account';
+						$msg .= '">login using your my.bzflag.org account';
 					} else
 					{
-						$msg .= '<a href="./">external login';
+						$msg .= '<a href="./">login using your external account';
 					}
 					$msg .= '</a>.</span>' . "\n";
 					die_with_no_login($msg);
