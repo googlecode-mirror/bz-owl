@@ -150,7 +150,7 @@
 		}
 		
 		if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
-			&& ((strcmp($suspended_mode, 'login disabled') === 0) || strcmp($suspended_mode, 'banned') === 0)))
+			&& ((strcmp($suspended_mode, 'login disabled') === 0) || strcmp($suspended_mode, 'banned') === 0))
 		{
 			$msg = 'There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!';
 			die_with_no_login($msg);
