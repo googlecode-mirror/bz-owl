@@ -300,17 +300,59 @@
 			} else
 			{
 				// user is not new, update his callsign with new callsign supplied from external login
-				$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']));
-				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
-				// each user has only one entry in the database
-				$query .= ' LIMIT 1';
-				if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+				
+				// check for collisions with all local accounts
+				$query = ('SELECT `external_playerid` FROM `players` WHERE `name`='
+						  . sqlSafeStringQuotes(htmlent($_SESSION['username'])));
+				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
-					$msg .= ('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
-										. htmlent($user_id)
-										. '). Please report this to an admin.</p>');
+					$msg = ('Could not find out if external_playerid is set for all accounts having name ' . sqlSafeString(htmlent($_SESSION['username'])) . '.');
 					die_with_no_login($msg, $msg);
 				}
+				$local_name_collisions = false;
+				while ($row = mysql_fetch_array($result))
+				{
+					if (strcmp(($row['external_playerid']), '') === 0)
+					{
+						// yes, it was indeed a false positive
+						$local_name_collisions = true;
+					}
+				}
+				mysql_free_result($result);
+				
+				if ($local_name_collisions)
+				{
+					// non-resolvable collisions found, reset username of current user
+					$query = ('SELECT `name` FROM `players` WHERE `external_playerid`='
+							  . sqlSafeStringQuotes($external_login_id) . ' LIMIT 1');
+					if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					{
+						$msg = ('Could not find out if external_playerid is set for all accounts having name ' . sqlSafeString(htmlent($_SESSION['username'])) . '.');
+						die_with_no_login($msg, $msg);
+					}
+					while ($row = mysql_fetch_array($result))
+					{
+						$_SESSION['username'] = htmlent_decode($row['name']);
+					}
+					mysql_free_result($result);
+					// print out a warning to the user, mentioning the non-updated callsign
+					$msg .= '<p>Your callsign was not updated because there is already another local account in the database with the same callsign.</p>';
+				} else
+				{
+					// update name in case there is no collision
+					$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']));
+					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
+					// each user has only one entry in the database
+					$query .= ' LIMIT 1';
+					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					{
+						$msg .= ('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
+								 . htmlent($user_id)
+								 . '). Please report this to an admin.</p>');
+						die_with_no_login($msg, $msg);
+					}
+				}
+				unset($local_name_collisions);
 			}
 		} else
 		{
