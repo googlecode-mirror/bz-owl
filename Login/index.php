@@ -100,6 +100,30 @@
 		}
 		mysql_free_result($result);
 		
+		// check if it is a false positive (no password stored in database)
+		// this can happen in case the user got imported from another database
+		if ($convert_to_external_login)
+		{
+			$query = ('SELECT `password` FROM `players_passwords` WHERE `players_passwords`.`playerid`='
+					  . sqlSafeStringQuotes($_SESSION['viewerid']) . ' LIMIT 1');
+			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			{
+				$msg = ('Could not find out if password is set for local account with id ' . sqlSafeString($_SESSION['external_id']) . '.');
+				die_with_no_login($msg, $msg);
+			}
+			
+			$rows_num_accounts = (int) mysql_num_rows($result);
+			while ($row = mysql_fetch_array($result))
+			{
+				if (strcmp(($row['password']), '') === 0)
+				{
+					// yes, it was indeed a false positive
+					$convert_to_external_login = false;
+				}
+			}
+			mysql_free_result($result);
+		}
+		
 		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
 		{
 			$msg = '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
@@ -111,7 +135,7 @@
 			{
 				$msg .= 'external logins';
 			}
-			$msg .= '. You may convert the account first by using your local login.</p>' . "\n";
+			$msg .= '. You may update the account first by using your local login.</p>' . "\n";
 			$msg .= '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.' . "\n";
 			
 			$output_buffer2 = '';

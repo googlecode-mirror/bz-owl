@@ -126,6 +126,30 @@
 				}
 				mysql_free_result($tmp_result);
 				
+				
+				// take care of deleted players
+				$query = ('SELECT `last_login`, (SELECT COUNT(*) FROM `l_player` WHERE `callsign`='
+						  . sqlSafeStringQuotes($current_name) . ' LIMIT 1) AS `num_not_deleted`'
+						  . ' FROM `l_player` WHERE `l_player`.`callsign`='
+						  . sqlSafeStringQuotes($current_name . ' (DELETED)')
+						  . ' ORDER BY `last_login` DESC LIMIT 1');
+				if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					$site->dieAndEndPage();
+				}
+				$last_login = '';
+				while ($tmp_row = mysql_fetch_array($tmp_result))
+				{
+					$last_login = $tmp_row['last_login'];
+					if ((int) $tmp_row['num_not_deleted'] === 0)
+					{
+						// set password to empty..you can not expect them to know the old password
+						$md5password = '';
+					}
+				}
+				
+				
 				$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`suspended`)'
 						  . ' VALUES '
 						  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($team)
