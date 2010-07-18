@@ -541,7 +541,8 @@
 								$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 								if (!($result))
 								{
-									$site->dieAndEndPage('Could not update old message status (msg=' . sqlSafeStringQuotes((int) $_GET['id'])) . ') by user (id=' . sqlSafeStringQuotes(getUserID()) . ') to replied.')
+									$site->dieAndEndPage('Could not update old message status (msg=' . sqlSafeStringQuotes((int) $_GET['id'])
+														 . ') by user (id=' . sqlSafeStringQuotes(strval(getUserID())) . ') to replied.');
 								}
 							}
 							// reset the pointer to beginning of array
