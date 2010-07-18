@@ -278,7 +278,7 @@
 				} else
 				{
 					// apologise, the user is new and we all like newbies
-					$msg = ('Unfortunately there seems to be a database problem and thus you (id='
+					$msg .= ('Unfortunately there seems to be a database problem and thus you (id='
 										 . htmlent($user_id)
 										 . ') can not be added to the list of players at this site. '
 										 . 'Please try again later.</p>' . "\n"
@@ -292,7 +292,7 @@
 				$query .= ', ' . sqlSafeStringQuotes('1') . ')';
 				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 				{
-					$msg = ('Unfortunately there seems to be a database problem and thus creating your profile page (id='
+					$msg .= ('Unfortunately there seems to be a database problem and thus creating your profile page (id='
 										 . htmlent($user_id)
 										 . ') failed. Please report this to admins.');
 					die_with_no_login($msg, $msg);
@@ -306,7 +306,7 @@
 				$query .= ' LIMIT 1';
 				if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 				{
-					$msg = ('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
+					$msg .= ('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
 										. htmlent($user_id)
 										. '). Please report this to an admin.</p>');
 					die_with_no_login($msg, $msg);
