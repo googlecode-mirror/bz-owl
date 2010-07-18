@@ -491,8 +491,8 @@
 							}
 							// put the message into the outbox of the user
 							// mark it as read because the user already saw the preview when compositing the message
-							// example query: INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_unread`) VALUES ('2', '1194', 0, 1, 0)
-							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_unread`';
+							// example query: INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_status`) VALUES ('2', '1194', 0, 1, 'new')
+							$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`, `msg_status`';
 							if (isset($_GET['reply']))
 							{
 								if (strcmp($_GET['reply'], 'team') === 0)
@@ -508,7 +508,7 @@
 								$query .= ',`msg_replied_to_msgid`';
 							}
 							$query .= ') VALUES (';
-							$query .= "'" . $rowId . "'" . ', ' . "'" . $user_id . "'" . ', 0, 1, 0';
+							$query .= sqlSafeStringQuotes($rowId) . ', ' . "'" . $user_id . "'" . ', 0, 1, ' . sqlSafeStringQuotes('read');
 							if (isset($_GET['reply']))
 							{
 								if (strcmp($_GET['reply'], 'team') === 0)

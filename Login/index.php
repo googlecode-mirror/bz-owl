@@ -106,7 +106,7 @@
 			$msg .= 'The account you tried to login to does not support ';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
-				$msg .= 'the forum login';
+				$msg .= 'the my.bzflag.org/bb/ (global) login';
 			} else
 			{
 				$msg .= 'external logins';
@@ -357,7 +357,7 @@
 					{
 						$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 						$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
-						$msg .= '">login using your my.bzflag.org account';
+						$msg .= '">login using your my.bzflag.org/bb/ account';
 					} else
 					{
 						$msg .= '<a href="./">login using your external account';

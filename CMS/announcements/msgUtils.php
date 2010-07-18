@@ -84,9 +84,9 @@
 		// folder is NULL in case a message is either being deleted or being sent
 		if (!($folder === NULL) && (!(strcmp($folder, 'outbox') === 0)))
 		{
-			// mark the message as unread
-			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_unread`=';
-			$query .= sqlSafeStringQuotes(0) . ' WHERE `msgid`=' . sqlSafeStringQuotes($id);
+			// mark the message as read
+			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_status`=';
+			$query .= sqlSafeStringQuotes('read') . ' WHERE `msgid`=' . sqlSafeStringQuotes($id);
 			$query .= ' AND `in_' . $folder . '`=' . "'" . '1' . "'";
 			// silently ignore the result, it's not a resource anyway so it can't even be dropped
 			$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
@@ -112,7 +112,8 @@
 			// TODO: implement class in stylesheets
 			echo '<tr class="msg_overview">' . "\n";
 			$currentId = $row['msgid'];
-			$unread = $row['msg_unread'];
+			// set $unread to true if status is new
+			$unread = strcmp($row['msg_status'], 'new') === 0;
 			// TODO: implement class in stylesheets
 			echo '	<td class="msg_overview_author">';
 			// player id 0 is reserved
@@ -253,7 +254,7 @@
 						  . ',`messages_storage`.`author_id`'
 						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
 						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
-						  . ',`messages_users_connection`.`msg_unread`'
+						  . ',`messages_users_connection`.`msg_status`'
 						  . ',`messages_storage`.`subject`'
 						  . ',`messages_storage`.`timestamp`'
 						  . ',`messages_storage`.`from_team`'

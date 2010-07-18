@@ -436,15 +436,15 @@
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
 			
-			$query = ('INSERT INTO `messages_users_connection` (`msgid`,`playerid`,`in_inbox`,`in_outbox`,`msg_unread`)'
+			$query = ('INSERT INTO `messages_users_connection` (`msgid`,`playerid`,`in_inbox`,`in_outbox`,`msg_status`)'
 					  . ' VALUES '
 					  . '(' . sqlSafeStringQuotes($row['msgid'])
 					  . ',' . sqlSafeStringQuotes($deleted_players[$row['toid']]['id'])
 					  // all messages only in inbox
 					  . ',' . sqlSafeStringQuotes('1')
 					  . ',' . sqlSafeStringQuotes('0')
-					  // mark all messages as already read
-					  . ',' . sqlSafeStringQuotes('0')
+					  // copy status from old database
+					  . ',' . sqlSafeStringQuotes($row['status'])
 					  . ')');
 			
 			// execute query, ignore result

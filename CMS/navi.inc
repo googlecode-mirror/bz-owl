@@ -59,15 +59,15 @@
 	if (getUserID() > 0)
 	{
 		// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
-		$query = 'UPDATE LOW_PRIORITY `online_users` SET `last_activity`=' . "'";
-		$query .= sqlSafeString(date('Y-m-d H:i:s')) . "'" . ' WHERE `playerid`=' . "'" . sqlSafeString(getUserID()) . "'";
+		$query = 'UPDATE LOW_PRIORITY `online_users` SET `last_activity`=';
+		$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ' WHERE `playerid`=' . sqlSafeStringQuotes(getUserID());
 		@mysql_select_db($site->db_used_name(), $connection);
 		@mysql_query($query, $connection);
 		
 		// are there unread messages?
 		// are there unread messages?
-		$query = ('SELECT `id` FROM `messages_users_connection` WHERE `msg_unread`='
-				  . "'" . '1' . "'"
+		$query = ('SELECT `id` FROM `messages_users_connection` WHERE `msg_status`='
+				  . sqlSafeStringQuotes('new')
 				  . ' AND `playerid`=' . sqlSafeStringQuotes(getUserID())
 				  . ' LIMIT 1');
 		$result = @mysql_query($query, $connection);
