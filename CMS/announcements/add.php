@@ -508,7 +508,15 @@
 								$query .= ',`msg_replied_to_msgid`';
 							}
 							$query .= ') VALUES (';
-							$query .= sqlSafeStringQuotes($rowId) . ', ' . "'" . $user_id . "'" . ', 0, 1, ' . sqlSafeStringQuotes('read');
+							$query .= sqlSafeStringQuotes($rowId) . ', ' . "'" . $user_id . "'" . ', 0, 1, ';
+							if (isset($_GET['reply']))
+							{
+								$query .= sqlSafeStringQuotes('replied');
+							} else
+							{
+								$query .= sqlSafeStringQuotes('read');
+							}
+							
 							if (isset($_GET['reply']))
 							{
 								if (strcmp($_GET['reply'], 'team') === 0)
