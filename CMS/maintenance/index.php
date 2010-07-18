@@ -559,7 +559,8 @@
 				}
 				
 				$team_activity45[$i] = ($team_activity45[$i] / 45);
-				$team_activity45[$i] = number_format($team_activity45[$i], 2, '.', '');
+				// number_format may round but it is not documented (behaviour may change), force doing it
+				$team_activity45[$i] = number_format(round($team_activity45[$i], 2), 2, '.', '');
 			}
 						
 			$team_activity90 = array();
@@ -584,7 +585,8 @@
 				}
 				
 				$team_activity90[$i] = ($team_activity90[$i] / 90);
-				$team_activity90[$i] = number_format($team_activity90[$i], 2, '.', '');
+				// number_format may round but it is not documented (behaviour may change), force doing it
+				$team_activity90[$i] = number_format(round($team_activity90[$i], 2), 2, '.', '');
 			}
 			
 			for ($i = 0; $i <= $num_active_teams; $i++)

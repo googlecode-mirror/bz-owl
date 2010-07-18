@@ -138,10 +138,12 @@
 					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage();
 				}
-				$last_login = '';
 				while ($tmp_row = mysql_fetch_array($tmp_result))
 				{
-					$last_login = $tmp_row['last_login'];
+					if (strcmp($last_login, '') === 0)
+					{
+						$last_login = $tmp_row['last_login'];
+					}
 					if ((int) $tmp_row['num_not_deleted'] === 0)
 					{
 						// set password to empty..you can not expect them to know the old password
