@@ -514,7 +514,7 @@ img.player_logo
 
 span.user_description_deleted
 {
-	color: grey;
+	color: #dd4718;
 	display: block;
 	text-align: right;
 	margin-top: -2em;
