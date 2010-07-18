@@ -73,7 +73,7 @@
 		// only need an external login id in case an external login was performed by the viewing player
 		// but look it up to find out if user is global login enabled
 		$query .= ' `external_playerid`, ';
-		$query .= '`suspended` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
+		$query .= '`status` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -83,7 +83,7 @@
 		}
 		
 		$rows_num_accounts = (int) mysql_num_rows($result);
-		$suspended_mode = 0;
+		$suspended_mode = '';
 		// find out if a username got locked before doing updates
 		// e.g. inappropriate username got renamed by admins
 		// and then someone else tries to join using this username, 
@@ -92,7 +92,7 @@
 		while ($row = mysql_fetch_array($result))
 		{
 			$_SESSION['viewerid'] = (int) $row['id'];
-			$suspended_mode = (int) $row['suspended'];
+			$suspended_mode = $row['suspended'];
 			if (strcmp(($row['external_playerid']), '') === 0)
 			{
 				$convert_to_external_login = $site->convert_users_to_external_login();
@@ -150,7 +150,7 @@
 		}
 		
 		if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
-			&& ($suspended_mode > (int) 1))
+			&& ((strcmp($suspended_mode, 'login disabled') === 0) || strcmp($suspended_mode, 'banned') === 0)))
 		{
 			$msg = 'There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!';
 			die_with_no_login($msg);
@@ -161,35 +161,31 @@
 		$user_id = getUserID();
 		
 		
-		// suspended mode:
-		// 0 describes an active account
-		// 1 describes an account that got deleted during maintenance
-		// 2 describes an account that got disabled by admins
-		// 3 describes that the owner of that account should be banned from the entire site, if possible
-		if ($suspended_mode === (int) 1)
+		// suspended mode: active; deleted; login disable; banned
+		if (strcmp($suspended_mode, 'deleted') === 0)
 		{
-			$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes('0');
+			$suspended_mode = 'active';
+			$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes($suspended_mode);
 			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
 				$msg = 'Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.';
 				die_with_no_login($msg, $msg);
 			}
-			$suspended_mode = (int) 0;
 		}
-		if ($suspended_mode > (int) 1)
+		if (strcmp($suspended_mode, 'login disabled') === 0)
 		{
 			$msg = '';
-			if ($suspended_mode === (int) 2)
-			{
-				$msg .= 'Login for this account was disabled by admins.';
-			}
-			if ($suspended_mode === (int) 3)
-			{
-				// FIXME: BAN FOR REAL!!!!
-				$msg .=  'Admins specified you should be banned from the entire site.';
-			}
-			// skip updates if the user has a disabled login or is banned (inappropriate callsign for instance)
+			$msg .= 'Login for this account was disabled by admins.';
+			// skip updates if the user has a disabled login (inappropriate callsign for instance)
+			die_with_no_login($msg);
+		}
+		if (strcmp($suspended_mode, 'banned') === 0)
+		{
+			$msg = '';
+			$msg .=  'Admins specified you should be banned from the entire site.';
+			// FIXME: BAN FOR REAL!!!!
+			// skip updates if the user is banned (inappropriate callsign for instance)
 			die_with_no_login($msg);
 		}
 		unset($suspended_mode);
@@ -399,7 +395,7 @@
 			// find out if someone else once used the same callsign
 			// update the callsign from the other player in case he did
 			// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194')
-			// AND (`external_playerid` <> '') AND (`suspended` < '2')
+			// AND (`external_playerid` <> '') AND (`status`='active' OR `status`='deleted')
 			// FIXME sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
 			// FIXME: find out if this depends on platform
 			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ')';
@@ -407,7 +403,7 @@
 			// do not update users with local login
 			$query .= ' AND (`external_playerid` <> ' . "'" . "'" . ')';
 			// skip updates for banned or disabled accounts (inappropriate callsign for instance)
-			$query .= ' AND (`suspended` < ' . sqlSafeStringQuotes('2') . ')';
+			$query .= ' AND (`status`=' . sqlSafeStringQuotes('active') . ' OR `status`=' . sqlSafeStringQuotes('deleted') . ')';
 			if ($result = $site->execute_query($site->db_used_name(), 'players', $query, $connection))
 			{
 				$errno = 0;

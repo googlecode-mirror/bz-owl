@@ -22,7 +22,7 @@
 	$db_to_be_imported = $db_from->db_import_name();
 	
 //	this code does not work because the order of statements in the dump
-//	cause the relations set up being violated
+//	cause the relations in the final database being violated
 //	$file = dirname(__FILE__) . '/ts-CMS_structure.sql';
 //	if (file_exists($file) && is_readable($file))
 //	{
@@ -82,7 +82,7 @@
 			$site->dieAndEndPage('');
 		}
 		// 0 means active player
-		$suspended_status = 0;
+		$suspended_status = 'active';
 		
 		$index_num = 1;
 		$players = array();
@@ -152,7 +152,7 @@
 				}
 				
 				
-				$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`suspended`)'
+				$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`status`)'
 						  . ' VALUES '
 						  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($team)
 						  . ',' . sqlSafeStringQuotes($current_name) . ',' . sqlSafeStringQuotes($suspended_status)
@@ -355,8 +355,7 @@
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
 		}
-		// 0 means active player
-		$suspended_status = 0;
+		$suspended_status = 'active';
 		while ($row = mysql_fetch_array($result))
 		{
 			$query = ('INSERT INTO `matches` (`id`,`playerid`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points`,`team1_new_score`,`team2_new_score`)'

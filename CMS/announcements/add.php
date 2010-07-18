@@ -82,15 +82,15 @@
 		
 		if (isset($_POST['teamid']))
 		{
-			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `suspended`='0' AND `teamid`='1'
+			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `status`='active' AND `teamid`='1'
 			$query = 'SELECT `id`,`name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($item) . "'";
-			$query .= ' AND `suspended`=' . "'" . sqlSafeString('0') . "'";
+			$query .= ' AND `status`=' . sqlSafeStringQuotes('active');
 			$query .= ' AND `teamid`=' . "'" . sqlSafeString($_POST['teamid']) . "'";
 		} else
 		{
-			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `suspended`='0'
-			$query = 'SELECT `id`,`name` FROM `players` WHERE `name`=' . "'" . sqlSafeString($item) . "'";
-			$query .= ' AND `suspended`=' . "'" . sqlSafeString('0') . "'";
+			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `status`='active'
+			$query = 'SELECT `id`,`name` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($item);
+			$query .= ' AND `status`=' . sqlSafeStringQuotes('0');
 		}
 		if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))
 		{
@@ -243,7 +243,7 @@
 		{
 			// get list of players belonging to the team to be messaged
 			$query = 'SELECT `id` FROM `players`';
-			$query .= ' WHERE `suspended`=' . "'" . sqlSafeString('0') . "'";
+			$query .= ' WHERE `status`=' . sqlSafeString('active');
 			$query .= ' AND `teamid`=' . "'" . sqlSafeString($_POST['teamid']) . "'";
 			
 			if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))

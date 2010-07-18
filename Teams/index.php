@@ -450,10 +450,10 @@
 		}
 		
 		// get a full list of teamless, not deleted players
-		// suspended: 0 active; 1 maint-deleted; 2 disabled; 3 banned
+		// status: active; deleted; disabled; banned
 		$query = ('SELECT `id`,`name` FROM `players`'
 				  . ' WHERE (`teamid`=' . sqlSafeStringQuotes('0')
-				  . ' AND `suspended`<>' . sqlSafeStringQuotes('1') . ')'
+				  . ' AND `status`<>' . sqlSafeStringQuotes('deleted') . ')'
 				  . ' ORDER BY `name`');
 		if (!($result_players = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
@@ -519,7 +519,7 @@
 			$query = 'SELECT `id`,`name` FROM `players`';
 			$query .= ' WHERE (`id`=' . "'" . sqlSafeString(htmlentities($leader_profile)) . "'";
 			$query .= ' AND `teamid`=' . "'" . sqlSafeString('0') . "'";
-			$query .= ' AND `suspended`<>' . sqlSafeStringQuotes('1') . ')';
+			$query .= ' AND `status`<>' . sqlSafeStringQuotes('deleted') . ')';
 			if (!($result_players = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)

@@ -56,11 +56,13 @@
 		$item = $result_team;
 	}
 	
-	function displayMessage(&$result, &$team_message_from_team_id, &$id)
+	function displayMessage(&$result, &$can_reply, &$team_message_from_team_id, &$id)
 	{
 		global $site;
 		global $connection;
 		global $folder;
+		
+		$can_reply = false;
 		
 		// display a single message (either in inbox or outbox) in all its glory
 		while($row = mysql_fetch_array($result))
@@ -72,6 +74,16 @@
 			echo '	<div class="msg_header_full">' . "\n";
 			echo '		<span class="msg_subject">' .  $row['subject'] . '</span>' . "\n";
 			echo '		<span class="msg_author"> by ' .  htmlent($row['author']) . '</span>' . "\n";
+			if (strlen($row['author_status']))
+			{
+				if (strcmp($row['author_status'], 'deleted') === 0)
+				{
+					echo ' (deleted)';
+				} elseif (strcmp($row['author_status'], 'active') !== 0)
+				{
+					echo ' (banned)';
+				}
+			}
 			echo '		<span class="msg_timestamp"> at ' .	 htmlent($row['timestamp']) . '</span>' . "\n";
 			echo '	</div>' . "\n";
 			// adding to string using . will put the message first, then the div tag..which is wrong
@@ -79,6 +91,11 @@
 			echo $site->bbcode($row['message']);
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
+			
+			if (strcmp($row['author_status'], 'active') === 0)
+			{
+				$can_reply = true;
+			}
 		}
 		
 		// folder is NULL in case a message is either being deleted or being sent
@@ -122,6 +139,16 @@
 				echo '<a href="../Players/?profile=' . htmlspecialchars($row['author_id']) . '">';
 			}
 			echo $row['author'];
+			if (strlen($row['author_status']) > 0)
+			{
+				if (strcmp($row['author_status'], 'deleted') === 0)
+				{
+					echo ' (deleted)';
+				} elseif (!strcmp($row['author_status'], 'active') === 0)
+				{
+					echo ' (banned)';
+				}
+			}
 			if ((int) $row['author_id'] > 0)
 			{
 				echo '</a>' . "\n";
@@ -189,6 +216,8 @@
 				$query = ('SELECT `subject`'
 						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
 						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
+						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `status` FROM `players` WHERE `id`=`author_id`),'
+						  . sqlSafeStringQuotes('') . ') AS `author_status`'
 						  . ',`author_id`,`timestamp`,`message`,`messages_storage`.`from_team`,`messages_storage`.`recipients`'
 						  . ' FROM `messages_storage`,`messages_users_connection`'
 						  . ' WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`'
@@ -208,29 +237,34 @@
 					// message came from a team?
 					$team_message_from_team_id = false;
 					// display the message chosen by user
-					displayMessage($result, $team_message_from_team_id, $id);
-					mysql_free_result($result);
+					displayMessage($result, $can_reply, $team_message_from_team_id, $id);
 					echo '<div class="msg_view_button_list">' . "\n";
 					// if the message is in inbox the user might want to reply to the message
 					if (strcmp($folder, 'inbox') === 0)
 					{
-						if ($team_message_from_team_id)
+						if ($can_reply)
 						{
-							// the message actually came from a team
-							echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=team&amp;id=' . htmlent($id);
-							echo '&amp;teamid=' . urlencode($team_message_from_team_id) . '" method="post">' . "\n";
+							if ($team_message_from_team_id)
+							{
+								// the message actually came from a team
+								echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=team&amp;id=' . htmlent($id);
+								echo '&amp;teamid=' . urlencode($team_message_from_team_id) . '" method="post">' . "\n";
+								echo '<p>';
+								$site->write_self_closing_tag('input type="submit" value="Reply to team"');
+								echo '</p>' . "\n";
+								echo '</form>' . "\n";
+							}
+							echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=players&amp;id=' . htmlent($id);
+							echo '" method="post">' . "\n";
 							echo '<p>';
-							$site->write_self_closing_tag('input type="submit" value="Reply to team"');
+							$site->write_self_closing_tag('input type="submit" value="Reply to player(s)"');
 							echo '</p>' . "\n";
 							echo '</form>' . "\n";
 						}
-						echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=players&amp;id=' . htmlent($id);
-						echo '" method="post">' . "\n";
-						echo '<p>';
-						$site->write_self_closing_tag('input type="submit" value="Reply to player(s)"');
-						echo '</p>' . "\n";
-						echo '</form>' . "\n";
 					}
+					// query result no longer needed
+					mysql_free_result($result);
+					
 					
 					// the user might want to delete the message
 					echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?delete=' . ((int) $id) . '&amp;folder=';
@@ -254,6 +288,8 @@
 						  . ',`messages_storage`.`author_id`'
 						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
 						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
+						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `status` FROM `players` WHERE `id`=`author_id`),'
+						  . sqlSafeStringQuotes('') . ') AS `author_status`'
 						  . ',`messages_users_connection`.`msg_status`'
 						  . ',`messages_storage`.`subject`'
 						  . ',`messages_storage`.`timestamp`'

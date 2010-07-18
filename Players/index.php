@@ -89,20 +89,20 @@
 		}
 		
 		// is player banned and does he exist?
-		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
+		$query = 'SELECT `status` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 		{
 			show_overview_and_profile_button();
 			$site->dieAndEndPage('It seems like the player profile can not be accessed for an unknown reason.');
 		}
 		
-		$suspended_status = 1;
+		$suspended_status = 'deleted';
 		$rows = (int) mysql_num_rows($result);
 		if ($rows === 1)
 		{
 			while ($row = mysql_fetch_array($result))
 			{
-				$suspended_status = (int) $row['suspended'];
+				$suspended_status = $row['status'];
 			}
 		}
 		mysql_free_result($result);
@@ -122,9 +122,9 @@
 		$profile = (int) urldecode($_GET['invite']);
 		
 		// was the player deleted during maintenance
-		$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
+		$query = 'SELECT `status` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 		// 1 means maintenance-deleted
-		$query .= ' AND `suspended`<>' . "'" . sqlSafeString('1') . "'";
+		$query .= ' AND `suspended`<>' . sqlSafeStringQuotes('deleted');
 		// only information about one player needed
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
@@ -133,16 +133,16 @@
 			$site->dieAndEndPage('');
 		}
 		
-		$suspended_status = 1;
+		$suspended_status = 'deleted';
 		while ($row = mysql_fetch_array($result))
 		{
-			$suspended_status = (int) $row['suspended'];
+			$suspended_status = $row['status'];
 		}
 		mysql_free_result($result);
 		
 		show_overview_and_profile_button();
 		
-		if ($suspended_status > 0)
+		if (!strcmp($suspended_status, 'active') === 0)
 		{
 			echo '<p>You may not invite deleted, disabled or banned users</p>' . "\n";
 			$site->dieAndEndPage('');
@@ -456,11 +456,11 @@
 			$site->dieAndEndPage('You (id='. $viewerid. ') are not allowed to edit the profile of the user with id ' . sqlSafeString($profile));
 		}
 		
-		$suspended_status = 1;
+		$suspended_status = 'deleted';
 		if (!(isset($_POST['user_suspended_status_id'])))
 		{
 			// get entire suspended status, including maintenance-deleted
-			$query = 'SELECT `suspended`';
+			$query = 'SELECT `status`';
 			if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 			{
 				// the ones who can ban, can also change a user's callsign
@@ -478,12 +478,12 @@
 			$callsign = 'ERROR: unknown callsign';
 			while($row = mysql_fetch_array($result))
 			{
-				$suspended_status = (int) $row['suspended'];
+				$suspended_status = $row['status'];
 				$callsign = htmlent($row['name']);
 			}
 			mysql_free_result($result);
 			
-			if ($suspended_status === 1)
+			if (strcmp($suspended_status, 'deleted') === 0)
 			{
 				echo '<p>You may not edit this user as the user was deleted during maintenance.</p>';
 				$site->dieAndEndPage('');
@@ -752,36 +752,20 @@
 	// banning user section
 	if (isset($_GET['ban']))
 	{
+		// show possiblity to go fast back to registered user overview
+		show_overview_and_profile_button();
+		
+		echo '<div class="static_page_box">' . "\n";
 		if (!(isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user']))
 		{
 			echo '<p class="first_p">You have no permissions to perform that action.</p>';
 			$site->dieAndEndPage('');
 		}
 		
-		$suspended_status = 1;
-		if (!(isset($_POST['user_suspended_status_id'])))
+		if (strcmp($suspended_status, 'deleted') === 0)
 		{
-			// get entire suspended status, including maintenance-deleted
-			$query = 'SELECT `suspended` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
-			// only information about one player needed
-			$query .= ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-			{
-				// query was bad, error message was already given in $site->execute_query(...)
-				$site->dieAndEndPage('');
-			}
-			
-			while($row = mysql_fetch_array($result))
-			{
-				$suspended_status = (int) $row['suspended'];
-			}
-			mysql_free_result($result);
-			
-			if ($suspended_status === 1)
-			{
-				echo '<p>You may not set a status for this user as the user was deleted during maintenance.</p>';
-				$site->dieAndEndPage('');
-			}
+			echo '<p>You may not set a status for this user as the user was deleted during maintenance.</p>';
+			$site->dieAndEndPage('');
 		}
 		
 		// need name for player for better end user experience
@@ -796,9 +780,6 @@
 		
 		if (isset($_POST['confirmed']) && ((int) $_POST['confirmed'] === (int) 1))
 		{
-			// show possiblity to go fast back to registered user overview
-			show_overview_and_profile_button();
-			
 			// validate random key
 			$new_randomkey_name = '';
 			if (isset($_POST['key_name']))
@@ -816,10 +797,16 @@
 			$suspended_status = (int) $_POST['user_suspended_status_id'];
 			if ($suspended_status === 1)
 			{
-				$suspended_status = 0;
+				$suspended_status = 'active';
+			} elseif ($suspended_status === 2)
+			{
+				$suspended_status = 'login disabled';
+			} else
+			{
+				$suspended_status = 'banned';
 			}
-			$query = 'UPDATE `players` SET `suspended`=' . "'" . sqlSafeString(htmlentities($suspended_status)) . "'";
-			$query .= ' WHERE `id`=' . "'" . sqlSafeString($profile) . "'";
+			$query = 'UPDATE `players` SET `status`=' .sqlSafeStringQuotes(htmlentities($suspended_status));
+			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
 			if (!($result_suspended = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 			{
 				echo '<p>The new suspended status for';
@@ -833,35 +820,24 @@
 				$site->dieAndEndPage('');
 			}			
 			
-			echo '<p>The new suspended status of user ';
+			echo '<p>The new status of user ';
 			while($row = mysql_fetch_array($result))
 			{
 				echo htmlent($row['name']);
 			}
 			mysql_free_result($result);
 			echo ' has been set to ';
-			echo htmlentities($suspended_status);
-			if ($suspended_status === 0)
-			{
-				echo ' (active) ';
-			}
-			if ($suspended_status === 2)
-			{
-				echo ' (login disabled) ';
-			}
-			if ($suspended_status === 3)
-			{
-				echo ' (banned from entire site) ';
-			}
-			
-			echo '</p>';
+			echo htmlent($suspended_status);			
+			echo '.</p>';
 			
 			// done with setting account status
 			$site->dieAndEndPage('');
 		}
 		
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?ban=' . htmlentities(urlencode($profile)) . '">' . "\n";
-		echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="confirmed" value="1"');
+		echo '</div>' . "\n";
 		
 		echo '<p id="edit_user_suspended_status_description">Select new status for user ';
 		
@@ -876,36 +852,45 @@
 		echo '<span><select id="user_suspended_status" name="user_suspended_status_id';
 		echo '">' . "\n";
 		
-		$n = (int) 3;
-		$options = Array();
-		$options[] = 'active';
-		$options[] = 'disabled';
-		$options[] = 'banned';
-		for ($i = (int) 1; $i <= $n; $i++)
+		echo '<option value="1';
+		if (strcmp($suspended_status, 'active') === 0)
 		{
-			echo '<option value="';
-			// 1 means maintenance-deleted
-			// thus when the request is processed, it will be dealt with
-			echo htmlentities($i);
-			if ($suspended_status === $i)
-			{
-				echo '" selected="selected';
-			}
-			echo '">' . htmlent($options[$i -1]);
-			echo '</option>' . "\n";
+			echo '" selected="selected';
 		}
+		echo '">active';
+		echo '</option>' . "\n";
+		echo '<option value="2';
+		if (strcmp($suspended_status, 'login disabled') === 0)
+		{
+			echo '" selected="selected';
+		}
+		echo '">disabled';
+		echo '</option>' . "\n";
+		echo '<option value="3';
+		if (strcmp($suspended_status, 'banned') === 0)
+		{
+			echo '" selected="selected';
+		}
+		echo '">banned';
+		echo '</option>' . "\n";
+		
 		echo '</select></span></p>' . "\n";			
 		
 		// send button
 		echo '<div class="edit_user_suspended_status_send">';
-		echo '<input type="submit" name="edit_user_suspended_status" value="Set new user suspended status" id="send"></div>' . "\n";
+		$site->write_self_closing_tag('input type="submit" name="edit_user_suspended_status" value="Set new user suspended status" id="send"');
+		echo '</div>' . "\n";
 		
 		// random key fun to prevent automated sending by visiting a page
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
-		echo '<div><input type="hidden" name="key_name" value="' . htmlspecialchars($new_randomkey_name) . '"></div>' . "\n";
-		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';		
-		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlspecialchars($new_randomkey_name) . '"');
+		echo '</div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="'
+									  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+		echo '</div>' . "\n";
 		
 		// form finished
 		echo '</form>' . "\n";
@@ -926,18 +911,17 @@
 			// in the login code that lets a banned player login to the site
 			if (!($viewerid === $profile))
 			{
-				if ($suspended_status === 0)
+				if (strcmp($suspended_status, 'active') === 0)
 				{
 					echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">ban</a>' . "\n";
-				}
-				if ($suspended_status > 1)
+				} elseif (strcmp($suspended_status, 'deleted') !== 0)
 				{
 					echo '<a class="button" href="./?ban=' . (urlencode($profile)) . '">unban</a>' . "\n";
 				}
 			}
 		}
 		
-		if ((($profile > 0) && $viewerid === $profile || $allow_edit_any_user_profile) && ($suspended_status !== 1))
+		if ((($profile > 0) && $viewerid === $profile || $allow_edit_any_user_profile) && (strcmp($suspended_status, 'deleted') !== 0))
 		{
 			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
 		}
@@ -1020,11 +1004,11 @@
 											  . '" style="max-width:200px; max-height:150px" alt="player logo"');
 			}
 			echo '		<span class="user_profile_name">' . $player_name . '</span> ';
-			if ($suspended_status === 1)
+			if (strcmp($suspended_status, 'deleted') === 0)
 			{
 				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";
 			}
-			if ($suspended_status > 1)
+			if ((strcmp($suspended_status, 'login disabled') === 0) || (strcmp($suspended_status, 'banned') === 0))
 			{
 				echo '<span class="user_description_banned">(banned)</span>' . "\n";
 			}
@@ -1121,13 +1105,13 @@
 			}
 			
 			// users are not supposed to invite themselves
-			if (($allow_invite_in_any_team || (($leader_of_team_with_id > 0) && ($viewerid !== $profile))) && ($suspended_status !== 1))
+			if (($allow_invite_in_any_team || (($leader_of_team_with_id > 0) && ($viewerid !== $profile))) && (strcmp($suspended_status, 'deleted') !== 1))
 			{
 				echo '<a class="button" href="?invite=' . htmlspecialchars(urlencode($profile)) . '">Invite player to team</a>' . "\n";
 			}
 			
 			
-			if (((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true)) && ($suspended_status !== 1))
+			if (((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true)) && (strcmp($suspended_status, 'deleted') !== 1))
 			{
 				echo '<a class="button" href="../Visits/?profile=' . htmlspecialchars($profile) . '">View visits log</a>' . "\n";
 			}
@@ -1275,7 +1259,7 @@
 	// IF (`players`.`teamid`<>'0',(SELECT `teams`.`name` FROM `teams`
 	// WHERE `teams`.`id`=`players`.`teamid` LIMIT 1),'(teamless)') AS `team_name`,
 	// `players_profile`.`joined` FROM `players`,`players_profile`
-	// WHERE `players`.`suspended`<>'1' AND `players_profile`.`playerid`=`players`.`id`
+	// WHERE `players`.`status`<>'deleted' AND `players_profile`.`playerid`=`players`.`id`
 	// ORDER BY `players`.`teamid`, `players`.`name`;
 	$query = 'SELECT ';
 	// the needed values
@@ -1297,7 +1281,7 @@
 	// tables involved
 	$query .= ' FROM `players`,`players_profile`';
 	// do not display deleted players during maintenance
-	$query .= ' WHERE `players`.`suspended`<>' . sqlSafeStringQuotes('1');
+	$query .= ' WHERE `players`.`status`<>' . sqlSafeStringQuotes('deleted');
 	if ($search_teamless)
 	{
 		$query .= ' AND `players`.`teamid`=' . sqlSafeStringQuotes('0');

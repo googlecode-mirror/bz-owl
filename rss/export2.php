@@ -23,8 +23,7 @@
 	mysql_free_result($result);
 	
 	$query = ('SELECT `id`,`teamid`,`name` FROM `players`'
-			  . ' WHERE `players`.`suspended`<'
-			  . sqlSafeStringQuotes(1));
+			  . ' WHERE `players`.`status`=' . sqlSafeStringQuotes('active'));
 	if (!($result = @$site->execute_silent_query($site->db_used_name(), 'players', $query, $connection)))
 	{
 		$site->dieAndEndPage('It seems like the player profile can not be accessed for an unknown reason.');

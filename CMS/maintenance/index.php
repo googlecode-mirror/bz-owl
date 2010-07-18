@@ -378,7 +378,7 @@
 			// get player id of teamless players that have not been logged-in in the last 2 months
 			$query = 'SELECT `playerid` FROM `players`, `players_profile`';
 			$query .= ' WHERE `players`.`teamid`=' . sqlSafeStringQuotes('0');
-			$query .= 'AND `players`.`suspended`=' . sqlSafeStringQuotes('0');
+			$query .= 'AND `players`.`status`=' . sqlSafeStringQuotes('active');
 			$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
 			$query .= 'AND `players_profile`.`last_login`<' . sqlSafeStringQuotes($two_months_in_past);
 			
@@ -462,7 +462,7 @@
 				unset($msgid);
 				
 				// mark account as deleted
-				$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes('1');
+				$query = 'UPDATE `players` SET `status`=' . sqlSafeStringQuotes('deleted');
 				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($one_inactive_player);
 				// and again only one player needs to be updated
 				$query .= ' LIMIT 1';
