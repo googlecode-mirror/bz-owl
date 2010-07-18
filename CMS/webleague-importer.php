@@ -416,8 +416,8 @@
 			if (strcmp($row['htmlok'], '1') === 0)
 			{
 				$msg = str_replace('&nbsp;', ' ', $msg);
-				$msg = str_replace('<br>', ' ', $msg);
-				$msg = str_replace('<BR>', ' ', $msg);
+				$msg = str_replace('<br>', '\n', $msg);
+				$msg = str_replace('<BR>', '\n', $msg);
 				$query .= ',' . sqlSafeStringQuotes(strip_tags($msg));
 			} else
 			{
