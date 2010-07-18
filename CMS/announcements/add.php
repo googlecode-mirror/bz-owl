@@ -508,14 +508,7 @@
 								$query .= ',`msg_replied_to_msgid`';
 							}
 							$query .= ') VALUES (';
-							$query .= sqlSafeStringQuotes($rowId) . ', ' . "'" . $user_id . "'" . ', 0, 1, ';
-							if (isset($_GET['reply']))
-							{
-								$query .= sqlSafeStringQuotes('replied');
-							} else
-							{
-								$query .= sqlSafeStringQuotes('read');
-							}
+							$query .= sqlSafeStringQuotes($rowId) . ', ' . "'" . $user_id . "'" . ', 0, 1, ' . sqlSafeStringQuotes('read');
 							
 							if (isset($_GET['reply']))
 							{
@@ -540,6 +533,17 @@
 								$message_sent = false;
 							}
 							
+							// set reply status if the user replied to a message
+							if ($message_sent && isset($_GET['reply']) && isset($_GET['id']) && ((int) $_GET['id'] > 0))
+							{
+								$query = ('UPDATE `message_users_connection` SET `msg_status`=' . sqlSafeStringQuotes('replied')
+										  . ' WHERE `msgid`=' . sqlSafeStringQuotes((int) $_GET['id']));
+								$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+								if (!($result))
+								{
+									$site->dieAndEndPage('Could not update old message status (msg=' . sqlSafeStringQuotes((int) $_GET['id'])) . ') by user (id=' . sqlSafeStringQuotes(getUserID()) . ') to replied.')
+								}
+							}
 							// reset the pointer to beginning of array
 							reset($known_recipients);
 							if ($message_sent)
