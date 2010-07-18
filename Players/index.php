@@ -519,7 +519,7 @@
 				if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 				{
 					// is the player name already used?
-					$query = 'SELECT `id` FROM `players` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['callsign'])) . "'" . ' LIMIT 1';
+					$query = 'SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes(htmlent($_POST['callsign'])) . ' LIMIT 1';
 					if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
@@ -552,7 +552,7 @@
 					} else
 					{
 						mysql_free_result($result);
-						$query = 'UPDATE `players` SET `name`=' . "'" . sqlSafeString(htmlent(urldecode($_POST['callsign']))) . "'";
+						$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent(urldecode($_POST['callsign'])));
 						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
 						if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 						{

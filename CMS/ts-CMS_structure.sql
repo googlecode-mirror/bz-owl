@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-07-18 19:31:44 +0200
+# Generation Time: 2010-07-18 21:24:13 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -193,7 +193,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -210,8 +210,9 @@ CREATE TABLE `players` (
   `last_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `status` set('active','deleted','login disabled','banned') NOT NULL DEFAULT 'active',
   PRIMARY KEY (`id`),
-  KEY `teamid` (`teamid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3124 DEFAULT CHARSET=utf8 COMMENT='The players';
+  KEY `teamid` (`teamid`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3124 DEFAULT CHARSET=utf8 COMMENT='The players'' main data';
 
 
 
@@ -359,7 +360,7 @@ CREATE TABLE `visits` (
   KEY `ip-address` (`ip-address`),
   KEY `host` (`host`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1285685 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1285686 DEFAULT CHARSET=utf8;
 
 
 
