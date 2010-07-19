@@ -437,7 +437,7 @@
 	
 	function show_score_changes($team_stats_changes, $keys, $n_teams=0)
 	{
-		if ((int) $n_teams === 0)
+		if (intval($n_teams) === 0)
 		{
 			$n_teams=(((int) count($keys)) - 1);
 		}
@@ -454,7 +454,7 @@
 		for ($i = 0; $i <= $n_teams; $i++)
 		{
 			// entries with no changed scores were deleted without re-indexing using unset
-			if (isset($team_stats_changes[$i]))
+			if (isset($keys[$i]))
 			{
 				echo '<tr class="table_scores_changed_overview">' . "\n";
 				echo '	<td class="table_scores_changed_overview_name">';
@@ -1676,8 +1676,6 @@
 			// TODO: list the stuff mentioned in the comment above
 			
 			// log the changes
-			$team_stats_changes[$team_id1] = '';
-			$team_stats_changes[$team_id2] = '';
 			$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
 			$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
 			$team_stats_changes[$team_id1]['old_score'] = $team1_new_score - $diff;
