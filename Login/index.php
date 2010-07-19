@@ -92,7 +92,7 @@
 		while ($row = mysql_fetch_array($result))
 		{
 			$_SESSION['viewerid'] = (int) $row['id'];
-			$suspended_mode = $row['suspended'];
+			$suspended_mode = $row['status'];
 			if (strcmp(($row['external_playerid']), '') === 0)
 			{
 				$convert_to_external_login = $site->convert_users_to_external_login();
