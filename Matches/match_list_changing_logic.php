@@ -1300,7 +1300,6 @@
 			if (isset($_GET['delete']))
 			{
 				// both teams might have an updated score
-				echo 'marking team scores as changed...get_score_at_that_time<br>';
 				$team_stats_changes[$team_id1] = '';
 				$team_stats_changes[$team_id2] = '';
 				
@@ -1431,9 +1430,6 @@
 				// both team id's are needed
 				$team_id1 = (int) $row['team1_teamid'];
 				$team_id2 = (int) $row['team2_teamid'];
-				// FIXME: remove debug comment
-				echo '$team_id1: ' . $team_id1 . '<br>';
-				echo '$team_id2: ' . $team_id2 . '<br>';
 				
 				// the POINTS of the game are needed, too..
 				$team1_points = $row['team1_points'];
@@ -1446,14 +1442,8 @@
 				$team1_new_score = get_score_at_that_time($site, $connection, $team_id1, $timestamp, $viewerid);
 				$team2_new_score = get_score_at_that_time($site, $connection, $team_id2, $timestamp, $viewerid);
 				// mark these teams as having an updated score
-				echo 'marking team scores as changed...get_score_at_that_time<br>';
 				$team_stats_changes[$team_id1] = '';
 				$team_stats_changes[$team_id2] = '';
-				
-				// FIXME: remove debug comment
-				echo '$team1_new_score: ' . $team1_new_score . '<br>';
-				echo '$team2_new_score: ' . $team2_new_score . '<br>';
-				
 				
 				$diff = 0;
 				compute_scores($team_id1, $team_id2, $team1_new_score,$team2_new_score, $team1_points, $team2_points, $diff, $team_stats_changes);

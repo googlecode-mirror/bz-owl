@@ -450,7 +450,10 @@
 		// update match stats for team1 in case old team1 = new team1
 		
 		$number_teams_mapped = (int) 0;
-		echo "call1";
+		if ($site->debug_sql())
+		{
+			echo "call1";
+		}
 		// new team and old teams in old order
 		if (cmp_team_participated_change($team1_points_before, $team2_points_before,
 										 $team1_points, $team2_points,
@@ -460,7 +463,10 @@
 			$number_teams_mapped = $number_teams_mapped + 1;
 		}
 		
-		echo "call2";
+		if ($site->debug_sql())
+		{
+			echo "call2";
+		}
 		// swap old teams, leave new teams in old order
 		if (cmp_team_participated_change($team2_points_before, $team1_points_before,
 										 $team1_points, $team2_points,
@@ -473,6 +479,7 @@
 		if (!($number_teams_mapped >= 2))
 		{
 			echo "call3";
+		}
 			// old teams in old order, swap new teams
 			if (cmp_team_participated_change($team1_points_before, $team2_points_before,
 											 $team2_points, $team1_points,
@@ -483,7 +490,10 @@
 			}
 			if (!($number_teams_mapped >= 2))
 			{
-				echo "call4";
+				if ($site->debug_sql())
+				{
+					echo "call4";
+				}
 				// swap old and new teams
 				if (cmp_team_participated_change($team2_points_before, $team1_points_before,
 												 $team2_points, $team1_points,
