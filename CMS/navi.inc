@@ -243,7 +243,7 @@
 		echo '</span>' . "\n";
 	}
 	
-	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
+	if ($logged_in)
 	{
 		echo '<span class="logout">';
 		echo '<a href="' . baseaddress() . 'Logout/' . '">Logout</a>';
