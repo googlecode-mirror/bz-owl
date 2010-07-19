@@ -56,6 +56,7 @@
 	mysql_free_result($result);
 	
 	// update activity data
+	$logged_in = true;
 	if (getUserID() > 0)
 	{
 		// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
@@ -77,6 +78,9 @@
 			$unread_messages = true;
 		}
 		mysql_free_result($result);
+	} else
+	{
+		$logged_in = false;
 	}
 	
 	define ('BASEPATH', baseaddress());
@@ -92,7 +96,7 @@
 	// public_html auf FreeBSD oder Sites auf Mac OS X
 	$ganzOben = (strcmp($name, 'public_html') == 0) || (strcmp($name, 'Sites') == 0) || (strcmp($name, 'leaguesite') == 0) || (strcmp($name, 'ts') == 0);
 	
-	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
+	if (!$logged_in)
 	{
 		if (strcmp($name, 'Login') == 0)
 		{
@@ -160,7 +164,7 @@
 		writeLink('Players', 'Players');
 	}
 	
-	if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
+	if ($logged_in && (isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
 	{
 		if (strcmp($name, 'Visits') == 0)
 		{
