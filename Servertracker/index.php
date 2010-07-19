@@ -71,19 +71,21 @@
 		formatbzfquery("bzf.guleague.org:5158", $connection);
 		
 		formatbzfquery("brad.guleague.org:5158", $connection);
-//		
-//		formatbzfquery("longdon.guleague.org:5158", $connection);
-//        
-//        formatbzfquery("destroyer.guleague.org:5158", $connection);
+		
+		formatbzfquery("longdon.guleague.org:5158", $connection);
+        
+        formatbzfquery("destroyer.guleague.org:5158", $connection);
 		
 		formatbzfquery("dub.guleague.org:59997", $connection);
 		
 		formatbzfquery("trb.guleague.org:5158", $connection);
 		
-		formatbzfquery("fairserve.bzflag.net:5157", $connection);
-		
-		formatbzfquery("fairserve.bzflag.net:5158", $connection);
-		
+		formatbzfquery("brl.arpa.net:5158", $connection);
+//		
+//		formatbzfquery("fairserve.bzflag.net:5157", $connection);
+//		
+//		formatbzfquery("fairserve.bzflag.net:5158", $connection);
+//		
 		formatbzfquery("quol.guleague.org:5157", $connection);
 		
 		formatbzfquery("quol.guleague.org:5158", $connection);

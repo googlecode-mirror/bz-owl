@@ -1647,18 +1647,18 @@
 			}
 			
 			// match was entered successfully, now update the score in teams overview
-			$query = 'UPDATE `teams_overview` SET `score`=' . "'" . sqlSafeString($team1_new_score) . "'";
-			$query .= ', deleted=' . "'" . sqlSafeString('1') . "'";
-			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($team_id1). "'";
+			$query = 'UPDATE `teams_overview` SET `score`=' . sqlSafeStringQuotes($team1_new_score);
+			$query .= ', deleted=' . sqlSafeString('1');
+			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
 									 . ' was entered but the team score of team with id ' . sqlSafeString($team_id1). ' could not be updated!');
 			}
-			$query = 'UPDATE `teams_overview` SET `score`=' . "'" . sqlSafeString($team2_new_score) . "'";
-			$query .= ', deleted=' . "'" . sqlSafeString('1') . "'";
-			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($team_id2). "'";
+			$query = 'UPDATE `teams_overview` SET `score`=' . sqlSafeStringQuotes($team2_new_score);
+			$query .= ', deleted=' . sqlSafeStringQuotes('1');
+			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id2);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				unlock_tables();
@@ -1676,6 +1676,8 @@
 			// TODO: list the stuff mentioned in the comment above
 			
 			// log the changes
+			$team_stats_changes[$team_id1] = '';
+			$team_stats_changes[$team_id2] = '';
 			$team_stats_changes[$team_id1]['new_score'] = $team1_new_score;
 			$team_stats_changes[$team_id2]['new_score'] = $team2_new_score;
 			$team_stats_changes[$team_id1]['old_score'] = $team1_new_score - $diff;
