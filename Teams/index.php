@@ -1655,7 +1655,7 @@
 				  . ',`team1_points`,`team2_points`,`playerid`'
 				  . ',(SELECT `players`.`name` FROM `players` WHERE `players`.`id`=`matches`.`playerid`) AS `playername`,`matches`.`id`'
 				  . ' FROM `matches` WHERE `matches`.`team1_teamid`=' . sqlSafeStringQuotes($profile)
-				  . ' OR `matches`.`team1_teamid`=' . sqlSafeStringQuotes($profile)
+				  . ' OR `matches`.`team2_teamid`=' . sqlSafeStringQuotes($profile)
 				  . ' ORDER BY `id` DESC LIMIT 0,10');
 		if (!($result = @$site->execute_query($site->db_used_name(), 'matches (subquery players)', $query, $connection)))
 		{
