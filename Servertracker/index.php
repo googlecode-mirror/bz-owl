@@ -72,7 +72,7 @@
 	
 	if (isset($_GET['server']))
 	{
-		echo '<a class="buttons" href="./">overview</a>' . "\n";
+		echo '<a class="button" href="./">overview</a>' . "\n";
 		$server = urldecode($_GET['server']);
 		formatbzfquery_last($server, $connection);
 	} else
