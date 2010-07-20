@@ -217,12 +217,12 @@
 	
 	if ($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker']))
 	{
-		if (strcmp($name, 'Server') == 0)
+		if (strcmp($name, 'Servertracker') == 0)
 		{
 			echo '<li>Servers</li>' . "\n";
 		} else
 		{
-			writeLink('Servertracker', 'Server');
+			writeLink('Servertracker', 'Servers');
 		}
 	}
 
