@@ -111,8 +111,10 @@ function marke($markierung, $name)
 
 function formatbzfquery($server, $connection)
 {
+	global $site;
+	
 	formatbzfquery_last($server, $connection);
-	echo '<hr>' . "\n";
+	$site->write_self_closing_tag('hr');
 }
 
 function formatbzfquery_last($server, $connection)
@@ -174,61 +176,68 @@ function formatbzfquery_last($server, $connection)
               . round(($zaehler / 60), 2) . VON . round((($data['maxTime']) /60), 2)
               . '</span>' . RESTZEIT . '</p>' . "\n";
         }
-        echo '<table class="punkte">' . "\n";
-        echo '  <tbody>' . "\n";
-        
-        usort ($data['player'], "cmp");
-        
-        // Display the server info
-        $teamName = array(0=>"schurke", 1=>"rot", 2=>"gruen", 3=>"blau", 4=>"violett", 5=>"zuschauer", 6=>"hase");
-        $teamColour = array(0=>"yellow", 1=>"red", 2=>"green", 3=>"blue", 4=>"purple", 5=>"gray", 6=>"orange");
-        while (list($key, $val) = each($data['team']))
-        {
-            if ($data['team'][$key]['size'] > 0)
-            {
-                echo '    ';
-                // Mannschaftsfarbe
-                marke('tr',$teamName[$key]);
-                // Punktzahl
-                echo '<td>';
-                echo ($data['team'][$key]['won'] - $data['team'][$key]['lost']);
-                echo '</td>';
-                // Gewonnen
-                echo '<td>';
-                echo '(' . $data['team'][$key]['won'] . ' - ';
-                // Verloren
-                echo $data['team'][$key]['lost'] . ')';
-                echo '</td>';
-                // #Spieler
-                echo '<td>';
-                echo $data['team'][$key]['size'];
-                echo '</td>';
-                // Ende Mannschaftsfarbe
-                echo '</tr>' . "\n";
-            }
-        }
-        echo '  </tbody>' . "\n" .'</table>' . "\n";
-        reset($data);
+		
+		// Display the server info
+		$teamName = array(0=>"schurke", 1=>"rot", 2=>"gruen", 3=>"blau", 4=>"violett", 5=>"zuschauer", 6=>"hase");
+		$teamColour = array(0=>"yellow", 1=>"red", 2=>"green", 3=>"blue", 4=>"purple", 5=>"gray", 6=>"orange");
+		
+//		echo 'count punkte:!' . print_r($data['player']['0']['team']);
+		if (isset($data['player']['0']['team']) && !(strcmp($data['player']['0']['team'], '5') === 0))
+		{
+			echo '<table class="punkte">' . "\n";
+			echo '  <tbody>' . "\n";
+			
+			usort ($data['player'], "cmp");
+			
+			while (list($key, $val) = each($data['team']))
+			{
+				if ($data['team'][$key]['size'] > 0)
+				{
+					echo '    ';
+					// Mannschaftsfarbe
+					marke('tr',$teamName[$key]);
+					// Punktzahl
+					echo '<td>';
+					echo ($data['team'][$key]['won'] - $data['team'][$key]['lost']);
+					echo '</td>';
+					// Gewonnen
+					echo '<td>';
+					echo '(' . $data['team'][$key]['won'] . ' - ';
+					// Verloren
+					echo $data['team'][$key]['lost'] . ')';
+					echo '</td>';
+					// #Spieler
+					echo '<td>';
+					echo $data['team'][$key]['size'];
+					echo '</td>';
+					// Ende Mannschaftsfarbe
+					echo '</tr>' . "\n";
+				}
+			}
+			echo '  </tbody>' . "\n" .'</table>' . "\n";
+		}
+		reset($data);
+
         
         echo "\n\n" . '<table class="spieler" border="0">' . "\n";
         echo '  <tbody>' . "\n";
 
         while (list($key, $val) = each($data['player']))
         {
-            echo '    <tr>';
+            echo '    <tr>' . "\n";
             // Zuschauer spielen nicht -> keine Punktzahl
             if (! strcmp($teamName[$data['player'][$key]['team']], 'zuschauer') == 0)
             {
                 echo '<td>';
                 echo ($data['player'][$key]['won'] - $data['player'][$key]['lost']);
-                echo '</td>';
+                echo '</td>' . "\n";
                 echo  '<td>('
                   . $data['player'][$key]['won'] . '-'
                   . $data['player'][$key]['lost'] . ')</td><td>['
                   . $data['player'][$key]['tks'] . ']</td>';
             } else
             {
-                echo '<td></td><td></td><td></td>';
+                echo '<td></td>' . "\n" . '<td></td>' . "\n" . '<td></td>' . "\n";
             }
             // Mannschaftsfarbe
             marke('td',$teamName[$data['player'][$key]['team']]);
@@ -243,12 +252,13 @@ function formatbzfquery_last($server, $connection)
 					echo htmlentities($playername[0]) . "...";
 				} else // Name kurz genug
 				{
-					echo htmlentities($playername) . '</td>';
+					echo htmlentities($playername);
 				}
 			} else // Vollversion, massig Platz auf Bildschirm vorhanden
 			{
-				echo htmlentities($playername) . '</td>';
+				echo htmlentities($playername);
 			}
+			echo '</td>' . "\n";
             // Mehl
             marke('td','mehl');
             if (! strcmp($data['player'][$key]['email'], '') == 0)
@@ -264,7 +274,7 @@ function formatbzfquery_last($server, $connection)
                   . $email
                   . ')';
             }
-            echo '</td>';
+            echo '</td>' . "\n";
             
             // Existiert Datenbankverbindung?
             if ($connection)
@@ -300,6 +310,7 @@ function formatbzfquery_last($server, $connection)
                     mysql_free_result($result);
                     echo $resultarray['name'];
                 }
+				echo '</td>' . "\n";
             }
             echo '</tr>' . "\n";
         }

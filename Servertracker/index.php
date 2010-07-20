@@ -20,16 +20,29 @@
 //		}
 //	}
 	require_once '../CMS/siteinfo.php';
-	?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<?php
+	$site = new siteinfo();
+	
+	if ($site->use_xtml())
+	{
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' . "\n";
+		echo '     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+	} else
+	{
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"' . "\n";
+		echo '        "http://www.w3.org/TR/html4/strict.dtd">';
+	}
+	echo "\n" . '<html';
+	if ($site->use_xtml())
+	{
+		echo ' xmlns="http://www.w3.org/1999/xhtml"';
+	}
+	echo '>' . "\n";
+	echo '<head>' . "\n";
+	echo '	' . ($site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"'));
+	
 	require '../stylesheet.inc';
 	
-	echo '  <link rel="stylesheet" media="all" href="spieler.css" type="text/css">' . "\n";
+	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="spieler.css" type="text/css"');
 	// mehl eventuell ausblenden
 	$objekt = new siteinfo();
 	if ($objekt->mobile_version())
@@ -43,6 +56,7 @@
 	
 	require '../CMS/navi.inc';
     
+	echo '<div class="static_page_box">' . "\n";
 	if (!($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker'])))
 	{
 		echo '<p>You have no permission to view this page</p>' . "\n";
@@ -100,7 +114,10 @@
 		formatbzfquery_last("bzflag.enuffsaid.co.nz:5158", $connection);
 	}
 ?>
+
 </div>
+</div>
+</body>
 </html><?php
 	// GU-spezifisch!
 	//require_once '../../../CMS/siteinfo.php';
