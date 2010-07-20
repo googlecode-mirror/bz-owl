@@ -119,7 +119,7 @@ function formatbzfquery_last($server, $connection)
 {
 	$objekt = new siteinfo();
     //$connection = $objekt->loudless_pconnect_to_db();
-    if ($connection)
+    if (!$use_internal_db && $connection)
     {
         // Datenbank auswaehlen
         if (@!mysql_select_db("playerlist", $connection))
