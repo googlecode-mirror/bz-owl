@@ -120,13 +120,16 @@ function formatbzfquery_last($server, $connection)
 	global $site;
 	global $connection;
 	global $use_internal_db;
-    if (!$use_internal_db && $connection)
-    {
-        if (@!mysql_select_db("playerlist", $connection))
+    if ($use_internal_db)
+	{
+        @!mysql_select_db($site->db_used_name(), $connection);
+    } else
+	{
+		if (@!mysql_select_db("playerlist", $connection))
 		{
 			@mysql_close($connection);
 			unset($connection);
-		};
+		}
     }
 
     if (isset($_GET['server']))
@@ -280,7 +283,13 @@ function formatbzfquery_last($server, $connection)
                 $teamid = $resultarray['teamid'];
                 if ($teamid > 0)
                 {
-                    $query = 'SELECT * from teams WHERE teamid=' . sqlSafeStringQuotes($teamid);
+					if ($use_internal_db)
+					{
+						$query = 'SELECT * from teams WHERE id=' . sqlSafeStringQuotes($teamid);
+					} else
+					{
+						$query = 'SELECT * from teams WHERE teamid=' . sqlSafeStringQuotes($teamid);
+					}
                     $result = mysql_query($query, $connection);
                     if (!$result)
                     {
