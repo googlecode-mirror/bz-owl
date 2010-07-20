@@ -56,6 +56,8 @@
 		$_SESSION['allow_edit_match'] = false;
 		$_SESSION['allow_delete_match'] = false;
 		
+		// server tracker permissions
+		$_SESSION['allow_watch_servertracker'] = false;
 	}
 	
 	function allow_change_debug_sql()
@@ -261,6 +263,14 @@
 		if (!($_SESSION['allow_delete_match']))
 		{
 			$_SESSION['allow_delete_match'] = true;
+		}
+	}
+	
+	function allow_watch_servertracker()
+	{
+		if (!($_SESSION['allow_watch_servertracker']))
+		{
+			$_SESSION['allow_watch_servertracker'] = true;
 		}
 	}
 ?>

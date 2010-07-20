@@ -157,6 +157,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_add_match();
 		allow_edit_match();
 		allow_delete_match();
+		
+		// server tracker permissions
+		allow_watch_servertracker();
 	}
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])

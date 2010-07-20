@@ -215,13 +215,16 @@
 		writeLink('Bans', 'Bans');
 	}
 	
-//	if (strcmp($name, 'Server') == 0)
-//	{
-//		echo '<li>Bans</li>' . "\n";
-//	} else
-//	{
-//		writeLink('Servertracker', 'Server');
-//	}
+	if ($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker']))
+	{
+		if (strcmp($name, 'Server') == 0)
+		{
+			echo '<li>Servers</li>' . "\n";
+		} else
+		{
+			writeLink('Servertracker', 'Server');
+		}
+	}
 
 	
 	if (strcmp($name, 'Config') == 0)

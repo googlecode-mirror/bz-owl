@@ -134,8 +134,7 @@ function formatbzfquery_last($server, $connection)
         echo '<p>' . $server . '</p>' . "\n";
     } else
     {
-        echo '<p><a href=' . "\x22" . '?server=' . urlencode($server) ."\x22" . '>' . $server . '</a></p>' . "\n";
-        //echo '<p><a href=' . "\x22" . urlencode($server) . '>' . $server '</a></p>' . "\n";
+        echo '<p><a href="?server=' . urlencode($server) . '">' . $server . '</a></p>' . "\n";
     }
     // Query the server
 	if (!function_exists('pcntl_fork'))
@@ -149,12 +148,7 @@ function formatbzfquery_last($server, $connection)
 		$ausgabe .= ob_get_contents();
 		ob_end_clean();
 	}
-    
-    //echo '<pre>';
-    //print_r($data);
-    //echo '</pre>';
-    //bzfdump($data);
-    
+	
     if (! isset($data['player']))
     { 
         if (! isset($data['protocol']))
@@ -172,8 +166,8 @@ function formatbzfquery_last($server, $connection)
         $zaehler = $data['maxTime'] - $data['timeElapsed'];
         if ($zaehler > 0)
         {
-            echo '<p class=' . "\x22" . 'zaehler' . "\x22" . '>' . ZAEHLER
-              . '<span class=' . "\x22" . 'zaehler' . "\x22" . '>'
+            echo '<p class="zaehler">' . ZAEHLER
+              . '<span class="zaehler">'
               . round(($zaehler / 60), 2) . VON . round((($data['maxTime']) /60), 2)
               . '</span>' . RESTZEIT . '</p>' . "\n";
         }
@@ -261,7 +255,7 @@ function formatbzfquery_last($server, $connection)
 				if (strlen($email) > 17)
 				{
 					$email = (str_split($email,14));
-					$email = $email[0]  . "...";
+					$email = $email[0]  . '...';
 				}
 				echo '('
                   . $email
@@ -275,7 +269,7 @@ function formatbzfquery_last($server, $connection)
                 // team herausfinden
                 marke('td', 'team');
                 $callsign = $data['player'][$key]['sign'];
-                $query = 'SELECT * from players WHERE name=' . "\x22". $callsign . "\x22";
+                $query = 'SELECT * from players WHERE name='. sqlSafeStringQuotes($callsign);
                 $result = mysql_query($query, $connection);
                 if (!$result)
                 {
@@ -286,7 +280,7 @@ function formatbzfquery_last($server, $connection)
                 $teamid = $resultarray['teamid'];
                 if ($teamid > 0)
                 {
-                    $query = 'SELECT * from teams WHERE teamid=' . $teamid;
+                    $query = 'SELECT * from teams WHERE teamid=' . sqlSafeStringQuotes($teamid);
                     $result = mysql_query($query, $connection);
                     if (!$result)
                     {
