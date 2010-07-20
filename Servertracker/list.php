@@ -117,11 +117,11 @@ function formatbzfquery($server, $connection)
 
 function formatbzfquery_last($server, $connection)
 {
-	$objekt = new siteinfo();
-    //$connection = $objekt->loudless_pconnect_to_db();
+	global $site;
+	global $connection;
+	global $use_internal_db;
     if (!$use_internal_db && $connection)
     {
-        // Datenbank auswaehlen
         if (@!mysql_select_db("playerlist", $connection))
 		{
 			@mysql_close($connection);
@@ -231,7 +231,7 @@ function formatbzfquery_last($server, $connection)
             marke('td',$teamName[$data['player'][$key]['team']]);
 			$playername = $data['player'][$key]['sign'];
 			// Spielernamen eventuell kuerzen
-			if ($objekt->mobile_version())
+			if ($site->mobile_version())
 			{
 				// Name ziemlich lang
 				if (strlen($playername) > 13)

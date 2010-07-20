@@ -115,38 +115,37 @@
 		die('no connection to database');
 	}
 	
-	// Jeden Tag nur ein Mal ausfuehren, um Kosten zu sparen
-	
-	date_default_timezone_set('Europe/Berlin');
-	
-	$heute = date("d.m.y");
-	$datei = 'maintenance.txt';
-	
-	if (is_writable($datei)) {
-		
-		// Wir öffnen $filename im "Anhänge" - Modus.
-		// Der Dateizeiger befindet sich am Ende der Datei, und
-		// dort wird $somecontent später mit fwrite() geschrieben.
-		if (!$handle = fopen($datei, "r")) {
-			print "Kann die Datei $datei nicht öffnen";
-			exit;
-		}
-	} else {
-		print "Die Datei $datei ist nicht schreibbar";
-	}
-	
-	// lese die ersten 10 Zeichen
-	$text = fread($handle, 10);
-	
-	// Ist DB auf dem Stand von heute?
-	if (strcasecmp($text, $heute) == 0)
-	{
-		// Nichts zu tun
-		die();
-	}
-	
 	if (!$use_internal_db)
 	{
+		// Jeden Tag nur ein Mal ausfuehren, um Kosten zu sparen
+		date_default_timezone_set('Europe/Berlin');
+		
+		$heute = date("d.m.y");
+		$datei = 'maintenance.txt';
+		
+		if (is_writable($datei)) {
+			
+			// Wir öffnen $filename im "Anhänge" - Modus.
+			// Der Dateizeiger befindet sich am Ende der Datei, und
+			// dort wird $somecontent später mit fwrite() geschrieben.
+			if (!$handle = fopen($datei, "r")) {
+				print "Kann die Datei $datei nicht öffnen";
+				exit;
+			}
+		} else {
+			print "Die Datei $datei ist nicht schreibbar";
+		}
+		
+		// lese die ersten 10 Zeichen
+		$text = fread($handle, 10);
+		
+		// Ist DB auf dem Stand von heute?
+		if (strcasecmp($text, $heute) == 0)
+		{
+			// Nichts zu tun
+			die();
+		}
+		
 		// Datenbank auswaehlen
 		mysql_select_db("playerlist", $connection);
 		
