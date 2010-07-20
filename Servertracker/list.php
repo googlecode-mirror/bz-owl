@@ -181,13 +181,13 @@ function formatbzfquery_last($server, $connection)
 		$teamName = array(0=>"schurke", 1=>"rot", 2=>"gruen", 3=>"blau", 4=>"violett", 5=>"zuschauer", 6=>"hase");
 		$teamColour = array(0=>"yellow", 1=>"red", 2=>"green", 3=>"blue", 4=>"purple", 5=>"gray", 6=>"orange");
 		
+		usort ($data['player'], "cmp");
+		
 //		echo 'count punkte:!' . print_r($data['player']['0']['team']);
 		if (isset($data['player']['0']['team']) && !(strcmp($data['player']['0']['team'], '5') === 0))
 		{
 			echo '<table class="punkte">' . "\n";
 			echo '  <tbody>' . "\n";
-			
-			usort ($data['player'], "cmp");
 			
 			while (list($key, $val) = each($data['team']))
 			{
@@ -220,11 +220,11 @@ function formatbzfquery_last($server, $connection)
 
         
         echo "\n\n" . '<table class="spieler" border="0">' . "\n";
-        echo '  <tbody>' . "\n";
+        echo '  <tbody>';
 
         while (list($key, $val) = each($data['player']))
         {
-            echo '    <tr>' . "\n";
+            echo "\n" . '<tr>' . "\n";
             // Zuschauer spielen nicht -> keine Punktzahl
             if (! strcmp($teamName[$data['player'][$key]['team']], 'zuschauer') == 0)
             {
@@ -268,10 +268,10 @@ function formatbzfquery_last($server, $connection)
 				if (strlen($email) > 17)
 				{
 					$email = (str_split($email,14));
-					$email = $email[0]  . '...';
+					$email = htmlent($email[0])  . '...';
 				}
 				echo '('
-                  . $email
+                  . htmlent($email)
                   . ')';
             }
             echo '</td>' . "\n";
