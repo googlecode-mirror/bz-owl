@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: ts-CMS
-# Generation Time: 2010-07-18 21:24:13 +0200
+# Generation Time: 2010-07-21 09:12:09 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -86,7 +86,7 @@ CREATE TABLE `matches` (
   KEY `timestamp` (`timestamp`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `matches_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21867 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
+) ENGINE=InnoDB AUTO_INCREMENT=21872 DEFAULT CHARSET=utf8 COMMENT='The played matches in the league';
 
 
 
@@ -125,7 +125,7 @@ CREATE TABLE `messages_storage` (
   `recipients` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `author_id` (`author_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=379654 DEFAULT CHARSET=utf8 COMMENT='The message storage';
+) ENGINE=InnoDB AUTO_INCREMENT=379650 DEFAULT CHARSET=utf8 COMMENT='The message storage';
 
 
 
@@ -193,7 +193,7 @@ CREATE TABLE `online_users` (
   PRIMARY KEY (`id`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `online_users_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='list of online users';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='list of online users';
 
 
 
@@ -360,7 +360,7 @@ CREATE TABLE `visits` (
   KEY `ip-address` (`ip-address`),
   KEY `host` (`host`),
   CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1285686 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1285693 DEFAULT CHARSET=utf8;
 
 
 

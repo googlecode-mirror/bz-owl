@@ -282,7 +282,7 @@ function formatbzfquery_last($server, $connection)
                 // team herausfinden
                 marke('td', 'team');
                 $callsign = $data['player'][$key]['sign'];
-                $query = 'SELECT * from players WHERE name='. sqlSafeStringQuotes($callsign);
+                $query = 'SELECT `teamid` from players WHERE `name=`'. sqlSafeStringQuotes($callsign) . ' LIMIT 1';
                 $result = mysql_query($query, $connection);
                 if (!$result)
                 {
@@ -295,10 +295,10 @@ function formatbzfquery_last($server, $connection)
                 {
 					if ($use_internal_db)
 					{
-						$query = 'SELECT * from teams WHERE id=' . sqlSafeStringQuotes($teamid);
+						$query = 'SELECT `name` from teams WHERE `id`=' . sqlSafeStringQuotes($teamid) . ' LIMIT 1';
 					} else
 					{
-						$query = 'SELECT * from teams WHERE teamid=' . sqlSafeStringQuotes($teamid);
+						$query = 'SELECT `name` from teams WHERE `teamid`=' . sqlSafeStringQuotes($teamid) . ' LIMIT 1';
 					}
                     $result = mysql_query($query, $connection);
                     if (!$result)
