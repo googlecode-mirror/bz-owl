@@ -25,11 +25,6 @@ table caption
 	margin-bottom: 0.5em;
 }
 
-table.big td
-{
-	min-width: 10em;
-}
-
 /* even table rows */
 tr:nth-child(even)
 {

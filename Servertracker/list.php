@@ -249,10 +249,10 @@ function formatbzfquery_last($server, $connection)
 				if (strlen($playername) > 13)
 				{
 					$playername = (str_split($playername,10));
-					echo htmlentities($playername[0]) . "...";
+					echo htmlent($playername[0]) . "...";
 				} else // Name kurz genug
 				{
-					echo htmlentities($playername);
+					echo htmlent($playername);
 				}
 			} else // Vollversion, massig Platz auf Bildschirm vorhanden
 			{
