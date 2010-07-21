@@ -66,6 +66,77 @@
 //		@$site->execute_query($site->db_used_name(), 'all!', $one_call, $connection);
 //	}
 	
+	// reset auto-increment values of each table
+	function reset_auto_increment()
+	{
+		$query = 'ALTER TABLE `bans` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'bans', $query, $connection);
+		
+		$query = 'ALTER TABLE `countries` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'countries', $query, $connection);
+		
+		$query = 'ALTER TABLE `invitations` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'invitations', $query, $connection);
+		
+		$query = 'ALTER TABLE `matches` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'matches', $query, $connection);
+		
+		$query = 'ALTER TABLE `matches_edit_stats` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'matches_edit_stats', $query, $connection);
+		
+		$query = 'ALTER TABLE `messages_storage` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
+		
+		$query = 'ALTER TABLE `messages_users_connection` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+		
+		$query = 'ALTER TABLE `news` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'news', $query, $connection);
+		
+		$query = 'ALTER TABLE `online_users` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
+		
+		$query = 'ALTER TABLE `players` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+		
+		$query = 'ALTER TABLE `players_profile` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+		
+		$query = 'ALTER TABLE `static_pages` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection);
+		
+		$query = 'ALTER TABLE `teams` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
+		
+		$query = 'ALTER TABLE `teams_overview` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+		
+		$query = 'ALTER TABLE `teams_permissions` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'teams_permissions', $query, $connection);
+		
+		$query = 'ALTER TABLE `teams_profile` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection);
+		
+		$query = 'ALTER TABLE `visits` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+	}
 	
 	// players
 	function import_players()
@@ -634,6 +705,7 @@
 	$deleted_players['0']['callsign'] = 'CTF League System';
 	$deleted_players['0']['dummy'] = true;
 	
+	reset_auto_increment();
 	import_players();
 	import_teams();
 	import_matches();
