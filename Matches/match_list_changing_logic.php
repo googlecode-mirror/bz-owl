@@ -435,8 +435,11 @@
 		}
 	}
 	
-	function show_score_changes($team_stats_changes, $keys, $n_teams=0)
+	function show_score_changes($team_stats_changes, $keys, $n_teams=0, $diff=false)
 	{
+		global $site;
+		global $connection;
+		
 		if (intval($n_teams) === 0)
 		{
 			$n_teams=(((int) count($keys)) - 1);
@@ -449,6 +452,7 @@
 		echo '	<th>Team</th>' . "\n";
 		echo '	<th>Previous score</th>' . "\n";
 		echo '	<th>New score</th>' . "\n";
+		echo '	<th>Difference</th>' . "\n";
 		echo '</tr>' . "\n\n";
 		
 		for ($i = 0; $i <= $n_teams; $i++)
@@ -467,6 +471,27 @@
 				echo '</td>' . "\n";
 				echo '	<td class="table_scores_changed_overview_score_after">';
 				echo strval($team_stats_changes[$keys[$i]]['new_score']);
+				echo '</td>' . "\n";
+				echo '	<td class="table_scores_changed_overview_difference">';
+				$score_change = 0;
+				if ($diff === false)
+				{
+					$score_change = strval((intval($team_stats_changes[$keys[$i]]['new_score'])) - (intval($team_stats_changes[$keys[$i]]['old_score'])));
+				} else
+				{
+					if ($i === 0)
+					{
+						$score_change = strval($diff);
+					} else
+					{
+						$score_change = strval(0 - intval($diff));
+					}
+				}
+				if ($score_change >= 0)
+				{
+					echo '+';
+				}
+				echo $score_change;
 				echo '</td>' . "\n";
 				echo '</tr>' . "\n";
 			}
@@ -686,7 +711,7 @@
 			// extract team id list from match to do sanity checks
 			if (isset($_GET['delete']))
 			{
-				$query = 'SELECT `team1_teamid`, `team2_teamid` FROM `matches` WHERE `id`=' . "'" . sqlSafeString((int) $_GET['delete']) . "'";
+				$query = 'SELECT `team1_teamid`, `team2_teamid` FROM `matches` WHERE `id`=' . sqlSafeStringQuotes((int) $_GET['delete']);
 				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 				{
 					$site->dieAndEndPage('Could not find out the id list of teams specified in the match that should be deleted');
@@ -703,8 +728,8 @@
 			
 			// matches against deleted teams can not be entered, edited or deleted
 			// check $team_id1
-			$query = 'SELECT `deleted` FROM `teams_overview` WHERE `deleted`=' . "'" . sqlSafeString('2') . "'";
-			$query .= ' AND `teamid`=' . "'" . sqlSafeString($team_id1) . "'";
+			$query = 'SELECT `deleted` FROM `teams_overview` WHERE `deleted`=' . sqlSafeStringQuotes('2');
+			$query .= ' AND `teamid`=' . sqlSafeStringQuotes($team_id1);
 			if (!($result_active = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -723,8 +748,8 @@
 			mysql_free_result($result_active);
 			
 			// check $team_id2
-			$query = 'SELECT `deleted` FROM `teams_overview` WHERE `deleted`=' . "'" . sqlSafeString('2') . "'";
-			$query .= ' AND `teamid`=' . "'" . sqlSafeString($team_id2) . "'";
+			$query = 'SELECT `deleted` FROM `teams_overview` WHERE `deleted`=' . sqlSafeStringQuotes('2');
+			$query .= ' AND `teamid`=' . sqlSafeStringQuotes($team_id2);
 			if (!($result_active = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -747,7 +772,7 @@
 			
 			// we also need to find out if the teams do exist at all
 			// check $team_id1
-			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($team_id1) . "'";
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id1);
 			// id is a unique identifier and therefore there will always be only one team at max with the same id
 			$query .= ' LIMIT 1';
 			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
@@ -772,7 +797,7 @@
 			mysql_free_result($result_exists);
 			
 			// check $team_id2
-			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($team_id2) . "'";
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id2);
 			// id is a unique identifier and therefore there will always be only one team at max with the same id
 			$query .= ' LIMIT 1';
 			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
@@ -1172,7 +1197,7 @@
 			// find out the appropriate team id list for the edited match
 //			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, team1_new_score, team2_new_score FROM `matches`';
 			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
-			$query .= ' WHERE `id`=' . "'" . sqlSafeString($match_id) . "'";
+			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($match_id);
 			if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 			{
 				unlock_tables();
@@ -1507,10 +1532,10 @@
 				// update score if necessary
 				if (!($diff === 0))
 				{
-					$query = 'UPDATE `matches` SET `team1_new_score`=' . "'" . sqlSafeString($team1_new_score) . "'";
+					$query = 'UPDATE `matches` SET `team1_new_score`=' . sqlSafeStringQuotes($team1_new_score);
 					$query .= ',`team2_new_score`=' . "'" . sqlSafeString($team2_new_score) . "'";
 					// use current row id to access the entry
-					$query .= ' WHERE `id`=' . "'" . sqlSafeString($row['id']) . "'";
+					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($row['id']);
 					// only one row needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result_update = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
@@ -1619,7 +1644,6 @@
 				}
 			}
 			
-				
 			if ($one_or_more_teams_have_changed_score)
 			{
 				show_score_changes($team_stats_changes, $teams, $n_teams);
@@ -1631,6 +1655,9 @@
 			}
 			// unlock all tables so site will still work
 			unlock_tables();
+			// do maintenance after match table has been changed
+			// a check inside the maintenance logic will make sure it will be only performed one time per day at max
+			require_once('../CMS/maintenance/index.php');
 			$site->dieAndEndPage();
 		} else
 		{
@@ -1645,7 +1672,7 @@
 			
 			// if we enter a new match and it is at the first position
 			// we can just use the data from team overview as shortcut
-			$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . "'" . sqlSafeString($team_id1) . "'";
+			$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
 				unlock_tables();
@@ -1659,7 +1686,7 @@
 			mysql_free_result($result);
 		}
 		
-		$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . "'" . sqlSafeString($team_id2) . "'";
+		$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . sqlSafeStringQuotes($team_id2);
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
 			unlock_tables();
@@ -1694,7 +1721,7 @@
 			
 			// match was entered successfully, now update the score in teams overview
 			$query = 'UPDATE `teams_overview` SET `score`=' . sqlSafeStringQuotes($team1_new_score);
-			$query .= ', deleted=' . sqlSafeString('1');
+			$query .= ', deleted=' . sqlSafeStringQuotes('1');
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
 			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 			{
@@ -1727,13 +1754,15 @@
 			$team_stats_changes[$team_id1]['old_score'] = $team1_new_score - $diff;
 			$team_stats_changes[$team_id2]['old_score'] = $team2_new_score + $diff;
 			
+			$teams = array_keys($team_stats_changes);
+			
 			// difference of score between before and after changing match list is always positive (absolute value)
-			show_score_changes($team_stats_changes,  array_keys($team_stats_changes));
+			show_score_changes($team_stats_changes, $teams, $diff);
 			
 			// &plusmn; displays a +- symbol
 			echo '<p>diff is &plusmn; ' . strval(abs($diff)) . '</p>';
 			
-			// do maintenance after a match has been entered
+			// do maintenance after match table has been changed
 			// a check inside the maintenance logic will make sure it will be only performed one time per day at max
 			unlock_tables();
 			require_once('../CMS/maintenance/index.php');
@@ -1850,7 +1879,7 @@
 	if (isset($_GET['edit']) || isset($_GET['delete']))
 	{
 		// retrieve the informations about the matches that are to be edited or to be deleted
-		$query = 'SELECT * FROM `matches` WHERE `id`=' . "'" . sqlSafeString($match_id) . "'" . ' LIMIT 1';
+		$query = 'SELECT * FROM `matches` WHERE `id`=' . sqlSafeStringQuotes($match_id) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
 		{
 			unlock_tables();
