@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: testdb
-# Generation Time: 2010-07-21 09:32:36 +0200
+# Generation Time: 2010-07-22 12:18:58 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -243,6 +243,7 @@ CREATE TABLE `players_profile` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `playerid` int(11) unsigned NOT NULL DEFAULT '0',
   `location` int(11) NOT NULL DEFAULT '1',
+  `UTC` tinyint(2) NOT NULL DEFAULT '0',
   `user_comment` varchar(1000) NOT NULL DEFAULT '',
   `raw_user_comment` varchar(1000) NOT NULL DEFAULT '',
   `admin_comments` mediumtext NOT NULL,
@@ -250,7 +251,9 @@ CREATE TABLE `players_profile` (
   `joined` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `last_login` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `logo_url` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `playerid` (`playerid`),
+  CONSTRAINT `players_profile_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='the players profile data';
 
 

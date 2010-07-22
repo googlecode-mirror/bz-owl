@@ -591,6 +591,16 @@
 				}
 			}
 			
+			if (isset($_POST['timezone']))
+			{
+				$query = 'UPDATE `players_profile` SET `UTC`=' . sqlSafeStringQuotes(intval($_POST['timezone']));
+				$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
+				if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+				{
+					// query was bad, error message was already given in $site->execute_query(...)
+					$site->dieAndEndPage('');
+				}
+			}
 			
 			// is there a user comment?
 			if (isset($_POST['user_comment']))
@@ -661,9 +671,9 @@
 		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
 		
-		$query = 'SELECT `location`,';
-		$query .= '`raw_user_comment`,`raw_admin_comments`';
-		$query .= ',`logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
+		$query = 'SELECT `location`, `UTC`';
+		$query .= ', `raw_user_comment`, `raw_admin_comments`';
+		$query .= ', `logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
 		{
@@ -672,11 +682,13 @@
 		}
 		
 		$location = 0;
+		$timezone = 0;
 		$user_comment = '';
 		$admin_comments = '';
 		while ($row = mysql_fetch_array($result))
 		{
 			$location = (int) $row['location'];
+			$timezone = (int) $row['UTC'];
 			$user_comment = $row['raw_user_comment'];
 			$admin_comments = $row['raw_admin_comments'];
 			$logo_url = $row['logo_url'];
@@ -721,7 +733,33 @@
 		}
 		mysql_free_result($result);
 		echo '</select>';
-		echo '</p>';
+		echo '</p>' . "\n\n";
+		
+		// timezone
+		echo '<p><label class="player_edit" for="edit_player_location">Change country: </label>';
+		echo '<select id="edit_player_timezone" name="timezone">';
+		for ($i = -12; $i <= 12; $i++)
+		{
+			echo '<option value="';
+			echo htmlspecialchars($i);
+			if ($timezone === $i)
+			{
+				echo '" selected="selected';
+			}
+			echo '">';
+			if ($i >= 0)
+			{
+				$time_format = '+' . strval($i);
+			} else
+			{
+				$time_format = strval($i);
+			}
+			echo htmlent('UTC ' . $time_format);
+			echo '</option>' . "\n";
+		}
+		unset($time_format);
+		echo '</select>';
+		echo '</p>' . "\n\n";
 		
 		// user comment
 		echo '<p><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
@@ -929,7 +967,7 @@
 		echo '<div class="p"></div>' . "\n";
 		
 		// the data we want
-		$query = 'SELECT `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`';
+		$query = 'SELECT `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`, `players_profile`.`UTC`';
 		$query .= ', `players_profile`.`last_login`,`players_profile`.`joined`, `players_profile`.`user_comment`';
 		// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 		if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
@@ -956,7 +994,7 @@
 			echo 'It seems like the flag specified by this user does not exist.';
 			// the data we want
 			$query = 'SELECT `players`.`name`,' . sqlSafeStringQuotes('') . ' AS `country_name`,' . sqlSafeStringQuotes('') . ' AS `flagfile`';
-			$query .= ',`players_profile`.`last_login`,`players_profile`.`joined`, `players_profile`.`user_comment`';
+			$query .= ', `players_profile`.`UTC`, `players_profile`.`last_login`, `players_profile`.`joined`, `players_profile`.`user_comment`';
 			// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 			if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
 			{
@@ -1025,6 +1063,15 @@
 				$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row['flagfile'] . '"');
 			}
 			echo '<span class="user_profile_location">' . htmlent($row['country_name']) . '</span></div>' . "\n";
+			if (intval($row['UTC']) >= 0)
+			{
+				$time_format = '+' . strval($row['UTC']);
+			} else
+			{
+				$time_format = strval($row['UTC']);
+			}
+			echo '		<div class="user_profile_location_timezone_row"><span class="user_profile_location_timezone_description">timezone: </span> <span class="user_profile_location_timezone">' . htmlent('UTC ' . $time_format) . '</span></div>' . "\n";
+			unset($time_format);
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_last_login_description_row"><span class="user_profile_last_login_description">last login:</span> <span class="user_profile_last_login">' . htmlent($row['last_login']) . '</span></div>' . "\n";
 			echo '	</div>' . "\n";

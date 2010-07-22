@@ -69,6 +69,9 @@
 	// reset auto-increment values of each table
 	function reset_auto_increment()
 	{
+		global $site;
+		global $connection;
+		
 		$query = 'ALTER TABLE `bans` AUTO_INCREMENT = 1';
 		// execute query, ignore result
 		$site->execute_query($site->db_used_name(), 'bans', $query, $connection);
@@ -174,7 +177,7 @@
 			// callsigns are case treated insensitive
 			if (!isset($players[strtolower($current_name)]))
 			{
-				$query = ('SELECT `team`,`last_login`,`comment`,`logo`,`md5password`'
+				$query = ('SELECT `team`,`last_login`,`comment`,`logo`,`md5password`,`utczone`'
 						  . ' FROM `l_player` WHERE `l_player`.`callsign`='
 						  . sqlSafeStringQuotes($current_name)
 						  . ' LIMIT 1');
@@ -187,12 +190,14 @@
 				$team = (int) 0;
 				$comment = '';
 				$logo = '';
+				$timezone = (int) 0;
 				while ($tmp_row = mysql_fetch_array($tmp_result))
 				{
 					$last_login = $tmp_row['last_login'];
 					$team = $tmp_row['team'];
 					$comment = $site->linebreaks($tmp_row['comment']);
 					$logo = $tmp_row['logo'];
+					$timezone = $tmp_row['utczone'];
 					$md5password = $tmp_row['md5password'];
 				}
 				mysql_free_result($tmp_result);
@@ -231,11 +236,12 @@
 				// execute query, ignore result
 				$site->execute_query($site->db_used_name(), 'players', $query, $connection);
 				
-				$query = ('INSERT INTO `players_profile` (`playerid`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
+				$query = ('INSERT INTO `players_profile` (`playerid`,`UTC`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
 						  . ' VALUES '
-						  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes(utf8_encode($comment))
-						  . ',' . sqlSafeStringQuotes(utf8_encode($comment)) . ',' . sqlSafeStringQuotes($row['created'])
-						  . ',' . sqlSafeStringQuotes($last_login) . ',' . sqlSafeStringQuotes($logo)
+						  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($timezone)
+						  . ',' . sqlSafeStringQuotes(utf8_encode($comment)) . ',' . sqlSafeStringQuotes(utf8_encode($comment))
+						  . ',' . sqlSafeStringQuotes($row['created']) . ',' . sqlSafeStringQuotes($last_login)
+						  . ',' . sqlSafeStringQuotes($logo)
 						  . ')');
 				// execute query, ignore result
 				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);

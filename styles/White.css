@@ -483,7 +483,7 @@ span.user_profile_name + div.user_profile_team_name
 	margin-bottom: 1em;
 }
 
-div.user_profile_location_description_row
+div.user_profile_location_timezone_row
 {
 	margin-bottom: 1em;
 }
