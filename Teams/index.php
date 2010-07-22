@@ -1847,7 +1847,7 @@
 		// list the non deleted teams
 		// example query: SELECT `teamid`,`name`, `score`, `member_count`,`activity`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
 		// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
-		$query = 'SELECT `teamid`,`name`, `score`,`activity`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
+		$query = 'SELECT `teamid`,`name`, `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
 		$query .= 'WHERE `teams`.`id` = `teams_overview`.`teamid`';
 		$query .= ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'";
 		$query .= ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')';
@@ -1888,6 +1888,7 @@
 				echo '<tr>' . "\n";
 				echo '	<th>Name</th>' . "\n";
 				echo '	<th>Score</th>' . "\n";
+				echo '	<th>Matches</th>' . "\n";
 				echo '	<th>Members</th>' . "\n";
 				echo '	<th>Activity</th>' . "\n";
 				if ($player_teamless)
@@ -1909,6 +1910,7 @@
 						echo $team['name'] . '</a></td>' . "\n";
 					}
 					echo '	<td>' . $team['score'] . '</td>' . "\n";
+					echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
 					echo '	<td>' . $team['member_count'] . '</td>' . "\n";
 					echo '	<td>' . $team['activity'] . '</td>' . "\n";
 					if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
@@ -1951,6 +1953,7 @@
 					$inactive_teams[$row['teamid']]['teamid'] = $row['teamid'];
 					$inactive_teams[$row['teamid']]['name'] = $row['name'];
 					$inactive_teams[$row['teamid']]['score'] = $row['score'];
+					$inactive_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
 					$inactive_teams[$row['teamid']]['member_count'] = $row['member_count'];
 					$inactive_teams[$row['teamid']]['activity'] = $row['activity'];
 					$inactive_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
@@ -1961,6 +1964,7 @@
 					$active_teams[$row['teamid']]['teamid'] = $row['teamid'];
 					$active_teams[$row['teamid']]['name'] = $row['name'];
 					$active_teams[$row['teamid']]['score'] = $row['score'];
+					$active_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
 					$active_teams[$row['teamid']]['member_count'] = $row['member_count'];
 					$active_teams[$row['teamid']]['activity'] = $row['activity'];
 					$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];

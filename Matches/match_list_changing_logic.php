@@ -1308,27 +1308,45 @@
 				{
 					// update team 1 data
 					$query = 'UPDATE `teams_profile` SET ';
-					$query .= '`num_matches_won`=`num_matches_won`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ', `num_matches_played`=`num_matches_played`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
+					$query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 					{
 						unlock_tables();
-						$site->dieAndEndPage('Could not update win/played count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
+						$site->dieAndEndPage('Could not update win count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
 					}
+					$query = 'UPDATE `teams_overview` SET ';
+					$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
+					// only one team needs to be updated
+					$query .= ' LIMIT 1';
+					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						unlock_tables();
+						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
+					}
+					
 					// update team 2 data
 					$query = 'UPDATE `teams_profile` SET ';
-					$query .= '`num_matches_lost`=`num_matches_lost`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ', `num_matches_played`=`num_matches_played`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
+					$query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update win/played count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
+					}
+					$query = 'UPDATE `teams_overview` SET ';
+					$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
+					// only one team needs to be updated
+					$query .= ' LIMIT 1';
+					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						unlock_tables();
+						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
 					}
 				}
 				
@@ -1337,27 +1355,46 @@
 				{
 					// update team 1 data
 					$query = 'UPDATE `teams_profile` SET ';
-					$query .= '`num_matches_lost`=`num_matches_lost`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ', `num_matches_played`=`num_matches_played`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
+					$query .= '`num_matches_lost`=`num_matches_lost`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 					{
 						unlock_tables();
-						$site->dieAndEndPage('Could not update lost/played count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
+						$site->dieAndEndPage('Could not update lost count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
 					}
+					$query = 'UPDATE `teams_overview` SET ';
+					$query .= ', `num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
+					// only one team needs to be updated
+					$query .= ' LIMIT 1';
+					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						unlock_tables();
+						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
+					}
+					
 					// update team 2 data
 					$query = 'UPDATE `teams_profile` SET ';
-					$query .= '`num_matches_won`=`num_matches_won`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ', `num_matches_played`=`num_matches_played`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
+					$query .= '`num_matches_won`=`num_matches_won`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeString($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 					{
 						unlock_tables();
-						$site->dieAndEndPage('Could not update lost/played count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
+						$site->dieAndEndPage('Could not update win count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
+					}
+					$query = 'UPDATE `teams_overview` SET ';
+					$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeString($team_id2) . ')';
+					// only one team needs to be updated
+					$query .= ' LIMIT 1';
+					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						unlock_tables();
+						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
 					}
 				}
 				
@@ -1366,28 +1403,47 @@
 				{
 					// update team 1 data
 					$query = 'UPDATE `teams_profile` SET ';
-					$query .= '`num_matches_draw`=`num_matches_draw`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ', `num_matches_played`=`num_matches_played`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id1) . "'" . ')';
+					$query .= '`num_matches_draw`=`num_matches_draw`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 					{
 						unlock_tables();
-						$site->dieAndEndPage('Could not update draw/played count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
+						$site->dieAndEndPage('Could not update draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
 					}
+					$query = 'UPDATE `teams_overview` SET ';
+					$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
+					// only one team needs to be updated
+					$query .= ' LIMIT 1';
+					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						unlock_tables();
+						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
+					}
+					
 					// update team 2 data
 					$query = 'UPDATE `teams_profile` SET ';
-					$query .= '`num_matches_draw`=`num_matches_draw`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ', `num_matches_played`=`num_matches_played`-' . "'" . sqlSafeString('1') . "'";
-					$query .= ' WHERE (`teamid`=' . "'" . sqlSafeString($team_id2) . "'" . ')';
+					$query .= '`num_matches_draw`=`num_matches_draw`-' . sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
 					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
 					{
 						unlock_tables();
-						$site->dieAndEndPage('Could not update draw/played count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
-					}					
+						$site->dieAndEndPage('Could not update draw count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
+					}
+					$query = 'UPDATE `teams_overview` SET ';
+					$query .= '`num_matches_played`=`num_matches_played`-' .  sqlSafeStringQuotes('1');
+					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
+					// only one team needs to be updated
+					$query .= ' LIMIT 1';
+					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					{
+						unlock_tables();
+						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
+					}
 				}
 				
 				$query = 'DELETE FROM `matches` WHERE `id`=' . sqlSafeStringQuotes($match_id);

@@ -325,29 +325,15 @@
 			{
 				$activity_status = 2;
 			}
-			$query = ('INSERT INTO `teams_overview` (`teamid`,`score`,`member_count`,`any_teamless_player_can_join`,`deleted`)'
+			$query = ('INSERT INTO `teams_overview` (`teamid`,`score`,`member_count`,`any_teamless_player_can_join`,`deleted`,`num_matches_played`)'
 					  . ' VALUES '
 					  . '(' . sqlSafeStringQuotes($row['id']) . ',' . sqlSafeStringQuotes($row['score'])
 					  . ',' . '(SELECT COUNT(*) FROM `players` WHERE `players`.`teamid`=' . sqlSafeStringQuotes($row['id']) . ') '
-					  . ',' . sqlSafeStringQuotes($row['adminclosed']) . ',' .sqlSafeStringQuotes($activity_status)
-					  . ')');
-			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
-			
-			$activity_status = 1;
-			if (!(strcmp($row['active'], 'yes') === 0))
-			{
-				$activity_status = 0;
-			}
-			$query = ('INSERT INTO `teams_profile` (`teamid`,`num_matches_played`,`num_matches_won`,`num_matches_draw`,`num_matches_lost`'
-					  . ',`description`,`raw_description`, `logo_url`,`created`)'
-					  . ' VALUES '
-					  . '(' . sqlSafeStringQuotes($row['id']));
-			
+					  . ',' . sqlSafeStringQuotes($row['adminclosed']) . ',' .sqlSafeStringQuotes($activity_status));
 			// total matches
 			$tmp_query = ('SELECT COUNT(*) AS `num_matches` FROM `bzl_match` WHERE (`team1`='
 						  . sqlSafeStringQuotes($row['id']) . ' OR `team2`=' . sqlSafeStringQuotes($row['id'])
-						  . ')');
+						  . ') LIMIT 1');
 			if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'bzl_match', $tmp_query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -358,6 +344,20 @@
 				$query .= ', ' . sqlSafeStringQuotes($tmp_row['num_matches']);
 			}
 			mysql_free_result($tmp_result);
+			$query .= ')';
+			
+			// execute query, ignore result
+			@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+			
+			$activity_status = 1;
+			if (!(strcmp($row['active'], 'yes') === 0))
+			{
+				$activity_status = 0;
+			}
+			$query = ('INSERT INTO `teams_profile` (`teamid`,`num_matches_won`,`num_matches_draw`,`num_matches_lost`'
+					  . ',`description`,`raw_description`, `logo_url`,`created`)'
+					  . ' VALUES '
+					  . '(' . sqlSafeStringQuotes($row['id']));
 			
 			// matches won
 			$tmp_query = ('SELECT COUNT(*) AS `num_matches` FROM `bzl_match` WHERE (`team1`='

@@ -12,19 +12,19 @@
 		global $connection;
 		global $site;
 		
-		$query = 'UPDATE `teams_profile` SET ';
+		$query = 'UPDATE `teams_overview` SET ';
 		$query .= '`num_matches_played`=`num_matches_played`+' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
-			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+			$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
 		}
 		
-		$query = 'UPDATE `teams_overview` SET `deleted`=' . "'" . sqlSafeString('1') . "'";
-		$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($teamid). "'";
+		$query = 'UPDATE `teams_overview` SET `deleted`=' . sqlSafeStringQuotes('1');
+		$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
 			$site->dieAndEndPage('Could not mark team with id ' . sqlSafeString($teamid) . ' as active!');
@@ -88,15 +88,15 @@
 		global $connection;
 		global $site;
 		
-		$query = 'UPDATE `teams_profile` SET ';
+		$query = 'UPDATE `teams_overview` SET ';
 		$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
-			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
+			$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
 		}
 		
 		// the team did not participate in the newer version and its score did depend on the former match
