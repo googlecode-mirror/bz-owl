@@ -173,95 +173,99 @@
 				$current_name = htmlent(substr($row['callsign'],0,-10));
 			}
 			
-			// is user already added to db?
-			// callsigns are case treated insensitive
-			if (!isset($players[strtolower($current_name)]))
+			// no empty usernames allowed
+			if (!(strcmp($current_name, '') === 0))
 			{
-				$query = ('SELECT `team`,`last_login`,`comment`,`logo`,`md5password`,`utczone`'
-						  . ' FROM `l_player` WHERE `l_player`.`callsign`='
-						  . sqlSafeStringQuotes($current_name)
-						  . ' LIMIT 1');
-				if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+				// is user already added to db?
+				// callsigns are case treated insensitive
+				if (!isset($players[strtolower($current_name)]))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage();
-				}
-				$last_login = '';
-				$team = (int) 0;
-				$comment = '';
-				$logo = '';
-				$timezone = (int) 0;
-				while ($tmp_row = mysql_fetch_array($tmp_result))
-				{
-					$last_login = $tmp_row['last_login'];
-					$team = $tmp_row['team'];
-					$comment = $site->linebreaks($tmp_row['comment']);
-					$logo = $tmp_row['logo'];
-					$timezone = $tmp_row['utczone'];
-					$md5password = $tmp_row['md5password'];
-				}
-				mysql_free_result($tmp_result);
-				
-				
-				// take care of deleted players
-				$query = ('SELECT `last_login`, (SELECT COUNT(*) FROM `l_player` WHERE `callsign`='
-						  . sqlSafeStringQuotes($current_name) . ' LIMIT 1) AS `num_not_deleted`'
-						  . ' FROM `l_player` WHERE `l_player`.`callsign`='
-						  . sqlSafeStringQuotes($current_name . ' (DELETED)')
-						  . ' ORDER BY `last_login` DESC LIMIT 1');
-				if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
-				{
-					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage();
-				}
-				while ($tmp_row = mysql_fetch_array($tmp_result))
-				{
-					if (strcmp($last_login, '') === 0)
+					$query = ('SELECT `team`,`last_login`,`comment`,`logo`,`md5password`,`utczone`'
+							  . ' FROM `l_player` WHERE `l_player`.`callsign`='
+							  . sqlSafeStringQuotes($current_name)
+							  . ' LIMIT 1');
+					if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+					{
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPage();
+					}
+					$last_login = '';
+					$team = (int) 0;
+					$comment = '';
+					$logo = '';
+					$timezone = (int) 0;
+					while ($tmp_row = mysql_fetch_array($tmp_result))
 					{
 						$last_login = $tmp_row['last_login'];
+						$team = $tmp_row['team'];
+						$comment = $site->linebreaks($tmp_row['comment']);
+						$logo = $tmp_row['logo'];
+						$timezone = $tmp_row['utczone'];
+						$md5password = $tmp_row['md5password'];
 					}
-					if ((int) $tmp_row['num_not_deleted'] === 0)
+					mysql_free_result($tmp_result);
+					
+					
+					// take care of deleted players
+					$query = ('SELECT `last_login`, (SELECT COUNT(*) FROM `l_player` WHERE `callsign`='
+							  . sqlSafeStringQuotes($current_name) . ' LIMIT 1) AS `num_not_deleted`'
+							  . ' FROM `l_player` WHERE `l_player`.`callsign`='
+							  . sqlSafeStringQuotes($current_name . ' (DELETED)')
+							  . ' ORDER BY `last_login` DESC LIMIT 1');
+					if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
 					{
-						// set password to empty..you can not expect them to know the old password
-						$md5password = '';
+						// query was bad, error message was already given in $site->execute_query(...)
+						$site->dieAndEndPage();
 					}
+					while ($tmp_row = mysql_fetch_array($tmp_result))
+					{
+						if (strcmp($last_login, '') === 0)
+						{
+							$last_login = $tmp_row['last_login'];
+						}
+						if ((int) $tmp_row['num_not_deleted'] === 0)
+						{
+							// set password to empty..you can not expect them to know the old password
+							$md5password = '';
+						}
+					}
+					
+					
+					$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`status`)'
+							  . ' VALUES '
+							  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($team)
+							  . ',' . sqlSafeStringQuotes($current_name) . ',' . sqlSafeStringQuotes($suspended_status)
+							  . ')');
+					// execute query, ignore result
+					$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+					
+					$query = ('INSERT INTO `players_profile` (`playerid`,`UTC`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
+							  . ' VALUES '
+							  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($timezone)
+							  . ',' . sqlSafeStringQuotes(utf8_encode($comment)) . ',' . sqlSafeStringQuotes(utf8_encode($comment))
+							  . ',' . sqlSafeStringQuotes($row['created']) . ',' . sqlSafeStringQuotes($last_login)
+							  . ',' . sqlSafeStringQuotes($logo)
+							  . ')');
+					// execute query, ignore result
+					@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+					
+					$query = ('INSERT INTO `players_passwords` (`playerid`,`password`,`password_encoding`)'
+							  . ' VALUES '
+							  . '(' . sqlSafeStringQuotes($index_num)
+							  . ',' . sqlSafeStringQuotes($md5password)
+							  . ',' . sqlSafeStringQuotes('md5')
+							  . ')');
+					// execute query, ignore result
+					@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+					
+					// mark the user has been added to db
+					// callsigns are case treated insensitive
+					$players[strtolower($current_name)] = true;
 				}
+				$deleted_players[$row['id']]['callsign'] = $current_name;
 				
-				
-				$query = ('INSERT INTO `players` (`id`,`teamid`,`name`,`status`)'
-						  . ' VALUES '
-						  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($team)
-						  . ',' . sqlSafeStringQuotes($current_name) . ',' . sqlSafeStringQuotes($suspended_status)
-						  . ')');
-				// execute query, ignore result
-				$site->execute_query($site->db_used_name(), 'players', $query, $connection);
-				
-				$query = ('INSERT INTO `players_profile` (`playerid`,`UTC`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
-						  . ' VALUES '
-						  . '(' . sqlSafeStringQuotes($index_num) . ',' . sqlSafeStringQuotes($timezone)
-						  . ',' . sqlSafeStringQuotes(utf8_encode($comment)) . ',' . sqlSafeStringQuotes(utf8_encode($comment))
-						  . ',' . sqlSafeStringQuotes($row['created']) . ',' . sqlSafeStringQuotes($last_login)
-						  . ',' . sqlSafeStringQuotes($logo)
-						  . ')');
-				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
-				
-				$query = ('INSERT INTO `players_passwords` (`playerid`,`password`,`password_encoding`)'
-						  . ' VALUES '
-						  . '(' . sqlSafeStringQuotes($index_num)
-						  . ',' . sqlSafeStringQuotes($md5password)
-						  . ',' . sqlSafeStringQuotes('md5')
-						  . ')');
-				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
-				
-				// mark the user has been added to db
-				// callsigns are case treated insensitive
-				$players[strtolower($current_name)] = true;
+				$index_num++;
 			}
-			$deleted_players[$row['id']]['callsign'] = $current_name;
-			
-			$index_num++;
 		}
 		unset($players);
 		
@@ -729,7 +733,7 @@
 	
 	// (should take about 3 minutes to import the data until this point)
 	// disable this when not doing the final import because this last step would take 90 minutes
-//	resolve_visits_log_hosts();
+	resolve_visits_log_hosts();
 	
 	// done
 ?>

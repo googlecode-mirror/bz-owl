@@ -1868,6 +1868,12 @@
 				global $viewerid;
 				global $player_teamless;
 				
+				// do not display empty team tables
+				if (count($teams) === 0)
+				{
+					return;
+				}
+				
 				// id's have to be unique
 				// append table name with lowercase
 				$table_id = 'table_team_members_' . strtolower($table_title);
