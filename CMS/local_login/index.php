@@ -79,6 +79,11 @@
 			die_with_no_login($msg);
 		}
 		
+		if (intval($playerid) === 0)
+		{
+			die_with_no_login('The specified user is not registered. You may want to <a href="./">try logging in again</a>.');
+		}
+		
 		// get password from database in order to compare it with the user entered password
 		$query = 'SELECT `password`, `password_encoding` FROM `players_passwords` WHERE `playerid`=' . sqlSafeStringQuotes($playerid);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
@@ -116,7 +121,8 @@
 			{
 				require_once '../CMS/navi.inc';
 				echo '<div class="static_page_box">' . "\n";
-				echo '<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.</p>' . "\n";
+				echo ('<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.'
+					  . ' You may want to <a href="./">try logging in again</a>.</p>' . "\n");
 				$site->dieAndEndPage();
 			}
 		} else
@@ -130,7 +136,7 @@
 			// TODO: automatically log these cases and lock account for some hours after several unsuccessful tries
 			require_once '../CMS/navi.inc';
 			echo '<div class="static_page_box">' . "\n";
-			echo '<p class="first_p">Your password does not match the stored password.</p>' . "\n";
+			echo '<p class="first_p">Your password does not match the stored password. You may want to <a href="./">try logging in again</a>.</p>' . "\n";
 			$site->dieAndEndPage();
 		}
 		

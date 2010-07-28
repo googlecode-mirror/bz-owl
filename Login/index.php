@@ -439,8 +439,7 @@
 			// update the callsign from the other player in case he did
 			// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194')
 			// AND (`external_playerid` <> '') AND (`status`='active' OR `status`='deleted')
-			// FIXME sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
-			// FIXME: find out if this depends on platform
+			// FIXME: sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
 			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ')';
 			$query .= ' AND (`external_playerid` <> ' . sqlSafeStringQuotes($_SESSION['external_id']) . ')';
 			// do not update users with local login
