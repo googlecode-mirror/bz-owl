@@ -233,7 +233,7 @@
 							$query .= '(' . sqlSafeStringQuotes ('0');
 							$query .= ', ' . sqlSafeStringQuotes('Welcome!') . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 							$query .= ', ' . sqlSafeStringQuotes('Welcome and thanks for registering at this website!' . "\n"
-																 . 'In the FAQ you can find the most important informations about organising and playin matches.'
+																 . 'In the FAQ you can find the most important informations about organising and playing matches.'
 																 . "\n\n" .
 																 'See you on the battlefield.');
 							$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($user_id) . ')';
