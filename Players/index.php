@@ -124,7 +124,7 @@
 		// was the player deleted during maintenance
 		$query = 'SELECT `status` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 		// 1 means maintenance-deleted
-		$query .= ' AND `suspended`<>' . sqlSafeStringQuotes('deleted');
+		$query .= ' AND `status`<>' . sqlSafeStringQuotes('deleted');
 		// only information about one player needed
 		$query .= ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
