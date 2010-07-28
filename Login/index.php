@@ -72,6 +72,7 @@
 		$query = 'SELECT `id`, ';
 		// only need an external login id in case an external login was performed by the viewing player
 		// but look it up to find out if user is global login enabled
+		// NOTE: this is only done as fallback in case the login module does not already handle it
 		$query .= ' `external_playerid`, ';
 		$query .= '`status` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
@@ -414,12 +415,12 @@
 					{
 						$msg .= '</p><p>';
 					}
-					$msg .= '<span class="unread_messages">The hoster of this website has disabled local logins. You should ';
+					$msg .= '<span class="unread_messages">Local logins are disabled on this website. You should ';
 					if (isset($module['bzbb']) && ($module['bzbb']))
 					{
 						$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 						$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
-						$msg .= '">login using your my.bzflag.org/bb/ account';
+						$msg .= '">login using your my.bzflag.org/bb/ (forum) account';
 					} else
 					{
 						$msg .= '<a href="./">login using your external account';

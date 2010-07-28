@@ -32,7 +32,12 @@
 		}
 		
 		// get player id
-		$query = 'SELECT `id` FROM `players` WHERE `name`=' . "'" . sqlSafeString($loginname) . "'";
+		$query = 'SELECT `id`';
+		if ($site->force_external_login_when_trying_local_login())
+		{
+			$query .= ', `external_playerid` ';
+		}
+		$query .= ' FROM `players` WHERE `name`=' . sqlSafeStringQuotes($loginname);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
 		
@@ -47,11 +52,32 @@
 		
 		// initialise with reserved player id 0 (no player)
 		$playerid = (int) 0;
+		$convert_to_external_login = true;
 		while($row = mysql_fetch_array($result))
 		{
 			$playerid = $row['id'];
+			if ($site->force_external_login_when_trying_local_login() && !(strcmp(($row['external_playerid']), '') === 0))
+			{
+				$convert_to_external_login = false;
+			}
 		}
 		mysql_free_result($result);
+		
+		if (!$convert_to_external_login && $site->force_external_login_when_trying_local_login())
+		{
+			$msg = '<span class="unread_messages">Local logins are disabled on this website. You should ';
+			if (isset($module['bzbb']) && ($module['bzbb']))
+			{
+				$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
+				$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
+				$msg .= '">login using your my.bzflag.org/bb/ (forum) account';
+			} else
+			{
+				$msg .= '<a href="./">login using your external account';
+			}
+			$msg .= '</a>.</span>' . "\n";
+			die_with_no_login($msg);
+		}
 		
 		// get password from database in order to compare it with the user entered password
 		$query = 'SELECT `password`, `password_encoding` FROM `players_passwords` WHERE `playerid`=' . sqlSafeStringQuotes($playerid);
