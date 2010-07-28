@@ -44,7 +44,11 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	// permissions for private messages
 	allow_add_messages();
 	allow_delete_messages();
-	//	}
+	
+	// match permissions for pulbic testing
+	// FIXME: Remove that after public test!
+	allow_add_match();
+	allow_edit_match();
 	
 	// test only for GU-LEAGUE.ADMINS group
 	$group_test = array_slice($groups, 1, 1);
