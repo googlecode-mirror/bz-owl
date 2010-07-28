@@ -45,7 +45,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	allow_add_messages();
 	allow_delete_messages();
 	
-	// match permissions for pulbic testing
+	// match permissions for public testing
 	// FIXME: Remove that after public test!
 	allow_add_match();
 	allow_edit_match();
