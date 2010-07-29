@@ -610,12 +610,15 @@
 		}
 		while ($row = mysql_fetch_array($result))
 		{
+			$text = $site->linebreaks($row['text']);
+			$text = str_replace('&', '&amp;', $text);
+			
 			$query = ('INSERT INTO `news` (`timestamp`,`author`,`announcement`,`raw_announcement`)'
 					  . ' VALUES '
 					  . '(' . sqlSafeStringQuotes($row['newsdate'])
 					  . ',' . sqlSafeStringQuotes($row['authorname'])
-					  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
-					  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
+					  . ',' . sqlSafeStringQuotes($text)
+					  . ',' . sqlSafeStringQuotes($text)
 					  . ')');
 			// execute query, ignore result
 			@$site->execute_query($site->db_used_name(), 'news', $query, $connection);

@@ -148,8 +148,8 @@ CREATE TABLE `messages_users_connection` (
   KEY `msgid` (`msgid`),
   KEY `playerid` (`playerid`),
   KEY `msg_status` (`msg_status`),
-  CONSTRAINT `messages_users_connection_ibfk_4` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `messages_users_connection_ibfk_3` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `messages_users_connection_ibfk_1` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `messages_users_connection_ibfk_2` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
 
 

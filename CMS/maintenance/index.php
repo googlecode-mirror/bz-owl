@@ -112,13 +112,13 @@
 	update_activity();
 	
 	
-	function update_activity($teamid)
+	function update_activity($teamid=false)
 	{
 		global $site;
 		global $connection;
 		
 		// update team activity
-		if (!isset($teamid))
+		if ($teamid === false)
 		{
 			$num_active_teams = 0;
 			// find out the number of active teams
