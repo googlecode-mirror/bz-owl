@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.48)
 # Database: testdb
-# Generation Time: 2010-07-28 15:30:21 +0200
+# Generation Time: 2010-07-29 11:13:42 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -148,7 +148,7 @@ CREATE TABLE `messages_users_connection` (
   KEY `msgid` (`msgid`),
   KEY `playerid` (`playerid`),
   KEY `msg_status` (`msg_status`),
-  CONSTRAINT `messages_users_connection_ibfk_2` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `messages_users_connection_ibfk_4` FOREIGN KEY (`msgid`) REFERENCES `messages_storage` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `messages_users_connection_ibfk_3` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Connects messages to users';
 
@@ -265,9 +265,10 @@ DROP TABLE IF EXISTS `static_pages`;
 
 CREATE TABLE `static_pages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `author` varchar(255) DEFAULT NULL,
-  `page_name` tinytext,
+  `author` varchar(255) NOT NULL,
+  `page_name` tinytext NOT NULL,
   `content` mediumtext NOT NULL,
+  `raw_content` mediumtext NOT NULL,
   `last_modified` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
