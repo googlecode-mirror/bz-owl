@@ -56,7 +56,7 @@
 		$item = $result_team;
 	}
 	
-	function displayMessage(&$result, &$can_reply, &$team_message_from_team_id, &$id)
+	function displayMessage(&$result, &$can_reply, &$team_message_from_team_id, $id)
 	{
 		global $site;
 		global $connection;
@@ -105,6 +105,9 @@
 			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_status`=';
 			$query .= sqlSafeStringQuotes('read') . ' WHERE `msgid`=' . sqlSafeStringQuotes($id);
 			$query .= ' AND `in_' . $folder . '`=' . "'" . '1' . "'";
+			// TODO: find out why connection isn't set up proper
+			// TODO: when this function is called from final deletion step in delete.php
+			$connection = $site->connect_to_db();
 			// silently ignore the result, it's not a resource anyway so it can't even be dropped
 			$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
 		}

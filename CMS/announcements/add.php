@@ -83,14 +83,14 @@
 		if (isset($_POST['teamid']))
 		{
 			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `status`='active' AND `teamid`='1'
-			$query = 'SELECT `id`,`name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($item) . "'";
+			$query = 'SELECT `id`,`name` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($item);
 			$query .= ' AND `status`=' . sqlSafeStringQuotes('active');
-			$query .= ' AND `teamid`=' . "'" . sqlSafeString($_POST['teamid']) . "'";
+			$query .= ' AND `teamid`=' . sqlSafeStringQuotes($_POST['teamid']);
 		} else
 		{
 			// example query: SELECT `id`,`name` FROM `players` WHERE `name`='ts' AND `status`='active'
 			$query = 'SELECT `id`,`name` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($item);
-			$query .= ' AND `status`=' . sqlSafeStringQuotes('0');
+			$query .= ' AND `status`=' . sqlSafeStringQuotes('active');
 		}
 		if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))
 		{

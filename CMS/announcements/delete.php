@@ -120,41 +120,61 @@
 			if ($message_mode)
 			{
 				require_once('msgUtils.php');
-				displayMessage(sqlSafeString($currentId), $site, $connection, NULL);
-			} else
-			{
-				// the "LIMIT 0,1" part of query means only the first entry is received
-				// this speeds up the query as there is only one row as result anyway
-				$query = 'SELECT * FROM `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' LIMIT 0,1';
+				$query = ('SELECT `subject`'
+						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
+						  . ',' . sqlSafeStringQuotes($site->displayed_system_username()) . ') AS `author`'
+						  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `status` FROM `players` WHERE `id`=`author_id`),'
+						  . sqlSafeStringQuotes('') . ') AS `author_status`'
+						  . ',`author_id`,`timestamp`,`message`,`messages_storage`.`from_team`,`messages_storage`.`recipients`'
+						  . ' FROM `messages_storage`,`messages_users_connection`'
+						  . ' WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`'
+						  . ' AND `messages_users_connection`.`playerid`=' . sqlSafeStringQuotes(getUserID())
+						  . ' AND `messages_storage`.`id`=' . sqlSafeStringQuotes($currentId)
+						  // we need only 1 entry to know if the message does not exist
+						  // or if there are no permissions to view the message
+						  // but we do not know which one of both is exactly not fulfilled
+						  . ' LIMIT 1');
 				$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
 				if (!$result)
 				{
 					$site->dieAndEndPage();
 				}
-				
-				$rows = mysql_num_rows($result);
-				// there is only one row as result
-				if ($rows === 1)
+				displayMessage($result, $reply_possible, $connection, sqlSafeString($currentId));
+				unset($reply_possible);
+				$site->dieAndEndPage();
+			}
+			
+			// the "LIMIT 0,1" part of query means only the first entry is received
+			// this speeds up the query as there is only one row as result anyway
+			$query = 'SELECT * FROM `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' LIMIT 0,1';
+			$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
+			if (!$result)
+			{
+				$site->dieAndEndPage();
+			}
+			
+			$rows = mysql_num_rows($result);
+			// there is only one row as result
+			if ($rows === 1)
+			{
+				// read each entry, row by row
+				while($row = mysql_fetch_array($result))
 				{
-					// read each entry, row by row
-					while($row = mysql_fetch_array($result))
-					{
-						// display the row to the user
-						echo '<div class="article">' . "\n";
-						echo '<div class="article_header">' . "\n";
-						echo '<div class="timestamp">';
-						echo htmlent($row['timestamp']);
-						echo '</div>' . "\n";
-						echo '<div class="author"> By: ';
-						echo htmlent($row['author']);
-						echo '</div>' . "\n";
-						echo '</div>' . "\n";
-						echo '<p>' . $row['announcement'] . '</p>' . "\n";
-						echo '</div>' . "\n\n";
-					}
-					// done
-					mysql_free_result($result);
+					// display the row to the user
+					echo '<div class="article">' . "\n";
+					echo '<div class="article_header">' . "\n";
+					echo '<div class="timestamp">';
+					echo htmlent($row['timestamp']);
+					echo '</div>' . "\n";
+					echo '<div class="author"> By: ';
+					echo htmlent($row['author']);
+					echo '</div>' . "\n";
+					echo '</div>' . "\n";
+					echo '<p>' . $row['announcement'] . '</p>' . "\n";
+					echo '</div>' . "\n\n";
 				}
+				// done
+				mysql_free_result($result);
 			}
 		}
 	}
