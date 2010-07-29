@@ -94,8 +94,7 @@
 		}
 	}
 	
-	
-	function readContent($page_title, $site, $connection, &$author, &$last_modified)
+	function readContent($page_title, $site, $connection, &$author, &$last_modified, $raw=false)
 	{
 		// initialise return variable so any returned value will be always in a defined state
 		$content = '<p class="first_p">No content available yet.</p>';
@@ -111,7 +110,13 @@
 		{	 
 			$author = $row['author'];
 			$last_modified = $row['last_modified'];
-			$content = $row['content'];
+			if ($raw && $site->bbcode_lib_available())
+			{
+				$content = $row['raw_content'];
+			} else
+			{
+				$content = $row['content'];
+			}
 		}
 		
 		mysql_free_result($result);
@@ -145,20 +150,34 @@
 		{
 			// no entry in table regarding current page
 			// thus insert new data
-			$query = 'INSERT INTO `static_pages` (`author`, `page_name`, `content`, `last_modified`) VALUES (';
+			$query = 'INSERT INTO `static_pages` (`author`, `page_name`, `raw_content`, `content`, `last_modified`) VALUES (';
 			// getUserID() is a function from siteinfo.php that identifies the current user
-			$query .= "'" . sqlSafeString(getUserID()) . "'";
-			$query .= ', ' . "'" . sqlSafeString($page_title) . "'";
-			$query .= ', ' . "'" . sqlSafeString($content) . "'";
-			$query .= ', ' . "'" . sqlSafeString($date_format) . "'";
+			$query .= sqlSafeStringQuotes(getUserID());
+			$query .= ', ' . sqlSafeStringQuotes($page_title);
+			$query .= ', ' . sqlSafeStringQuotes($content);
+			if ($site->bbcode_lib_available())
+			{
+				$query .= ', ' . sqlSafeStringQuotes($site->bbcode($content));
+			} else
+			{
+				$query .= ', ' . sqlSafeStringQuotes($content);
+			}
+			$query .= ', ' . sqlSafeStringQuotes($date_format);
 			$query .= ')';
 		} else
 		{
 			// either 1 or more entries found, just assume there is only one
-			$query = 'UPDATE `static_pages` SET `author`=' . "'" . sqlSafeString(getUserID()) . "'";
-			$query .= ', `content`=' . "'" . sqlSafeString($content) . "'";
-			$query .= ', `last_modified`=' . "'" . sqlSafeString($date_format) . "'";
-			$query .= ' WHERE `page_name`=' . "'" . sqlSafeString($page_title) . "'";
+			$query = 'UPDATE `static_pages` SET `author`=' . sqlSafeStringQuotes(getUserID());
+			$query .= ', `raw_content`=' . sqlSafeStringQuotes($content);
+			if ($site->bbcode_lib_available())
+			{
+				$query .= ', `content`=' . sqlSafeStringQuotes($site->bbcode($content));
+			} else
+			{
+				$query .= ', `content`=' . sqlSafeStringQuotes($content);
+			}			
+			$query .= ', `last_modified`=' . sqlSafeStringQuotes($date_format);
+			$query .= ' WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
 			$query .= ' LIMIT 1';
 		}
 		
@@ -175,15 +194,6 @@
 		echo '<p>Updating: No problems occured, changes written successfully!</p>' . "\n";
 		// we are done updating, do not show the edit field again
 		$site->dieAndEndPage();
-	} else
-	{
-		if ($previewSeen < 1)
-		{
-			$author = '';
-			$last_modified = '';
-			
-			$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
-		}
 	}
 		
 	if (isset($_GET['edit']))
@@ -217,14 +227,20 @@
 			echo '</p>' . "\n";
 		} else
 		{
-			echo '<p>Put the articles in p-tags and headlines into h1-tags to get their style being applied.</p>' . "\n";
-			if ($site->use_xtml())
+			if ($site->bbcode_lib_available())
 			{
-				echo '<div>Keep in mind the home page currently uses XHTML, not HTML.</div>' . "\n";
+				echo '<div>A BBCode library is available. Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
 			} else
 			{
-				echo '<div>Keep in mind the home page currently uses HTML, not XHTML.</div>' . "\n";
+				if ($site->use_xtml())
+				{
+					echo '<div>Keep in mind the home page currently uses XHTML, not HTML or BBCode.</div>' . "\n";
+				} else
+				{
+					echo '<div>Keep in mind the home page currently uses HTML, not XHTML or BBCode.</div>' . "\n";
+				}
 			}
+			$buffer = readContent($page_title, $site, $connection, $author, $last_modified, true);
 			echo '<div><textarea cols="75" rows="20" name="News">' . htmlent($buffer) . '</textarea></div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="1"');
@@ -238,6 +254,10 @@
 	} else
 	{
 		echo '<div class="static_page_box">' . "\n";
+		$author = '';
+		$last_modified = '';
+		
+		$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
 		echo $buffer;
 	}
 ?>

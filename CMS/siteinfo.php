@@ -307,6 +307,11 @@
 			die("\n". '</div>' . "\n" . '</body>' . "\n" . '</html>');
 		}
 		
+		function bbcode_lib_available()
+		{
+			return !(strcmp(bbcode_command(), '') === 0);
+		}
+		
 		// give ability to use a limited custom style
 		function bbcode($string)
 		{

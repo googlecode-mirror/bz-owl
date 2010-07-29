@@ -168,7 +168,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
-		if (isset($_SESSION['bzid']) && ((!strcmp($_SESSION['bzid'], '-1') == 0) || !(strcmp($_SESSION['bzid'], '0') == 0)))
+		if (isset($_SESSION['bzid']) && (!(strcmp($_SESSION['bzid'], '-1') == 0) || !(strcmp($_SESSION['bzid'], '0') == 0)))
 		{
 			$_SESSION['external_id'] = $_SESSION['bzid'];
 		}
