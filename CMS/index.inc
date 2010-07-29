@@ -18,10 +18,10 @@
 	}
 	echo '>' . "\n";
 	echo '<head>' . "\n";
-	echo '	' . ($site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"')) . "\n";
+	$site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"');
 
 	require (dirname(dirname(__FILE__)) . '/stylesheet.inc');
-	echo '  <title>';
+	echo '	<title>';
 	// display the title specified in $page_title
 	// the latter is defined in the script that includes this file
 	if (isset($display_page_title) && (!(strcmp($display_page_title, '') === 0)))
