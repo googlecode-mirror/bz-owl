@@ -213,7 +213,13 @@
 		{
 			echo '<p>Preview:</p>' . "\n";
 			echo '<div>';
-			echo $content;
+			if ($site->bbcode_lib_available())
+			{
+				echo $site->bbcode($content);
+			} else
+			{
+				echo $content;
+			}
 			echo '</div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlent($content) . '"');
