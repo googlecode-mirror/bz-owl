@@ -198,7 +198,7 @@
 		
 	if (isset($_GET['edit']))
 	{
-		echo '<form action="./?edit" method="post" name="form" accept-charset="utf-8">' . "\n";
+		echo '<form action="./?edit" enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8">' . "\n";
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
 		echo '<div>';
@@ -236,7 +236,9 @@
 			if ($site->bbcode_lib_available())
 			{
 				echo '<div>A BBCode library is available. Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
+				echo '<div>';
 				include 'bbcode_buttons.php';
+				echo '</div>';
 			} else
 			{
 				if ($site->use_xtml())

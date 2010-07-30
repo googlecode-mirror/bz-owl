@@ -2,7 +2,7 @@
 // license: public domain
 
 function insert(aTag, eTag) {
-  var input = document.forms['form'].elements['announcement'];
+  var input = document.forms[0].elements['announcement'];
   input.focus();
   /* für Internet Explorer */
   if(typeof document.selection != 'undefined') {

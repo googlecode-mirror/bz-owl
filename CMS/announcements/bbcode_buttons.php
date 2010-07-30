@@ -5,7 +5,6 @@
 	if ($site->bbcode_lib_available())
 	{
 		echo '<script type="text/javascript" src="' . baseaddress() . 'bbcode_buttons.js"></script>' . "\n";
-		echo '<div>';
 		$site->write_self_closing_tag('input type="button" name="bold" value="b" '
 									  . 'style="font-weight: bold;" '
 									  . 'onclick="' . "insert('[b]', '[/b]'" . ')"');
@@ -19,6 +18,5 @@
 									  . 'onclick="' . "insert('[img]', '[/img]'" . ')"');
 		$site->write_self_closing_tag('input type="button" name="url" value="url" '
 									  . 'onclick="' . "insert('[url]', '[/url]'" . ')"');		
-		echo '</div>' . "\n";
 	}
 ?>

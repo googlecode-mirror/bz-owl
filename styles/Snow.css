@@ -191,6 +191,19 @@ div.add
 	margin-top: 2mm;
 }
 
+div.msg_send > input[type=button]
+{
+	margin-bottom: 1mm;
+}
+div.msg_ann > input[type=button]
+{
+	margin-bottom: 1mm;
+}
+div.msg_edit > input[type=button]
+{
+	margin-bottom: 1mm;
+}
+
 textarea#msg_send_announcement
 {
 	width: 10.1cm;

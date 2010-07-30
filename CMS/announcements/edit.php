@@ -172,7 +172,7 @@
 					mysql_free_result($result);
 					
 					
-					echo "<form action=\x22" . baseaddress() . $name . '/?edit=' . $currentId . "\x22 method=\x22post\x22>\n";
+					echo '<form action="' . baseaddress() . $name . '/?edit=' . $currentId . '" method="post">' . "\n";
 					
 					// timestamp
 					echo '<div>' . "\n";
@@ -181,8 +181,20 @@
 					$site->write_self_closing_tag('input type="text" id="msg_edit_timestamp" name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"');
 					echo '	</span>' . "\n";
 					echo '</div>' . "\n";
-										
+					
 					// announcement
+					if ($site->bbcode_lib_available())
+					{
+						echo "\n" . '<div class="msg_edit">';
+						echo '<div class="invisi" style="display: inline;">';
+						echo '	<label class="msg_edit">bbcode:</label><span>';
+						echo '</div>';
+						include 'bbcode_buttons.php';
+						echo '</span>';
+						echo "\n";
+						echo '</div>' . "\n";
+					}
+					
 					echo '<div>' . "\n";
 					echo '	<label class="msg_edit" for="msg_send_announcement">Message:</label>' . "\n";
 					echo '	<span><textarea id="msg_send_announcement" rows="2" cols="30" name="announcement">';

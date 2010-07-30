@@ -133,7 +133,7 @@
 											  . '"');
 				echo "\n" . '	';
 				$site->write_self_closing_tag('input type="submit" name="remove_recipient' . $iteration_count
-											  . '" value="-" class="msg_send_remove_recipient">');
+											  . '" value="-" class="msg_send_remove_recipient"');
 				echo "\n";
 			} else
 			{
@@ -614,7 +614,7 @@
 				}
 				if ($message_mode)
 				{
-					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add';
+					echo '<form enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8" action="./?add';
 					if (isset($_GET['reply']))
 					{
 						echo '&amp;';
@@ -720,7 +720,7 @@
 				if ($previewSeen === 0)
 				{
 					echo '<div class="static_page_box">' . "\n";
-					echo '<form enctype="application/x-www-form-urlencoded" method="post" action="./?add';
+					echo '<form enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8" action="./?add';
 					if (isset($_GET['reply']))
 					{
 						echo '&amp;';
@@ -976,6 +976,33 @@
 					}
 					
 					// announcement, it may be set when adding another recipient in private message mode
+					if ($site->bbcode_lib_available())
+					{
+						echo "\n" . '<div class="';
+						if ($message_mode)
+						{
+							echo 'msg_send';
+						} else
+						{
+							echo 'msg_ann';
+						}
+						echo '">';
+						echo '<div class="invisi" style="display: inline;">';
+						echo '	<label class="';
+						if ($message_mode)
+						{
+							echo 'msg_send';
+						} else
+						{
+							echo 'msg_ann';
+						}
+						echo '">bbcode:</label><span>';
+						echo '</div>';
+						include 'bbcode_buttons.php';
+						echo '</span>';
+						echo "\n";
+						echo '</div>' . "\n";
+					}
 					echo '<div>' . "\n";
 					echo '	<label class="';
 					// need to format it properly in CSS to prevent much useless whitespace
