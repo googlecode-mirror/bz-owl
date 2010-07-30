@@ -235,7 +235,7 @@
 		{
 			if ($site->bbcode_lib_available())
 			{
-				echo '<div>A BBCode library is available. Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
+				echo '<div>Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
 				echo '<div>';
 				include 'bbcode_buttons.php';
 				echo '</div>';
