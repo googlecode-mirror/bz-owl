@@ -38,7 +38,7 @@ p.first_p
 table
 {
 	display: inline-block;
-	background-color: rgba(238,241,220,0.55);
+	background-color: rgba(234,238,223,0.55);
 }
 
 table.big
@@ -108,7 +108,7 @@ ul.navigation
 {
 	text-align: center;
 	list-style: none;
-	background-color: rgba(238,241,220,0.55);
+	background-color: rgba(234,238,223,0.55);
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -174,11 +174,11 @@ div.static_page_box
 {
 	display: block;
 	padding: 1em;
+	background-color: rgba(234,238,223,0.55);
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	background-color: rgba(238,241,220,0.55);
 }
 
 /* private messages */
@@ -300,11 +300,11 @@ textarea#msg_send_announcement
 /* news announcements */
 div.article
 {
+	background-color: rgba(234,238,223,0.55);
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	background-color: rgba(238,241,220,0.55);
 }
 
 div.article_header
@@ -419,6 +419,7 @@ span.msg_recipient_seperator
 div.msg_contents
 {
 	margin-top: 0.2em;
+	background-color: rgba(234,238,223,0.55);
 }
 
 /*team profile*/
@@ -630,6 +631,7 @@ div.user_description
     text-align: left;
 	margin-top: 0.5em;
 	margin-bottom: 0.2em;
+	background-color: rgba(234,238,223,0.55);
 }
 
 img.player_logo
@@ -649,6 +651,7 @@ span.user_description_deleted
 
 span.user_comment
 {
+	background-color: rgba(234,238,223,0.55);
 	display:block;
 	margin-top: 0.5em;
 }
