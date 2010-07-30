@@ -152,6 +152,7 @@
 	foreach ($styles AS $s) {
 		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s).'</option>';
 	}
+	echo '</select>';
 	
 	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
 ?>
