@@ -147,10 +147,10 @@
 <p>Theme:
 	<select name="stylesheet">
 <?php
-	$styles = array('White', 'Snow', 'Eierschale', 'Eierschale%20smoothed');
+	$styles = array('White', 'Snow', 'Eierschale', 'Eierschale smoothed');
 	
 	foreach ($styles AS $s) {
-		echo '<option'.($stylesheet==$s?' selected="selected"':'').'>'.$s.'</option>';
+		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s).'</option>';
 	}
 	
 	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
