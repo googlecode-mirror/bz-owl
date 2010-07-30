@@ -370,7 +370,7 @@
 					$ch = curl_init();
 					
 					// set URL and other appropriate options
-					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=id&value=' . sqlSafeString($_SESSION['username']));
+					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=id&value=' . sqlSafeString(strtolower($_SESSION['username'])));
 					curl_setopt($ch, CURLOPT_HEADER, 0);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 					
@@ -385,27 +385,34 @@
 					{
 						// example query: UPDATE `players` SET `external_playerid`='external_id' WHERE `id`='internal_id';
 						$query = 'UPDATE `players` SET `external_playerid`=' . sqlSafeStringQuotes(htmlent(substr($output, 9)));
-					}
-					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($internal_login_id);
-					// each user has only one entry in the database
-					$query .= ' LIMIT 1';
-					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
-					{
-						$msg = ('Unfortunately there seems to be a database problem'
-											 . ' which prevents the system from setting your external playerid (id='
-											 . htmlent($user_id)
-											 . '). Please report this to an admin.');
-						die_with_no_login($msg, $msg);
-					}
-					$msg .= 'Congratulations, you enabled ';
-					if (isset($module['bzbb']) && ($module['bzbb']))
-					{
-						$msg .= 'the my.bzflag.org/bb/ (global) login';
+						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($internal_login_id);
+						// each user has only one entry in the database
+						$query .= ' LIMIT 1';
+						if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+						{
+							$msg = ('Unfortunately there seems to be a database problem'
+									. ' which prevents the system from setting your external playerid (id='
+									. htmlent($user_id)
+									. '). Please report this to an admin.');
+							die_with_no_login($msg, $msg);
+						}
+						$msg .= 'Congratulations, you enabled ';
+						if (isset($module['bzbb']) && ($module['bzbb']))
+						{
+							$msg .= 'the my.bzflag.org/bb/ (global) login';
+						} else
+						{
+							$msg .= 'external logins';
+						}
+						$msg .= ' for this account.' . "\n";
 					} else
 					{
-						$msg .= 'external logins';
+						$msg = ('Unfortunately the bzidtools2.php script failed'
+								. ' which prevents the system from setting your external playerid (id='
+								. htmlent($user_id)
+								. '). Please report this to an admin.');
+						die_with_no_login($msg, $msg);
 					}
-					$msg .= ' for this account.' . "\n";
 				}
 				
 				// local login tried but external login forced in settings
