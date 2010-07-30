@@ -39,9 +39,9 @@
 	{
 		$previewSeen = (int) $_POST['preview'];
 	}
-	if (isset($_POST['News']))
+	if (isset($_POST['announcement']))
 	{
-		$content = $_POST['News'];
+		$content = $_POST['announcement'];
 	}
 	
 	
@@ -198,7 +198,7 @@
 		
 	if (isset($_GET['edit']))
 	{
-		echo '<form action="./?edit" method="post" accept-charset="utf-8">' . "\n";
+		echo '<form action="./?edit" method="post" name="form" accept-charset="utf-8">' . "\n";
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
 		echo '<div>';
@@ -222,7 +222,7 @@
 			}
 			echo '</div>' . "\n";
 			echo '<div>';
-			$site->write_self_closing_tag('input type="hidden" name="News" value="' . htmlent($content) . '"');
+			$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . htmlent($content) . '"');
 			echo '</div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
@@ -236,6 +236,7 @@
 			if ($site->bbcode_lib_available())
 			{
 				echo '<div>A BBCode library is available. Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
+				include 'bbcode_buttons.php';
 			} else
 			{
 				if ($site->use_xtml())
@@ -247,7 +248,7 @@
 				}
 			}
 			$buffer = readContent($page_title, $site, $connection, $author, $last_modified, true);
-			echo '<div><textarea cols="75" rows="20" name="News">' . htmlent($buffer) . '</textarea></div>' . "\n";
+			echo '<div><textarea cols="75" rows="20" name="announcement">' . htmlent($buffer) . '</textarea></div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="1"');
 			echo '</div>' . "\n";
