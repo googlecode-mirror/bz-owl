@@ -65,6 +65,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	allow_add_match();
 	allow_edit_match();
 	
+	// server tracker permissions
+	allow_watch_servertracker();
+	
 	
 	
 	// test only for GU-LEAGUE.ADMINS group
