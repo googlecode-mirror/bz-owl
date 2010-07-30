@@ -11,6 +11,6 @@
 	
 	// do not allow editing messages
 	$entry_edit_permission = 'allow_edit_static_pages';
-	
+	w
 	include_once('CMS/announcements/static_website_content.php');
 ?>
