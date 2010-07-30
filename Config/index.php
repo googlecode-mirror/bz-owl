@@ -150,9 +150,9 @@
 	$styles = array('White', 'Snow', 'Eierschale', 'Eierschale smoothed', 'BradTest');
 	
 	foreach ($styles AS $s) {
-		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s).'</option>';
+		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s)."</option>\n";
 	}
-	echo '</select>';
+	echo "</select>\n";
 	
 	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
 ?>
