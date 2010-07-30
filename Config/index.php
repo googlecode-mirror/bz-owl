@@ -152,34 +152,7 @@
 	foreach ($styles AS $s) {
 		echo '<option'.($stylesheet==$s?' selected="selected"':'').'>'.$s.'</option>';
 	}
-	/*define ('SELECTED', ' selected="selected"');
 	
-	echo '		<option';
-	if (strcmp($stylesheet, 'White') == 0)
-	{
-		echo SELECTED;
-	}
-	echo '>White</option>' . "\n";
-	
-	echo '		<option';
-	if (strcmp($stylesheet, 'Snow') == 0)
-	{
-		echo SELECTED;
-	}
-	echo '>Snow</option>' . "\n";
-	echo '		<option';
-	if (strcmp($stylesheet, 'Eierschale') == 0)
-	{
-		echo SELECTED;
-	}
-	echo '>Eierschale</option>' . "\n";
-	echo '		<option';
-	if (strcmp($stylesheet, 'Eierschale%20smoothed') == 0)
-	{
-		echo SELECTED;
-	}
-	echo ' value="Eierschale%20smoothed">Eierschale smoothed</option>' . "\n";
-	echo '	</select>' . "\n" . '	';*/
 	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
 ?>
 </p>
