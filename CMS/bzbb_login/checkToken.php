@@ -1,4 +1,6 @@
 <?php
+// source: http://sourceforge.net/projects/bzflag/
+// license: LGPL v2
 
 // This function will check a username and token returned by the bzflag
 // weblogin page at http://my.bzflag.org/weblogin.php?action=weblogin. You can use

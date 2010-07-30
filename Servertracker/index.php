@@ -42,7 +42,7 @@
 	
 	require '../stylesheet.inc';
 	
-	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="spieler.css" type="text/css"');
+	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players" type="text/css"');
 	// mehl eventuell ausblenden
 	$objekt = new siteinfo();
 	if ($objekt->mobile_version())

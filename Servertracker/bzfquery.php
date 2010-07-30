@@ -1,5 +1,7 @@
 <?php
-
+// source: http://sourceforge.net/projects/bzflag/
+// license: LGPL v2
+	
 // bzfquery.php
 // based on bzflist.php
 //
