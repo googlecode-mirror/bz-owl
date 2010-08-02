@@ -39,6 +39,11 @@
 	{
 		$previewSeen = (int) $_POST['preview'];
 	}
+	if (isset($_POST['edit_page']))
+	{
+		// user looked at preview but chose to edit the message again
+		$previewSeen = 0;
+	}
 	if (isset($_POST['announcement']))
 	{
 		$content = $_POST['announcement'];
@@ -51,7 +56,7 @@
 		if (isset($_GET['edit']))
 		{
 			// user looks at page in edit mode
-			echo '<p><a href="./" class="button">overview</a>' . '</p>' ."\n";
+			echo '<a href="./" class="button">overview</a>' ."\n";
 			echo '<div class="static_page_box">' . "\n";
 		} else
 		{
@@ -97,7 +102,11 @@
 	function readContent($page_title, $site, $connection, &$author, &$last_modified, $raw=false)
 	{
 		// initialise return variable so any returned value will be always in a defined state
-		$content = '<p class="first_p">No content available yet.</p>';
+		$content = '';
+		if (!$raw)
+		{
+			$content = '<p class="first_p">No content available yet.</p>';
+		}
 		
 		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
@@ -124,7 +133,7 @@
 		return $content;
 	}
 	
-	function writeContent (&$content, $page_title, $site, $connection)
+	function writeContent(&$content, $page_title, $site, $connection)
 	{
 		if (strcmp($content, '') === 0)
 		{
@@ -227,10 +236,14 @@
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
 			echo '</div>' . "\n";
+			echo '</div>' . "\n";
 			
 			echo '<p>';
 			$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
+			$site->write_self_closing_tag('input type="submit" name="edit_page" value="Edit page"');
 			echo '</p>' . "\n";
+			
+			$site->dieAndEndPageNoBox();
 		} else
 		{
 			if ($site->bbcode_lib_available())
@@ -249,7 +262,14 @@
 					echo '<div>Keep in mind the home page currently uses HTML, not XHTML or BBCode.</div>' . "\n";
 				}
 			}
-			$buffer = readContent($page_title, $site, $connection, $author, $last_modified, true);
+			$buffer = '';
+			if (isset($_POST['edit_page']))
+			{
+				$buffer = $_POST['announcement'];
+			} else
+			{
+				$buffer = readContent($page_title, $site, $connection, $author, $last_modified, true);
+			}
 			echo '<div><textarea cols="75" rows="20" name="announcement">' . htmlent($buffer) . '</textarea></div>' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="preview" value="1"');

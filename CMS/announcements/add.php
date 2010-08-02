@@ -986,8 +986,8 @@
 						{
 							echo 'msg_ann';
 						}
-						echo '">';
-						echo '<div class="invisi" style="display: inline;">';
+						echo '" style="display: inline-block;">';
+						echo '<div class="invisi" style="display: inline;">' . "\n";
 						echo '	<label class="';
 						if ($message_mode)
 						{
@@ -996,8 +996,8 @@
 						{
 							echo 'msg_ann';
 						}
-						echo '">bbcode:</label><span>';
-						echo '</div>';
+						echo '">bbcode:</label></div>' . "\n";
+						echo '<span class="test">';
 						include 'bbcode_buttons.php';
 						echo '</span>';
 						echo "\n";
