@@ -43,11 +43,11 @@
 	require '../stylesheet.inc';
 	
 	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players" type="text/css"');
-	// mehl eventuell ausblenden
+	// perhaps exclude email string, depending on browser
 	$objekt = new siteinfo();
 	if ($objekt->mobile_version())
 	{
-		// mobiler brauser
+		// mobile browser
 		echo '<style type="text/css">*.mehl { display: none; } table.punkte { left: 25em; }</style>';
 	}
 	echo '  <title>BZFlag Ligen</title>' . "\n";

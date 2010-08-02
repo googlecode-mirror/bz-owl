@@ -58,6 +58,9 @@
 		
 		// server tracker permissions
 		$_SESSION['allow_watch_servertracker'] = false;
+		
+		// aux permissions
+		$_SESSION['IsAdmin'] = false;
 	}
 	
 	function allow_change_debug_sql()
@@ -271,6 +274,14 @@
 		if (!($_SESSION['allow_watch_servertracker']))
 		{
 			$_SESSION['allow_watch_servertracker'] = true;
+		}
+	}
+	
+	function is_admin()
+	{
+		if (!($_SESSION['IsAdmin']))
+		{
+			$_SESSION['IsAdmin'] = true;
 		}
 	}
 ?>

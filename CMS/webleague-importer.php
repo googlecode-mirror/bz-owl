@@ -18,6 +18,17 @@
 	$randomkey_name = 'randomkey_user';
 	$viewerid = (int) getUserID();
 	
+	if ($viewerid < 1)
+	{
+		echo '<p class="first_p">You need to be logged in to update the old bbcode entries.</p>';
+		$site->dieAndEndPage();
+	}
+	
+	if (!(isset($_SESSION['IsAdmin'])) || !($_SESSION['IsAdmin']))
+	{
+		$site->dieAndEndPage('User with id ' . sqlSafeStringQuotes($viewerid) . ' tried to run the webleague importer script without permissions.');
+	}
+	
 	$db_from = new db_import;
 	$db_to_be_imported = $db_from->db_import_name();
 	

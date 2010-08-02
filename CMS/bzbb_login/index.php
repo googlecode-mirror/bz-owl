@@ -91,7 +91,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			echo '<p>gu league admin detected</p>';
 		}
 		// GU-LEAGUE.ADMINS group
-		$_SESSION['IsAdmin'] = true;
 		
 		// can change debug sql setting
 		allow_change_debug_sql();
@@ -125,6 +124,12 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_add_match();
 		allow_edit_match();
 		allow_delete_match();
+		
+		// server tracker permissions
+		allow_watch_servertracker();
+		
+		// aux permissions
+		is_admin();
 	}
 	
 	// test only for TS.ADMIN group
@@ -145,7 +150,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			echo '<p>ts.admin detected</p>';
 		}
 		// TS.ADMIN group
-		$_SESSION['IsAdmin'] = true;
 		
 		// can change debug sql setting
 		allow_change_debug_sql();
@@ -184,6 +188,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		
 		// server tracker permissions
 		allow_watch_servertracker();
+		
+		// aux permissions
+		is_admin();
 	}
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
