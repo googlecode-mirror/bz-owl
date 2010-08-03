@@ -8,12 +8,14 @@
 	
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
-	require realpath('../CMS/navi.inc');
+	require '../CMS/navi.inc';
 	
 	if (!isset($site))
 	{
 		$site = new siteinfo();
 	}
+	
+	echo '<div class="static_page_box">' . "\n";
 	
 	$connection = $site->connect_to_db();
 	// choose database
@@ -21,7 +23,7 @@
 	$table_name = 'online_users';
 	
 	// find out if table exists
-	$query = 'SHOW TABLES LIKE ' . "'" . $table_name . "'";
+	$query = 'SHOW TABLES LIKE ' . sqlSafeStringQuotes($table_name);
 	$result = mysql_query($query, $connection);
 	$rows = mysql_num_rows($result);
 	// done
@@ -86,13 +88,15 @@
 			{
 				echo '<div class="online_user"><a href="../Players/' . '?profile=' . ((int) htmlentities($v1['playerid'])) .'">';
 				echo htmlentities($v1['username']) . '</a>' . "\n";
-				echo '(last access at ' . htmlentities($v1['last_activity']) . ')</div>' . "\n";
+				echo '(last access at ' . htmlentities($v1['last_activity']) . ')</div>';
 			}
 		}
 		mysql_free_result($result);
 	}
 	mysql_close($connection);
 ?>
+
+</div>
 </div>
 </body>
 </html>
