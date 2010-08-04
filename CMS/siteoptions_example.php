@@ -47,6 +47,15 @@
 		return 'CTF League System';
 	}
 	
+	function timezone()
+	{
+		// set the timezone used
+		// values like Europe/Berlin or UTC are accepted
+		// look at http://www.php.net/manual/en/timezones.php
+		// for a complete list of supported timezones
+		return 'Europe/Berlin';
+	}
+	
 	function xhtml_on()
 	{
 		// nl2br needs php newer or equal to 4.0.5 to support xhtml

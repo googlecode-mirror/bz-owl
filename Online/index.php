@@ -90,7 +90,9 @@
 			{
 				echo '<div class="online_user"><a href="../Players/' . '?profile=' . ((int) htmlentities($v1['playerid'])) .'">';
 				echo htmlentities($v1['username']) . '</a>';
-				if (phpversion() >= ('5.3'))
+				
+				// class DateTime is available with PHP version 5.3 and later
+				if (phpversion() >= '5.3')
 				{
 					$datetime1 = new DateTime($v1['last_activity']);
 					$datetime2 = new DateTime(date('Y-m-d H:i:s'));
@@ -103,11 +105,11 @@
 						|| (intval($cmp_diff[1]) > 0)
 						|| (intval($cmp_diff[2]) > 0))
 					{
-						echo ' ' . $cmp_diff[0] . ':' . $cmp_diff[1] . ':' . $cmp_diff[2] . ' idle ';
+						echo ' ' . $cmp_diff[0] . ':' . $cmp_diff[1] . ':' . $cmp_diff[2] . ' idle';
 					}
 					
 				}
-				echo ' (last access at ' . htmlentities($v1['last_activity']) . ')</div>';
+				echo ' (last access at ' . htmlentities($v1['last_activity']) . ' ' . date('T') . ')</div>';
 			}
 		}
 		mysql_free_result($result);

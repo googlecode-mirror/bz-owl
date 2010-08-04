@@ -251,7 +251,7 @@
 		
 		function used_timezone()
 		{
-			return 'UTC';
+			return timezone();
 		}
 		
 		function use_xtml()
