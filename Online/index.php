@@ -90,23 +90,23 @@
 			{
 				echo '<div class="online_user"><a href="../Players/' . '?profile=' . ((int) htmlentities($v1['playerid'])) .'">';
 				echo htmlentities($v1['username']) . '</a>';
-//				if (phpversion() >= ('5.3'))
-//				{
-				$datetime1 = new DateTime($v1['last_activity']);
-				$datetime2 = new DateTime(date('Y-m-d H:i:s'));
-				
-				$diff = $datetime1->diff($datetime2);
-				$diff = $diff->format('%Y-%m-%d %H:%i:%s');
-				$cmp_diff = explode(' ', $diff);
-				$cmp_diff = explode(':', $cmp_diff[1]);
-				if ((intval($cmp_diff[0]) > 0)
-					|| (intval($cmp_diff[1]) > 0)
-					|| (intval($cmp_diff[2]) > 0))
+				if (phpversion() >= ('5.3'))
 				{
-					echo ' ' . $cmp_diff[0] . ':' . $cmp_diff[1] . ':' . $cmp_diff[2] . ' idle ';
+					$datetime1 = new DateTime($v1['last_activity']);
+					$datetime2 = new DateTime(date('Y-m-d H:i:s'));
+					
+					$diff = $datetime1->diff($datetime2);
+					$diff = $diff->format('%Y-%m-%d %H:%i:%s');
+					$cmp_diff = explode(' ', $diff);
+					$cmp_diff = explode(':', $cmp_diff[1]);
+					if ((intval($cmp_diff[0]) > 0)
+						|| (intval($cmp_diff[1]) > 0)
+						|| (intval($cmp_diff[2]) > 0))
+					{
+						echo ' ' . $cmp_diff[0] . ':' . $cmp_diff[1] . ':' . $cmp_diff[2] . ' idle ';
+					}
+					
 				}
-				
-//				}
 				echo ' (last access at ' . htmlentities($v1['last_activity']) . ')</div>';
 			}
 		}
