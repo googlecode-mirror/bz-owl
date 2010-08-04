@@ -22,7 +22,7 @@
 	$unread_messages = false;
 	
 	// set the date and time
-	date_default_timezone_set('Europe/Berlin');
+	date_default_timezone_set($site->used_timezone());
 	
 	$connection = $site->connect_to_db();
 	

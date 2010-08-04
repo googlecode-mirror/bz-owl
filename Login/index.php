@@ -44,7 +44,7 @@
 	}
 	
 	// set the date and time
-	date_default_timezone_set('Europe/Berlin');
+	date_default_timezone_set($site->used_timezone());
 	
 	// only perform the operation if user logs is and not on reload
 	if ($auth_performed && (isset($_SESSION['user_logged_in'])))

@@ -338,7 +338,7 @@
 			
 			// set up team profile
 			// set the date and time (for team creation timestamp)
-			date_default_timezone_set('Europe/Berlin');
+			date_default_timezone_set($site->used_timezone());
 			$query = 'INSERT INTO `teams_profile` (`teamid`, `description`, `raw_description`, `created`) VALUES (' . sqlSafeStringQuotes($new_team_id) . ', ';
 			$query .= sqlSafeStringQuotes($site->bbcode($_POST['team_description'])) . ', ' . sqlSafeStringQuotes($_POST['team_description']);
 			$query .= ', ' . sqlSafeStringQuotes(date('Y-m-d')) . ')';

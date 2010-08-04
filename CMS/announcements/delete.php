@@ -47,7 +47,7 @@
 				// get the list of messages, we need to know if more than one user stores the message
 				// example query: SELECT `id` FROM `messages_users_connection` WHERE `msgid`='66' LIMIT 0,1
 				$message_is_stored_several_times = true;
-				$query = 'SELECT `id` FROM `messages_users_connection` WHERE `msgid`=' . "'" . sqlSafeString($currentId) . "'" . ' LIMIT 0,1';
+				$query = 'SELECT `id` FROM `messages_users_connection` WHERE `msgid`=' . sqlSafeStringQuotes($currentId) . ' LIMIT 0,1';
 				$result = $site->execute_query($site->db_used_name(), $table_name, $query, $connection);
 				if ($result)
 				{

@@ -134,8 +134,8 @@
 	
 	if (!$use_internal_db)
 	{
-		// Jeden Tag nur ein Mal ausfuehren, um Kosten zu sparen
-		date_default_timezone_set('Europe/Berlin');
+		// only execute once per day to avoid overhead
+		date_default_timezone_set($site->used_timezone());
 		
 		$heute = date("d.m.y");
 		$datei = 'maintenance.txt';

@@ -249,6 +249,11 @@
 			}
 		}
 		
+		function used_timezone()
+		{
+			return 'UTC';
+		}
+		
 		function use_xtml()
 		{
 			// do we use xtml (->true) or html (->false)

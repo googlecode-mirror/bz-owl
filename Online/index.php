@@ -56,7 +56,7 @@
 	}
 	
 	$onlineUsers = false;
-	$query = 'SELECT * FROM `' . $table_name . '`';	
+	$query = 'SELECT * FROM `' . sqlSafeString($table_name) . '`';	
 	if ($result = (@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
 	{
 		$onlineUsers = true;
@@ -68,7 +68,7 @@
 	
 	// use the resulting data
 	if ($result)
-	{		
+	{
 		$rows = mysql_num_rows($result);
 		// by definition this is a joke but online guests are not shown by default
 		if ($rows < 1)
@@ -76,6 +76,8 @@
 			echo '<div class="online_user">No logged in user at the moment</div>';
 		} else
 		{
+			
+			date_default_timezone_set($site->used_timezone());
 			// convert $result resource to array
 			$users = Array();
 			while($row = mysql_fetch_array($result))
@@ -87,8 +89,25 @@
 			foreach ($users as $v1)
 			{
 				echo '<div class="online_user"><a href="../Players/' . '?profile=' . ((int) htmlentities($v1['playerid'])) .'">';
-				echo htmlentities($v1['username']) . '</a>' . "\n";
-				echo '(last access at ' . htmlentities($v1['last_activity']) . ')</div>';
+				echo htmlentities($v1['username']) . '</a>';
+//				if (phpversion() >= ('5.3'))
+//				{
+				$datetime1 = new DateTime($v1['last_activity']);
+				$datetime2 = new DateTime(date('Y-m-d H:i:s'));
+				
+				$diff = $datetime1->diff($datetime2);
+				$diff = $diff->format('%Y-%m-%d %H:%i:%s');
+				$cmp_diff = explode(' ', $diff);
+				$cmp_diff = explode(':', $cmp_diff[1]);
+				if ((intval($cmp_diff[0]) > 0)
+					|| (intval($cmp_diff[1]) > 0)
+					|| (intval($cmp_diff[2]) > 0))
+				{
+					echo ' ' . $cmp_diff[0] . ':' . $cmp_diff[1] . ':' . $cmp_diff[2] . ' idle ';
+				}
+				
+//				}
+				echo ' (last access at ' . htmlentities($v1['last_activity']) . ')</div>';
 			}
 		}
 		mysql_free_result($result);

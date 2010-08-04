@@ -1,6 +1,6 @@
 <?php
 	// set the date and time
-	date_default_timezone_set('Europe/Berlin');
+	date_default_timezone_set($site->used_timezone());
 	
 	// find out if maintenance is needed (compare old date in plain text file)
 	$today = date('d.m.Y');
