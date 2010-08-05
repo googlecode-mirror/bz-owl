@@ -705,7 +705,7 @@
 		// admins may change user names
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
-			echo '<p><label class="player_edit" for="edit_player_name">Change callsign: </label>';
+			echo '<p><label class="player_edit" for="edit_player_name">Change callsign:</label> ';
 			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'
 										  . htmlent_decode($callsign) . '"');
 			echo '</p>';
@@ -717,7 +717,7 @@
 		{
 			$site->dieAndEndPage('Could not retrieve list of countries from database.');
 		}
-		echo '<p><label class="player_edit" for="edit_player_location">Change country: </label>';
+		echo '<p><label class="player_edit" for="edit_player_location">Change country:</label> ';
 		echo '<select id="edit_player_location" name="location">';
 		while ($row = mysql_fetch_array($result))
 		{
@@ -736,7 +736,7 @@
 		echo '</p>' . "\n\n";
 		
 		// timezone
-		echo '<p><label class="player_edit" for="edit_player_location">Change country: </label>';
+		echo '<p><label class="player_edit" for="edit_player_location">Change timezone:</label> ';
 		echo '<select id="edit_player_timezone" name="timezone">';
 		for ($i = -12; $i <= 12; $i++)
 		{
