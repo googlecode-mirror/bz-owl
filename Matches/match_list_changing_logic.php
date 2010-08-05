@@ -280,7 +280,7 @@
 		}
 		echo '></span></p>' . "\n\n";
 		
-		echo '<p>Current day and time is: ' . date('Y-m-d H:i:s') . '</p>' . "\n";
+		echo '<p>Current day and time is: ' . date('Y-m-d H:i:s') . ' ' . date('T') . '</p>' . "\n";
 		
 		echo '<p><label for="match_day">Day: </label>' . "\n";
 		echo '<span><input type="text" class="small_input_field" id="match_day" name="match_day" value="';
