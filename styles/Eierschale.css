@@ -1,6 +1,6 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Eierschale
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale.css
+	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale
 */
 
 body
@@ -38,6 +38,7 @@ p.first_p
 table
 {
 	display: inline-block;
+	background-color: rgba(234,238,223,0.55);
 }
 
 table.big
@@ -107,6 +108,7 @@ ul.navigation
 {
 	text-align: center;
 	list-style: none;
+	background-color: rgba(234,238,223,0.55);
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -139,6 +141,7 @@ ul.navigation a.current_nav_entry
 {
 	color: #005981;
 }
+
 
 ul.navigation a:active
 {
@@ -177,6 +180,7 @@ div.static_page_box
 {
 	display: block;
 	padding: 1em;
+	background-color: rgba(234,238,223,0.55);
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -302,6 +306,7 @@ textarea#msg_send_announcement
 /* news announcements */
 div.article
 {
+	background-color: rgba(234,238,223,0.55);
 	border: 0.2em dashed #677068;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -366,6 +371,7 @@ div.msg_area
 div.msg_view_full
 {
 	border: 0.2em dashed #677068;
+	background-color: rgba(234,238,223,0.55);
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -435,6 +441,7 @@ div.team_header
 	display: block;
 	min-width: 84%;
 	border: 0.2em dashed #677068;
+	background-color: rgba(234,238,223,0.55);
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -514,6 +521,7 @@ table.nested_table caption
 div.team_profile_box
 {
 	border: 0.2em dashed #677068;
+	background-color: rgba(234,238,223,0.55);
 	display: block;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -631,6 +639,7 @@ div.user_description
     text-align: left;
 	margin-top: 0.5em;
 	margin-bottom: 0.2em;
+	background-color: rgba(234,238,223,0.55);
 }
 
 img.player_logo
@@ -650,6 +659,7 @@ span.user_description_deleted
 
 span.user_comment
 {
+	background-color: rgba(234,238,223,0.55);
 	display:block;
 	margin-top: 0.5em;
 }

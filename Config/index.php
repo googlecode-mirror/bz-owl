@@ -147,7 +147,7 @@
 <p>Theme:
 	<select name="stylesheet">
 <?php
-	$styles = array('White', 'Snow', 'Eierschale', 'Eierschale smoothed', 'BradTest');
+	$styles = array('White', 'Snow', 'Eierschale', 'BradTest');
 	
 	foreach ($styles AS $s) {
 		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s)."</option>\n";
