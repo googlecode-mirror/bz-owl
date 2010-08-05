@@ -1,6 +1,6 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Eierschale
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale
+	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale.css
 */
 
 body
@@ -228,6 +228,9 @@ input[type=text]
 	width: 10cm;
 	max-width: 100%;
 	margin-bottom: 2mm;
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;
 }
 
 input[type=text].small_input_field
@@ -577,6 +580,7 @@ div.user_area
 	overflow: hidden;
 	min-width: 25em;
 	border: 0.2em dashed #677068;
+	background-color: rgba(234,238,223,0.55);
 	margin-bottom: 1em;
 	padding: 1em;
 	margin-bottom: 1em;
@@ -639,7 +643,6 @@ div.user_description
     text-align: left;
 	margin-top: 0.5em;
 	margin-bottom: 0.2em;
-	background-color: rgba(234,238,223,0.55);
 }
 
 img.player_logo
@@ -659,7 +662,6 @@ span.user_description_deleted
 
 span.user_comment
 {
-	background-color: rgba(234,238,223,0.55);
 	display:block;
 	margin-top: 0.5em;
 }
@@ -673,6 +675,7 @@ span.no_user_comment
 div.user_admin_comments_area
 {
 	border: 0.2em dashed #677068;
+	background-color: rgba(234,238,223,0.55);
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
