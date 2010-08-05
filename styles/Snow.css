@@ -78,6 +78,11 @@ ul.navigation a
 	font-variant: normal;
 }
 
+ul.navigation a.current_nav_entry
+{
+	color: #000088;
+}
+
 ul.navigation a:active
 {
 	color : #000088;

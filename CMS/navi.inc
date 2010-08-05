@@ -85,10 +85,22 @@
 	
 	define ('BASEPATH', baseaddress());
 	
-	function writeLink($verzeichnis, $titel)
+	function writeLink($folder, $title, $current=false)
 	{
-		echo '<li><a href="';
-		echo (BASEPATH . $verzeichnis . '/">' . $titel . '</a></li>' . "\n");
+		echo '<li>';
+		if (!$current)
+		{
+			echo '<a href="' . (BASEPATH . $folder) . '/">';
+		} elseif (count($_GET) > 0)
+		{
+			echo '<a class="current_nav_entry" href="' . (BASEPATH . $folder) . '/">';
+		}
+		echo $title;
+		if (!$current || (count($_GET) > 0))
+		{
+			echo '</a>';
+		}
+		echo '</li>' . "\n";
 	}
 	
 	$name = $site->base_name();
@@ -98,13 +110,7 @@
 	
 	if (!$logged_in)
 	{
-		if (strcmp($name, 'Login') == 0)
-		{
-			echo '<li>Login</li>' . "\n";
-		} else
-		{
-			writeLink('Login', 'Login');
-		}
+		writeLink('Login', 'Login', (strcmp($name, 'Login') == 0));
 	}
 	
 	if ($ganzOben)
@@ -112,128 +118,49 @@
 		echo '<li>Home</li>' . "\n";
 	} else
 	{
-		echo "<li><a href=\x22" . BASEPATH . "\x22>Home</a></li>\n";
+		echo '<li><a href="' . BASEPATH . '">Home</a></li>' . "\n";
 	}
 	
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 	{
-		if (strcmp($name, 'Messages') == 0)
+		if ($unread_messages)
 		{
-			echo '<li>Mail</li>' . "\n";
+			writeLink('Messages', '<span class="unread_messages">Mail</span>');
 		} else
 		{
-			if ($unread_messages)
-			{
-				writeLink('Messages', '<span class="unread_messages">Mail</span>');
-			} else
-			{
-				echo writeLink('Messages', 'Mail');
-			}
+			writeLink('Messages', 'Mail', (strcmp($name, 'Messages') == 0));
 		}
 	}
 	
-	if (strcmp($name, 'News') == 0)
-	{
-		echo '<li>News</li>' . "\n";
-	} else
-	{
-		writeLink('News', 'News');
-	}
+	writeLink('News', 'News', (strcmp($name, 'News') == 0));
 	
-	if (strcmp($name, 'Matches') == 0)
-	{
-		echo '<li>Matches</li>' . "\n";
-	} else
-	{
-		writeLink('Matches', 'Matches');
-	}
+	writeLink('Matches', 'Matches', (strcmp($name, 'Matches') == 0));
 	
-	if (strcmp($name, 'Teams') == 0)
-	{
-		echo '<li>Teams</li>' . "\n";
-	} else
-	{
-		writeLink('Teams', 'Teams');
-	}
+	writeLink('Teams', 'Teams', (strcmp($name, 'Teams') == 0));
 	
-	if (strcmp($name, 'Players') == 0)
-	{
-		echo '<li>Players</li>' . "\n";
-	} else
-	{
-		writeLink('Players', 'Players');
-	}
+	writeLink('Players', 'Players', (strcmp($name, 'Players') == 0));
 	
 	if ($logged_in && (isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
 	{
-		if (strcmp($name, 'Visits') == 0)
-		{
-			echo '<li>Visits</li>' . "\n";
-		} else
-		{
-			echo writeLink('Visits', 'Visits');
-		}
+		writeLink('Visits', 'Visits', (strcmp($name, 'Visits') == 0));
 	}
 	
-	if (strcmp($name, 'Rules') == 0)
-	{
-		echo '<li>Rules</li>' . "\n";
-	} else
-	{
-		writeLink('Rules', 'Rules');
-	}
+	writeLink('Rules', 'Rules', (strcmp($name, 'Rules') == 0));
 	
-	if (strcmp($name, 'FAQ') == 0)
-	{
-		echo '<li>FAQ</li>' . "\n";
-	} else
-	{
-		writeLink('FAQ', 'FAQ');
-	}
+	writeLink('FAQ', 'FAQ', (strcmp($name, 'FAQ') == 0));
 	
-	if (strcmp($name, 'Links') == 0)
-	{
-		echo '<li>Links</li>' . "\n";
-	} else
-	{
-		writeLink('Links', 'Links');
-	}
+	writeLink('Links', 'Links', (strcmp($name, 'Links') == 0));
 	
-	if (strcmp($name, 'Contact') == 0)
-	{
-		echo '<li>Contact</li>' . "\n";
-	} else
-	{
-		writeLink('Contact', 'Contact');
-	}
+	writeLink('Contact', 'Contact', (strcmp($name, 'Contact') == 0));
 	
-	if (strcmp($name, 'Bans') == 0)
-	{
-		echo '<li>Bans</li>' . "\n";
-	} else
-	{
-		writeLink('Bans', 'Bans');
-	}
-	
+	writeLink('Bans', 'Bans', (strcmp($name, 'Bans') == 0));
+
 	if ($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker']))
 	{
-		if (strcmp($name, 'Servertracker') == 0)
-		{
-			echo '<li>Servers</li>' . "\n";
-		} else
-		{
-			writeLink('Servertracker', 'Servers');
-		}
+		writeLink('Servertracker', 'Servers', (strcmp($name, 'Servertracker') == 0));
 	}
-
 	
-	if (strcmp($name, 'Config') == 0)
-	{
-		echo '<li>Config</li>' . "\n";
-	} else
-	{
-		writeLink('Config', 'Config');
-	}
+	writeLink('Config', 'Config', (strcmp($name, 'Config') == 0));
 ?>
 </ul>
 
