@@ -57,6 +57,7 @@
 	{
 		if ($viewerid < 1)
 		{
+			$profile = (int) $_GET['edit'];
 			show_overview_and_profile_button();
 			echo '<p>You must login to change any player data.</p>' . "\n";
 			$site->dieAndEndPage();
