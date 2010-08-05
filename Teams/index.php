@@ -1505,7 +1505,10 @@
 			echo '		<td>' . htmlentities($row['num_matches_won']) . '</td>' . "\n";
 			echo '		<td>' . htmlentities($row['num_matches_draw']) . '</td>' . "\n";
 			echo '		<td>' . htmlentities($row['num_matches_lost']) . '</td>' . "\n";
-			echo '		<td>' . htmlentities($row['num_matches_played']) . '</td>' . "\n";
+			echo '		<td><a href="../Matches/?search_string=';
+			echo $team_name;
+			echo '&search_type=team+name&amp;search_result_amount=200&search=Search">';
+			echo htmlentities($row['num_matches_played']) . '</td>' . "\n";;
 			echo '	</tr>' . "\n";
 			echo '	</table>' . "\n";
 			$site->write_self_closing_tag('br');
