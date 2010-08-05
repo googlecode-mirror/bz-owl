@@ -10,7 +10,7 @@
 		define("default_stylesheet", 'White');
 	} else
 	{
-		define("default_stylesheet", 'Eierschale smoothed');
+		define("default_stylesheet", 'Eierschale');
 	}
 	
 	$stylesheet = default_stylesheet;
