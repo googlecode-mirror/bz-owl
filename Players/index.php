@@ -84,7 +84,7 @@
 		
 		if ($profile === 0)
 		{
-			show_overview_and_profile_button();
+			echo '<a class="button" href="./">overview</a>' . "\n";
 			echo '<p>The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
@@ -111,7 +111,7 @@
 		if ($rows === 0)
 		{
 			// someone tried to view the profile of a non existing user
-			show_overview_and_profile_button();
+			echo '<a class="button" href="./">overview</a>' . "\n";
 			echo '<p>This user does not exist.</p>';
 			$site->dieAndEndPage('');
 		}
