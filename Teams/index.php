@@ -363,31 +363,51 @@
 			echo '<p>Your new team was created successfully.</p>';
 			$site->dieAndEndPage('');
 		}
-		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?create">' . "\n";
-		echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="confirmed" value="1"');
+		echo '</div>' . "\n";
 		
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
-		echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
-		echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
-		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
+		echo '</div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="' . htmlentities($randomkey_name) . '" value="'
+									  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+		echo '</div>' . "\n";
 		
 		// team name
-		echo '<p><label for="edit_team_name">Team name: </label>' . "\n";
-		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="enter team name here" id="edit_team_name"';
-		echo ' onfocus="if(this.value==' . "'" . 'enter team name here' . "'" . ') this.value=' . "'" . "'" . '"';
-		echo ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'enter team name here' . "'" . '"';
-		echo '></p>' . "\n";
+		echo '<p><label class="team_create" for="edit_team_name">Team name: </label>' . "\n";
+		$site->write_self_closing_tag('input type="text" maxlength="30" size="30" name="edit_team_name" value="enter team name here" id="edit_team_name"'
+									  . ' onfocus="if(this.value==' . "'" . 'enter team name here' . "'" . ') this.value=' . "'" . "'" . '"'
+									  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'enter team name here' . "'" . '"');
+		echo '</p>' . "\n";
 		
 		// team leader is automatically the creator of the team
 		
 		// any teamless player allowed to join? default to yes.
-		echo '<p><label for="any_teamless_player_can_join">Can any teamless player join the team?</label> <input type="checkbox" name="any_teamless_player_can_join" value="';
-		echo '1' . '" id="any_teamless_player_can_join" checked="checked"></p>' . "\n";
+		echo '<p><label class="team_create" for="any_teamless_player_can_join">Can any teamless player join the team?</label> ';
+		$site->write_self_closing_tag('input type="checkbox" name="any_teamless_player_can_join" value="'
+									  . '1' . '" id="any_teamless_player_can_join" checked="checked"');
+		echo '</p>' . "\n";
 		
 		// team description
-		echo '<div><label for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
+		if ($site->bbcode_lib_available())
+		{
+			echo "\n" . '<div class="team_create" id="bbcode_buttons1" style="display: inline-block;">';
+			echo '<div class="invisi" style="display: inline;">' . "\n";
+			echo '	<label class="team_create">bbcode:</label></div>' . "\n";
+			echo '<span class="bbcode_buttons">';
+			include '../CMS/bbcode_buttons.php';
+			echo '</span>';
+			echo "\n";
+			echo '</div>' . "\n";
+		}
+		echo '<div><label class="team_create" for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
 		if (isset($team_description))
 		{
 			echo $team_description;
@@ -398,7 +418,7 @@
 		echo '</textarea></span></div>' . "\n";
 		
 		// logo/avatar url
-		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		echo '<p><label class="team_create" for="edit_avatar_url">Avatar URL: </label>';
 		
 		// quell warning about not initialised variable
 		if (!(isset($logo_url)))
@@ -408,7 +428,9 @@
 		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'"');
 		echo '</p>';
 		
-		echo '<div><input type="submit" name="edit_team_data" value="Submit new team creation" id="send"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="submit" name="edit_team_data" value="Submit new team creation" id="send"');
+		echo '</div>' . "\n";
 		echo '</form>' . "\n";
 		$site->dieAndEndPage('');
 	}
@@ -631,11 +653,17 @@
 		// protection against links
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
-		echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
-		echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
-		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
+		echo '</div>' . "\n";
+		echo '<div>';
+		$site->write_self_closing_tag('input type="hidden" name="' . htmlentities($randomkey_name) . '" value="'
+									  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+		echo '</div>' . "\n";
 		
-		echo '<div style="display:inline"><input type="submit" name="reactivate_team" value="Reactivate the team" id="send"></div>' . "\n";
+		echo '<div style="display:inline">';
+		$site->write_self_closing_tag('input type="submit" name="reactivate_team" value="Reactivate the team" id="send"');
+		echo '</div>' . "\n";
 		echo '</form>' . "\n";		
 		
 		$site->dieAndEndPage('');
@@ -779,7 +807,7 @@
 			$site->dieAndEndPage();
 		}
 		
-		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		$query = 'SELECT `name` FROM `teams`';
@@ -1221,7 +1249,7 @@
 			$site->dieAndEndPage('');
 		}
 		
-		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?edit=' . urlencode($teamid) . '">' . "\n";
@@ -1380,7 +1408,7 @@
 			$site->dieAndEndPage('');
 		}
 		
-		echo '<a class="button" href="./">Cancel & back to overview</a>' . "\n";
+		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($playerid_to_remove) . "'";
