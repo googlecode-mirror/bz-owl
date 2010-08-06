@@ -50,7 +50,7 @@
 		// mobile browser
 		echo '<style type="text/css">*.mehl { display: none; } table.punkte { left: 25em; }</style>';
 	}
-	echo '  <title>BZFlag Ligen</title>' . "\n";
+	echo '  <title>Official match servers</title>' . "\n";
 	echo '</head>' . "\n";
 	echo '<body>' . "\n";
 	
