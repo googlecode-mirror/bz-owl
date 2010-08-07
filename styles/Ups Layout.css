@@ -214,6 +214,20 @@ label.msg_edit
 	padding: 1mm 2mm 0 0;
 }
 
+label.team_change
+{
+	width: 9em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+* + div.team_change
+{
+	margin-top: 0.2em;
+	margin-left: -9.3em;
+}
+
 input[type=text]
 {
 	width: 10cm;
