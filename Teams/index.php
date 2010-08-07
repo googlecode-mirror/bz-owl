@@ -2037,10 +2037,11 @@
 		echo '<caption>Opponent statistics for team ' . $team_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
+		echo '	<th>Total</th>' . "\n";
 		echo '	<th>Won</th>' . "\n";
 		echo '	<th>Tied</th>' . "\n";
 		echo '	<th>Lost</th>' . "\n";
-//		echo '	<th>Activity</th>' . "\n";
+		echo '	<th>Won ratio</th>' . "\n";
 		echo '</tr>' . "\n";
 		
 		$match_stats_keys = array_keys($match_stats);
@@ -2057,34 +2058,32 @@
 			echo '</td>';
 			
 			echo '<td>';
-			if (isset($match_stats[$match_stats_keys[$i]]['won']))
+			if (!isset($match_stats[$match_stats_keys[$i]]['won']))
 			{
-				echo $match_stats[$match_stats_keys[$i]]['won'];
-			} else
-			{
-				echo '0';
+				$match_stats[$match_stats_keys[$i]]['won'] = 0;
 			}
+			if (!isset($match_stats[$match_stats_keys[$i]]['tied']))
+			{
+				$match_stats[$match_stats_keys[$i]]['tied'] = 0;
+			}
+			if (!isset($match_stats[$match_stats_keys[$i]]['lost']))
+			{
+				$match_stats[$match_stats_keys[$i]]['lost'] = 0;
+			}
+			$total = ($match_stats[$match_stats_keys[$i]]['won'] + $match_stats[$match_stats_keys[$i]]['tied'] + $match_stats[$match_stats_keys[$i]]['lost']);
+			echo $total;
 			echo '</td>';
 			
-			echo '<td>';
-			if (isset($match_stats[$match_stats_keys[$i]]['tied']))
-			{
-				echo $match_stats[$match_stats_keys[$i]]['tied'];
-			} else
-			{
-				echo '0';
-			}
-			echo '</td>';
+			echo '<td>' . $match_stats[$match_stats_keys[$i]]['won'] . '</td>';
+			
+			echo '<td>' . $match_stats[$match_stats_keys[$i]]['tied'] . '</td>';
+			
+			echo '<td>' . $match_stats[$match_stats_keys[$i]]['lost'] . '</td>';
 			
 			echo '<td>';
-			if (isset($match_stats[$match_stats_keys[$i]]['lost']))
-			{
-				echo $match_stats[$match_stats_keys[$i]]['lost'];
-			} else
-			{
-				echo '0';
-			}
-			echo '</td>';
+			$ratio = $match_stats[$match_stats_keys[$i]]['won'] / $total;
+			echo round($ratio*100, 0);
+			echo ' %</td>';
 			
 			echo '</tr>' . "\n";
 		}
