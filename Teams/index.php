@@ -2052,7 +2052,7 @@
 			echo '<td>';
 			if (isset($match_stats[$match_stats_keys[$i]]['name']))
 			{
-				echo $match_stats[$match_stats_keys[$i]]['name'];
+				echo '<a href=".?profile=' . htmlent($match_stats_keys[$i]) . '">' . $match_stats[$match_stats_keys[$i]]['name'] . '</a>';
 			}
 			echo '</td>';
 			
