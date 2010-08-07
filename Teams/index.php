@@ -9,6 +9,21 @@
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	
+	function cleanTeamName($name)
+	{
+		// check for printable characters
+		if (ctype_print($name))
+		{
+			// strip whitespace or other characters from the end of the name
+			$cleaned_name = rtrim($name);
+			if (strcmp($name, $cleaned_name) === 0)
+			{
+				return htmlent($name);
+			}
+		}
+		return false;
+	}
+	
 	function writeLogo()
 	{
 		global $profile;
@@ -381,7 +396,7 @@
 		echo '</div>' . "\n";
 		
 		// team name
-		echo '<p><label class="team_create" for="edit_team_name">Team name: </label>' . "\n";
+		echo '<p><label class="team_change" for="edit_team_name">Team name: </label>' . "\n";
 		$site->write_self_closing_tag('input type="text" maxlength="30" size="30" name="edit_team_name" value="enter team name here" id="edit_team_name"'
 									  . ' onfocus="if(this.value==' . "'" . 'enter team name here' . "'" . ') this.value=' . "'" . "'" . '"'
 									  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . 'enter team name here' . "'" . '"');
@@ -390,7 +405,7 @@
 		// team leader is automatically the creator of the team
 		
 		// any teamless player allowed to join? default to yes.
-		echo '<p><label class="team_create" for="any_teamless_player_can_join">Can any teamless player join the team?</label> ';
+		echo '<p><label class="team_change" for="any_teamless_player_can_join">Can any teamless player join the team?</label> ';
 		$site->write_self_closing_tag('input type="checkbox" name="any_teamless_player_can_join" value="'
 									  . '1' . '" id="any_teamless_player_can_join" checked="checked"');
 		echo '</p>' . "\n";
@@ -398,16 +413,16 @@
 		// team description
 		if ($site->bbcode_lib_available())
 		{
-			echo "\n" . '<div class="team_create" id="bbcode_buttons1" style="display: inline-block;">';
+			echo "\n" . '<div class="team_change" id="bbcode_buttons1" style="display: inline-block;">';
 			echo '<div class="invisi" style="display: inline;">' . "\n";
-			echo '	<label class="team_create">bbcode:</label></div>' . "\n";
+			echo '	<label class="team_change">bbcode:</label></div>' . "\n";
 			echo '<span class="bbcode_buttons">';
 			include '../CMS/bbcode_buttons.php';
 			echo '</span>';
 			echo "\n";
 			echo '</div>' . "\n";
 		}
-		echo '<div><label class="team_create" for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
+		echo '<div><label class="team_change" for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
 		if (isset($team_description))
 		{
 			echo $team_description;
@@ -418,7 +433,7 @@
 		echo '</textarea></span></div>' . "\n";
 		
 		// logo/avatar url
-		echo '<p><label class="team_create" for="edit_avatar_url">Avatar URL: </label>';
+		echo '<p><label class="team_change" for="edit_avatar_url">Avatar URL: </label>';
 		
 		// quell warning about not initialised variable
 		if (!(isset($logo_url)))
@@ -1091,6 +1106,8 @@
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
 			
+			echo '<div class="static_page_box">' . "\n";
+			
 			// someone is trying to break the form
 			// TODO: implement preview
 			if (($_POST['confirmed'] < 1) || ($_POST['confirmed'] > 2))
@@ -1116,11 +1133,10 @@
 			if (isset($_POST['edit_team_name']))
 			{
 				// is the team name already used?
-				$query = 'SELECT `id` FROM `teams` WHERE `name`=' . "'" . sqlSafeString(htmlent($_POST['edit_team_name'])) . "'" . ' LIMIT 1';
+				$query = 'SELECT `id` FROM `teams` WHERE `name`=' . sqlSafeStringQuotes(htmlent($_POST['edit_team_name'])) . ' LIMIT 1';
 				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('');
+					$site->dieAndEndPage('Could not find out id for team with name ' . sqlSafeString(htmlent($_POST['edit_team_name'])) . '.');
 				}
 				
 				if ((int) mysql_num_rows($result) > 0)
@@ -1140,19 +1156,28 @@
 					if ($name_change_tried)
 					{
 						// team name already used -> do not change to team name to it
-						// note: this does also happen when the team profile is changed but not its name
+						// note: this also happens when the team profile is changed but not its name
 						echo '<p>The team name was not changed because there is already a team with that name in the database.</p>' . "\n";
 					}
 				} else
 				{
 					mysql_free_result($result);
 					// team name not used -> set team name to it
-					$query = 'UPDATE `teams` SET `name`=' . "'" . sqlSafeString(htmlent($_POST['edit_team_name'])) . "'";
-					$query .= ' WHERE `id`=' . "'" . $teamid . "'";
-					if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+					$name = cleanTeamName($_POST['edit_team_name']);
+					die('name is "' . $name . '"!');
+					if ($name === false)
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
-						$site->dieAndEndPage('');
+						// team name not clean -> do not change to team name to it
+						echo ('<p>The team name was not changed because there are issues with it.'
+							  . ' A team name must not end with whitespace and must not contain non-printable characters.</p>' . "\n");
+					} else
+					{
+						$query = 'UPDATE `teams` SET `name`=' . sqlSafeStringQuotes($name);
+						$query .= ' WHERE `id`=' . "'" . $teamid . "'";
+						if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+						{
+							$site->dieAndEndPage('Could not update name for team with id ' . sqlSafeString($teamid) . '.');
+						}
 					}
 				}
 			}
@@ -1163,7 +1188,11 @@
 				$new_leader = (int) $_POST['team_leader'];
 				if ($new_leader  < 1)
 				{
-					$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') tried to set a new leader with id lower than 1 (' . sqlSafeString($new_leader) . ')!');
+					$site->dieAndEndPage('You (id='
+										 . sqlSafeString($viewerid)
+										 . ') tried to set a new leader with id lower than 1 ('
+										 . sqlSafeString($new_leader)
+										 . ')!');
 				}
 				
 				// find out if new leader is member of team
@@ -1264,7 +1293,7 @@
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
 		
 		// team name
-		echo '<p><label for="edit_team_name">Change team name: </label>' . "\n";
+		echo '<p><label class="team_change" for="edit_team_name">Change team name: </label>' . "\n";
 		echo '<input type="text" maxlength="30" size="30" name="edit_team_name" value="' . ($team_name) . '" id="edit_team_name"></p>' . "\n";
 		
 		// team leader
@@ -1274,7 +1303,7 @@
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
 		}
-		echo '<p><label for="team_leader">Leader: </label>' . "\n";
+		echo '<p><label class="team_change" for="team_leader">Leader:</label>' . "\n";
 		echo '<select name="team_leader" id="team_leader">' . "\n";
 		while($row = mysql_fetch_array($result))
 		{
@@ -1298,7 +1327,7 @@
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
 		}
-		echo '<p><label for="any_teamless_player_can_join">Can any teamless player join the team?</label> <input type="checkbox" name="any_teamless_player_can_join" value="';
+		echo '<p><label class="team_change" for="any_teamless_player_can_join">Can any teamless player join the team?</label> <input type="checkbox" name="any_teamless_player_can_join" value="';
 		echo '1' . '" id="any_teamless_player_can_join"';
 		
 		while($row = mysql_fetch_array($result))
@@ -1312,7 +1341,19 @@
 		echo '></p>';
 		
 		// team description
-		echo '<div><label for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
+		// team description
+		if ($site->bbcode_lib_available())
+		{
+			echo "\n" . '<div class="team_change" id="bbcode_buttons1" style="display: inline-block;">';
+			echo '<div class="invisi" style="display: inline;">' . "\n";
+			echo '	<label class="team_change">bbcode:</label></div>' . "\n";
+			echo '<span class="bbcode_buttons">';
+			include '../CMS/bbcode_buttons.php';
+			echo '</span>';
+			echo "\n";
+			echo '</div>' . "\n";
+		}
+		echo '<div><label class="team_change" for="team_description">Edit team description: </label><span><textarea id="team_description" rows="10" cols="50" name="team_description">';
 		if (isset($team_description))
 		{
 			echo $team_description;
@@ -1323,13 +1364,16 @@
 		echo '</textarea></span></div>' . "\n";
 		
 		// logo/avatar url
-		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		echo '<p><label class="team_change" class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
 		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'. $logo_url .'"');
 		echo '</p>';
 		
-		echo '<div><input type="submit" name="edit_team_data" value="Submit new team data" id="send"></div>' . "\n";
+		// close static box
+		echo '</div>';
+		
+		echo '<p><input type="submit" name="edit_team_data" value="Submit new team data" id="send"></p>' . "\n";
 		echo '</form>' . "\n";
-		$site->dieAndEndPage('');
+		$site->dieAndEndPageNoBox();
 	}
 	
 	if (isset($_GET['remove']))
