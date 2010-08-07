@@ -2044,7 +2044,7 @@
 			
 			echo '</tr>' . "\n";
 		}
-		unset($one_team_stats);
+		echo '</table>' . "\n";
 		$site->dieAndEndPageNoBox();
 	}
 	
