@@ -1056,7 +1056,7 @@
 		}		
 		
 		$team_name = '(no name)';
-		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . "'" .  sqlSafeString($teamid) . "'" . ' LIMIT 0,1';
+		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($teamid) . ' LIMIT 0,1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -1076,7 +1076,9 @@
 		if ($rows > (int) 1)
 		{
 			echo '<a class="button" href="./">overview</a>' . "\n";
-			$site->dieAndEndPage('There is more than one team with the id ' . sqlSafeString($teamid) . ' in the database! This is a database problem, please report it to admins!');
+			$site->dieAndEndPage('There is more than one team with the id '
+								 . sqlSafeString($teamid)
+								 . ' in the database! This is a database problem, please report it to admins!');
 		}
 		
 		while($row = mysql_fetch_array($result))
@@ -1461,15 +1463,21 @@
 		$profile = (int) $_GET['profile'];
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		
+		// message to team
 		if (($team_leader_id > 0) && ($viewerid > 0))
 		{
 			echo '<a class="button" href="../Messages/?add' . htmlspecialchars('&') . 'teamid=' . htmlspecialchars(urlencode($profile)) . '">Send message to team</a>' . "\n";
 		}
 		
+		// edit team
 		if (($team_leader_id > 0) && $viewerid === $team_leader_id || $allow_edit_any_team_profile)
 		{
 			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
 		}
+		
+		// opponent stats
+		echo '<a class="button" href="./?opponent_stats=' . urlencode($profile) . '">opponent stats</a>' . "\n";
+		
 		// need an element displayed with display: block before the team area
 		echo '<div class="p"></div>' . "\n";
 		
@@ -1477,7 +1485,7 @@
 		$query = 'SELECT `name`, `score`, `activity`, `member_count`, `num_matches_played`, `num_matches_won`, `num_matches_draw`, `num_matches_lost`, `teams_profile`.`logo_url`, `created`';
 		$query .= ' FROM `teams`, `teams_overview`, `teams_profile`';
 		$query .= ' WHERE `teams`.`id` = `teams_overview`.`teamid` AND `teams_overview`.`teamid` = `teams_profile`.`teamid` AND `teams`.`id`=';
-		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
+		$query .= sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams, teams_overview, teams_profile', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -1816,7 +1824,9 @@
 					if (!($result_name = @$site->execute_silent_query($site->db_used_name(), 'players', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
-						$site->dieAndEndPage('Could not get find out the corresponding name of player id ' . sqlSafeString($playerid) . ' from invited players');
+						$site->dieAndEndPage('Could not get find out the corresponding name of player id '
+											 . sqlSafeString($playerid)
+											 . ' from invited players');
 					}
 					// collect the data from query result array
 					while($row = mysql_fetch_array($result_name))
@@ -1834,215 +1844,416 @@
 		{
 			echo '<p><a class="button" href="./?delete=' . (urlencode($profile)) . '">delete this team</a></p>' . "\n";
 		}
-	} else
-	{
-		// display overview
 		
-		// reactivate button
-		if ($allow_reactivate_teams)
+		$site->dieAndEndPage();
+	}
+	
+	// someone wants to look at a team profile
+	if (isset($_GET['opponent_stats']))
+	{
+		echo '<a class="button" href="./">overview</a>' . "\n";
+		
+		$profile = intval($_GET['opponent_stats']);
+		$team_name = '(no name)';
+		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 0,1';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
 		{
-			echo '<a class="button" href="./?reactivate">Reactivate a team</a>' . "\n";
-			$site->write_self_closing_tag('br');
-			$site->write_self_closing_tag('br');
+			echo '<div class="static_page_box">' . "\n";
+			$site->dieAndEndPage('Could not find out name for team with id ' . sqlSafeString($profile));
+		}
+		while($row = mysql_fetch_array($result))
+		{
+			$team_name = $row['name'];
+		}
+		mysql_free_result($result);
+		
+		$query = 'SELECT * FROM `matches` WHERE `team1_teamid`=' . sqlSafeStringQuotes($profile) . '  OR `team2_teamid`=' . sqlSafeStringQuotes($profile);
+		if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+		{
+			echo '<div class="static_page_box">' . "\n";
+			$site->dieAndEndPage('Could not get team stats for team with id ' . sqlSafeString($profile));
 		}
 		
-		// is player teamless?
-		$player_teamless = false;
-		// display a create team button to the teamless players viewing this page
-		if ($viewerid > 0)
+		$rows = (int) mysql_num_rows($result);
+		if ($rows < (int) 1)
 		{
-			// this would also work without the viewerid switch but it would be one unneeded query,
-			// thus avoid it due to performance reasons; slow sites are usually not liked
-			$query = 'SELECT `teamid` FROM `players` WHERE `id`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			mysql_free_result($result);
+			echo '<div class="static_page_box">' . "\n";
+			echo '<p class="first_p">This team has not played a match yet.</p>';
+			$site->dieAndEndPage();
+		}
+		
+		$match_stats = array();
+		
+		while ($row = mysql_fetch_array($result))
+		{
+			if (intval($row['team1_teamid']) === $profile)
+			{
+				// look up name if needed
+				if (!(isset($match_stats[$row['team2_teamid']]['name'])))
+				{
+					$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($row['team2_teamid']) .' LIMIT 1';
+					if (!($result_foreign_team = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+					{
+						echo '<div class="static_page_box">' . "\n";
+						$site->dieAndEndPage('Could not get name for foreign team with id ' . sqlSafeString($profile));
+					}
+					while ($row_foreign_team = mysql_fetch_array($result_foreign_team))
+					{
+						$match_stats[$row['team2_teamid']]['name'] = $row_foreign_team['name'];
+					}
+					mysql_free_result($result_foreign_team);
+				}
+				
+				if (intval($row['team1_points']) > intval($row['team2_points']))
+				{
+					// team 1 won
+					if (isset($match_stats[$row['team2_teamid']]['won']))
+					{
+						$match_stats[$row['team2_teamid']]['won'] += 1;
+					} else
+					{
+						$match_stats[$row['team2_teamid']]['won'] = 1;
+					}
+				} elseif (intval($row['team1_points']) < intval($row['team2_points']))
+				{
+					// team 1 lost
+					if (isset($match_stats[$row['team2_teamid']]['lost']))
+					{
+						$match_stats[$row['team2_teamid']]['lost'] += 1;
+					} else
+					{
+						$match_stats[$row['team2_teamid']]['lost'] = 1;
+					}
+				} else
+				{
+					// team 1 tied
+					if (isset($match_stats[$row['team2_teamid']]['tied']))
+					{
+						$match_stats[$row['team2_teamid']]['tied'] += 1;
+					} else
+					{
+						$match_stats[$row['team2_teamid']]['tied'] = 1;
+					}
+				}
+			} else
+			{
+				// look up name if needed
+				if (!(isset($match_stats[$row['team1_teamid']]['name'])))
+				{
+					$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($row['team1_teamid']) .' LIMIT 1';
+					if (!($result_foreign_team = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+					{
+						echo '<div class="static_page_box">' . "\n";
+						$site->dieAndEndPage('Could not get name for foreign team with id ' . sqlSafeString($profile));
+					}
+					while ($row_foreign_team = mysql_fetch_array($result_foreign_team))
+					{
+						$match_stats[$row['team1_teamid']]['name'] = $row_foreign_team['name'];
+					}
+					mysql_free_result($result_foreign_team);
+				}
+				
+				if (intval($row['team1_points']) > intval($row['team2_points']))
+				{
+					// team 2 won
+					if (isset($match_stats[$row['team1_teamid']]['lost']))
+					{
+						$match_stats[$row['team1_teamid']]['lost'] += 1;
+					} else
+					{
+						$match_stats[$row['team1_teamid']]['lost'] = 1;
+					}
+				} elseif (intval($row['team1_points']) < intval($row['team2_points']))
+				{
+					// team 2 lost
+					if (isset($match_stats[$row['team1_teamid']]['won']))
+					{
+						$match_stats[$row['team1_teamid']]['won'] += 1;
+					} else
+					{
+						$match_stats[$row['team1_teamid']]['won'] = 1;
+					}
+				} else
+				{
+					// team 2 tied
+					if (isset($match_stats[$row['team1_teamid']]['tied']))
+					{
+						$match_stats[$row['team1_teamid']]['tied'] += 1;
+					} else
+					{
+						$match_stats[$row['team1_teamid']]['tied'] = 1;
+					}
+				}
+			}
+		}
+		mysql_free_result($result);
+		
+		echo '<table class="big" id="opponent_stats">' . "\n";
+		echo '<caption>Opponent statistics for team ' . $team_name . '</caption>' . "\n";
+		echo '<tr>' . "\n";
+		echo '	<th>Name</th>' . "\n";
+		echo '	<th>Won</th>' . "\n";
+		echo '	<th>Tied</th>' . "\n";
+		echo '	<th>Lost</th>' . "\n";
+//		echo '	<th>Activity</th>' . "\n";
+		echo '</tr>' . "\n";
+		
+		$match_stats_keys = array_keys($match_stats);
+		$n_teams = ((int) count($match_stats_keys)) - 1;
+		for ($i = 0; $i <= $n_teams; $i++)
+		{
+			echo '<tr>';
+			
+			echo '<td>';
+			if (isset($match_stats[$match_stats_keys[$i]]['name']))
+			{
+				echo $match_stats[$match_stats_keys[$i]]['name'];
+			}
+			echo '</td>';
+			
+			echo '<td>';
+			if (isset($match_stats[$match_stats_keys[$i]]['won']))
+			{
+				echo $match_stats[$match_stats_keys[$i]]['won'];
+			} else
+			{
+				echo '0';
+			}
+			echo '</td>';
+			
+			echo '<td>';
+			if (isset($match_stats[$match_stats_keys[$i]]['tied']))
+			{
+				echo $match_stats[$match_stats_keys[$i]]['tied'];
+			} else
+			{
+				echo '0';
+			}
+			echo '</td>';
+			
+			echo '<td>';
+			if (isset($match_stats[$match_stats_keys[$i]]['lost']))
+			{
+				echo $match_stats[$match_stats_keys[$i]]['lost'];
+			} else
+			{
+				echo '0';
+			}
+			echo '</td>';
+			
+			echo '</tr>' . "\n";
+		}
+		unset($one_team_stats);
+		$site->dieAndEndPageNoBox();
+	}
+	
+	// nothing else wanted -> display overview
+	
+	// reactivate button
+	if ($allow_reactivate_teams)
+	{
+		echo '<a class="button" href="./?reactivate">Reactivate a team</a>' . "\n";
+		$site->write_self_closing_tag('br');
+		$site->write_self_closing_tag('br');
+	}
+	
+	// is player teamless?
+	$player_teamless = false;
+	// display a create team button to the teamless players viewing this page
+	if ($viewerid > 0)
+	{
+		// this would also work without the viewerid switch but it would be one unneeded query,
+		// thus avoid it due to performance reasons; slow sites are usually not liked
+		$query = 'SELECT `teamid` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($viewerid) . ' LIMIT 1';
+		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		{
+			// query was bad, error message was already given in $site->execute_query(...)
+			$site->dieAndEndPage('');
+		}
+		
+		while($row = mysql_fetch_array($result))
+		{
+			if (((int) $row['teamid']) === 0)
+			{
+				$player_teamless = true;
+			}
+		}
+		mysql_free_result($result);
+		
+		if ($player_teamless)
+		{
+			echo '<a class="button" href="./?create">Create a new team</a>' . "\n";
+		}
+	}
+	
+	// list the non deleted teams
+	// example query: SELECT `teamid`,`name`, `score`, `member_count`,`activity`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
+	// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
+	$query = 'SELECT `teamid`,`name`, `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
+	$query .= 'WHERE `teams`.`id` = `teams_overview`.`teamid`';
+	$query .= ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'";
+	$query .= ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')';
+	$query .= ' ORDER BY `score` DESC';
+	if ($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection))
+	{
+		$rows = (int) mysql_num_rows($result);
+		if ($rows === 0)
+		{
+			echo '<p>There are no teams in the database.</p>';
+			$site->dieAndEndPageNoBox();
+		}
+		
+		function display_teams($table_title, &$teams, &$invited_to_teams)
+		{
+			global $site;
+			global $connection;
+			global $viewerid;
+			global $player_teamless;
+			
+			// do not display empty team tables
+			if (count($teams) === 0)
+			{
+				return;
+			}
+			
+			// id's have to be unique
+			// append table name with lowercase
+			$table_id = 'table_team_members_' . strtolower($table_title);
+			// convert spaces to underscore
+			$table_id = str_replace(' ', '_', $table_id);
+			// use generated id
+			echo '<table id="' . $table_id . '" class="big">' . "\n";
+			// id no longer needed
+			unset($table_id);
+			
+			echo '<caption>' . $table_title . '</caption>' . "\n";
+			echo '<tr>' . "\n";
+			echo '	<th>Name</th>' . "\n";
+			echo '	<th>Score</th>' . "\n";
+			echo '	<th>Matches</th>' . "\n";
+			echo '	<th>Members</th>' . "\n";
+			echo '	<th>Activity</th>' . "\n";
+			if ($player_teamless)
+			{
+				echo '	<th>Allowed actions</th>' . "\n";
+			}
+			echo '</tr>' . "\n";
+			
+			foreach ($teams as &$team)
+			{					
+				echo '<tr class="teams_overview">' . "\n";
+				echo '	<td><a href="./?profile=' . $team['teamid'] . '">';
+				// team name empty?
+				if (strcmp(($team['name']), '') === 0)
+				{
+					echo '(unnamed team)';
+				} else
+				{
+					echo $team['name'] . '</a></td>' . "\n";
+				}
+				echo '	<td>' . $team['score'] . '</td>' . "\n";
+				echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
+				echo '	<td>' . $team['member_count'] . '</td>' . "\n";
+				echo '	<td>' . $team['activity'] . '</td>' . "\n";
+				if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
+				{					
+					// take care of potential database problems
+					if ($player_teamless)
+					{
+						echo '	<td><a class="button" href="./?join=' . $team['teamid'] . '">Join team</a></td>' . "\n";
+					}
+				}
+				else
+				{
+					// display empty row so there is always the same number of columns within a table
+					if ($player_teamless)
+					{
+						if (in_array($team['teamid'],$invited_to_teams))
+						{
+							echo '	<td><a class="button" href="./?join=' . $team['teamid'] . '">Join team using invite</a></td>' . "\n";
+						} else
+						{
+							echo '	<td></td>' . "\n";
+						}
+					}
+				}
+				echo '</tr>' . "\n";
+			}
+			unset($team);
+			// no more players left to display
+			echo '</table>' . "\n";
+		}
+		
+		$active_teams = array(array());
+		$inactive_teams = array(array());
+		while ($row = mysql_fetch_array($result))
+		{
+			// classify team as active (at least 1 match in last 45 days) or not
+			if (strcmp(substr($row['activity'],0,4), '0.00') === 0)
+			{
+				// inactive team
+				$inactive_teams[$row['teamid']]['teamid'] = $row['teamid'];
+				$inactive_teams[$row['teamid']]['name'] = $row['name'];
+				$inactive_teams[$row['teamid']]['score'] = $row['score'];
+				$inactive_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
+				$inactive_teams[$row['teamid']]['member_count'] = $row['member_count'];
+				$inactive_teams[$row['teamid']]['activity'] = $row['activity'];
+				$inactive_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
+				
+			} else
+			{
+				// active team
+				$active_teams[$row['teamid']]['teamid'] = $row['teamid'];
+				$active_teams[$row['teamid']]['name'] = $row['name'];
+				$active_teams[$row['teamid']]['score'] = $row['score'];
+				$active_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
+				$active_teams[$row['teamid']]['member_count'] = $row['member_count'];
+				$active_teams[$row['teamid']]['activity'] = $row['activity'];
+				$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
+			}
+		}
+		mysql_free_result($result);
+		
+		$invited_to_teams = array();
+		if ($player_teamless)
+		{
+			// is the player invited to the team?
+			$query = 'SELECT `teamid` FROM `invitations` WHERE `invited_playerid`=' . sqlSafeStringQuotes($viewerid);
+			// is the invitation expired?
+			$query .= ' AND expiration>' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+			// there should be only one invitation
+			// FIXME: enforce that there will be only one invitation in the player list source code
+			$query .= ' LIMIT 1';
+			if (!($result = @$site->execute_query($site->db_used_name(), 'invitations', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
 			}
 			
-			while($row = mysql_fetch_array($result))
+			$rows = (int) mysql_num_rows($result);
+			if ($rows > 0)
 			{
-				if (((int) $row['teamid']) === 0)
+				while ($row = mysql_fetch_array($result))
 				{
-					$player_teamless = true;
+					$invited_to_teams[] = (int) $row['teamid'];
 				}
 			}
 			mysql_free_result($result);
-			
-			if ($player_teamless)
-			{
-				echo '<a class="button" href="./?create">Create a new team</a>' . "\n";
-			}
 		}
 		
-		// list the non deleted teams
-		// example query: SELECT `teamid`,`name`, `score`, `member_count`,`activity`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
-		// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
-		$query = 'SELECT `teamid`,`name`, `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
-		$query .= 'WHERE `teams`.`id` = `teams_overview`.`teamid`';
-		$query .= ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'";
-		$query .= ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')';
-		$query .= ' ORDER BY `score` DESC';
-		if ($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection))
-		{
-			$rows = (int) mysql_num_rows($result);
-			if ($rows === 0)
-			{
-				echo '<p>There are no teams in the database.</p>';
-				$site->dieAndEndPageNoBox();
-			}
-			
-			function display_teams($table_title, &$teams, &$invited_to_teams)
-			{
-				global $site;
-				global $connection;
-				global $viewerid;
-				global $player_teamless;
-				
-				// do not display empty team tables
-				if (count($teams) === 0)
-				{
-					return;
-				}
-				
-				// id's have to be unique
-				// append table name with lowercase
-				$table_id = 'table_team_members_' . strtolower($table_title);
-				// convert spaces to underscore
-				$table_id = str_replace(' ', '_', $table_id);
-				// use generated id
-				echo '<table id="' . $table_id . '" class="big">' . "\n";
-				// id no longer needed
-				unset($table_id);
-				
-				echo '<caption>' . $table_title . '</caption>' . "\n";
-				echo '<tr>' . "\n";
-				echo '	<th>Name</th>' . "\n";
-				echo '	<th>Score</th>' . "\n";
-				echo '	<th>Matches</th>' . "\n";
-				echo '	<th>Members</th>' . "\n";
-				echo '	<th>Activity</th>' . "\n";
-				if ($player_teamless)
-				{
-					echo '	<th>Allowed actions</th>' . "\n";
-				}
-				echo '</tr>' . "\n";
-				
-				foreach ($teams as &$team)
-				{					
-					echo '<tr class="teams_overview">' . "\n";
-					echo '	<td><a href="./?profile=' . $team['teamid'] . '">';
-					// team name empty?
-					if (strcmp(($team['name']), '') === 0)
-					{
-						echo '(unnamed team)';
-					} else
-					{
-						echo $team['name'] . '</a></td>' . "\n";
-					}
-					echo '	<td>' . $team['score'] . '</td>' . "\n";
-					echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
-					echo '	<td>' . $team['member_count'] . '</td>' . "\n";
-					echo '	<td>' . $team['activity'] . '</td>' . "\n";
-					if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
-					{					
-						// take care of potential database problems
-						if ($player_teamless)
-						{
-							echo '	<td><a class="button" href="./?join=' . $team['teamid'] . '">Join team</a></td>' . "\n";
-						}
-					}
-					else
-					{
-						// display empty row so there is always the same number of columns within a table
-						if ($player_teamless)
-						{
-							if (in_array($team['teamid'],$invited_to_teams))
-							{
-								echo '	<td><a class="button" href="./?join=' . $team['teamid'] . '">Join team using invite</a></td>' . "\n";
-							} else
-							{
-								echo '	<td></td>' . "\n";
-							}
-						}
-					}
-					echo '</tr>' . "\n";
-				}
-				unset($team);
-				// no more players left to display
-				echo '</table>' . "\n";
-			}
-			
-			$active_teams = array(array());
-			$inactive_teams = array(array());
-			while ($row = mysql_fetch_array($result))
-			{
-				// classify team as active (at least 1 match in last 45 days) or not
-				if (strcmp(substr($row['activity'],0,4), '0.00') === 0)
-				{
-					// inactive team
-					$inactive_teams[$row['teamid']]['teamid'] = $row['teamid'];
-					$inactive_teams[$row['teamid']]['name'] = $row['name'];
-					$inactive_teams[$row['teamid']]['score'] = $row['score'];
-					$inactive_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
-					$inactive_teams[$row['teamid']]['member_count'] = $row['member_count'];
-					$inactive_teams[$row['teamid']]['activity'] = $row['activity'];
-					$inactive_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
-
-				} else
-				{
-					// active team
-					$active_teams[$row['teamid']]['teamid'] = $row['teamid'];
-					$active_teams[$row['teamid']]['name'] = $row['name'];
-					$active_teams[$row['teamid']]['score'] = $row['score'];
-					$active_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
-					$active_teams[$row['teamid']]['member_count'] = $row['member_count'];
-					$active_teams[$row['teamid']]['activity'] = $row['activity'];
-					$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
-				}
-			}
-			mysql_free_result($result);
-			
-			$invited_to_teams = array();
-			if ($player_teamless)
-			{
-				// is the player invited to the team?
-				$query = 'SELECT `teamid` FROM `invitations` WHERE `invited_playerid`=' . sqlSafeStringQuotes($viewerid);
-				// is the invitation expired?
-				$query .= ' AND expiration>' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-				// there should be only one invitation
-				// FIXME: enforce that there will be only one invitation in the player list source code
-				$query .= ' LIMIT 1';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'invitations', $query, $connection)))
-				{
-					// query was bad, error message was already given in $site->execute_query(...)
-					$site->dieAndEndPage('');
-				}
-				
-				$rows = (int) mysql_num_rows($result);
-				if ($rows > 0)
-				{
-					while ($row = mysql_fetch_array($result))
-					{
-						$invited_to_teams[] = (int) $row['teamid'];
-					}
-				}
-				mysql_free_result($result);
-			}
-			
-			// first entry is always empty
-			unset($active_teams[0]);
-			unset($inactive_teams[0]);
-			
-			// display the teams, beginning with active ones
-			display_teams('Active teams',$active_teams, $invited_to_teams);
-			unset($active_teams);
-			$site->write_self_closing_tag('br');
-			display_teams('Inactive teams',$inactive_teams, $invited_to_teams);
-			unset($inactive_teams);
-		}
+		// first entry is always empty
+		unset($active_teams[0]);
+		unset($inactive_teams[0]);
+		
+		// display the teams, beginning with active ones
+		display_teams('Active teams',$active_teams, $invited_to_teams);
+		unset($active_teams);
+		$site->write_self_closing_tag('br');
+		display_teams('Inactive teams',$inactive_teams, $invited_to_teams);
+		unset($inactive_teams);
 	}
-?>
+	?>
 
 </div>
 </body>
