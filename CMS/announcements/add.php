@@ -998,7 +998,7 @@
 						}
 						echo '">bbcode:</label></div>' . "\n";
 						echo '<span class="test">';
-						include '../bbcode_buttons.php';
+						include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
 						echo '</span>';
 						echo "\n";
 						echo '</div>' . "\n";

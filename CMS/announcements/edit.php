@@ -189,7 +189,7 @@
 						echo '<div class="invisi" style="display: inline;">';
 						echo '	<label class="msg_edit">bbcode:</label><span>';
 						echo '</div>';
-						include '../bbcode_buttons.php';
+						include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
 						echo '</span>';
 						echo "\n";
 						echo '</div>' . "\n";
