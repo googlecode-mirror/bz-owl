@@ -74,20 +74,20 @@ th
 {
 	height: 1.5em;
 	max-width: 80%;
+	padding-left: 1em;
 }
 
 table.big tbody
 {
 	display: block;
 	margin-bottom: 0.5em;
-	margin-left: 1em;
 	overflow: auto;
-	margin-right: 1em;
 }
 
 table.big td
 {
 	min-width: 12em;
+	padding-left: 1em;
 }
 
 /* even table rows */
@@ -525,7 +525,7 @@ table.nested_table
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	padding: 0.5em;
+	padding-bottom: 0.5em;
 }
 
 table.nested_table caption
@@ -539,9 +539,6 @@ table.nested_table caption
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.25em;
-	margin-left: -0.5em;
-	margin-top: -0.5em;
-	margin-right: -0.5em;
 }
 
 div.team_profile_box
