@@ -39,7 +39,6 @@ table
 {
 	display: inline-block;
 	background-color: rgba(234,238,223,0.55);
-	overflow: auto;
 }
 
 table.big
@@ -82,6 +81,7 @@ table.big tbody
 {
 	display: block;
 	margin-bottom: 0.5em;
+	overflow: auto;
 }
 
 table.big td
