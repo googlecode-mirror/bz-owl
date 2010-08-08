@@ -749,6 +749,11 @@ label.player_edit
 	padding: 1mm 2mm 0 0;
 }
 
+* + div.player_edit
+{
+	margin-bottom: -0.8em;
+}
+
 textarea.player_edit
 {
 	width: 10.1cm;

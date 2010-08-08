@@ -190,6 +190,7 @@
 						echo '	<label class="msg_edit">bbcode:</label><span>';
 						echo '</div>';
 						include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
+						showBBCodeButtons();
 						echo '</span>';
 						echo "\n";
 						echo '</div>' . "\n";

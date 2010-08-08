@@ -409,7 +409,8 @@
 		$site->write_self_closing_tag('input type="checkbox" name="any_teamless_player_can_join" value="'
 									  . '1' . '" id="any_teamless_player_can_join" checked="checked"');
 		echo '</p>' . "\n";
-		
+		echo 'test!!!!!111';
+
 		// team description
 		if ($site->bbcode_lib_available())
 		{
@@ -417,7 +418,9 @@
 			echo '<div class="invisi" style="display: inline;">' . "\n";
 			echo '	<label class="team_change">bbcode:</label></div>' . "\n";
 			echo '<span class="bbcode_buttons">';
-			include '../CMS/bbcode_buttons.php';
+			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
+			// set up name of field to edit so javascript knows which element to manipulate
+			showBBCodeButtons('team_description');
 			echo '</span>';
 			echo "\n";
 			echo '</div>' . "\n";
@@ -1348,7 +1351,10 @@
 			echo '<div class="invisi" style="display: inline;">' . "\n";
 			echo '	<label class="team_change">bbcode:</label></div>' . "\n";
 			echo '<span class="bbcode_buttons">';
-			include '../CMS/bbcode_buttons.php';
+			echo '<span class="bbcode_buttons">';
+			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
+			// set up name of field to edit so javascript knows which element to manipulate
+			showBBCodeButtons('team_description');
 			echo '</span>';
 			echo "\n";
 			echo '</div>' . "\n";

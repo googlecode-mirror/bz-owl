@@ -763,6 +763,18 @@
 		echo '</p>' . "\n\n";
 		
 		// user comment
+		if ($site->bbcode_lib_available())
+		{
+			echo "\n" . '<div class="player_edit">';
+			echo '<div class="invisi" style="display: inline;">';
+			echo '	<label class="player_edit">bbcode:</label><span>';
+			echo '</div>';
+			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
+			showBBCodeButtons('user_comment');
+			echo '</span>';
+			echo "\n";
+			echo '</div>' . "\n";
+		}
 		echo '<p><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
 		echo '<span><textarea class="player_edit" id="edit_user_comment" rows="10" cols="50" name="user_comment">';
 		echo $user_comment;
@@ -776,6 +788,18 @@
 		// admin comments, these should only be set by an admin
 		if ($allow_add_admin_comments_to_user_profile === true)
 		{
+			if ($site->bbcode_lib_available())
+			{
+				echo "\n" . '<div class="player_edit">';
+				echo '<div class="invisi" style="display: inline;">';
+				echo '	<label class="player_edit">bbcode:</label><span>';
+				echo '</div>';
+				// bbcode_buttons.php file already included
+				showBBCodeButtons('admin_comments');
+				echo '</span>';
+				echo "\n";
+				echo '</div>' . "\n";
+			}
 			echo '<p><label class="player_edit" for="edit_admin_comments">Edit admin comments: </label>';
 			echo '<span><textarea class="player_edit" id="edit_admin_comments" rows="10" cols="50" name="admin_comments">';
 			echo $admin_comments;

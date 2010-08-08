@@ -605,6 +605,11 @@ input[type=text].logo_url
 	max-width: 100%;
 }
 
+* + div.player_edit
+{
+	margin-bottom: -0.8em;
+}
+
 textarea.player_edit
 {
 	width: 10.1cm;

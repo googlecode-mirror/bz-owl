@@ -1,8 +1,8 @@
 // source: http://aktuell.de.selfhtml.org/artikel/javascript/bbcode/index.htm
 // license: public domain
 
-function insert(aTag, eTag) {
-  var input = document.forms[0].elements['announcement'];
+function insert(aTag, eTag, form_number, element_name) {
+  var input = document.forms[form_number].elements[element_name];
   input.focus();
   /* für Internet Explorer */
   if(typeof document.selection != 'undefined') {
