@@ -87,6 +87,10 @@ table.big tbody
 table.big td
 {
 	width: 1%;
+}
+
+td
+{
 	padding-left: 1em;
 }
 
@@ -544,6 +548,11 @@ table.nested_table caption
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
 	padding: 0.25em;
+}
+
+table.nested_table td
+{
+	padding-right: 1em;
 }
 
 div.team_profile_box

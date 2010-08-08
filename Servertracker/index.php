@@ -59,7 +59,7 @@
 	echo '<div class="static_page_box">' . "\n";
 	if (!($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker'])))
 	{
-		echo '<p>You have no permission to view this page</p>' . "\n";
+		echo '<p>You have no permission to view this page.</p>' . "\n";
 		$site->dieAndEndPage();
 	}
 	$use_internal_db = true;
