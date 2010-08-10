@@ -94,7 +94,9 @@
 		formatbzfquery("brad.guleague.org:5158", $connection);
 		
 //		formatbzfquery("longdon.guleague.org:5158", $connection);
-//        
+//      
+		formatbzfquery("destroyer.guleague.org:5157", $connection);
+		
         formatbzfquery("destroyer.guleague.org:5158", $connection);
 		
 		formatbzfquery("dub.guleague.org:59997", $connection);
