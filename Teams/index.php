@@ -1901,9 +1901,10 @@
 	// someone wants to look at a team profile
 	if (isset($_GET['opponent_stats']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
-		
 		$profile = intval($_GET['opponent_stats']);
+		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<a class="button" href="./?profile=' . strval($profile) . '">back to team profile</a>' . "\n";
+		
 		$team_name = '(no name)';
 		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 0,1';
 		if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
@@ -2042,28 +2043,104 @@
 		echo '<table class="big" id="opponent_stats">' . "\n";
 		echo '<caption>Opponent statistics for team ' . $team_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
-		echo '	<th>Name</th>' . "\n";
-		echo '	<th>Total</th>' . "\n";
-		echo '	<th>Won</th>' . "\n";
-		echo '	<th>Tied</th>' . "\n";
-		echo '	<th>Lost</th>' . "\n";
-		echo '	<th>Won ratio</th>' . "\n";
+		
+		// find out of table is to be sorted
+		$sortBy = '';
+		if (isset($_GET['sort']))
+		{
+			// allowed sorting columns
+			$sort_colums = array('Name', 'Total', 'Total', 'Won', 'Tied', 'Lost', 'Won Ratio');
+			
+			$n_columns = count($sort_colums) -1;
+			for ($i = 0; $i <= $n_columns; $i++)
+			{
+				if (strcmp($_GET['sort'], $sort_colums[$i]) === 0)
+				{
+					$sortBy = $_GET['sort'];
+				}
+			}
+		}
+		
+		$order = 'asc';
+		$orderAsc = true;
+		$orderLink = 'desc';
+		
+		if (isset($_GET['order']) && strcmp($_GET['order'], 'desc') === 0)
+		{
+			$order = 'desc';
+			$orderAsc = false;
+			$orderLink = 'asc';
+		}
+		
+		// write one specified table header
+		function writeNavi($item)
+		{
+			global $profile;
+			global $sortBy;
+			global $order;
+			global $orderLink;
+			
+			$itemLink = str_replace(' ', '%20', $item);
+			echo ('	<th><a href="./?opponent_stats=' . $profile
+				  . '&amp;sort=' . $itemLink . '&amp;order=');
+			if (strcmp($sortBy, $item) === 0)
+			{
+				echo $orderLink . '">' . $item;
+			} else
+			{
+				echo $order . '">' . $item;
+			}
+			
+			if (strcmp($sortBy, $item) === 0)
+			{
+				echo ' <span class="opponent_stats_order_' . $order . '">(' . $order . ')</span>';
+			}
+			echo '</a></th>' . "\n";
+		}
+		
+		// write the navigation elements
+		writeNavi('Name');
+		writeNavi('Total');
+		writeNavi('Won');
+		writeNavi('Tied');
+		writeNavi('Lost');
+		writeNavi('Won Ratio');
+		
 		echo '</tr>' . "\n";
 		
+		// sorting callback function
+		function cmp($a, $b)
+		{
+			global $orderAsc;
+			global $sortBy;
+			global $sortByName;
+			
+			$sortBy = strtolower($sortBy);
+			if (!($sortByName))
+			{
+				if ($orderAsc)
+				{
+					return (intval($a[$sortBy]) >= intval($b[$sortBy]));
+				} else
+				{
+					return (intval($a[$sortBy]) < intval($b[$sortBy]));					
+				}
+			}
+
+			if ($orderAsc)
+			{
+				return strcmp($a[$sortBy], $b[$sortBy]);
+			} else
+			{
+				return !(strcmp($a[$sortBy], $b[$sortBy]));
+			}
+		}
+		
+		// fill empty entries with 0 and compute won ratio
 		$match_stats_keys = array_keys($match_stats);
 		$n_teams = ((int) count($match_stats_keys)) - 1;
 		for ($i = 0; $i <= $n_teams; $i++)
 		{
-			echo '<tr>';
-			
-			echo '<td>';
-			if (isset($match_stats[$match_stats_keys[$i]]['name']))
-			{
-				echo '<a href=".?profile=' . htmlent($match_stats_keys[$i]) . '">' . $match_stats[$match_stats_keys[$i]]['name'] . '</a>';
-			}
-			echo '</td>';
-			
-			echo '<td>';
 			if (!isset($match_stats[$match_stats_keys[$i]]['won']))
 			{
 				$match_stats[$match_stats_keys[$i]]['won'] = 0;
@@ -2076,9 +2153,40 @@
 			{
 				$match_stats[$match_stats_keys[$i]]['lost'] = 0;
 			}
-			$total = ($match_stats[$match_stats_keys[$i]]['won'] + $match_stats[$match_stats_keys[$i]]['tied'] + $match_stats[$match_stats_keys[$i]]['lost']);
-			echo $total;
+			
+			$total = ($match_stats[$match_stats_keys[$i]]['won']
+					  + $match_stats[$match_stats_keys[$i]]['tied']
+					  + $match_stats[$match_stats_keys[$i]]['lost']);
+			$match_stats[$match_stats_keys[$i]]['total'] = $total;
+			$ratio = $match_stats[$match_stats_keys[$i]]['won'] / $total;
+			$match_stats[$match_stats_keys[$i]]['won ratio'] = round($ratio*100, 0);
+		}
+		
+		// sort the array
+		if (!(strcmp($sortBy, '') === 0))
+		{
+			// mark whether to sort by name for callback
+			$sortByName = (strcmp($sortBy, 'Name') === 0);
+			usort($match_stats, 'cmp');
+			unset($sortByName);
+			
+			// re-index the key lookup table
+			// NOTE: would also be necessary if uasort would be used to sort the array 
+			$match_stats_keys = array_keys($match_stats);
+		}
+		
+		for ($i = 0; $i <= $n_teams; $i++)
+		{
+			echo '<tr>';
+			
+			echo '<td>';
+			if (isset($match_stats[$match_stats_keys[$i]]['name']))
+			{
+				echo '<a href=".?profile=' . htmlent($match_stats_keys[$i]) . '">' . $match_stats[$match_stats_keys[$i]]['name'] . '</a>';
+			}
 			echo '</td>';
+			
+			echo '<td>' . $match_stats[$match_stats_keys[$i]]['total'] . '</td>';
 			
 			echo '<td>' . $match_stats[$match_stats_keys[$i]]['won'] . '</td>';
 			
@@ -2086,10 +2194,7 @@
 			
 			echo '<td>' . $match_stats[$match_stats_keys[$i]]['lost'] . '</td>';
 			
-			echo '<td>';
-			$ratio = $match_stats[$match_stats_keys[$i]]['won'] / $total;
-			echo round($ratio*100, 0);
-			echo ' %</td>';
+			echo '<td>' . $match_stats[$match_stats_keys[$i]]['won ratio'] . ' %</td>';
 			
 			echo '</tr>' . "\n";
 		}
