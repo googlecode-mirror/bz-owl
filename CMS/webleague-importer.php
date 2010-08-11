@@ -20,11 +20,12 @@
 	
 	if ($viewerid < 1)
 	{
-		echo '<p class="first_p">You need to be logged in to update the old bbcode entries.</p>';
-		$site->dieAndEndPage();
-	}
-	
-	if (!(isset($_SESSION['IsAdmin'])) || !($_SESSION['IsAdmin']))
+		if (!(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])))
+		{
+			echo '<p class="first_p">You need to be logged in to update the old bbcode entries.</p>';
+			$site->dieAndEndPage();
+		}
+	} elseif (!(isset($_SESSION['IsAdmin'])) || !($_SESSION['IsAdmin']))
 	{
 		$site->dieAndEndPage('User with id ' . sqlSafeStringQuotes($viewerid) . ' tried to run the webleague importer script without permissions.');
 	}
@@ -74,7 +75,7 @@
 //	echo '</pre>';
 //	foreach($db_structure_calls as $one_call)
 //	{
-//		@$site->execute_query($site->db_used_name(), 'all!', $one_call, $connection);
+//		@$site->execute_query('all!', $one_call, $connection);
 //	}
 	
 	// reset auto-increment values of each table
@@ -83,73 +84,74 @@
 		global $site;
 		global $connection;
 		
+		$site->selectDB($site->db_used_name(), $connection);
 		$query = 'ALTER TABLE `bans` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'bans', $query, $connection);
+		$site->execute_query('bans', $query, $connection);
 		
 		$query = 'ALTER TABLE `countries` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'countries', $query, $connection);
+		$site->execute_query('countries', $query, $connection);
 		
 		$query = 'ALTER TABLE `invitations` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'invitations', $query, $connection);
+		$site->execute_query('invitations', $query, $connection);
 		
 		$query = 'ALTER TABLE `matches` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'matches', $query, $connection);
+		$site->execute_query('matches', $query, $connection);
 		
 		$query = 'ALTER TABLE `matches_edit_stats` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'matches_edit_stats', $query, $connection);
+		$site->execute_query('matches_edit_stats', $query, $connection);
 		
 		$query = 'ALTER TABLE `messages_storage` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
+		$site->execute_query('messages_storage', $query, $connection);
 		
 		$query = 'ALTER TABLE `messages_users_connection` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+		$site->execute_query('messages_users_connection', $query, $connection);
 		
 		$query = 'ALTER TABLE `news` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'news', $query, $connection);
+		$site->execute_query('news', $query, $connection);
 		
 		$query = 'ALTER TABLE `online_users` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
+		$site->execute_query('online_users', $query, $connection);
 		
 		$query = 'ALTER TABLE `players` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+		$site->execute_query('players', $query, $connection);
 		
 		$query = 'ALTER TABLE `players_profile` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+		$site->execute_query('players_profile', $query, $connection);
 		
 		$query = 'ALTER TABLE `static_pages` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection);
+		$site->execute_query('static_pages', $query, $connection);
 		
 		$query = 'ALTER TABLE `teams` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
+		$site->execute_query('teams', $query, $connection);
 		
 		$query = 'ALTER TABLE `teams_overview` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+		$site->execute_query('teams_overview', $query, $connection);
 		
 		$query = 'ALTER TABLE `teams_permissions` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'teams_permissions', $query, $connection);
+		$site->execute_query('teams_permissions', $query, $connection);
 		
 		$query = 'ALTER TABLE `teams_profile` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection);
+		$site->execute_query('teams_profile', $query, $connection);
 		
 		$query = 'ALTER TABLE `visits` AUTO_INCREMENT = 1';
 		// execute query, ignore result
-		$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+		$site->execute_query('visits', $query, $connection);
 	}
 	
 	// players
@@ -160,12 +162,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT `id`,`callsign`,`created` FROM `l_player` ORDER BY `id`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'l_player', $query, $connection)))
+		if (!($result = @$site->execute_query('l_player', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		// 0 means active player
 		$suspended_status = 'active';
 		
@@ -191,15 +195,17 @@
 				// callsigns are case treated insensitive
 				if (!isset($players[strtolower($current_name)]))
 				{
+					$site->selectDB($db_to_be_imported, $connection);
 					$query = ('SELECT `team`,`last_login`,`comment`,`logo`,`md5password`,`utczone`'
 							  . ' FROM `l_player` WHERE `l_player`.`callsign`='
 							  . sqlSafeStringQuotes($current_name)
 							  . ' LIMIT 1');
-					if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+					if (!($tmp_result = @$site->execute_query('l_team', $query, $connection)))
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
+						$site->selectDB($site->db_used_name(), $connection);
 						$site->dieAndEndPage();
 					}
+					$site->selectDB($site->db_used_name(), $connection);
 					$last_login = '';
 					$team = (int) 0;
 					$comment = '';
@@ -218,16 +224,18 @@
 					
 					
 					// take care of deleted players
+					$site->selectDB($db_to_be_imported, $connection);
 					$query = ('SELECT `last_login`, (SELECT COUNT(*) FROM `l_player` WHERE `callsign`='
 							  . sqlSafeStringQuotes($current_name) . ' LIMIT 1) AS `num_not_deleted`'
 							  . ' FROM `l_player` WHERE `l_player`.`callsign`='
 							  . sqlSafeStringQuotes($current_name . ' (DELETED)')
 							  . ' ORDER BY `last_login` DESC LIMIT 1');
-					if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+					if (!($tmp_result = @$site->execute_query('l_team', $query, $connection)))
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
+						$site->selectDB($site->db_used_name(), $connection);
 						$site->dieAndEndPage();
 					}
+					$site->selectDB($site->db_used_name(), $connection);
 					while ($tmp_row = mysql_fetch_array($tmp_result))
 					{
 						if (strcmp($last_login, '') === 0)
@@ -248,7 +256,7 @@
 							  . ',' . sqlSafeStringQuotes($current_name) . ',' . sqlSafeStringQuotes($suspended_status)
 							  . ')');
 					// execute query, ignore result
-					$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+					$site->execute_query('players', $query, $connection);
 					
 					$query = ('INSERT INTO `players_profile` (`playerid`,`UTC`,`user_comment`,`raw_user_comment`,`joined`,`last_login`,`logo_url`)'
 							  . ' VALUES '
@@ -258,7 +266,7 @@
 							  . ',' . sqlSafeStringQuotes($logo)
 							  . ')');
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+					@$site->execute_query('players_profile', $query, $connection);
 					
 					$query = ('INSERT INTO `players_passwords` (`playerid`,`password`,`password_encoding`)'
 							  . ' VALUES '
@@ -267,7 +275,7 @@
 							  . ',' . sqlSafeStringQuotes('md5')
 							  . ')');
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+					@$site->execute_query('players_profile', $query, $connection);
 					
 					// mark the user has been added to db
 					// callsigns are case treated insensitive
@@ -286,7 +294,7 @@
 		foreach($deleted_players AS &$deleted_player)
 		{
 			$query = 'SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($deleted_player['callsign']);
-			if (!($result = @$site->execute_query($site->db_used_name(), 'l_player', $query, $connection)))
+			if (!($result = @$site->execute_query('l_player', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -309,12 +317,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT * FROM `l_team` ORDER BY `created`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+		if (!($result = @$site->execute_query('l_team', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		while ($row = mysql_fetch_array($result))
 		{
 			$query = ('INSERT INTO `teams` (`id`,`name`,`leader_playerid`)'
@@ -329,7 +339,7 @@
 			}
 			$query .= ')';
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
+			@$site->execute_query('teams', $query, $connection);
 			
 			$activity_status = 1;
 			if (strcmp($row['status'], 'deleted') === 0)
@@ -342,14 +352,16 @@
 					  . ',' . '(SELECT COUNT(*) FROM `players` WHERE `players`.`teamid`=' . sqlSafeStringQuotes($row['id']) . ') '
 					  . ',' . sqlSafeStringQuotes($row['adminclosed']) . ',' .sqlSafeStringQuotes($activity_status));
 			// total matches
+			$site->selectDB($db_to_be_imported, $connection);
 			$tmp_query = ('SELECT COUNT(*) AS `num_matches` FROM `bzl_match` WHERE (`team1`='
 						  . sqlSafeStringQuotes($row['id']) . ' OR `team2`=' . sqlSafeStringQuotes($row['id'])
 						  . ') LIMIT 1');
-			if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'bzl_match', $tmp_query, $connection)))
+			if (!($tmp_result = @$site->execute_query('bzl_match', $tmp_query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				$site->selectDB($site->db_used_name(), $connection);
 				$site->dieAndEndPage('');
 			}
+			$site->selectDB($site->db_used_name(), $connection);
 			while ($tmp_row = mysql_fetch_array($tmp_result))
 			{
 				$query .= ', ' . sqlSafeStringQuotes($tmp_row['num_matches']);
@@ -358,7 +370,7 @@
 			$query .= ')';
 			
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+			@$site->execute_query('teams_overview', $query, $connection);
 			
 			$activity_status = 1;
 			if (!(strcmp($row['active'], 'yes') === 0))
@@ -371,17 +383,19 @@
 					  . '(' . sqlSafeStringQuotes($row['id']));
 			
 			// matches won
+			$site->selectDB($db_to_be_imported, $connection);
 			$tmp_query = ('SELECT COUNT(*) AS `num_matches` FROM `bzl_match` WHERE (`team1`='
 						  . sqlSafeStringQuotes($row['id']) . ' OR `team2`=' . sqlSafeStringQuotes($row['id'])
 						  . ') AND ((`team1`=' . sqlSafeStringQuotes($row['id'])
 						  . ' AND `score1`>`score2`) OR (`team2`=' . sqlSafeStringQuotes($row['id'])
 						  . ' AND `score2`>`score1`)'
 						  . ')');
-			if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'bzl_match', $tmp_query, $connection)))
+			if (!($tmp_result = @$site->execute_query('bzl_match', $tmp_query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				$site->selectDB($site->db_used_name(), $connection);
 				$site->dieAndEndPage('');
 			}
+			$site->selectDB($site->db_used_name(), $connection);
 			while ($tmp_row = mysql_fetch_array($tmp_result))
 			{
 				$query .= ', ' . sqlSafeStringQuotes($tmp_row['num_matches']);
@@ -389,15 +403,17 @@
 			mysql_free_result($tmp_result);
 			
 			// matches draw
+			$site->selectDB($db_to_be_imported, $connection);
 			$tmp_query = ('SELECT COUNT(*) AS `num_matches` FROM `bzl_match` WHERE (`team1`='
 						  . sqlSafeStringQuotes($row['id']) . ' OR `team2`=' . sqlSafeStringQuotes($row['id'])
 						  . ') AND (`score1`=`score2`'
 						  . ')');
-			if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'bzl_match', $tmp_query, $connection)))
+			if (!($tmp_result = @$site->execute_query('bzl_match', $tmp_query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				$site->selectDB($site->db_used_name(), $connection);
 				$site->dieAndEndPage('');
 			}
+			$site->selectDB($site->db_used_name(), $connection);
 			while ($tmp_row = mysql_fetch_array($tmp_result))
 			{
 				$query .= ', ' . sqlSafeStringQuotes($tmp_row['num_matches']);
@@ -405,17 +421,19 @@
 			mysql_free_result($tmp_result);
 			
 			// matches won
+			$site->selectDB($db_to_be_imported, $connection);
 			$tmp_query = ('SELECT COUNT(*) AS `num_matches` FROM `bzl_match` WHERE (`team1`='
 						  . sqlSafeStringQuotes($row['id']) . ' OR `team2`=' . sqlSafeStringQuotes($row['id'])
 						  . ') AND ((`team1`=' . sqlSafeStringQuotes($row['id'])
 						  . ' AND `score1`<`score2`) OR (`team2`=' . sqlSafeStringQuotes($row['id'])
 						  . ' AND `score2`<`score1`)'
 						  . ')');
-			if (!($tmp_result = @$site->execute_query($db_to_be_imported, 'bzl_match', $tmp_query, $connection)))
+			if (!($tmp_result = @$site->execute_query('bzl_match', $tmp_query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
+				$site->selectDB($site->db_used_name(), $connection);
 				$site->dieAndEndPage('');
 			}
+			$site->selectDB($site->db_used_name(), $connection);
 			while ($tmp_row = mysql_fetch_array($tmp_result))
 			{
 				$query .= ', ' . sqlSafeStringQuotes($tmp_row['num_matches']);
@@ -427,7 +445,7 @@
 					   . ',' . sqlSafeStringQuotes($row['logo']) . ',' . sqlSafeStringQuotes($row['created'])
 					   . ')');
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+			@$site->execute_query('teams_overview', $query, $connection);
 		}
 		mysql_free_result($result);
 	}
@@ -441,12 +459,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT * FROM `bzl_match` ORDER BY `id`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		$suspended_status = 'active';
 		while ($row = mysql_fetch_array($result))
 		{
@@ -488,7 +508,7 @@
 					   . ',' . sqlSafeStringQuotes($row['newrankt1']) . ',' . sqlSafeStringQuotes($row['newrankt2'])
 					   . ')');
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'matches', $query, $connection);
+			@$site->execute_query('matches', $query, $connection);
 		}
 		mysql_free_result($result);
 	}
@@ -502,12 +522,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT * FROM `l_message` ORDER BY `datesent`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+		if (!($result = @$site->execute_query('l_team', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		while ($row = mysql_fetch_array($result))
 		{
 			$query = ('INSERT INTO `messages_storage` (`id`,`author_id`,`subject`,`timestamp`,`message`,`from_team`,`recipients`)'
@@ -551,7 +573,7 @@
 			$query .= ',' . sqlSafeStringQuotes('0');
 			$query .= ',' . sqlSafeStringQuotes($deleted_players[$row['toid']]['id']) . ')';
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
+			@$site->execute_query('messages_storage', $query, $connection);
 			
 			$query = ('INSERT INTO `messages_users_connection` (`msgid`,`playerid`,`in_inbox`,`in_outbox`,`msg_status`)'
 					  . ' VALUES '
@@ -565,7 +587,7 @@
 					  . ')');
 			
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+			@$site->execute_query('messages_users_connection', $query, $connection);
 		}
 	}
 	
@@ -578,12 +600,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT * FROM `bzl_visit` ORDER BY `ts`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+		if (!($result = @$site->execute_query('l_team', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		// use lookup array to save some dns lookups
 		while ($row = mysql_fetch_array($result))
 		{
@@ -599,7 +623,7 @@
 						  . ',' . sqlSafeStringQuotes($row['ts'])
 						  . ')');
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+				@$site->execute_query('visits', $query, $connection);
 			}
 		}
 	}
@@ -613,12 +637,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT * FROM `bzl_news` ORDER BY `newsdate`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+		if (!($result = @$site->execute_query('l_team', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		while ($row = mysql_fetch_array($result))
 		{
 			$text = $site->linebreaks($row['text']);
@@ -632,7 +658,7 @@
 					  . ',' . sqlSafeStringQuotes($text)
 					  . ')');
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'news', $query, $connection);
+			@$site->execute_query('news', $query, $connection);
 		}
 	}
 	
@@ -645,12 +671,14 @@
 		global $deleted_players;
 		global $db_to_be_imported;
 		
+		$site->selectDB($db_to_be_imported, $connection);
 		$query = 'SELECT * FROM `bzl_shame` ORDER BY `newsdate`';
-		if (!($result = @$site->execute_query($db_to_be_imported, 'l_team', $query, $connection)))
+		if (!($result = @$site->execute_query('l_team', $query, $connection)))
 		{
-			// query was bad, error message was already given in $site->execute_query(...)
+			$site->selectDB($site->db_used_name(), $connection);
 			$site->dieAndEndPage('');
 		}
+		$site->selectDB($site->db_used_name(), $connection);
 		while ($row = mysql_fetch_array($result))
 		{
 			$query = ('INSERT INTO `bans` (`timestamp`,`author`,`announcement`,`raw_announcement`)'
@@ -661,7 +689,7 @@
 					  . ',' . sqlSafeStringQuotes($site->linebreaks($row['text']))
 					  . ')');
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'bans', $query, $connection);
+			@$site->execute_query('bans', $query, $connection);
 		}
 	}
 	
@@ -674,7 +702,7 @@
 		
 		// get a rough max estimate of entries to be updated
 		$query = 'SELECT COUNT(*) AS `n` FROM `visits` WHERE `host`=' . sqlSafeStringQuotes('');
-		if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
+		if (!($result = @$site->execute_query('visits', $query, $connection)))
 		{
 			$site->dieAndEndPage('Could not get list of entries where hostname is empty');
 		}
@@ -689,7 +717,7 @@
 		{
 			// select only 1 entry
 			$query = 'SELECT `ip-address` FROM `visits` WHERE `host`=' . sqlSafeStringQuotes('') . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'visits', $query, $connection)))
+			if (!($result = @$site->execute_query('visits', $query, $connection)))
 			{
 				$site->dieAndEndPage('Could not get list of entries where hostname is empty');
 			}
@@ -720,7 +748,7 @@
 				  . sqlSafeStringQuotes(gethostbyaddr($ip_address))
 				  . ' WHERE `ip-address`=' . sqlSafeStringQuotes($ip_address));
 		// execute query, ignore result
-		@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+		@$site->execute_query('visits', $query, $connection);
 	}
 	
 	// create lookup array

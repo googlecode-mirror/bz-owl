@@ -42,7 +42,7 @@
 		$query .= ' LIMIT 1';
 		
 		// execute query
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
 			require_once '../CMS/navi.inc';
 			echo '<div class="static_page_box">' . "\n";
@@ -90,7 +90,7 @@
 		$query .= ' LIMIT 1';
 		
 		// execute query
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players_passwords', $query, $connection)))
+		if (!($result = @$site->execute_query('players_passwords', $query, $connection)))
 		{
 			require_once '../CMS/navi.inc';
 			echo '<div class="static_page_box">' . "\n";

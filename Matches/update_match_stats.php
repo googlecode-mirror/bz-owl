@@ -10,7 +10,7 @@
 		// increase match count for teams that participated
 		$query = 'UPDATE `teams_overview` SET `num_matches_played`=`num_matches_played`+1';
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ' OR `teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('The match count for the teams with id'
@@ -23,7 +23,7 @@
 			// team 1 won
 			$query = 'UPDATE `teams_profile` SET `num_matches_won`=`num_matches_won`+1';
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+			if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('The match win count for team ' . sqlSafeString($team_id1) . ' could not be updated due to a sql problem!');
@@ -32,7 +32,7 @@
 			// team 2 lost
 			$query = 'UPDATE `teams_profile` SET `num_matches_lost`=`num_matches_lost`+1';
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id2);
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+			if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('The match lose count for team ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
@@ -44,7 +44,7 @@
 			// team 2 won
 			$query = 'UPDATE `teams_profile` SET `num_matches_won`=`num_matches_won`+1';
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id2);
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+			if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('The match win count for team ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
@@ -53,7 +53,7 @@
 			// team 1 lost
 			$query = 'UPDATE `teams_profile` SET `num_matches_lost`=`num_matches_lost`+1';
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+			if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('The match lose count for team ' . sqlSafeString($team_id1) . ' could not be updated due to a sql problem!');
@@ -65,7 +65,7 @@
 		{
 			$query = 'UPDATE `teams_profile` SET `num_matches_draw`=`num_matches_draw`+1';
 			$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ' OR `teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
-			if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+			if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 			{
 				unlock_tables($site, $connection);
 				$site->dieAndEndPage('The match draw count for the teams with id'

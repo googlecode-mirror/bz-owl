@@ -42,7 +42,7 @@
 		global $connection;
 		
 		$query = 'SELECT `id`, `raw_user_comment`, `raw_admin_comments` from `players_profile`';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+		if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -58,7 +58,7 @@
 				$query = ('UPDATE `players_profile` SET `user_comment`=' . sqlSafeStringQuotes($site->bbcode($row['raw_user_comment']))
 						  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id']) . ' LIMIT 1');
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+				@$site->execute_query('players_profile', $query, $connection);
 			}
 			if (!(strcmp($row['raw_admin_comments'], '') === 0))
 			{
@@ -67,7 +67,7 @@
 				$query = ('UPDATE `players_profile` SET `admin_comments`=' . sqlSafeStringQuotes($site->bbcode($row['raw_admin_comments']))
 						  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id']) . ' LIMIT 1');
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+				@$site->execute_query('players_profile', $query, $connection);
 			}
 		}
 		
@@ -81,7 +81,7 @@
 		global $connection;
 		
 		$query = 'SELECT `id`, `raw_description` from `teams_profile`';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = @$site->execute_query('teams_profile', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -94,7 +94,7 @@
 				$query = ('UPDATE `players_profile` SET `description`=' . sqlSafeStringQuotes($site->bbcode($row['raw_description']))
 						  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id']) . ' LIMIT 1');
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection);
+				@$site->execute_query('teams_profile', $query, $connection);
 			}
 		}
 		mysql_free_result($result);
@@ -120,7 +120,7 @@
 				$query = ('UPDATE `news` SET `announcement`=' . sqlSafeStringQuotes($site->bbcode($row['raw_announcement']))
 						  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id']) . ' LIMIT 1');
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'news', $query, $connection);
+				@$site->execute_query('news', $query, $connection);
 			}
 		}
 	}
@@ -146,7 +146,7 @@
 				$query = ('UPDATE `bans` SET `announcement`=' . sqlSafeStringQuotes($site->bbcode($row['raw_announcement']))
 						  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id']) . ' LIMIT 1');
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'news', $query, $connection);
+				@$site->execute_query('news', $query, $connection);
 			}
 		}
 	}

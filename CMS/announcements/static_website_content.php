@@ -109,7 +109,7 @@
 		}
 		
 		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
+		if (!($result = @$site->execute_query('static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
 		}
@@ -139,7 +139,7 @@
 		{
 			// empty content
 			$query = 'DELETE FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
-			if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
+			if (!($result = @$site->execute_query('static_pages', $query, $connection)))
 			{
 				$site->dieAndEndPage('An error occured deleting content for page ' . $page_title . '!');
 			}
@@ -147,7 +147,7 @@
 		}
 		
 		$query = 'SELECT `id` FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
+		if (!($result = @$site->execute_query('static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
 		}
@@ -190,7 +190,7 @@
 			$query .= ' LIMIT 1';
 		}
 		
-		if (!($result = @$site->execute_query($site->db_used_name(), 'static_pages', $query, $connection)))
+		if (!($result = @$site->execute_query('static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured updating content for page ' . $page_title
 								 . ' by user ' . sqlSafeString(getUserID()) . '!');

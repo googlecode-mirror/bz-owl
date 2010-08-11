@@ -12,7 +12,7 @@
 	$query = ('SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`'
 			  . ' WHERE `teams_overview`.`teamid`=`teams`.`id` AND `teams_overview`.`deleted`<>'
 			  . sqlSafeStringQuotes(2));
-	if (!($result = @$site->execute_silent_query($site->db_used_name(), 'teams,teams_overview', $query, $connection)))
+	if (!($result = @$site->execute_silent_query('teams,teams_overview', $query, $connection)))
 	{
 		$site->dieAndEndPage('It seems like the team profile can not be accessed for an unknown reason.');
 	}
@@ -24,7 +24,7 @@
 	
 	$query = ('SELECT `id`,`teamid`,`name` FROM `players`'
 			  . ' WHERE `players`.`status`=' . sqlSafeStringQuotes('active'));
-	if (!($result = @$site->execute_silent_query($site->db_used_name(), 'players', $query, $connection)))
+	if (!($result = @$site->execute_silent_query('players', $query, $connection)))
 	{
 		$site->dieAndEndPage('It seems like the player profile can not be accessed for an unknown reason.');
 	}

@@ -35,8 +35,8 @@
 				// delete the message in the user's folder by his own request
 				// example query: DELETE FROM `messages_users_connection` WHERE `playerid`='1194' `msgid`='66' AND `in_inbox`='1'
 				$query = 'DELETE FROM `messages_users_connection` WHERE `playerid`=' . "'" . ($user_id) . "'";
-				$query .= ' AND `msgid`=' . "'" . sqlSafeString($currentId) . "'" . ' AND `' . $box_name . '`=' . "'" . 1 . "'";
-				$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+				$query .= ' AND `msgid`=' . sqlSafeStringQuotes($currentId) . ' AND `' . $box_name . '`=' . "'" . 1 . "'";
+				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				if ($result)
 				{
 					// give feedback, the user might want to know deleting was successfull so far
@@ -48,7 +48,7 @@
 				// example query: SELECT `id` FROM `messages_users_connection` WHERE `msgid`='66' LIMIT 0,1
 				$message_is_stored_several_times = true;
 				$query = 'SELECT `id` FROM `messages_users_connection` WHERE `msgid`=' . sqlSafeStringQuotes($currentId) . ' LIMIT 0,1';
-				$result = $site->execute_query($site->db_used_name(), $table_name, $query, $connection);
+				$result = $site->execute_query($table_name, $query, $connection);
 				if ($result)
 				{
 					$rows = (int) mysql_num_rows($result);
@@ -67,7 +67,7 @@
 					}
 					// example query: DELETE FROM `messages_storage` WHERE `id`='11'
 					$query = 'DELETE FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes($currentId);
-					$result = $site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);
+					$result = $site->execute_query('messages_storage', $query, $connection);
 					if ($result)
 					{
 						if ($site->debug_sql())
@@ -80,7 +80,7 @@
 			} else
 			{
 				$query = 'DELETE FROM ' . $table_name .' WHERE id=' . sqlSafeString($currentId);
-				$result = $site->execute_query($site->db_used_name(), $table_name, $query, $connection);
+				$result = $site->execute_query($table_name, $query, $connection);
 				if ($result)
 				{
 					echo '<p>Deleting: No problems occured, entry deleted!</p>' . "\n";
@@ -134,7 +134,7 @@
 						  // or if there are no permissions to view the message
 						  // but we do not know which one of both is exactly not fulfilled
 						  . ' LIMIT 1');
-				$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
+				$result = ($site->execute_query($table_name, $query, $connection));
 				if (!$result)
 				{
 					$site->dieAndEndPage();
@@ -147,7 +147,7 @@
 			// the "LIMIT 0,1" part of query means only the first entry is received
 			// this speeds up the query as there is only one row as result anyway
 			$query = 'SELECT * FROM `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' LIMIT 0,1';
-			$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
+			$result = ($site->execute_query($table_name, $query, $connection));
 			if (!$result)
 			{
 				$site->dieAndEndPage();

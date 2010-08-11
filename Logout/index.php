@@ -8,8 +8,6 @@
 	$site = new siteinfo();
 	
 	$connection = $site->connect_to_db();
-	// choose database
-	mysql_select_db($site->db_used_name(), $connection);
 	
 	// find out if table exists
 	$query = 'SHOW TABLES LIKE ' . "'" . 'online_users' . "'";
@@ -33,7 +31,7 @@
 	if ($onlineUsers && (getUserID() > 0))
 	{
 		$query = 'DELETE FROM `online_users` WHERE playerid=' . sqlSafeStringQuotes(getUserID());
-		@$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
+		@$site->execute_query('online_users', $query, $connection);
 	}
 	// stop buffering
 	$buffer .= ob_get_contents();

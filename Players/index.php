@@ -91,7 +91,7 @@
 		
 		// is player banned and does he exist?
 		$query = 'SELECT `status` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
 			show_overview_and_profile_button();
 			$site->dieAndEndPage('It seems like the player profile can not be accessed for an unknown reason.');
@@ -128,7 +128,7 @@
 		$query .= ' AND `status`<>' . sqlSafeStringQuotes('deleted');
 		// only information about one player needed
 		$query .= ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -170,7 +170,7 @@
 			}
 			
 			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
 			}
@@ -238,7 +238,7 @@
 				$query .= ') AND `teams`.`id`=`teams_overview`.`teamid`';				
 				$query .= ' AND `teams`.`id`=`teams_overview`.`teamid` AND `teams`.`id`=' . "'" . sqlSafeString($invited_to_team) . "'";
 				$query .= ' LIMIT 1';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				if (!($result = @$site->execute_query('teams', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage('');
@@ -264,7 +264,7 @@
 			$sevendayslater = strtotime('+7 days');
 			$sevendayslater = strftime('%Y-%m-%d %H:%M:%S', $sevendayslater);
 			$query .= ', ' . "'" . sqlSafeString($sevendayslater) . "'" . ')';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'invitations', $query, $connection)))
+			if (!($result = @$site->execute_query('invitations', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -273,7 +273,7 @@
 			// get team name
 			$team_name = '(no team name)';
 			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($invited_to_team) . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -287,7 +287,7 @@
 			// get player name
 			$player_name = '(no player name)';
 			$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -300,7 +300,7 @@
 			
 			// lock messages_storage because of mysql_insert_id() usage
 			$query = 'LOCK TABLES `messages_storage` WRITE';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+			if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -313,7 +313,7 @@
 			$query .= ', ' . sqlSafeStringQuotes(('Invitation to team ' . $team_name)) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n" . 'The invitation will expire in 7 days.'));
 			$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($profile) . ')';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+			if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -324,7 +324,7 @@
 			
 			// unlock messages_storage because mysql_insert_id() was used and is no longer needed
 			$query = 'UNLOCK TABLES';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+			if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -335,7 +335,7 @@
 			$query .= '(' . sqlSafeStringQuotes($msgid) . ', ' . sqlSafeStringQuotes($profile);
 			$query .= ', ' . sqlSafeStringQuotes('1');
 			$query .= ', ' . sqlSafeStringQuotes('0') . ')';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
+			if (!($result = @$site->execute_query('messages_users_connection', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -362,7 +362,7 @@
 				$query .= ' OR `teams_overview`.`deleted`=' . "'" . sqlSafeString('1') . "'";
 				$query .= ' OR `teams_overview`.`deleted`=' . "'" . sqlSafeString('3') . "'";
 				$query .= ') AND `teams`.`id`=`teams_overview`.`teamid`';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				if (!($result = @$site->execute_query('teams', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage('');
@@ -417,7 +417,7 @@
 			
 			// find out the player's name
 			$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
 				echo '</form>' . "\n";
 				$site->dieAndEndPage('A database related problem prevented to find out the name of the player.');
@@ -470,7 +470,7 @@
 			$query .= ' FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 			// only information about one player needed
 			$query .= ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -521,7 +521,7 @@
 				{
 					// is the player name already used?
 					$query = 'SELECT `id` FROM `players` WHERE `name`=' . sqlSafeStringQuotes(htmlent($_POST['callsign'])) . ' LIMIT 1';
-					if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					if (!($result = @$site->execute_query('players', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPage('');
@@ -555,7 +555,7 @@
 						mysql_free_result($result);
 						$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent(urldecode($_POST['callsign'])));
 						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
-						if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+						if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 						{
 							// query was bad, error message was already given in $site->execute_query(...)
 							$site->dieAndEndPage('');
@@ -567,7 +567,7 @@
 			if (isset($_POST['location']))
 			{
 				$query = 'SELECT `location` FROM `players_profile` WHERE `playerid`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+				if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 				{
 					$site->dieAndEndPageNoBox('Could not confirm value ' . sqlSafeStringQuotes($_POST['location']) . ' as new location.');
 				}
@@ -584,7 +584,7 @@
 				{
 					$query = 'UPDATE `players_profile` SET `location`=' . sqlSafeStringQuotes((int) $_POST['location']);
 					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
-					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPageNoBox('Could not update value ' . sqlSafeStringQuotes($_POST['location']).' as new location for player '.sqlSafeStringQuotes($profile) . '.');
@@ -596,7 +596,7 @@
 			{
 				$query = 'UPDATE `players_profile` SET `UTC`=' . sqlSafeStringQuotes(intval($_POST['timezone']));
 				$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
-				if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+				if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage('');
@@ -612,7 +612,7 @@
 					$query = 'UPDATE `players_profile` SET `user_comment`=' . sqlSafeStringQuotes($site->bbcode($_POST['user_comment']));
 					$query .= ', `raw_user_comment`=' . sqlSafeStringQuotes($_POST['user_comment']);
 					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
-					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPage('');
@@ -629,7 +629,7 @@
 					// image url exists and has a valid file extension
 					$query = "UPDATE `players_profile` SET `logo_url` = '$logo_url'";
 					$query .= " WHERE `playerid` = $profile";
-					if (!($result = $site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					if (!($result = $site->execute_query('players_profile', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPage('');
@@ -651,7 +651,7 @@
 					$query = 'UPDATE `players_profile` SET `admin_comments`=' . sqlSafeStringQuotes($site->bbcode($_POST['admin_comments']));
 					$query .= ', `raw_admin_comments`=' . sqlSafeStringQuotes($_POST['admin_comments']);
 					$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($profile);
-					if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+					if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						$site->dieAndEndPage('');
@@ -676,7 +676,7 @@
 		$query .= ', `raw_user_comment`, `raw_admin_comments`';
 		$query .= ', `logo_url` FROM `players_profile` WHERE `playerid`=' . "'" . sqlSafeString($profile) . "'";
 		$query .= ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+		if (!($result = @$site->execute_query('players_profile', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -714,7 +714,7 @@
 		
 		// location
 		$query = 'SELECT `id`,`name` FROM `countries` ORDER BY `name`';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+		if (!($result = @$site->execute_query('countries', $query, $connection)))
 		{
 			$site->dieAndEndPage('Could not retrieve list of countries from database.');
 		}
@@ -839,7 +839,7 @@
 		$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 		$query .= ' LIMIT 1';
 		// perform the query
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -874,7 +874,7 @@
 			}
 			$query = 'UPDATE `players` SET `status`=' .sqlSafeStringQuotes(htmlentities($suspended_status));
 			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
-			if (!($result_suspended = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			if (!($result_suspended = @$site->execute_query('players', $query, $connection)))
 			{
 				echo '<p>The new suspended status for';
 				while($row = mysql_fetch_array($result_suspended))
@@ -1012,7 +1012,7 @@
 		$query .= ' AND `players_profile`.`location`=`countries`.`id`';
 		$query .= ' AND `players`.`id`=';
 		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile, countries', $query, $connection)))
+		if (!($result = @$site->execute_query('players, players_profile, countries', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -1037,7 +1037,7 @@
 			$query .= ' FROM `players`, `players_profile` WHERE `players`.`id` = `players_profile`.`playerid`';
 			$query .= ' AND `players`.`id`=';
 			$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
+			if (!($result = @$site->execute_query('players, players_profile', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				$site->dieAndEndPage('');
@@ -1167,7 +1167,7 @@
 			if (!($allow_invite_in_any_team))
 			{
 				$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				if (!($result = @$site->execute_query('teams', $query, $connection)))
 				{
 					$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
 				}
@@ -1382,7 +1382,7 @@
 	{
 		$query .= ' ORDER BY `team_name`, `players`.`name`';
 	}
-	if ($result = @$site->execute_query($site->db_used_name(), 'players, teams', $query, $connection))
+	if ($result = @$site->execute_query('players, teams', $query, $connection))
 	{
 		$rows = (int) mysql_num_rows($result);
 		if ($rows === 0)

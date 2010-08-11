@@ -83,7 +83,7 @@
 		// only comparing nearest match in time
 		$query .= ' LIMIT 0,1';
 		
-		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+		if (!($result = @$site->execute_query('matches', $query, $connection)))
 		{
 			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps (using operator '
 								 . sqlSafeString($comparisonOperator) . ') of matches failed.');
@@ -183,7 +183,7 @@
 		$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
 		$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
 		$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'teams, teams_overview', $query, $connection)))
+		if (!($result = @$site->execute_query('teams, teams_overview', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
@@ -336,7 +336,7 @@
 		$query .= sqlSafeStringQuotes($timestamp);
 		$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		$query .= ' ORDER BY `timestamp` DESC LIMIT 0,1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+		if (!($result = $site->execute_query('matches', $query, $connection)))
 		{
 			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 		}
@@ -510,18 +510,18 @@
 		if ($tables_locked)
 		{
 			$query = 'UNLOCK TABLES';
-			if (!($site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+			if (!($site->execute_query('all!', $query, $connection)))
 			{
 				$site->dieAndEndPage('Unfortunately unlocking tables failed. This likely leads to an access problem to database!');
 			}
 			$tables_locked = false;
 			$query = 'COMMIT';
-			if (!($site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+			if (!($site->execute_query('all!', $query, $connection)))
 			{
 				$site->dieAndEndPage('Unfortunately committing changes failed!');
 			}
 //			$query = 'SET AUTOCOMMIT = 1';
-//			if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+//			if (!($result = @$site->execute_query('all!', $query, $connection)))
 //			{
 //				$site->dieAndEndPage('Trying to activate autocommit failed.');
 //			}
@@ -668,7 +668,7 @@
 			}
 			$query .= ', `teams` READ';
 			
-			if (!($result = @$site->execute_query($site->db_used_name(), 'matches, teams_overview, teams_profile, matches_edit_stats, teams', $query, $connection)))
+			if (!($result = @$site->execute_query('matches, teams_overview, teams_profile, matches_edit_stats, teams', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('Unfortunately locking the matches table failed and thus altering the list of matches was cancelled.');
@@ -678,7 +678,7 @@
 //			// innoDB may neeed autcommit = 0
 //			// TODO: FIND OUT IF THIS IS THE BEHAVIOUR WANTED!
 //			$query = 'SET AUTOCOMMIT = 0';
-//			if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+//			if (!($result = @$site->execute_query('all!', $query, $connection)))
 //			{
 //				unlock_tables();
 //				$site->dieAndEndPage('Trying to deactivate autocommit failed.');
@@ -712,7 +712,7 @@
 			if (isset($_GET['delete']))
 			{
 				$query = 'SELECT `team1_teamid`, `team2_teamid` FROM `matches` WHERE `id`=' . sqlSafeStringQuotes((int) $_GET['delete']);
-				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result = $site->execute_query('matches', $query, $connection)))
 				{
 					$site->dieAndEndPage('Could not find out the id list of teams specified in the match that should be deleted');
 				}
@@ -730,7 +730,7 @@
 			// check $team_id1
 			$query = 'SELECT `deleted` FROM `teams_overview` WHERE `deleted`=' . sqlSafeStringQuotes('2');
 			$query .= ' AND `teamid`=' . sqlSafeStringQuotes($team_id1);
-			if (!($result_active = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result_active = @$site->execute_query('matches', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables();
@@ -750,7 +750,7 @@
 			// check $team_id2
 			$query = 'SELECT `deleted` FROM `teams_overview` WHERE `deleted`=' . sqlSafeStringQuotes('2');
 			$query .= ' AND `teamid`=' . sqlSafeStringQuotes($team_id2);
-			if (!($result_active = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result_active = @$site->execute_query('matches', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables();
@@ -775,7 +775,7 @@
 			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id1);
 			// id is a unique identifier and therefore there will always be only one team at max with the same id
 			$query .= ' LIMIT 1';
-			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result_exists = @$site->execute_query('matches', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables();
@@ -800,7 +800,7 @@
 			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id2);
 			// id is a unique identifier and therefore there will always be only one team at max with the same id
 			$query .= ' LIMIT 1';
-			if (!($result_exists = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result_exists = @$site->execute_query('teams', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('could not find out if team with id ' . sqlSafeString($team_id2) . ' exists.');
@@ -935,7 +935,7 @@
 			// checked if there is already a match entered at that time
 			// scores depend on the order, two matches done at the same time lead to undefined behaviour
 			$query = 'SELECT `timestamp` FROM `matches` WHERE `timestamp`=' . sqlSafeStringQuotes(($_POST['match_day'])  . ' ' . ($_POST['match_time']));
-			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result = @$site->execute_query('matches', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps (using equal operator) of matches failed.');
@@ -1013,7 +1013,7 @@
 		{
 			// checked if there are newer matches already entered
 			$query = 'SELECT * FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes(($_POST['match_day'])  . ' ' . ($_POST['match_time']));
-			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result = @$site->execute_query('matches', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
@@ -1137,7 +1137,7 @@
 					// deletion
 					$query .= sqlSafeStringQuotes((int) $_GET['delete']);
 				}
-				if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result = @$site->execute_query('matches', $query, $connection)))
 				{
 					unlock_tables();
 					$site->dieAndEndPage('Could not get timestamp of original match.');
@@ -1177,7 +1177,7 @@
 				$query .= sqlSafeStringQuotes($team_id2) . ', ' . sqlSafeStringQuotes($team1_points) . ', ' . sqlSafeStringQuotes($team2_points);
 				$query .= ', ' . sqlSafeStringQuotes($team1_new_score) . ', ' . sqlSafeStringQuotes($team2_new_score);
 				$query .= ')';
-				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result = $site->execute_query('matches', $query, $connection)))
 				{
 					unlock_tables();
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be entered due to a sql problem!');
@@ -1198,7 +1198,7 @@
 //			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, team1_new_score, team2_new_score FROM `matches`';
 			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
 			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($match_id);
-			if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result = $site->execute_query('matches', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('Could not find out id for team 1 given match id ' . sqlSafeString($match_id) . ' due to a sql problem!');
@@ -1253,7 +1253,7 @@
 				// original timestamp no longer needed
 				unset($orig_timestamp);
 				
-				if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result = @$site->execute_query('matches', $query, $connection)))
 				{
 					unlock_tables();
 					$site->dieAndEndPage('Could not get data of original match.');
@@ -1292,7 +1292,7 @@
 				unset($tmp_team1_points);
 				unset($tmp_team2_points);
 				unset($tmp_timestamp);
-				if (!($result = $site->execute_query($site->db_used_name(), 'matches_edit_stats', $query, $connection)))
+				if (!($result = $site->execute_query('matches_edit_stats', $query, $connection)))
 				{
 					unlock_tables();
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be entered due to a sql problem!');
@@ -1312,7 +1312,7 @@
 				// only one row needs to be updated
 				$query .= ' LIMIT 1';
 				
-				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result = $site->execute_query('matches', $query, $connection)))
 				{
 					unlock_tables();
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be edited due to a sql problem!');
@@ -1337,7 +1337,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+					if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update win count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
@@ -1346,7 +1346,7 @@
 					$query .= '`num_matches_played`=`num_matches_played`-' . sqlSafeStringQuotes('1');
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
@@ -1358,7 +1358,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+					if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update win/played count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
@@ -1368,7 +1368,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
@@ -1384,7 +1384,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+					if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update lost count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
@@ -1394,7 +1394,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
@@ -1406,7 +1406,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeString($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+					if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update win count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
@@ -1416,7 +1416,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeString($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
@@ -1432,7 +1432,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+					if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update draw count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
@@ -1442,7 +1442,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id1) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id1) . ' due to a sql problem!');
@@ -1454,7 +1454,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+					if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update draw count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
@@ -1464,7 +1464,7 @@
 					$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($team_id2) . ')';
 					// only one team needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+					if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 					{
 						unlock_tables();
 						$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($team_id2) . ' due to a sql problem!');
@@ -1475,7 +1475,7 @@
 				// only one row needs to be updated
 				$query .= ' LIMIT 1';
 				
-				if (!($result = $site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result = $site->execute_query('matches', $query, $connection)))
 				{
 					unlock_tables();
 					$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid) . ' could not be deleted due to a sql problem!');
@@ -1491,7 +1491,7 @@
 			$query = 'SELECT `id`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_new_score`,`team2_new_score`,`team1_points`,`team2_points` FROM `matches`';
 			$query .= ' WHERE `timestamp`>' . "'" . sqlSafeString($_POST['match_day']) . ' ' . sqlSafeString($_POST['match_time']) . "'";
 			$query .= ' ORDER BY `timestamp`';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result = @$site->execute_query('matches', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
@@ -1538,7 +1538,7 @@
 					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($row['id']);
 					// only one row needs to be updated
 					$query .= ' LIMIT 1';
-					if (!($result_update = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+					if (!($result_update = @$site->execute_query('matches', $query, $connection)))
 					{
 						// query was bad, error message was already given in $site->execute_query(...)
 						unlock_tables();
@@ -1553,7 +1553,7 @@
 			
 			// lock table matches for read access only, lock teams_overview with write access to copy the data from matches
 			$query = 'LOCK TABLES `matches` READ, `teams_overview` WRITE, `teams` WRITE;';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'matches, teams_overview, teams', $query, $connection)))
+			if (!($result = @$site->execute_query('matches, teams_overview, teams', $query, $connection)))
 			{
 				$site->dieAndEndPage('Unfortunately locking the matches table failed and thus entering the match was cancelled.');
 			}
@@ -1562,7 +1562,7 @@
 //			// innoDB may neeed autcommit = 0
 //			// TODO: FIND OUT IF THIS IS THE BEHAVIOUR WANTED!
 //			$query = 'SET AUTOCOMMIT = 0';
-//			if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+//			if (!($result = @$site->execute_query('all!', $query, $connection)))
 //			{
 //				unlock_tables();
 //				$site->dieAndEndPage('Trying to deactivate autocommit failed.');
@@ -1587,7 +1587,7 @@
 			$query .= ') AND `teams_overview`.`teamid`=`teams`.`id`';
 			
 			// execute the query if there are teams scores to be updated
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview, teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams_overview, teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
 				unlock_tables();
@@ -1617,7 +1617,7 @@
 				$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($row['teamid']);
 				// only one row is updated per loop iteration
 				$query .= ' LIMIT 1';
-				if (!($result_update = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+				if (!($result_update = @$site->execute_query('teams_overview', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
 					unlock_tables();
@@ -1673,7 +1673,7 @@
 			// if we enter a new match and it is at the first position
 			// we can just use the data from team overview as shortcut
 			$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('Could not get score of team with id ' . sqlSafeString($team_id1) . ', requested by user with id ' . sqlSafeString($viewerid) . '.');
@@ -1687,7 +1687,7 @@
 		}
 		
 		$query = 'SELECT `score` FROM `teams_overview` WHERE `teamid`=' . sqlSafeStringQuotes($team_id2);
-		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 		{
 			unlock_tables();
 			$site->dieAndEndPage('Could not get score of team with id ' . sqlSafeString($team_id2)
@@ -1712,7 +1712,7 @@
 			$query .= sqlSafeStringQuotes($team_id2) . ', ' . sqlSafeStringQuotes($team1_points) . ', ' . sqlSafeStringQuotes($team2_points);
 			$query .= ', ' . sqlSafeStringQuotes($team1_new_score) . ', ' . sqlSafeStringQuotes($team2_new_score);
 			$query .= ')';
-			if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+			if (!($result = @$site->execute_query('matches', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
@@ -1723,7 +1723,7 @@
 			$query = 'UPDATE `teams_overview` SET `score`=' . sqlSafeStringQuotes($team1_new_score);
 			$query .= ', deleted=' . sqlSafeStringQuotes('1');
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id1);
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
@@ -1732,7 +1732,7 @@
 			$query = 'UPDATE `teams_overview` SET `score`=' . sqlSafeStringQuotes($team2_new_score);
 			$query .= ', deleted=' . sqlSafeStringQuotes('1');
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id2);
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 			{
 				unlock_tables();
 				$site->dieAndEndPage('The match reported by user with id ' . sqlSafeString($viewerid)
@@ -1778,7 +1778,7 @@
 		
 		// checked if there are newer matches already entered
 		$query = 'SELECT * FROM `matches` WHERE `timestamp`>' . "'" . sqlSafeString($_POST['match_day']) . ' ' . sqlSafeString($_POST['match_time']) . "'";
-		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+		if (!($result = @$site->execute_query('matches', $query, $connection)))
 		{
 			$site->dieAndEndPage('Unfortunately there seems to be a database problem and thus comparing timestamps of matches failed.');
 		}
@@ -1880,7 +1880,7 @@
 	{
 		// retrieve the informations about the matches that are to be edited or to be deleted
 		$query = 'SELECT * FROM `matches` WHERE `id`=' . sqlSafeStringQuotes($match_id) . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+		if (!($result = @$site->execute_query('matches', $query, $connection)))
 		{
 			unlock_tables();
 			$site->dieAndEndPage('The information about the matches in question could not be retrieved because of an SQL/database connectivity problem.');

@@ -28,7 +28,7 @@
 	
 	// remove expired sessions from the list of online users
 	$query ='SELECT `playerid`, `last_activity` FROM `online_users`';
-	if (!($result = @$site->execute_silent_query($site->db_used_name(), 'online_users', $query, $connection)))
+	if (!($result = @$site->execute_silent_query('online_users', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
 		$site->dieAndEndPage('<p>Could not get list of online users from database.</p>');
@@ -45,7 +45,7 @@
 			{
 				$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
 				$query .= sqlSafeStringQuotes($saved_timestamp);
-				if (!($result_delete = @$site->execute_silent_query($site->db_used_name(), 'online_users', $query, $connection)))
+				if (!($result_delete = @$site->execute_silent_query('online_users', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage('<p>Could delete old online users from database.</p>');

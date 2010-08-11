@@ -44,8 +44,8 @@
 	
 	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players" type="text/css"');
 	// perhaps exclude email string, depending on browser
-	$objekt = new siteinfo();
-	if ($objekt->mobile_version())
+	$object = new siteinfo();
+	if ($object->mobile_version())
 	{
 		// mobile browser
 		echo '<style type="text/css">*.mehl { display: none; } table.punkte { left: 25em; }</style>';
@@ -68,7 +68,7 @@
 	//formatbzfquery("bzflagr.net:5154");
 	//echo '<hr>' . "\n";
 	
-	$connection = $objekt->loudless_pconnect_to_db();
+	$connection = $object->loudless_pconnect_to_db();
 	
 	if (isset($_GET['server']))
 	{
@@ -124,10 +124,10 @@
 	// GU-spezifisch!
 	//require_once '../../../CMS/siteinfo.php';
 	//
-	//$objekt = new siteinfo();
+	//$object = new siteinfo();
 	@mysql_close($connection);
 	unset($connection);
-	$connection = $objekt->loudless_connect_to_db();
+	$connection = $object->loudless_connect_to_db();
 	if (!$connection)
 	{
 		// HTML oben schon beendet
@@ -257,10 +257,9 @@
 			// players
 			if ($num == 3)
 			{
-				// mysql_real_escape_string zerschie§t " in /"
-				$teamid = "\x22" . mysql_real_escape_string((int) (str_replace('PL: ', '', $data[0]))) . "\x22";
+				$teamid = '"' . mysql_real_escape_string((int) (str_replace('PL: ', '', $data[0]))) . '"';
 				
-				$name = "\x22" . mysql_real_escape_string(htmlentities($data[2])) . "\x22";
+				$name = '"' . mysql_real_escape_string(htmlentities($data[2])) . '"';
 				
 				$query = 'INSERT INTO players (teamid, name) Values(' . $teamid . ', ' . $name . ')';
 				$result = mysql_query($query, $connection);

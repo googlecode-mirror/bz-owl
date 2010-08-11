@@ -46,7 +46,7 @@
 	{
 		$query = 'CHECKSUM TABLE `matches`';
 		
-		if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+		if (!($result = @$site->execute_query('matches', $query, $connection)))
 		{
 			// a severe problem with the table exists
 			$site->dieAndEndPageNoBox('Checksum of the matches could not be generated');
@@ -300,7 +300,7 @@
 	// limit the number of displayed rows regarding the user's wish
 	$query .= sqlSafeString($num_results + 1);
 	
-	if (!($result = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+	if (!($result = @$site->execute_query('matches', $query, $connection)))
 	{
 		$site->dieAndEndPageNoBox('The list of matches could not be displayed because of an SQL/database connectivity problem.');
 	}

@@ -85,6 +85,7 @@
 			return $pw->mysqluser_secret();
 		}
 		
+		// this function should be used to connect to a database
 		function connect_to_db()
 		{
 			$link = $this->loudless_connect_to_db();
@@ -96,10 +97,12 @@
 					echo 'Raw error: ' . mysql_error();
 				}
 			}
+			$this->selectDB($this->db_used_name(), $link);
 			return $link;
 		}
 		
 		// maybe one day use PDO ( http://de.php.net/pdo )
+		// major problem nowadays are the error messages that would be shown that include username and password if not handled
 		function loudless_connect_to_db()
 		{
 			return $link = @mysql_connect('127.0.0.1', $this->mysqluser(), $this->mysqlpw());
@@ -126,14 +129,17 @@
 			}
 		}
 		
-		function execute_silent_query($db, $table, $query, $connection)
+		function selectDB($db, $connection)
 		{
 			// choose database
 			if (!(mysql_select_db($db, $connection)))
 			{
 				die('<p>Could not select database!<p>');
 			}
-			
+		}
+		
+		function execute_silent_query($table, $query, $connection)
+		{
 			$result = mysql_query($query, $connection);
 			if (!$result)
 			{
@@ -149,15 +155,8 @@
 			return $result;
 		}
 		
-		function execute_query($db, $table, $query, $connection)
+		function execute_query($table, $query, $connection)
 		{
-			// choose database
-			if (!(mysql_select_db($db, $connection)))
-			{
-				die('<p>Could not select database!<p>');
-			}
-				
-			
 			// output the query in debug mode
 			if ($this->debug_sql())
 			{

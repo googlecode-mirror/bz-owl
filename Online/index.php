@@ -18,8 +18,6 @@
 	echo '<div class="static_page_box">' . "\n";
 	
 	$connection = $site->connect_to_db();
-	// choose database
-	mysql_select_db($site->db_used_name(), $connection);
 	$table_name = 'online_users';
 	
 	// find out if table exists
@@ -48,7 +46,7 @@
 		$query = $query . '`last_activity` timestamp NOT NULL default ' . "'" . '0000-00-00 00:00:00' . "'" . ',' . "\n";
 		$query = $query . 'PRIMARY KEY  (`id`)' . "\n";
 		$query = $query . ') ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8' . "\n";
-		if (!(@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
+		if (!(@$site->execute_query($table_name, $query, $connection)))
 		{
 			echo '<p>Creation of table failed.</p>';
 			die("\n</div>\n</body>\n</html>");
@@ -57,7 +55,7 @@
 	
 	$onlineUsers = false;
 	$query = 'SELECT * FROM `' . sqlSafeString($table_name) . '`';	
-	if ($result = (@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
+	if ($result = (@$site->execute_query($table_name, $query, $connection)))
 	{
 		$onlineUsers = true;
 	} else

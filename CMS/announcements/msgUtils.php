@@ -109,7 +109,7 @@
 			// TODO: when this function is called from final deletion step in delete.php
 			$connection = $site->connect_to_db();
 			// silently ignore the result, it's not a resource anyway so it can't even be dropped
-			$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+			$site->execute_query('messages_users_connection', $query, $connection);
 		}
 	}
 	
@@ -232,7 +232,7 @@
 						  // but we do not know which one of both is exactly not fulfilled
 						  . ' LIMIT 1');
 				
-				$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				$rows = (int) mysql_num_rows($result);
 				if ($rows === 1)
 				{
@@ -329,7 +329,7 @@
 				}
 				$query .= 201;
 				
-				$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				
 				$rows = (int) mysql_num_rows($result);
 				$show_next_messages_button = false;

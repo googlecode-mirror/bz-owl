@@ -29,17 +29,17 @@
 		global $tables_locked;
 		
 		$query = 'UNLOCK TABLES';
-		if (!($site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+		if (!($site->execute_query('all!', $query, $connection)))
 		{
 			$site->dieAndEndPage('Unfortunately unlocking tables failed. This likely leads to an access problem to database!');
 		}
 		$query = 'COMMIT';
-		if (!($site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+		if (!($site->execute_query('all!', $query, $connection)))
 		{
 			$site->dieAndEndPage('Unfortunately committing changes failed!');
 		}
 		$query = 'SET AUTOCOMMIT = 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+		if (!($result = @$site->execute_query('all!', $query, $connection)))
 		{
 			$site->dieAndEndPage('Trying to activate autocommit failed.');
 		}		
@@ -48,13 +48,13 @@
 	$query = 'LOCK TABLES `misc_data` WRITE, `teams` WRITE, `teams_overview` WRITE, `teams_permissions` WRITE, `teams_profile` WRITE';
 	$query .= ', `players` WRITE, `players_profile` WRITE, `visits` WRITE, `messages_users_connection` WRITE, `messages_storage` WRITE';
 	$query .= ', `countries` WRITE, `matches` WRITE';
-	if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+	if (!($result = @$site->execute_query('all!', $query, $connection)))
 	{
 		unlock_tables_maint();
 		$site->dieAndEndPage('Unfortunately locking the matches table failed and thus entering the match was cancelled.');
 	}
 	$query = 'SET AUTOCOMMIT = 0';
-	if (!($result = @$site->execute_query($site->db_used_name(), 'all!', $query, $connection)))
+	if (!($result = @$site->execute_query('all!', $query, $connection)))
 	{
 		unlock_tables_maint();
 		$site->dieAndEndPage('Trying to deactivate autocommit failed.');
@@ -64,7 +64,7 @@
 	$last_maintenance = '00.00.0000';
 	$query = 'SELECT `last_maintenance` FROM `misc_data` LIMIT 1';
 	// execute query
-	if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+	if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 	{
 		unlock_tables_maint();
 		$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
@@ -76,7 +76,7 @@
 		// first maintenance run in history
 		$query = 'INSERT INTO `misc_data` (`last_maintenance`) VALUES (' . sqlSafeStringQuotes($today) . ')';
 		// execute query
-		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 		{
 			unlock_tables_maint();
 			$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
@@ -123,7 +123,7 @@
 			$num_active_teams = 0;
 			// find out the number of active teams
 			$query = 'SELECT COUNT(*) AS `num_teams` FROM `teams_overview` WHERE `deleted`<>' . sqlSafeStringQuotes('2');
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: could not find out number of active teams.');
@@ -134,7 +134,7 @@
 			}
 			
 			$query = 'SELECT `teamid` FROM `teams_overview` WHERE `deleted`<>' . sqlSafeStringQuotes('2');
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: could not find out id list of active teams.');
@@ -159,7 +159,7 @@
 			$query = 'SELECT COUNT(*) as `num_matches` FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes($timestamp);
 			$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ')';
 			// execute query
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id '
@@ -185,7 +185,7 @@
 			$query = 'SELECT COUNT(*) as `num_matches` FROM `matches` WHERE `timestamp`>' . sqlSafeStringQuotes($timestamp);
 			$query .= ' AND (`team1_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ' OR `team2_teamid`=' . sqlSafeStringQuotes($teamid[$i]) . ')';
 			// execute query
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: could not find out how many matches team with id '
@@ -210,7 +210,7 @@
 			$query = 'Update `teams_overview` SET `activity`=' . sqlSafeStringQuotes($team_activity45[$i]);
 			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid[$i]);
 			// execute query, ignore result
-			@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+			@$site->execute_query('teams_overview', $query, $connection);
 		}
 		unset($teamid);
 		unset($team_activity45);
@@ -236,7 +236,7 @@
 			$query = 'SELECT `teamid`, `member_count`, `deleted` FROM `teams_overview`';
 			$query .= ' WHERE `deleted`<>' . sqlSafeStringQuotes('2');
 			// execute query
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of teams with deleted not equal 2 (2 means deleted team) failed.');
@@ -271,7 +271,7 @@
 				// only one match is sufficient to be considered active
 				$query .= ' LIMIT 1';
 				// execute query
-				if (!($result_matches = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+				if (!($result_matches = @$site->execute_query('matches', $query, $connection)))
 				{
 					unlock_tables_maint();
 					$site->dieAndEndPage('MAINTENANCE ERROR: getting list of recent matches from teams failed.');
@@ -297,7 +297,7 @@
 							  // only 1 active player is enough not to deactivate the team
 							  . ' LIMIT 1');
 					// execute query
-					if (!($result_active_players = @$site->execute_query($site->db_used_name(), 'matches', $query, $connection)))
+					if (!($result_active_players = @$site->execute_query('matches', $query, $connection)))
 					{
 						unlock_tables_maint();
 						$site->dieAndEndPage('MAINTENANCE ERROR: getting list of recent logged in player from team'
@@ -325,16 +325,16 @@
 					// delete (for real) the new team
 					$query = 'DELETE FROM `teams` WHERE `id`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
+					@$site->execute_query('teams', $query, $connection);
 					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+					@$site->execute_query('teams_overview', $query, $connection);
 					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams_permissions', $query, $connection);
+					@$site->execute_query('teams_permissions', $query, $connection);
 					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection);						
+					@$site->execute_query('teams_profile', $query, $connection);						
 				}
 				
 				// if team not active but is not new, mark it as deleted
@@ -349,7 +349,7 @@
 					// only one player needs to be updated
 					$query .= ' LIMIT 1';
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection);	
+					@$site->execute_query('teams_profile', $query, $connection);	
 					
 					// mark the team as deleted
 					$query = 'UPDATE `teams_overview` SET deleted=' . sqlSafeStringQuotes('2');
@@ -358,13 +358,13 @@
 					// only one team with that id in database (id is unique identifier)
 					$query .= ' LIMIT 1';
 					// execute query, ignoring result
-					@$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection);
+					@$site->execute_query('teams_overview', $query, $connection);
 					
 					// mark who was where, to easily restore an unwanted team deletion
 					$query = 'UPDATE `players` SET `last_teamid`=' . sqlSafeStringQuotes($curTeam);
 					$query .= ', `teamid`=' . sqlSafeStringQuotes('0');
 					$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($curTeam);
-					if (!($result_update = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					if (!($result_update = @$site->execute_query('players', $query, $connection)))
 					{
 						unlock_tables_maint();
 						$site->dieAndEndPage();
@@ -381,7 +381,7 @@
 			
 			// flag stuff
 			$query = 'SELECT `id` FROM `countries` WHERE `id`=' . sqlSafeStringQuotes('1');
-			if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+			if (!($result = @$site->execute_query('countries', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPageNoBox('Could not find out if country with id 1 does exist in database');
@@ -399,7 +399,7 @@
 				$query .= sqlSafeStringQuotes('1') . ',';
 				$query .= sqlSafeStringQuotes('here be dragons') . ',';
 				$query .= sqlSafeStringQuotes('') . ')';
-				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+				if (!($result = @$site->execute_query('countries', $query, $connection)))
 				{
 					unlock_tables_maint();
 					$site->dieAndEndPageNoBox('Could not insert reserved country with name '
@@ -427,7 +427,7 @@
 				$flag_name_stripped = str_replace('.png', '', $flag_name_stripped);
 				$flag_name_stripped = str_replace('_', ' ', $flag_name_stripped);
 				$query = 'SELECT `flagfile` FROM `countries` WHERE `name`=' . sqlSafeStringQuotes($flag_name_stripped);
-				if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+				if (!($result = @$site->execute_query('countries', $query, $connection)))
 				{
 					unlock_tables_maint();
 					$site->dieAndEndPageNoBox('Could not check if flag '
@@ -467,7 +467,7 @@
 					}
 					
 					// do the changes
-					if (!($result = @$site->execute_query($site->db_used_name(), 'countries', $query, $connection)))
+					if (!($result = @$site->execute_query('countries', $query, $connection)))
 					{
 						unlock_tables_maint();
 						$site->dieAndEndPageNoBox('Could update or insert country entry for '
@@ -497,7 +497,7 @@
 			$query .= 'AND `players_profile`.`last_login`<' . sqlSafeStringQuotes($two_months_in_past);
 			
 			// execute query
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
+			if (!($result = @$site->execute_query('players, players_profile', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of 2 months long inactive players failed.');
@@ -523,18 +523,18 @@
 				// only one player needs to be updated
 				$query .= ' LIMIT 1';
 				// execute query, ignore result
-				@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);
+				@$site->execute_query('players_profile', $query, $connection);
 				
 				// visits log (ip-addresses and host data)
 				$query = 'DELETE FROM `visits` WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
-				@$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+				@$site->execute_query('visits', $query, $connection);
 				
 				// private messages connection
 				
 				// get msgid first!
 				$query = 'SELECT `msgid` FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				// execute query
-				if (!($result = @$site->execute_query($site->db_used_name(), 'players, players_profile', $query, $connection)))
+				if (!($result = @$site->execute_query('players, players_profile', $query, $connection)))
 				{
 					unlock_tables_maint();
 					$site->dieAndEndPage('MAINTENANCE ERROR: getting private msgid list of inactive players failed.');
@@ -549,7 +549,7 @@
 				
 				// now delete the connection to mailbox
 				$query = 'DELETE FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes($one_inactive_player);
-				@$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);				
+				@$site->execute_query('messages_users_connection', $query, $connection);				
 				
 				// delete private messages itself, in case no one else has the message in mailbox
 				foreach ($msg_list as $msgid)
@@ -558,7 +558,7 @@
 					$query .= ' AND `playerid`<>' . sqlSafeStringQuotes($one_inactive_player);
 					// we only need to know whether there is more than zero rows the result of query
 					$query .= ' LIMIT 1';
-					if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
+					if (!($result = @$site->execute_query('messages_users_connection', $query, $connection)))
 					{
 						unlock_tables_maint();
 						$site->dieAndEndPage('MAINTENANCE ERROR: finding out whether actual private messages can be deleted failed.');
@@ -570,7 +570,7 @@
 					{
 						// delete actual message
 						$query = 'DELETE FROM `messages_storage` WHERE `id`=' . sqlSafeStringQuotes($msgid);
-						@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection);								
+						@$site->execute_query('messages_storage', $query, $connection);								
 					}
 				}
 				unset($msgid);
@@ -580,14 +580,14 @@
 				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($one_inactive_player);
 				// and again only one player needs to be updated
 				$query .= ' LIMIT 1';
-				@$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+				@$site->execute_query('players', $query, $connection);
 				
 				// FIXME: if user marked deleted check if he was leader of a team
 				$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 				// only one player was changed and thus only one team at maximum needs to be updated
 				$query .= ' LIMIT 1';
 				// execute query
-				if (!($result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+				if (!($result = @$site->execute_query('teams', $query, $connection)))
 				{
 					unlock_tables_maint();
 					$site->dieAndEndPage('MAINTENANCE ERROR: finding out if inactive player was leader of a team failed.');
@@ -601,7 +601,7 @@
 					$query = 'Update `teams` SET `leader_playerid`=' . sqlSafeStringQuotes('0');
 					$query .= ' WHERE `leader_playerid`=' . sqlSafeStringQuotes($one_inactive_player);
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
+					@$site->execute_query('teams', $query, $connection);
 					
 					// update member count of team
 					$member_count_modified = true;
@@ -610,7 +610,7 @@
 					$query .= sqlSafeStringQuotes($teamid) . ') WHERE `teamid`=';
 					$query .= sqlSafeStringQuotes($teamid);
 					// execute query, ignore result
-					@$site->execute_query($site->db_used_name(), 'teams', $query, $connection);
+					@$site->execute_query('teams', $query, $connection);
 				}
 				mysql_free_result($result);
 				
@@ -629,7 +629,7 @@
 			// update maintenance date
 			$query = 'UPDATE `misc_data` SET `last_maintenance`=' . sqlSafeStringQuotes($today);
 			// execute query
-			if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+			if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 			{
 				unlock_tables_maint();
 				$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');

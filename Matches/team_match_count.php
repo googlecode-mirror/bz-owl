@@ -17,7 +17,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -25,7 +25,7 @@
 		
 		$query = 'UPDATE `teams_overview` SET `deleted`=' . sqlSafeStringQuotes('1');
 		$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
-		if (!($result = @$site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 		{
 			$site->dieAndEndPage('Could not mark team with id ' . sqlSafeString($teamid) . ' as active!');
 		}
@@ -41,7 +41,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -58,7 +58,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -75,7 +75,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -93,7 +93,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_overview', $query, $connection)))
+		if (!($result = $site->execute_query('teams_overview', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -117,7 +117,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -134,7 +134,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');
@@ -151,7 +151,7 @@
 		$query .= ' WHERE (`teamid`=' . sqlSafeStringQuotes($teamid) . ')';
 		// only one team needs to be updated
 		$query .= ' LIMIT 1';
-		if (!($result = $site->execute_query($site->db_used_name(), 'teams_profile', $query, $connection)))
+		if (!($result = $site->execute_query('teams_profile', $query, $connection)))
 		{
 			unlock_tables($site, $connection);
 			$site->dieAndEndPage('Could not update win/play count for team with id ' . sqlSafeString($teamid) . ' due to a sql problem!');

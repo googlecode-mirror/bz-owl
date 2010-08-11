@@ -3,9 +3,6 @@
 	$site = new siteinfo();
 	$connection = $site->connect_to_db();
 	
-	// choose database
-	mysql_select_db($site->db_used_name(), $connection);
-	
 	$path = (pathinfo(realpath('./')));
 	$display_page_title = $path['basename'];
 	
@@ -52,7 +49,7 @@
 		// delete expired invitations
 		$query = 'DELETE LOW_PRIORITY FROM `invitations` WHERE `expiration`<=';
 		$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-		if (!$result = $site->execute_query($site->db_used_name(), 'invitations', $query, $connection))
+		if (!$result = $site->execute_query('invitations', $query, $connection))
 		{
 			$msg = 'Could not delete expired invitations.';
 			die_with_no_login($msg, $msg);
@@ -77,7 +74,7 @@
 		$query .= '`status` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
 			$msg = ('Could not get account data for external_playerid ' . sqlSafeString($_SESSION['external_id']) . '.');
 			die_with_no_login($msg, $msg);
@@ -107,7 +104,7 @@
 		{
 			$query = ('SELECT `password` FROM `players_passwords` WHERE `players_passwords`.`playerid`='
 					  . sqlSafeStringQuotes($_SESSION['viewerid']) . ' LIMIT 1');
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
 				$msg = ('Could not find out if password is set for local account with id ' . sqlSafeString($_SESSION['external_id']) . '.');
 				die_with_no_login($msg, $msg);
@@ -168,7 +165,7 @@
 			$suspended_mode = 'active';
 			$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes($suspended_mode);
 			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
-			if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
 				$msg = 'Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.';
 				die_with_no_login($msg, $msg);
@@ -200,10 +197,10 @@
 				// example query: INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES('1194', '0', 'ts')
 				$query = 'INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES(';
 				$query .= sqlSafeStringQuotes($_SESSION['external_id']) . ', ' . "'" . '0' . "'" . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) .')';
-				if ($insert_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection))
+				if ($insert_result = @$site->execute_query('players', $query, $connection))
 				{
 					$query = 'SELECT `id` FROM `players` WHERE `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']);
-					if ($id_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection))
+					if ($id_result = @$site->execute_query('players', $query, $connection))
 					{
 						$rows = mysql_num_rows($id_result);
 						while($row = mysql_fetch_array($id_result))
@@ -221,7 +218,7 @@
 							
 							// lock messages_storage because of mysql_insert_id() usage
 							$query = 'LOCK TABLES `messages_storage` WRITE';
-							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+							if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
 								$msg = 'Could not lock the messages_storage table.';
@@ -237,7 +234,7 @@
 																 . "\n\n" .
 																 'See you on the battlefield.');
 							$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($user_id) . ')';
-							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+							if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
 								$msg = 'Could not create the welcome mail.';
@@ -249,7 +246,7 @@
 							
 							// unlock messages_storage because mysql_insert_id() was used and is no longer needed
 							$query = 'UNLOCK TABLES';
-							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+							if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
 								$msg = 'Could not unlock the messages_storage table.';
@@ -260,7 +257,7 @@
 							$query .= '(' . sqlSafeStringQuotes($msgid) . ', ' . sqlSafeStringQuotes($user_id);
 							$query .= ', ' . sqlSafeStringQuotes('1');
 							$query .= ', ' . sqlSafeStringQuotes('0') . ')';
-							if (!($result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection)))
+							if (!($result = @$site->execute_query('messages_users_connection', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
 								$msg = 'Could not send the welcome mail.';
@@ -291,7 +288,7 @@
 				$query = 'INSERT INTO `players_profile` (`playerid`, `joined`, `location`) VALUES (';
 				$query .= sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 				$query .= ', ' . sqlSafeStringQuotes('1') . ')';
-				if (!(@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection)))
+				if (!(@$site->execute_query('players_profile', $query, $connection)))
 				{
 					$msg .= ('Unfortunately there seems to be a database problem and thus creating your profile page (id='
 										 . htmlent($user_id)
@@ -305,7 +302,7 @@
 				// check for collisions with all local accounts
 				$query = ('SELECT `external_playerid` FROM `players` WHERE `name`='
 						  . sqlSafeStringQuotes(htmlent($_SESSION['username'])));
-				if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+				if (!($result = @$site->execute_query('players', $query, $connection)))
 				{
 					$msg = ('Could not find out if external_playerid is set for all accounts having name ' . sqlSafeString(htmlent($_SESSION['username'])) . '.');
 					die_with_no_login($msg, $msg);
@@ -326,7 +323,7 @@
 					// non-resolvable collisions found, reset username of current user
 					$query = ('SELECT `name` FROM `players` WHERE `external_playerid`='
 							  . sqlSafeStringQuotes($external_login_id) . ' LIMIT 1');
-					if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					if (!($result = @$site->execute_query('players', $query, $connection)))
 					{
 						$msg = ('Could not find out if external_playerid is set for all accounts having name ' . sqlSafeString(htmlent($_SESSION['username'])) . '.');
 						die_with_no_login($msg, $msg);
@@ -345,7 +342,7 @@
 					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
 					// each user has only one entry in the database
 					$query .= ' LIMIT 1';
-					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					if (!($update_result = @$site->execute_query('players', $query, $connection)))
 					{
 						$msg .= ('Unfortunately there seems to be a database problem which prevents the system from updating your callsign (id='
 								 . htmlent($user_id)
@@ -388,7 +385,7 @@
 						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($internal_login_id);
 						// each user has only one entry in the database
 						$query .= ' LIMIT 1';
-						if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+						if (!($update_result = @$site->execute_query('players', $query, $connection)))
 						{
 							$msg = ('Unfortunately there seems to be a database problem'
 									. ' which prevents the system from setting your external playerid (id='
@@ -453,7 +450,7 @@
 			$query .= ' AND (`external_playerid` <> ' . "'" . "'" . ')';
 			// skip updates for banned or disabled accounts (inappropriate callsign for instance)
 			$query .= ' AND (`status`=' . sqlSafeStringQuotes('active') . ' OR `status`=' . sqlSafeStringQuotes('deleted') . ')';
-			if ($result = $site->execute_query($site->db_used_name(), 'players', $query, $connection))
+			if ($result = $site->execute_query('players', $query, $connection))
 			{
 				$errno = 0;
 				$errstr = '';
@@ -485,7 +482,7 @@
 					}
 					$query .= ' WHERE `external_playerid`=' . sqlSafeStringQuotes((int) $row['bzid']);
 
-					if (!($update_result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+					if (!($update_result = @$site->execute_query('players', $query, $connection)))
 					{
 						// trying to update the players old callsign failed
 						$msg = ('Unfortunately there seems to be a database problem which prevents the system from updating the old callsign of another user.'
@@ -519,7 +516,7 @@
 		}
 		// only one user account needs to be updated
 		$query .= ' LIMIT 1';
-		@$site->execute_query($site->db_used_name(), 'players_profile', $query, $connection);		
+		@$site->execute_query('players_profile', $query, $connection);		
 	}
 	
 	
@@ -569,7 +566,7 @@
 			// insert logged in user into online_users table
 			$query = 'INSERT INTO `online_users` (`playerid`, `username`, `last_activity`) Values';
 			$query .= '(' . sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ', ' . $curDate . ')';	
-			$site->execute_query($site->db_used_name(), 'online_users', $query, $connection);
+			$site->execute_query('online_users', $query, $connection);
 			
 			// do maintenance in case a user still belongs to a deleted team (database problem)
 			$query = 'SELECT `teams_overview`.`deleted` FROM `teams_overview`, `players` WHERE `teams_overview`.`teamid`=`players`.`teamid` AND `players`.`id`=';
@@ -577,7 +574,7 @@
 			$query .= ' AND `teams_overview`.`deleted`>' . sqlSafeStringQuotes('2');
 			// only the player that just wants to log-in is dealt with
 			$query .= ' LIMIT 1';
-			if ($result = $site->execute_query($site->db_used_name(), 'teams_overview, players', $query, $connection))
+			if ($result = $site->execute_query('teams_overview, players', $query, $connection))
 			{
 				while($row = mysql_fetch_array($result))
 				{
@@ -587,7 +584,7 @@
 						$query = 'UPDATE `players` SET `last_teamid`=`players`.`teamid`';
 						$query .= ', `teamid`=' . sqlSafeStringQuotes('0');
 						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
-						$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+						$site->execute_query('players', $query, $connection);
 					}
 				}
 				mysql_free_result($result);
@@ -604,7 +601,7 @@
 					  . ',' . sqlSafeStringQuotes(htmlent(getenv('HTTP_X_FORWARDED_FOR')))
 					  . ', ' . $curDate
 					  . ')');
-			$site->execute_query($site->db_used_name(), 'visits', $query, $connection);
+			$site->execute_query('visits', $query, $connection);
 		}
 	}
 	

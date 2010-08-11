@@ -65,16 +65,13 @@
 	
 	function db_create_when_needed($site, $connection, $message_mode, $table_name, $table_name_msg_user_connection)
 	{
-		// choose database
-		mysql_select_db($site->db_used_name(), $connection);
-		
 		// cache if we were successful
 		$success = false;
 		
 		if ($message_mode)
 		{
 			//set up table structure for private messages when needed
-			$query = 'SHOW TABLES LIKE ' . "'" . $table_name . "'";
+			$query = 'SHOW TABLES LIKE ' . sqlSafeStringQuotes($table_name);
 			$result = mysql_query($query, $connection);
 			$rows = mysql_num_rows($result);
 			// done
@@ -101,7 +98,7 @@
 				$query = $query . '`from_team` bit(1) default NULL,' . "\n";
 				$query = $query . 'PRIMARY KEY	(`id`)' . "\n";
 				$query = $query . ') ENGINE=MyISAM DEFAULT CHARSET=utf8';
-				if (@$site->execute_query($site->db_used_name(), $table_name, $query, $connection))
+				if (@$site->execute_query($table_name, $query, $connection))
 				{
 					$success = true;
 				} else
@@ -139,7 +136,7 @@
 				$query = $query . '`in_outbox` bit(1) NOT NULL,' . "\n";
 				$query = $query . 'PRIMARY KEY	(`id`)' . "\n";
 				$query = $query . ') ENGINE=MyISAM DEFAULT CHARSET=utf8';
-				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
+				if ((@$site->execute_query($table_name, $query, $connection)))
 				{
 					$success = true;
 				} else
@@ -178,7 +175,7 @@
 				$query = $query . '`announcement` text,' . "\n";
 				$query = $query . 'PRIMARY KEY	(`id`)' . "\n";
 				$query = $query . ') ENGINE=MyISAM DEFAULT CHARSET=utf8';
-				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
+				if ((@$site->execute_query($table_name, $query, $connection)))
 				{
 					$success = true;
 				} else
@@ -270,9 +267,6 @@
 	{
 		// show existing entries at the bottom of page
 		
-		// choose database
-		mysql_select_db($site->db_used_name(), $connection);
-		
 		// display depends on current mode
 		if ($message_mode)
 		{
@@ -358,7 +352,7 @@
 			$query .= sqlSafeString($num_results + 1);
 
 			
-			$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
+			$result = ($site->execute_query($table_name, $query, $connection));
 			if (!$result)
 			{
 				$site->dieAndEndPage();

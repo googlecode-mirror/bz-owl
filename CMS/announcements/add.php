@@ -92,7 +92,7 @@
 			$query = 'SELECT `id`,`name` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($item);
 			$query .= ' AND `status`=' . sqlSafeStringQuotes('active');
 		}
-		if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))
+		if ($result = @$site->execute_query('players', $query, $utils->getConnection()))
 		{
 			$rows = (int) mysql_num_rows($result);
 			if ($rows === 0)
@@ -164,7 +164,7 @@
 		
 		// find out callsign
 		$query = 'SELECT `name` FROM `players` WHERE `id`=' . sqlSafeStringQuotes(strval(getUserID())) . ' LIMIT 1';
-		if ($result = (@$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if ($result = (@$site->execute_query('players', $query, $connection)))
 		{
 			while($row = mysql_fetch_array($result))
 			{
@@ -246,7 +246,7 @@
 			$query .= ' WHERE `status`=' . sqlSafeString('active');
 			$query .= ' AND `teamid`=' . "'" . sqlSafeString($_POST['teamid']) . "'";
 			
-			if ($result = @$site->execute_query($site->db_used_name(), 'players', $query, $utils->getConnection()))
+			if ($result = @$site->execute_query('players', $query, $utils->getConnection()))
 			{
 				while($row = mysql_fetch_array($result))
 				{
@@ -427,7 +427,7 @@
 							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($announcement) . ', 0, ' . sqlSafeStringQuotes(implode(' ', ($utils->getRecipientsIDs()))) . ')';
 						}
 						$message_sent = true;
-						if ($result = (@$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+						if ($result = (@$site->execute_query('messages_storage', $query, $connection)))
 						{
 							$rowId = (int) mysql_insert_id($connection);
 							// id from new entry
@@ -440,7 +440,7 @@
 								$known_recipients = array();
 								$query = 'SELECT `id` FROM `players` WHERE `teamid`=';
 								$query .= sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid']));
-								$result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+								$result = @$site->execute_query('players', $query, $connection);
 																
 								while ($row = mysql_fetch_array($result))
 								{
@@ -463,7 +463,7 @@
 									}
 									$query .= ')';
 									// usually the result should be freed for performance reasons but mysql does not return a resource for insert queries
-									$tmp_result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);									
+									$tmp_result = @$site->execute_query('messages_users_connection', $query, $connection);									
 								}
 							} else
 							{
@@ -472,7 +472,7 @@
 									// get unique id from the specified player name in recipient list
 									// example query: SELECT * FROM `players` WHERE `name`='ts'
 									$query = 'SELECT * FROM `players` WHERE `name`=' . sqlSafeStringQuotes($one_recipient);
-									$result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection);
+									$result = @$site->execute_query('players', $query, $connection);
 									
 									// the message needs to be send to the recipients
 									$recipientId = 0;
@@ -485,7 +485,7 @@
 										$query = 'INSERT INTO `messages_users_connection` (`msgid`, `playerid`, `in_inbox`, `in_outbox`) VALUES (';
 										$query .= "'" . $rowId . "'" . ', ' . "'" . $recipientId . "'" . ', 1, 0)';
 										// usually the result should be freed for performance reasons but mysql does not return a resource for insert queries
-										$tmp_result = @$site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+										$tmp_result = @$site->execute_query('messages_users_connection', $query, $connection);
 									}
 								}
 							}
@@ -527,7 +527,7 @@
 							}
 							$query .= ')';
 							// immediately free the result for performance reasons
-							$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+							$result = $site->execute_query('messages_users_connection', $query, $connection);
 							if (!($result))
 							{
 								$message_sent = false;
@@ -538,7 +538,7 @@
 							{
 								$query = ('UPDATE `message_users_connection` SET `msg_status`=' . sqlSafeStringQuotes('replied')
 										  . ' WHERE `msgid`=' . sqlSafeStringQuotes((int) $_GET['id']));
-								$result = $site->execute_query($site->db_used_name(), 'messages_users_connection', $query, $connection);
+								$result = $site->execute_query('messages_users_connection', $query, $connection);
 								if (!($result))
 								{
 									$site->dieAndEndPage('Could not update old message status (msg=' . sqlSafeStringQuotes((int) $_GET['id'])
@@ -563,7 +563,7 @@
 				{
 					$query = 'INSERT INTO `' . $table_name . '` (`timestamp`, `author`, `announcement`, `raw_announcement`) VALUES (';
 					$query = $query . sqlSafeStringQuotes($timestamp) . ',' . sqlSafeStringQuotes(htmlent($author)) . ',' . sqlSafeStringQuotes($site->bbcode($announcement)) . ',' . sqlSafeStringQuotes($announcement) .')';
-					if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
+					if ((@$site->execute_query($table_name, $query, $connection)))
 					{
 						echo '<p>Updating: No problems occured, changes written!</p>' . "\n";
 					} else
@@ -761,7 +761,7 @@
 								// a message id is always unique -> maximum 1 match in table
 								$query .= ' LIMIT 1';
 								
-								if (!($recipient_list = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+								if (!($recipient_list = @$site->execute_query('messages_storage', $query, $connection)))
 								{
 									// query was bad, error message was already given in $site->execute_query(...)
 									$site->dieAndEndPage('ERROR: Could not get recipient list for message with id ' . sqlSafeStringQuotes((int) $_GET['id']));
@@ -840,7 +840,7 @@
 								unset($curRecipient);
 								unset($num_recipients);
 								
-								if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+								if (!($result = @$site->execute_query('players', $query, $connection)))
 								{
 									// query was bad, error message was already given in $site->execute_query(...)
 									$site->dieAndEndPage('ERROR: Could not get recipient id/name list for message with id ' . sqlSafeStringQuotes((int) $_GET['id']));
@@ -868,7 +868,7 @@
 								// a message id is always unique -> maximum 1 match in table
 								$query .= ' LIMIT 1';
 								
-								if (!($result = @$site->execute_query($site->db_used_name(), 'messages_storage', $query, $connection)))
+								if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 								{
 									// query was bad, error message was already given in $site->execute_query(...)
 									$site->dieAndEndPage('ERROR: Could not get name and subject for message with id ' . sqlSafeStringQuotes((int) $_GET['id']));
@@ -913,7 +913,7 @@
 								// query the team name for given team id
 								$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeString((int) urldecode(htmlspecialchars_decode($_GET['teamid']))) . ' LIMIT 1';
 								
-								if (!($team_name_result = @$site->execute_query($site->db_used_name(), 'teams', $query, $connection)))
+								if (!($team_name_result = @$site->execute_query('teams', $query, $connection)))
 								{
 									// query was bad, error message was already given in $site->execute_query(...)
 									$site->dieAndEndPage('');

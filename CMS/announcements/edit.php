@@ -77,7 +77,7 @@
 				$query .= '", `announcement`="' . sqlSafeString($site->bbcode($announcement)) . '", `raw_announcement`="' . sqlSafeString($announcement);
 				$query .= '" WHERE id=' . sqlSafeString($currentId);
 				
-				if ((@$site->execute_query($site->db_used_name(), $table_name, $query, $connection)))
+				if ((@$site->execute_query($table_name, $query, $connection)))
 				{
 					echo '<p>Updating: No problems occured, changes written!</p>' . "\n";
 				} else
@@ -152,8 +152,9 @@
 				{
 					echo '<div class="static_page_box">' . "\n";
 					
-					$query = 'SELECT `timestamp`,`author`,`raw_announcement` from `' . $table_name . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' ORDER BY id LIMIT 1';
-					$result = ($site->execute_query($site->db_used_name(), $table_name, $query, $connection));
+					$query = ('SELECT `timestamp`,`author`,`raw_announcement` from `' . $table_name
+							  . '` WHERE `id`=' . sqlSafeStringQuotes($currentId) . ' ORDER BY id LIMIT 1');
+					$result = ($site->execute_query($table_name, $query, $connection));
 					if (!$result)
 					{
 						$site->dieAndEndPage();
@@ -178,7 +179,8 @@
 					echo '<div>' . "\n";
 					echo '	<label class="msg_edit" for="msg_edit_timestamp">Timestamp:</label> ' . "\n";
 					echo '	<span>' . "\n" . '		';
-					$site->write_self_closing_tag('input type="text" id="msg_edit_timestamp" name="timestamp" value="' . htmlentities(urldecode($timestamp)) . '"');
+					$site->write_self_closing_tag('input type="text" id="msg_edit_timestamp" name="timestamp" value="'
+												  . htmlentities(urldecode($timestamp)) . '"');
 					echo '	</span>' . "\n";
 					echo '</div>' . "\n";
 					

@@ -231,7 +231,7 @@
 		}
 		
 		$query = 'SELECT `name` FROM `players` WHERE `players`.`id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
-		if (!($result = @$site->execute_query($site->db_used_name(), 'players', $query, $connection)))
+		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
 			$site->dieAndEndPageNoBox('<p>It seems like the name of player with id ' . sqlSafeStringQuotes(htmlent($profile)) . ' can not be accessed for an unknown reason.</p>');
 		}
@@ -297,7 +297,7 @@
 	$query .= sqlSafeString($num_results + 1);
 
 	
-	if (!($result = @$site->execute_query($site->db_used_name(), 'visits, players', $query, $connection)))
+	if (!($result = @$site->execute_query('visits, players', $query, $connection)))
 	{
 		// query was bad, error message was already given in $site->execute_query(...)
 		$site->dieAndEndPageNoBox();
