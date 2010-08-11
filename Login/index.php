@@ -367,7 +367,7 @@
 					$ch = curl_init();
 					
 					// set URL and other appropriate options
-					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=id&value=' . sqlSafeString(strtolower($_SESSION['username'])));
+					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=id&value=' . htmlentities(strtolower($_SESSION['username'])));
 					curl_setopt($ch, CURLOPT_HEADER, 0);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 					
