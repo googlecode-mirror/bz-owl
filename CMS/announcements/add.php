@@ -999,7 +999,9 @@
 						echo '">bbcode:</label></div>' . "\n";
 						echo '<span class="test">';
 						include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
-						showBBCodeButtons();
+						$bbcode = new bbcode_buttons();
+						$bbcode->showBBCodeButtons();
+						unset($bbcode);
 						echo '</span>';
 						echo "\n";
 						echo '</div>' . "\n";

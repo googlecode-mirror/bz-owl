@@ -419,8 +419,10 @@
 			echo '	<label class="team_change">bbcode:</label></div>' . "\n";
 			echo '<span class="bbcode_buttons">';
 			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
+			$bbcode = new bbcode_buttons();
 			// set up name of field to edit so javascript knows which element to manipulate
-			showBBCodeButtons('team_description');
+			$bbcode->showBBCodeButtons('team_description');
+			unset($bbcode);
 			echo '</span>';
 			echo "\n";
 			echo '</div>' . "\n";
@@ -1353,8 +1355,10 @@
 			echo '<span class="bbcode_buttons">';
 			echo '<span class="bbcode_buttons">';
 			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
+			$bbcode = new bbcode_buttons();
 			// set up name of field to edit so javascript knows which element to manipulate
-			showBBCodeButtons('team_description');
+			$bbcode->showBBCodeButtons('team_description');
+			unset($bbcode);
 			echo '</span>';
 			echo "\n";
 			echo '</div>' . "\n";

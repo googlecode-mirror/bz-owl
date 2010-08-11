@@ -770,7 +770,9 @@
 			echo '	<label class="player_edit">bbcode:</label><span>';
 			echo '</div>';
 			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
-			showBBCodeButtons('user_comment');
+			$bbcode = new bbcode_buttons();
+			$bbcode->showBBCodeButtons('user_comment');
+			unset($bbcode);			
 			echo '</span>';
 			echo "\n";
 			echo '</div>' . "\n";
@@ -795,7 +797,9 @@
 				echo '	<label class="player_edit">bbcode:</label><span>';
 				echo '</div>';
 				// bbcode_buttons.php file already included
-				showBBCodeButtons('admin_comments');
+				$bbcode = new bbcode_buttons();
+				$bbcode->showBBCodeButtons('admin_comments');
+				unset($bbcode);
 				echo '</span>';
 				echo "\n";
 				echo '</div>' . "\n";
