@@ -367,7 +367,8 @@
 					$ch = curl_init();
 					
 					// set URL and other appropriate options
-					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=id&value=' . urlencode(strtolower($_SESSION['username'])));
+					$url = ('http://my.bzflag.org/bzidtools2.php?action=id&value=' . urlencode(strtolower($_SESSION['username'])));
+					curl_setopt($ch, CURLOPT_URL, $url);
 					curl_setopt($ch, CURLOPT_HEADER, 0);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 					
@@ -407,7 +408,9 @@
 						$msg = ('Unfortunately the bzidtools2.php script failed'
 								. ' which prevents the system from setting your external playerid (id='
 								. htmlent($user_id)
-								. '). Please report this to an admin.');
+								. '). The bzidtool2.php call was '
+								. sqlSafeStringQuotes($url)
+								. '. Please report this to an admin.');
 						die_with_no_login($msg, $msg);
 					}
 				}
