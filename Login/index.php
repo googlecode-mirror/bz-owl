@@ -450,7 +450,7 @@
 			$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ')';
 			$query .= ' AND (`external_playerid` <> ' . sqlSafeStringQuotes($_SESSION['external_id']) . ')';
 			// do not update users with local login
-			$query .= ' AND (`external_playerid` <> ' . "'" . "'" . ')';
+			$query .= ' AND (`external_playerid` <> ' . "''" . ')';
 			// skip updates for banned or disabled accounts (inappropriate callsign for instance)
 			$query .= ' AND (`status`=' . sqlSafeStringQuotes('active') . ' OR `status`=' . sqlSafeStringQuotes('deleted') . ')';
 			if ($result = $site->execute_query('players', $query, $connection))
