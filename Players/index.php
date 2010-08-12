@@ -1199,17 +1199,18 @@
 	
 	// form letting search for team name or time
 	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
-	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./">' . "\n";
+	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline"><label for="player_search_string">Search for:</label> ' . "\n";
+	echo '<div style="display:inline" class="search_bar_text"><label for="player_search_string">Search for:</label> ' . "\n";
 	echo '<span>';
 	if (isset($_GET['search']))
 	{
-		$site->write_self_closing_tag('input type="text" id="player_search_string" name="search_string" value="' . $_GET['search_string'] . '"');
+		$site->write_self_closing_tag('input type="text" title="use * as wildcard" id="player_search_string" name="search_string" value="'
+									  . $_GET['search_string'] . '"');
 	} else
 	{
-		$site->write_self_closing_tag('input type="text" id="player_search_string" name="search_string"');
+		$site->write_self_closing_tag('input type="text" title="use * as wildcard" id="player_search_string" name="search_string"');
 	}
 	echo '</span></div> ' . "\n";
 	

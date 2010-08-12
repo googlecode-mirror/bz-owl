@@ -1,4 +1,7 @@
-/* @override http://192.168.1.10/~spiele/league_svn/ts/styles/Snow.css */
+/* @override
+	http://192.168.1.10/~spiele/league_svn/ts/styles/Snow.css
+	http://vps1.moooo.org/ts/styles/Eierschale
+*/
 
 body
 {
@@ -55,13 +58,13 @@ ul.navigation
 	font-size: 1.5em;
 	float: left;
 	background: rgba(210,211,235,0.54);
-	margin-top: 0em;
 	padding-top: 0.1em;
 	padding-bottom: 0.3em;
 	padding-left: 1.4em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
+	margin-top: 0.7em;
 }
 
 ul.navigation li
@@ -107,6 +110,27 @@ div.userbuttons
 div.online_user
 {
 	text-align: center;
+}
+
+form.search_bar
+{
+	display: block;
+	background: rgba(210,211,235,0.54);
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	padding: 1em 1em 0.75em;
+	text-align: center;
+}
+
+div.static_page_box
+{
+	display: block;
+	padding: 1em;
+	background: rgba(210,211,235,0.54);
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
 }
 
 /* private messages */

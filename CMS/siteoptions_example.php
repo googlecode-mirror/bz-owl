@@ -73,11 +73,13 @@
 	
 	function db_used_custom_name()
 	{
+		// this is the database name this league website will use
 		return 'ts-CMS';
 	}
 	
 	function debug_sql_custom()
 	{
+		// show sql queries by default? use true or false
 		return true;
 	}
 	
