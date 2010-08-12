@@ -10,6 +10,9 @@
 	ob_start();
 	require '../CMS/index.php';
 	
+	// as the navigation is different for a logged in user output buffering will be used
+	// buffer the text into the $msg variable
+	$msg = '';
 	
 	function die_with_no_login($message='', &$logged_string='')
 	{
@@ -51,7 +54,7 @@
 		$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 		if (!$result = $site->execute_query('invitations', $query, $connection))
 		{
-			$msg = 'Could not delete expired invitations.';
+			$msg .= 'Could not delete expired invitations.';
 			die_with_no_login($msg, $msg);
 		}
 	}
@@ -82,21 +85,47 @@
 		
 		$rows_num_accounts = (int) mysql_num_rows($result);
 		$suspended_mode = '';
-		// find out if a username got locked before doing updates
-		// e.g. inappropriate username got renamed by admins
-		// and then someone else tries to join using this username, 
-		// causing a reset of the other username to be reset to the inappropriate one
 		$convert_to_external_login = false;
-		while ($row = mysql_fetch_array($result))
+		if ($rows_num_accounts > 0)
 		{
-			$_SESSION['viewerid'] = (int) $row['id'];
-			$suspended_mode = $row['status'];
-			if (strcmp(($row['external_playerid']), '') === 0)
+			// find out if a username got locked before doing updates
+			// e.g. inappropriate username got renamed by admins
+			// and then someone else tries to join using this username, 
+			// causing a reset of the other username to be reset to the inappropriate one
+			while ($row = mysql_fetch_array($result))
 			{
-				$convert_to_external_login = $site->convert_users_to_external_login();
+				$_SESSION['viewerid'] = (int) $row['id'];
+				$suspended_mode = $row['status'];
+				if (strcmp(($row['external_playerid']), '') === 0)
+				{
+					$convert_to_external_login = $site->convert_users_to_external_login();
+				}
+			}
+			mysql_free_result($result);
+		} elseif (isset($external_login_id) && $external_login_id)
+		{
+			// name is not known, check if id is already in the database
+			// $rows_num_accounts === 0
+			$query = 'SELECT `id`, `status` FROM `players` WHERE `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']) . ' LIMIT 1';
+			if (!($result = @$site->execute_query('players', $query, $connection)))
+			{
+				$msg = ('Could not find out if player already has an account with id ' . sqlSafeString($_SESSION['external_id']) . ' (renamed user?).');
+				die_with_no_login($msg, $msg);
+			}
+			
+			$rows_num_accounts = (int) mysql_num_rows($result);
+			if ($rows_num_accounts > 0)
+			{
+				while ($row = mysql_fetch_array($result))
+				{
+					$_SESSION['viewerid'] = (int) $row['id'];
+					$suspended_mode = $row['status'];
+					// reset back to default as there is nothing to do in that regard
+					$convert_to_external_login = false;
+				}
+				mysql_free_result($result);
 			}
 		}
-		mysql_free_result($result);
 		
 		// check if it is a false positive (no password stored in database)
 		// this can happen in case the user got imported from another database
@@ -124,7 +153,7 @@
 		
 		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
 		{
-			$msg = '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
+			$msg .= '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
 			$msg .= 'The account you tried to login to does not support ';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
@@ -150,7 +179,7 @@
 		if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
 			&& ((strcmp($suspended_mode, 'login disabled') === 0) || strcmp($suspended_mode, 'banned') === 0))
 		{
-			$msg = 'There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!';
+			$msg .= 'There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!';
 			die_with_no_login($msg);
 		}
 		// dealing only with the current player from this point on
@@ -163,24 +192,22 @@
 		if (strcmp($suspended_mode, 'deleted') === 0)
 		{
 			$suspended_mode = 'active';
-			$query = 'UPDATE `players` SET `suspended`=' . sqlSafeStringQuotes($suspended_mode);
-			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id);
+			$query = 'UPDATE `players` SET `status`=' . sqlSafeStringQuotes($suspended_mode);
+			$query .= ' WHERE `id`=' . sqlSafeStringQuotes($user_id) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
-				$msg = 'Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.';
+				$msg .= 'Could not reactivate deleted account with id ' . sqlSafeString($user_id) . '.';
 				die_with_no_login($msg, $msg);
 			}
 		}
 		if (strcmp($suspended_mode, 'login disabled') === 0)
 		{
-			$msg = '';
 			$msg .= 'Login for this account was disabled by admins.';
 			// skip updates if the user has a disabled login (inappropriate callsign for instance)
 			die_with_no_login($msg);
 		}
 		if (strcmp($suspended_mode, 'banned') === 0)
 		{
-			$msg = '';
 			$msg .=  'Admins specified you should be banned from the entire site.';
 			// FIXME: BAN FOR REAL!!!!
 			// skip updates if the user is banned (inappropriate callsign for instance)
@@ -192,10 +219,9 @@
 		{
 			if ($rows_num_accounts === 0)
 			{
-				$msg = '';
 				$msg .= '<p class="first_p">Adding user to database…</p>' . "\n";
-				// example query: INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES('1194', '0', 'ts')
-				$query = 'INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES(';
+				// example query: INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES ('1194', '0', 'ts')
+				$query = 'INSERT INTO `players` (`external_playerid`, `teamid`, `name`) VALUES (';
 				$query .= sqlSafeStringQuotes($_SESSION['external_id']) . ', ' . "'" . '0' . "'" . ', ' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) .')';
 				if ($insert_result = @$site->execute_query('players', $query, $connection))
 				{
@@ -221,7 +247,7 @@
 							if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
-								$msg = 'Could not lock the messages_storage table.';
+								$msg .= 'Could not lock the messages_storage table.';
 								die_with_no_login($msg);
 							}
 							
@@ -237,7 +263,7 @@
 							if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 							{
 								// query was bad, error message was already given in $site->execute_query(...)
-								$msg = 'Could not create the welcome mail.';
+								$msg .= 'Could not create the welcome mail.';
 								die_with_no_login($msg);
 							}
 							
@@ -248,8 +274,7 @@
 							$query = 'UNLOCK TABLES';
 							if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 							{
-								// query was bad, error message was already given in $site->execute_query(...)
-								$msg = 'Could not unlock the messages_storage table.';
+								$msg .= 'Could not unlock the messages_storage table.';
 								die_with_no_login($msg);
 							}
 							// send the invitation message to user
@@ -259,15 +284,14 @@
 							$query .= ', ' . sqlSafeStringQuotes('0') . ')';
 							if (!($result = @$site->execute_query('messages_users_connection', $query, $connection)))
 							{
-								// query was bad, error message was already given in $site->execute_query(...)
-								$msg = 'Could not send the welcome mail.';
+								$msg .= 'Could not send the welcome mail.';
 								die_with_no_login($msg);
 							}
 							
 							// message sent
 						} else
 						{
-							$msg = ('Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. '
+							$msg .= ('Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. '
 												 . ' Please try again later.</p>' . "\n"
 												 . '<p>If the problem persists please tell an admin');
 							die_with_no_login($msg, $msg);
@@ -339,7 +363,13 @@
 				{
 					// update name in case there is no collision
 					$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']));
-					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
+					if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
+					{
+						$query .= ' WHERE `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']);
+					} else
+					{
+						$query .= ' WHERE `id`=' . sqlSafeStringQuotes($_SESSION['viewerid']);
+					}
 					// each user has only one entry in the database
 					$query .= ' LIMIT 1';
 					if (!($update_result = @$site->execute_query('players', $query, $connection)))
@@ -357,7 +387,6 @@
 			// local login
 			if (isset($internal_login_id))
 			{
-				$msg = '';
 				if (isset($convert_to_external_login) && $convert_to_external_login)
 				{
 					// user is not new, update his callsign with new external playerid supplied from login
@@ -561,7 +590,7 @@
 				$result = mysql_query($query, $connection);
 				if (!($result))
 				{
-					$msg = 'Could not remove already logged in user from online user table. Database broken?';
+					$msg .= 'Could not remove already logged in user from online user table. Database broken?';
 					die_with_no_login($msg, $msg);
 				}
 			}
