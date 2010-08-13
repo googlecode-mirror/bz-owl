@@ -35,7 +35,6 @@ p.first_p
 table
 {
 	display: inline-block;
-	background-color: rgba(234,238,223,0.55);
 }
 
 table.big
@@ -556,7 +555,7 @@ table.nested_table
 {
 	display: inline-block;
 	margin-top: 1em;
-	border: 0.2em dashed rgba(181,181,181,0.61);
+	border: 0.2em solid rgba(181,181,181,0.61);
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
@@ -565,7 +564,6 @@ table.nested_table
 
 table.nested_table caption
 {
-	background: rgba(191,194,198,0.43) -3px;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
