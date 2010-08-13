@@ -378,6 +378,21 @@ textarea#msg_send_announcement
 }
 
 /* news announcements */
+a#new_entry.button + br +br + span
+{
+	display: block;
+	text-align: right;
+	margin-bottom: 0.15em;
+	margin-top: -2.25em;
+}
+
+span.edit_and_delete_links
+{
+	display: block;
+	text-align: right;
+	margin-bottom: 0.1em;
+}
+
 div.article
 {
 	background-color: #323333;

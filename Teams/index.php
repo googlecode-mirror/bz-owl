@@ -2213,7 +2213,6 @@
 	{
 		echo '<a class="button" href="./?reactivate">Reactivate a team</a>' . "\n";
 		$site->write_self_closing_tag('br');
-		$site->write_self_closing_tag('br');
 	}
 	
 	// is player teamless?

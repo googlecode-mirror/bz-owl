@@ -105,7 +105,8 @@
 	
 	$name = $site->base_name();
 	
-	// public_html auf FreeBSD oder Sites auf Mac OS X
+	// public_html on FreeBSD or Sites on Mac OS X
+	// top level dir depends on siteconfig
 	$ganzOben = (strcmp($name, 'public_html') == 0) || (strcmp($name, 'Sites') == 0) || (strcmp($name, 'leaguesite') == 0) || (strcmp($name, 'ts') == 0);
 	
 	if (!$logged_in)
@@ -164,9 +165,19 @@
 ?>
 </ul>
 
-<div class="userbuttons">
 <?php
+	$online = true;
 	if (!(strcmp($name, 'Online') == 0))
+	{
+		$online = false;
+	}
+	
+	if ($logged_in || !$online)
+	{
+		echo '<div class="userbuttons">' . "\n";
+	}
+	
+	if (!$online)
 	{
 		echo '<span class="onlineUsers">';
 		echo '<a href="' . baseaddress() . 'Online/' . '">online users</a>';
