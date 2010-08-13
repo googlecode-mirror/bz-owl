@@ -1,6 +1,7 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Test42
 	http://192.168.1.10/~spiele/league_svn/ts/styles/Test42
+	http://192.168.1.10/~spiele/league_svn/ts/styles/Test42.css
 */
 
 body
@@ -48,7 +49,7 @@ table.big
 
 table caption
 {
-	background: #8a8a8a -3px;
+	background: #8a8a8a;
 	display: block;
 	text-align: center;
 	border-bottom: 0.15em solid #dd4718;
@@ -364,7 +365,7 @@ div.article
 div.article_header
 {
 	overflow: auto;
-	background: #8a8a8a -3px;
+	background: #8a8a8a;
 	color: #382e41;
 	border-bottom: 0.15em solid #dd4718;
 	padding-top: 0.5em;
@@ -501,8 +502,7 @@ div.team_header
 {
 	display: block;
 	min-width: 84%;
-	border: 0.2em dashed #677068;
-	background-color: rgba(234,238,223,0.55);
+	background-color: #ddd;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -513,10 +513,12 @@ div.team_header
 div.team_name
 {
     text-align: center;
-	background: rgba(191,194,198,0.64) -3px;
+	background: #8a8a8a;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
+	padding: 0.5em 1em 0.2em;
+	font-weight: bold;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -524,8 +526,6 @@ div.team_name
 	-moz-border-radius: 1em 1em 0em 0em;
 	/* Don't know what the final CSS 3 spec will be */
 	border-radius: 1em 1em 0em 0em;
-	padding: 0.5em 1em 0.2em;
-	font-weight: bold;
 }
 
 img.team_logo
@@ -583,8 +583,7 @@ table.nested_table td
 
 div.team_profile_box
 {
-	border: 0.2em dashed #677068;
-	background-color: rgba(234,238,223,0.55);
+	background-color: #ddd;
 	display: block;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -598,7 +597,7 @@ div.team_profile_header_text
 {
 	display: block;
 	text-align: center;
-	background: rgba(191,194,198,0.64) -3px;
+	background: #8a8a8a;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
