@@ -250,7 +250,10 @@
 			{
 				echo '<div>Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
 				echo '<div>';
-				include 'bbcode_buttons.php';
+				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
+				$bbcode = new bbcode_buttons();
+				$bbcode->showBBCodeButtons();
+				unset($bbcode);
 				echo '</div>';
 			} else
 			{
