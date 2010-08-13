@@ -1,7 +1,6 @@
 /* @override 
-	http://vps1.moooo.org/ts/styles/Eierschale
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale.css
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale
+	http://vps1.moooo.org/ts/styles/Test42
+	http://192.168.1.10/~spiele/league_svn/ts/styles/Test42
 */
 
 body
@@ -203,8 +202,7 @@ div.static_page_box
 {
 	display: block;
 	padding: 1em;
-	background-color: rgba(255,151,155,0.41);
-	border: 0.2em dashed #677068;
+	background-color: #ddd;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
