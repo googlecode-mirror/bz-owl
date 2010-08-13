@@ -37,6 +37,8 @@ table
 	display: inline-block;
 }
 
+
+
 table.big
 {
 	display: block;
@@ -48,8 +50,9 @@ table.big
 
 table caption
 {
-	background: #8a8a8a;
 	display: block;
+	color: #382e41;
+	background: #8a8a8a;
 	text-align: center;
 	border-bottom: 0.15em solid #dd4718;
 	-webkit-border-top-left-radius: 1em;
@@ -431,8 +434,7 @@ div.msg_area
 
 div.msg_view_full
 {
-	border: 0.2em dashed #677068;
-	background-color: rgba(234,238,223,0.55);
+	background-color: #ddd;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -443,7 +445,9 @@ div.msg_view_full
 div.msg_header_full
 {
 	text-align: left;
-	background: rgba(191,194,198,0.64) -3px;
+	color: #382e41;
+	background: #8a8a8a;
+	border-bottom: 0.15em solid #dd4718;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
@@ -461,7 +465,6 @@ div.msg_header_full
 span.msg_subject
 {
 	font-weight: bold;
-	color: black;
 }
 
 span.msg_author
@@ -469,13 +472,11 @@ span.msg_author
 	font-style: normal;
 	padding-left: 1em;
 	font-weight: normal;
-	color: black;
 }
 
 span.msg_timestamp
 {
 	font-style: italic;
-	color: black;
 	padding-left: 1em;
 }
 
