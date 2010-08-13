@@ -112,6 +112,31 @@ tr:nth-child(odd)
 	/* background: #fafafa */
 }
 
+/* round the corners of last row */
+/* first cell in last row */
+tr:last-child td:first-child
+{
+	-webkit-border-top-left-radius: 0em;
+	-webkit-border-top-right-radius: 0em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 1em;
+	-moz-border-radius: 0em 0em 0em 1em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 0em 0em 0em 1em;
+}
+
+/* last cell in last row */
+tr:last-child td:last-child
+{
+	-webkit-border-top-left-radius: 0em;
+	-webkit-border-top-right-radius: 0em;
+	-webkit-border-bottom-right-radius: 1em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 0em 0em 1em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 0em 0em 1em 0em;
+}
+
 /* navigation */
 ul.navigation
 {
