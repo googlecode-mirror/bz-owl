@@ -6,7 +6,7 @@
 
 body
 {
-	background: #323333 url(Test42_misc/BG.png) repeat;
+	background: #323333 url(Test42_misc/BG.png) repeat fixed;
 	color: black;
 	max-width: 100em;
 }
