@@ -35,9 +35,8 @@ p.first_p
 table
 {
 	display: inline-block;
+	color: black;
 }
-
-
 
 table.big
 {
@@ -203,7 +202,7 @@ ul.navigation a:hover
 
 div.content
 {
-	color: black;
+	color: white;
 	text-align: left;
 }
 
@@ -230,6 +229,7 @@ div.static_page_box
 {
 	display: block;
 	padding: 1em;
+	color: black;
 	background-color: #ddd;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -373,7 +373,6 @@ textarea#msg_send_announcement
 {
 	width: 10.1cm;
 	max-width: 100%;
-	font-size: 1em;
 	height: 10em;
 	max-height: 90%;
 }
@@ -426,6 +425,7 @@ div.article p
 {
 	margin-bottom: 0;
 	margin-top: 0.5em;
+	color: black;
 	background-color: #dedede;
 	padding: 1em;
 	-webkit-border-top-left-radius: 0em;
@@ -459,6 +459,7 @@ div.msg_area
 
 div.msg_view_full
 {
+	color: black;
 	background-color: #ddd;
 	padding: 1em;
 	margin-bottom: 1em;
@@ -527,6 +528,7 @@ div.team_header
 {
 	display: block;
 	min-width: 84%;
+	color: black;
 	background-color: #ddd;
 	padding: 1em;
 	margin-bottom: 1em;
@@ -608,8 +610,9 @@ table.nested_table td
 
 div.team_profile_box
 {
-	background-color: #ddd;
 	display: block;
+	color: black;
+	background-color: #ddd;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -664,6 +667,7 @@ div.user_area
 	display: block;
 	overflow: hidden;
 	min-width: 25em;
+	color: black;
 	background-color: #ddd;
 	margin-bottom: 1em;
 	padding: 1em;
@@ -758,8 +762,8 @@ span.no_user_comment
 
 div.user_admin_comments_area
 {
-	border: 0.2em dashed #677068;
-	background-color: rgba(234,238,223,0.55);
+	color: black;
+	background-color: #ddd;
 	padding: 1em;
 	margin-bottom: 1em;
 	-webkit-border-radius: 1em;
@@ -769,7 +773,7 @@ div.user_admin_comments_area
 
 div.user_admin_comments_header_text
 {
-	background: rgba(191,194,198,0.64) -3px;
+	background: #8a8a8a;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
@@ -790,6 +794,7 @@ div.user_admin_comments
 	margin-top: 0.2em;
 }
 
+
 /* edit section */
 label.player_edit
 {
@@ -808,7 +813,6 @@ textarea.player_edit
 {
 	width: 10.1cm;
 	max-width: 100%;
-	font-size: 1em;
 	height: 10em;
 	max-height: 90%;
 }
@@ -828,6 +832,14 @@ div.edit_user_suspended_status_send
 {
 	display: inline;
 }
+
+/* matches */
+/* result bold */
+table#table_matches_played tr td:nth-child(3)
+{
+	font-weight: bold;
+}
+
 
 /* hack because it's not possible to say to display something blocking using :before */
 div.p
@@ -871,13 +883,16 @@ form
 
 form.search_bar
 {
-	background: #8a8a8a -3px;
 	display: block;
+	color: black;
+	background: #8a8a8a;
 	text-align: center;
+	padding-top: 0.4em;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
-	padding-top: 0.4em;
 }
 
 /* some links should be displayed as butttons */
@@ -886,7 +901,8 @@ a.button:before
     content: "[";
 }
 
-a.button
+/*form.search_bar + a.button*/
+div.content > a.button
 {
 	color: #dedede;
 }

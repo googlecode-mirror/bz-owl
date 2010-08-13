@@ -38,20 +38,19 @@
 	
 	// form letting search for ip-address, host or name
 	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
-	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./">' . "\n";
+	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline"><label for="visit_search_string">Search for:</label> ' . "\n";
-	echo '<span><input type="text" id="visit_search_string" name="search_string"';
+	echo '<div style="display:inline" class="search_bar_text"><label for="visit_search_string">Search for:</label> ' . "\n";
+	echo '<span>';
 	if (isset($_GET['search']))
 	{
-		echo ' value="' . $_GET['search_string'] . '"';	
-	}
-	if ($site->use_xtml())
+		$site->write_self_closing_tag('input type="text" title="use * as wildcard" id="visit_search_string" name="search_string" value="'
+									  . $_GET['search_string'] . '"');
+	} else
 	{
-		echo ' /';
+		$site->write_self_closing_tag('input type="text" title="use * as wildcard" id="visit_search_string" name="search_string"');
 	}
-	echo '>';
 	echo '</span></div> ' . "\n";
 	
 	// looking for either ip-address, host or name?
