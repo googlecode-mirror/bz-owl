@@ -225,7 +225,7 @@
 	// user is able to add new entries
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (!isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
-		echo '<a class="button" href="./?add">new entry</a>';
+		echo '<a class="button" id="new_entry" href="./?add">new entry</a>';
 		$site->write_self_closing_tag('br');
 		$site->write_self_closing_tag('br');
 		echo "\n";
@@ -379,16 +379,19 @@
 			{
 				if ($current_row < $num_results)
 				{
+					echo '<span class="edit_and_delete_links">';
 					if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
 					{
 						$currentId = $row["id"];
-						echo '<a href="./?edit=' . $currentId . '">[edit]</a>' . "\n";
+						echo '<a class="button" href="./?edit=' . $currentId . '">edit</a>' . "\n";
 					}
 					if ((isset($_SESSION[$entry_delete_permission])) && ($_SESSION[$entry_delete_permission]))
 					{
 						$currentId = $row["id"];
-						echo '<a href="./?delete=' . $currentId . '">[delete]</a>' . "\n";
+						echo '<a class="button" href="./?delete=' . $currentId . '">delete</a>' . "\n";
 					}
+					echo '</span>' . "\n\n";
+					
 					echo '<div class="article">' . "\n";
 					echo '<div class="article_header">' . "\n";
 					echo '<div class="timestamp">';
