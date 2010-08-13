@@ -242,7 +242,7 @@
 				// mysql_real_escape_string zerschie§t " in /"
 				$teamid = mysql_real_escape_string((int) (str_replace('TE: ', '', $data[0])));
 				
-				$name = "\x22" . mysql_real_escape_string(htmlentities($data[1])) . "\x22";
+				$name = '"' . mysql_real_escape_string(htmlentities($data[1])) . '"';
 				
 				$query = 'INSERT INTO teams (teamid, name) Values(' . $teamid . ',' . $name . ')';
 				$result = mysql_query($query, $connection);

@@ -154,18 +154,20 @@ function formatbzfquery_last($server, $connection)
 		ob_end_clean();
 	}
 	
-    if (! isset($data['player']))
+    if (!isset($data['player']))
     { 
-        if (! isset($data['protocol']))
-    {
-        echo '<p>' . KEINEVERBINDUNG . ' ';
-        if (! strcmp($ausgabe, '') == 0)
-        {
-            echo GEMELDETERFEHLER . $ausgabe . '.';
-        }
-        echo '</p>' . "\n";
-    } else
-        echo '<p>' . KEINESPIELER . '</p>' . "\n";
+        if (!isset($data['protocol']))
+		{
+			echo '<p>' . KEINEVERBINDUNG . ' ';
+			if (! strcmp($ausgabe, '') == 0)
+			{
+				echo GEMELDETERFEHLER . $ausgabe . '.';
+			}
+			echo '</p>' . "\n";
+		} else
+		{
+			echo '<p>' . KEINESPIELER . '</p>' . "\n";
+		}
     } else
     {
         $zaehler = $data['maxTime'] - $data['timeElapsed'];
