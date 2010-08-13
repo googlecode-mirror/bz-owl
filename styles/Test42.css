@@ -513,6 +513,7 @@ div.team_name
 {
     text-align: center;
 	background: #8a8a8a;
+	border-bottom: 0.15em solid #dd4718;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
@@ -596,6 +597,7 @@ div.team_profile_header_text
 	display: block;
 	text-align: center;
 	background: #8a8a8a;
+	border-bottom: 0.15em solid #dd4718;
 	-webkit-border-top-left-radius: 1em;
 	-webkit-border-top-right-radius: 1em;
 	-webkit-border-bottom-right-radius: 0em;
