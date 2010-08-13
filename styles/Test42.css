@@ -638,8 +638,7 @@ div.user_area
 	display: block;
 	overflow: hidden;
 	min-width: 25em;
-	border: 0.2em dashed #677068;
-	background-color: rgba(234,238,223,0.55);
+	background-color: #ddd;
 	margin-bottom: 1em;
 	padding: 1em;
 	margin-bottom: 1em;
@@ -651,7 +650,7 @@ div.user_area
 div.user_general_info_header
 {
 	text-align: center;
-	background: rgba(191,194,198,0.64) -3px;
+	background: #8a8a8a;
 	margin-left: -1em;
 	margin-top: -1em;
 	margin-right: -1em;
