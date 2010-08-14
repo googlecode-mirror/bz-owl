@@ -59,21 +59,18 @@ table caption
 	-webkit-border-bottom-right-radius: 0em;
 	-webkit-border-bottom-left-radius: 0em;
 	-moz-border-radius: 1em 1em 0em 0em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 1em 1em 0em 0em;
+	/* border-radius does not apply to table elements when ‘border-collapse’ is ‘collapse’ but the single variants apply to all elements  */
+	border-top-right-radius: 1em;
+	border-top-left-radius: 1em;
+	border-bottom-right-radius: 0em;
+	border-bottom-left-radius: 0em;
+	/*border-radius: 1em 1em 0em 0em;*/
 }
 
 table.big caption
 {
 	padding: 0.5em 1em 0.2em;
 	margin-bottom: 0.5em;
-	-webkit-border-top-left-radius: 1em;
-	-webkit-border-top-right-radius: 1em;
-	-webkit-border-bottom-right-radius: 0em;
-	-webkit-border-bottom-left-radius: 0em;
-	-moz-border-radius: 1em 1em 0em 0em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 1em 1em 0em 0em;
 }
 
 th
@@ -126,9 +123,16 @@ tr:last-child td:first-child
 	-webkit-border-top-right-radius: 0em;
 	-webkit-border-bottom-right-radius: 0em;
 	-webkit-border-bottom-left-radius: 1em;
-	-moz-border-radius: 0em 0em 0em 1em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 0em 0em 0em 1em;
+	-moz-border-radius-topleft: 0em;
+	-moz-border-radius-topright: 0em;
+	-moz-border-radius-bottomright: 0em;
+	-moz-border-radius-bottomleft: 1em;
+	/* border-radius does not apply to table elements when ‘border-collapse’ is ‘collapse’ but the single variants apply to all elements  */
+	border-top-right-radius: 0em;
+	border-top-left-radius: 0em;
+	border-bottom-right-radius: 0em;
+	border-bottom-left-radius: 1em;
+	/*border-radius: 0em 0em 0em 1em;*/
 }
 
 /* last cell in last row */
@@ -139,9 +143,14 @@ tr:last-child td:last-child
 	-webkit-border-bottom-right-radius: 1em;
 	-webkit-border-bottom-left-radius: 0em;
 	-moz-border-radius: 0em 0em 1em 0em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 0em 0em 1em 0em;
+	/* border-radius does not apply to table elements when ‘border-collapse’ is ‘collapse’ but the single variants apply to all elements  */
+	border-top-right-radius: 0em;
+	border-top-left-radius: 0em;
+	border-bottom-right-radius: 1em;
+	border-bottom-left-radius: 0em;
+	/*border-radius: 0em 0em 1em 0em;*/
 }
+
 
 /* navigation */
 ul.navigation
