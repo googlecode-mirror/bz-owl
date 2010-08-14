@@ -194,7 +194,7 @@ ul.navigation a
 
 ul.navigation a.current_nav_entry
 {
-	color: #005981;
+	color: #4e405a;
 }
 
 
@@ -939,26 +939,26 @@ a.button:after
 /* remove underline from links */
 a
 {
-	color: #dd4718;
+	color: #005981;
 	text-decoration: none;
 }
 
 a:hover
 {
-	color: #382e41;
+	color: #4e405a;
 }
 
 a:visited
 {
-	color : #004080;
+	color : #005981;
 }
 
 a:visited:hover
 {
-	color: #382e41;
+	color: #4e405a;
 }
 
 a:active
 {
-	color : #000088;
+	color : #005981;
 }
