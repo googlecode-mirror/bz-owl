@@ -996,7 +996,7 @@
 		echo '<div class="p"></div>' . "\n";
 		
 		// the data we want
-		$query = 'SELECT `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`, `players_profile`.`UTC`';
+		$query = 'SELECT `players`.`external_playerid`, `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`, `players_profile`.`UTC`';
 		$query .= ', `players_profile`.`last_login`,`players_profile`.`joined`, `players_profile`.`user_comment`';
 		// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 		if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
@@ -1011,7 +1011,7 @@
 		$query .= ' FROM `players`, `players_profile`,`countries` WHERE `players`.`id` = `players_profile`.`playerid`';
 		$query .= ' AND `players_profile`.`location`=`countries`.`id`';
 		$query .= ' AND `players`.`id`=';
-		$query .= "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
+		$query .= sqlSafeStringQuotes($profile) . ' LIMIT 1';
 		if (!($result = @$site->execute_query('players, players_profile, countries', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -1022,7 +1022,7 @@
 		{
 			echo 'It seems like the flag specified by this user does not exist.';
 			// the data we want
-			$query = 'SELECT `players`.`name`,' . sqlSafeStringQuotes('') . ' AS `country_name`,' . sqlSafeStringQuotes('') . ' AS `flagfile`';
+			$query = 'SELECT `players`.`external_playerid`, `players`.`name`,' . sqlSafeStringQuotes('') . ' AS `country_name`,' . sqlSafeStringQuotes('') . ' AS `flagfile`';
 			$query .= ', `players_profile`.`UTC`, `players_profile`.`last_login`, `players_profile`.`joined`, `players_profile`.`user_comment`';
 			// optimise query by finding out whether the admin comments are needed at all (no permission to view = unnecessary)
 			if ((isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits'] === true))
@@ -1101,6 +1101,17 @@
 			}
 			echo '		<div class="user_profile_location_timezone_row"><span class="user_profile_location_timezone_description">timezone: </span> <span class="user_profile_location_timezone">' . htmlent('UTC ' . $time_format) . '</span></div>' . "\n";
 			unset($time_format);
+			require_once dirname(dirname(__FILE__)) . '/CMS/login_module_list.php';
+			$module = active_login_modules();
+			if (isset($module['bzbb']) && ($module['bzbb']) && (!(strcmp($row['external_playerid'], '') === 0)))
+			{
+				echo ('		<div class="user_profile_bzbb_description_row"><span class="user_profile_bzbb_description">BZBB id:</span>'
+					  . ' <span class="user_profile_bzbb">'
+					  . '<a href="http://my.bzflag.org/bb/memberlist.php?mode=viewprofile&amp;u=' . htmlent($row['external_playerid']) . '">'
+					  . htmlent($row['external_playerid'])
+					  . '</a>'
+					  . '</span></div>' . "\n");
+			}
 			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
 			echo '		<div class="user_profile_last_login_description_row"><span class="user_profile_last_login_description">last login:</span> <span class="user_profile_last_login">' . htmlent($row['last_login']) . '</span></div>' . "\n";
 			echo '	</div>' . "\n";
