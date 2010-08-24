@@ -244,7 +244,7 @@
 			// get list of players belonging to the team to be messaged
 			$query = 'SELECT `id` FROM `players`';
 			$query .= ' WHERE `status`=' . sqlSafeString('active');
-			$query .= ' AND `teamid`=' . "'" . sqlSafeString($_POST['teamid']) . "'";
+			$query .= ' AND `teamid`=' . sqlSafeStringQuotes($_POST['teamid']);
 			
 			if ($result = @$site->execute_query('players', $query, $utils->getConnection()))
 			{

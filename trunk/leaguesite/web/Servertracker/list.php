@@ -133,7 +133,7 @@ function formatbzfquery_last($server, $connection)
 			unset($connection);
 		}
     }
-
+	
     if (isset($_GET['server']))
     {
         echo '<p>' . $server . '</p>' . "\n";
