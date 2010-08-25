@@ -911,7 +911,9 @@
 							if (isset($_GET['teamid']))
 							{
 								// query the team name for given team id
-								$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeString((int) urldecode(htmlspecialchars_decode($_GET['teamid']))) . ' LIMIT 1';
+								$query = ('SELECT `name` FROM `teams` WHERE `id`='
+										  . sqlSafeStringQuotes((int) urldecode(htmlspecialchars_decode($_GET['teamid'])))
+										  . ' LIMIT 1');
 								
 								if (!($team_name_result = @$site->execute_query('teams', $query, $connection)))
 								{
