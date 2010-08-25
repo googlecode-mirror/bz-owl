@@ -307,7 +307,7 @@
 				echo '<span class="prev_next_msg_buttons">' . "\n";
 				
 				// previous message button
-				$query = ('SELECT * FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`>'
+				$query = ('SELECT * FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`<'
 						  . sqlSafeStringQuotes($_GET['view']) . ' AND `in_inbox`='
 						  . sqlSafeStringQuotes(strval((strcmp($folder, '') === 0) || (strcmp($folder, 'inbox') === 0)))
 						  . ' AND `in_outbox`=' . sqlSafeStringQuotes(strval(strcmp($folder, 'outbox') === 0))
@@ -323,7 +323,7 @@
 				mysql_free_result($result);
 				
 				// next message button
-				$query = ('SELECT * FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`<'
+				$query = ('SELECT * FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`>'
 						  . sqlSafeStringQuotes($_GET['view']) . ' AND `in_inbox`='
 						  . sqlSafeStringQuotes(strval((strcmp($folder, '') === 0) || (strcmp($folder, 'inbox') === 0)))
 						  . ' AND `in_outbox`=' . sqlSafeStringQuotes(strval(strcmp($folder, 'outbox') === 0))
