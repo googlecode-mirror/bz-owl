@@ -124,7 +124,7 @@
 		$box_name = sqlSafeString('in_' . $folder);
 		
 		// read each entry, row by row
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			// FIXME: display possibility to delete messages in the summary (checkboxes in each row and one button at the end of the list)
 			
@@ -268,7 +268,6 @@
 					// query result no longer needed
 					mysql_free_result($result);
 					
-					
 					// the user might want to delete the message
 					echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?delete=' . ((int) $id) . '&amp;folder=';
 					echo $folder . '" method="post">' . "\n";
@@ -276,6 +275,7 @@
 					$site->write_self_closing_tag('input type="submit" value="Delete this message"');
 					echo '</p>' . "\n";
 					echo '</form>' . "\n";
+					
 					echo '</div>' . "\n";
 					
 					echo '</div>' . "\n";
@@ -367,7 +367,7 @@
 						{
 							echo '	<a href="./?folder=';
 							echo $folder;
-							echo '&i=';
+							echo '&amp;i=';
 							echo ((int) $view_range)-200;
 							echo '">Previous messages</a>' . "\n";
 						}
@@ -376,7 +376,7 @@
 							
 							echo '	<a href="./?folder=';
 							echo $folder;
-							echo '&i=';
+							echo '&amp;i=';
 							echo ((int) $view_range)+200;
 							echo '">Next messages</a>' . "\n";
 						}

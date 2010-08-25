@@ -270,7 +270,8 @@
 		// display depends on current mode
 		if ($message_mode)
 		{
-			echo '<div class="folder_selection">' . "\n";
+			echo '<div class="msg_nav">' . "\n";
+			echo '<span class="folder_selection">' . "\n";
 			require_once('msgUtils.php');
 			$msgDisplay = new folderDisplay();
 			if ((strcmp($folder, 'inbox') == 0) || (strcmp($folder, '') == 0))
@@ -299,7 +300,46 @@
 					}
 				}
 			}
-			echo "\n" . '</div>' . "\n";
+			echo '</span>' . "\n";
+			
+			if (isset($_GET['view']) && intval($_GET['view']) > 0)
+			{
+				echo '<span class="prev_next_msg_buttons">' . "\n";
+				
+				// previous message button
+				$query = ('SELECT * FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`>'
+						  . sqlSafeStringQuotes($_GET['view']) . ' AND `in_inbox`='
+						  . sqlSafeStringQuotes(strval((strcmp($folder, '') === 0) || (strcmp($folder, 'inbox') === 0)))
+						  . ' AND `in_outbox`=' . sqlSafeStringQuotes(strval(strcmp($folder, 'outbox') === 0))
+						  . ' LIMIT 1');
+				$result = $site->execute_query('messages_users_connection', $query, $connection);
+				while ($row = mysql_fetch_array($result))
+				{
+					echo ('<a class="button" id="prev_msg" href="./?folder='
+						  . htmlent($folder) . '&amp;view=' . htmlent($row['msgid'])
+						  . '">Previous message</a> ');
+				}
+				mysql_free_result($result);
+				
+				// next message button
+				$query = ('SELECT * FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`<'
+						  . sqlSafeStringQuotes($_GET['view']) . ' AND `in_inbox`='
+						  . sqlSafeStringQuotes(strval((strcmp($folder, '') === 0) || (strcmp($folder, 'inbox') === 0)))
+						  . ' AND `in_outbox`=' . sqlSafeStringQuotes(strval(strcmp($folder, 'outbox') === 0))
+						  . ' LIMIT 1');
+				$result = $site->execute_query('messages_users_connection', $query, $connection);
+				while ($row = mysql_fetch_array($result))
+				{
+					echo (' <a class="button" id="next_msg" href="./?folder='
+						  . htmlent($folder) . '&amp;view=' . htmlent($row['msgid'])
+						  . '">Next message</a>');
+				}
+				mysql_free_result($result);
+				
+				echo "\n" . '</span>';
+			}
+			
+			echo '</div>' . "\n";
 			$msgDisplay->displayMessageFolder($folder, $connection, $site, $logged_in);
 		} else
 		{
