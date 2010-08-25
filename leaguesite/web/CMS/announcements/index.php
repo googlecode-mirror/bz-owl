@@ -311,6 +311,7 @@
 						  . sqlSafeStringQuotes($_GET['view']) . ' AND `in_inbox`='
 						  . sqlSafeStringQuotes(strval((strcmp($folder, '') === 0) || (strcmp($folder, 'inbox') === 0)))
 						  . ' AND `in_outbox`=' . sqlSafeStringQuotes(strval(strcmp($folder, 'outbox') === 0))
+						  . ' ORDER BY `id` DESC'
 						  . ' LIMIT 1');
 				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				while ($row = mysql_fetch_array($result))
@@ -326,6 +327,7 @@
 						  . sqlSafeStringQuotes($_GET['view']) . ' AND `in_inbox`='
 						  . sqlSafeStringQuotes(strval((strcmp($folder, '') === 0) || (strcmp($folder, 'inbox') === 0)))
 						  . ' AND `in_outbox`=' . sqlSafeStringQuotes(strval(strcmp($folder, 'outbox') === 0))
+						  . ' ORDER BY `id` DESC'
 						  . ' LIMIT 1');
 				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				while ($row = mysql_fetch_array($result))
