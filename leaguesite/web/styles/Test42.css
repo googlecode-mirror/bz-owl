@@ -246,6 +246,24 @@ div.static_page_box
 }
 
 /* private messages */
+div.msg_nav
+{
+	display: block;
+	color: black;
+	background: #8a8a8a;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	margin-bottom: 1em;
+	text-align: left;
+	padding: 0.4em 0.2em 0.4em 1em;
+}
+
+span.prev_next_msg_buttons
+{
+	margin-left: 1em;
+}
+
 span.unread_messages
 {
 	color: #dd4718;
