@@ -1,13 +1,12 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Test42
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Test42
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Test42.css
+	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Test42.css
 */
 
 body
 {
 	background: #323333 url(Test42_misc/BG.png) repeat fixed;
-	color: black;
+	color: white;
 	max-width: 100em;
 }
 
@@ -182,6 +181,7 @@ ul.navigation li
 	list-style: none;
 	display: inline;
 	white-space: nowrap;
+	color: black;
 }
 
 ul.navigation a
