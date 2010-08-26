@@ -203,6 +203,11 @@
 			{
 				// echo '<p>variable previewSeen was reset because first recipient was added</p>';
 				// echo 'submit set:' . (isset($_POST['submit']));
+				
+				// do reset the reply setting
+				// TODO: find a more elegant way
+				unset($_GET['reply']);
+				
 				$previewSeen = 0;
 			}
 			// we support up to a fixed number of recipients
@@ -216,6 +221,10 @@
 				
 				if ((isset($_POST[$variable_remove_name])) && (!(strcmp ($_POST[$variable_remove_name], '') == 0)))
 				{
+					// do reset the reply setting
+					// TODO: find a more elegant way
+					unset($_GET['reply']);
+					
 					// a recipient was removed and thus do not show the preview yet
 					$previewSeen = 0;
 				}
