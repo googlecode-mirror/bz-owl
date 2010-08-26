@@ -409,8 +409,7 @@
 		$site->write_self_closing_tag('input type="checkbox" name="any_teamless_player_can_join" value="'
 									  . '1' . '" id="any_teamless_player_can_join" checked="checked"');
 		echo '</p>' . "\n";
-		echo 'test!!!!!111';
-
+		
 		// team description
 		if ($site->bbcode_lib_available())
 		{
