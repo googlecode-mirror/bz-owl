@@ -28,6 +28,12 @@
 		$stylesheet = $_SESSION['stylesheet'];
 	}
 	
+	if (!(file_exists(dirname(__FILE__)) . '/styles/' . $stylesheet))
+	{
+		// stylesheet in question does not exist, go back to default
+		$stylesheet = default_stylesheet;
+	}
+	
 	if (strcasecmp($stylesheet, '') == 0)
 	{
 		// nothing is set, go back to default
