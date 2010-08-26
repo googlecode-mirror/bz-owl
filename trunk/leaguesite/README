@@ -10,9 +10,11 @@ PHP's variable magic_quotes_gpc is required to be off, see also
 	http://www.php.net/manual/en/info.configuration.php#ini.magic-quotes-gpc
 
 You need to set up two configuration files
-	siteoptions_path_example.php: example file that shows you how to point to the actual config
+	CMS/siteoptions_path.php: file that shows the code where the actual config resides.
+				  A template is available at CMS/siteoptions_path_example.php
 	siteoptions.php: The actual config. This file should not reside in the webserver dir.
 			 Also it is required to be readable by PHP.
+			 A template is at CMS/siteoptions_example.php
 
 You may use the examples to modify them. :)
 	cp siteoptions_path_example.php siteoptions_path.php
