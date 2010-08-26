@@ -804,10 +804,6 @@
 								// user at end of list
 								$tmp_recipients = str_replace(' ' . (getUserID()), '', $tmp_recipients);
 								
-								// user id 0 is reserved
-								$tmp_recipients = str_replace('0 ', '', $tmp_recipients);
-								$tmp_recipients = str_replace(' 0 ', '', $tmp_recipients);
-								$tmp_recipients = str_replace(' 0', '', $tmp_recipients);
 								// clean whitespace
 								$tmp_recipients = str_replace('  ', ' ', $tmp_recipients);
 								
