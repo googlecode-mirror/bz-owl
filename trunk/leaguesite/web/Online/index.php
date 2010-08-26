@@ -20,39 +20,6 @@
 	$connection = $site->connect_to_db();
 	$table_name = 'online_users';
 	
-	// find out if table exists
-	$query = 'SHOW TABLES LIKE ' . sqlSafeStringQuotes($table_name);
-	$result = mysql_query($query, $connection);
-	$rows = mysql_num_rows($result);
-	// done
-	mysql_free_result($result);
-	
-	if ($rows < 1)
-	{
-		echo '<p class="first_p">Table does not exist. Attempting to create table.<p>';
-		
-		// query will be
-		//CREATE TABLE `online_users` (
-		//							 `id` int(11) NOT NULL auto_increment,
-		//							 `bzid` int(11) NOT NULL,
-		//							 `username` varchar(50) NOT NULL,
-		//							 `last_activity` timestamp NOT NULL default '0000-00-00 00:00:00',
-		//							 PRIMARY KEY  (`id`)
-		//							 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
-		$query = 'CREATE TABLE `' . $table_name . '` (';
-		$query = $query . '`id` int(11) NOT NULL auto_increment,' . "\n";
-		$query = $query . '`bzid` int(11) NOT NULL,' . "\n";
-		$query = $query . '`username` varchar(50) NOT NULL,' . "\n";
-		$query = $query . '`last_activity` timestamp NOT NULL default ' . "'" . '0000-00-00 00:00:00' . "'" . ',' . "\n";
-		$query = $query . 'PRIMARY KEY  (`id`)' . "\n";
-		$query = $query . ') ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8' . "\n";
-		if (!(@$site->execute_query($table_name, $query, $connection)))
-		{
-			echo '<p>Creation of table failed.</p>';
-			die("\n</div>\n</body>\n</html>");
-		}
-	}
-	
 	$onlineUsers = false;
 	$query = 'SELECT * FROM `' . sqlSafeString($table_name) . '`';	
 	if ($result = (@$site->execute_query($table_name, $query, $connection)))
@@ -71,7 +38,7 @@
 		// by definition this is a joke but online guests are not shown by default
 		if ($rows < 1)
 		{
-			echo '<div class="online_user">No logged in user at the moment</div>';
+			echo '<div class="online_user">No logged in user at the moment.</div>';
 		} else
 		{
 			
