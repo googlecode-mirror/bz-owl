@@ -47,7 +47,6 @@
 				$query .= sqlSafeStringQuotes($saved_timestamp);
 				if (!($result_delete = @$site->execute_silent_query('online_users', $query, $connection)))
 				{
-					// query was bad, error message was already given in $site->execute_query(...)
 					$site->dieAndEndPage('<p>Could delete old online users from database.</p>');
 				}
 			}
@@ -166,22 +165,40 @@
 </ul>
 
 <?php
-	$online = true;
+	$online_users_page_viewed = true;
 	if (!(strcmp($name, 'Online') == 0))
 	{
-		$online = false;
+		$online_users_page_viewed = false;
 	}
 	
-	if ($logged_in || !$online)
+	if ($logged_in || !$online_users_page_viewed)
 	{
 		echo '<div class="userbuttons">' . "\n";
 	}
 	
-	if (!$online)
+	if (!$online_users_page_viewed)
 	{
 		echo '<span class="onlineUsers">';
-		echo '<a href="' . baseaddress() . 'Online/' . '">online users</a>';
+		$query = 'SELECT count(`playerid`) AS `num_players` FROM `online_users`';
+		if (!($result = @$site->execute_silent_query('online_users', $query, $connection)))
+		{
+			$site->dieAndEndPage('<p>Could not get number of online users from database.</p>');
+		}
+		
+		$n_users = (mysql_fetch_array($result));
+		switch ($n_users['num_players'])
+		{
+			case '1':
+				echo '<a href="' . baseaddress() . 'Online/' . '">' . '1 online user</a>';
+				break;
+				
+			default:
+				echo '<a href="' . baseaddress() . 'Online/' . '">' . $n_users['num_players'] . ' online users</a>';
+		}
 		echo '</span>' . "\n";
+		
+		mysql_free_result($result);
+		unset($n_users);
 	}
 	
 	if ($logged_in)
