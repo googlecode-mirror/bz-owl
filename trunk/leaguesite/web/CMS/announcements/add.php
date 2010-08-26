@@ -545,7 +545,7 @@
 							// set reply status if the user replied to a message
 							if ($message_sent && isset($_GET['reply']) && isset($_GET['id']) && ((int) $_GET['id'] > 0))
 							{
-								$query = ('UPDATE `message_users_connection` SET `msg_status`=' . sqlSafeStringQuotes('replied')
+								$query = ('UPDATE `messages_users_connection` SET `msg_status`=' . sqlSafeStringQuotes('replied')
 										  . ' WHERE `msgid`=' . sqlSafeStringQuotes((int) $_GET['id']));
 								$result = $site->execute_query('messages_users_connection', $query, $connection);
 								if (!($result))
