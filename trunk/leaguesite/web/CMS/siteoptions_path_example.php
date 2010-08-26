@@ -9,5 +9,7 @@
 	// dirname(__FILE__) gets the directory name where this file resides (CMS/)
 	// the other dirname's work like ../ in the shell.
 	// this example points to ../../siteoptions.php
+	// you could also use an absolute path
+	// 	require_once ('/absolute/path/to/siteoptions.php'));
 	require_once (realpath(dirname(dirname(dirname(__FILE__))) . '/siteoptions.php'));
 ?>
