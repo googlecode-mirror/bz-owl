@@ -1,4 +1,8 @@
 <?php
+	if (!isset($site))
+	{
+		die("This file is meant to be only included by other files!");
+	}
 	
 	// edit profile
 	if (isset($_GET['edit']))
