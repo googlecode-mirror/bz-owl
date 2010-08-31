@@ -1,11 +1,11 @@
 /* @override 
-	http://vps1.moooo.org/ts/styles/Test42
-	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Test42.css
+	http://vps1.moooo.org/ts/styles/42
+	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/42.css
 */
 
 body
 {
-	background: #323333 url(Test42_misc/BG.png) repeat fixed;
+	background: #323333 url(42_misc/BG.png) repeat fixed;
 	color: white;
 	max-width: 100em;
 }

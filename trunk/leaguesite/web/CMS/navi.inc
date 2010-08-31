@@ -186,14 +186,12 @@
 		}
 		
 		$n_users = (mysql_fetch_array($result));
-		switch ($n_users['num_players'])
+		if (intval($n_users['num_players']) === 1)
 		{
-			case '1':
-				echo '<a href="' . baseaddress() . 'Online/' . '">' . '1 online user</a>';
-				break;
-				
-			default:
-				echo '<a href="' . baseaddress() . 'Online/' . '">' . $n_users['num_players'] . ' online users</a>';
+			echo '<a href="' . baseaddress() . 'Online/' . '">' . '1 online user</a>';
+		} else
+		{
+			echo '<a href="' . baseaddress() . 'Online/' . '">' . $n_users['num_players'] . ' online users</a>';
 		}
 		echo '</span>' . "\n";
 		
