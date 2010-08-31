@@ -10,7 +10,7 @@
 		define("default_stylesheet", 'White');
 	} else
 	{
-		define("default_stylesheet", 'Eierschale');
+		define("default_stylesheet", '42');
 	}
 	
 	$stylesheet = default_stylesheet;
@@ -28,7 +28,7 @@
 		$stylesheet = $_SESSION['stylesheet'];
 	}
 	
-	if (!(file_exists(dirname(__FILE__)) . '/styles/' . $stylesheet))
+	if (!(file_exists(dirname(__FILE__) . '/styles/' . $stylesheet . '.css')))
 	{
 		// stylesheet in question does not exist, go back to default
 		$stylesheet = default_stylesheet;
@@ -45,7 +45,7 @@
 	
 	echo '	';
 	$stylesheet_written = 'link href="' . $url;
-	// Need to append file extension as only
+	// Need to append file extension as url
 	// apache allows not using it by default
 	$stylesheet_written .= 'styles/' . str_replace(' ', '%20', htmlspecialchars($stylesheet)) . '.css"';
 	$stylesheet_written .= ' rel="stylesheet" type="text/css"';
