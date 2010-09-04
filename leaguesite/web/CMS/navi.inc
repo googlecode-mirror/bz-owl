@@ -89,10 +89,10 @@
 		echo '<li>';
 		if (!$current)
 		{
-			echo '<a href="' . (BASEPATH . $folder) . '/">';
+			echo '<a href="' . (BASEPATH . $folder) . '">';
 		} elseif (count($_GET) > 0)
 		{
-			echo '<a class="current_nav_entry" href="' . (BASEPATH . $folder) . '/">';
+			echo '<a class="current_nav_entry" href="' . (BASEPATH . $folder) . '">';
 		}
 		echo $title;
 		if (!$current || (count($_GET) > 0))
@@ -110,7 +110,7 @@
 	
 	if (!$logged_in)
 	{
-		writeLink('Login', 'Login', (strcmp($name, 'Login') == 0));
+		writeLink('Login/', 'Login', (strcmp($name, 'Login') == 0));
 	}
 	
 	if ($ganzOben)
@@ -125,42 +125,42 @@
 	{
 		if ($unread_messages)
 		{
-			writeLink('Messages', '<span class="unread_messages">Mail</span>');
+			writeLink('Messages/', '<span class="unread_messages">Mail</span>');
 		} else
 		{
-			writeLink('Messages', 'Mail', (strcmp($name, 'Messages') == 0));
+			writeLink('Messages/', 'Mail', (strcmp($name, 'Messages') == 0));
 		}
 	}
 	
-	writeLink('News', 'News', (strcmp($name, 'News') == 0));
+	writeLink('News/', 'News', (strcmp($name, 'News') == 0));
 	
-	writeLink('Matches', 'Matches', (strcmp($name, 'Matches') == 0));
+	writeLink('Matches/', 'Matches', (strcmp($name, 'Matches') == 0));
 	
-	writeLink('Teams', 'Teams', (strcmp($name, 'Teams') == 0));
+	writeLink('Teams/', 'Teams', (strcmp($name, 'Teams') == 0));
 	
-	writeLink('Players', 'Players', (strcmp($name, 'Players') == 0));
+	writeLink('Players/', 'Players', (strcmp($name, 'Players') == 0));
 	
 	if ($logged_in && (isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
 	{
-		writeLink('Visits', 'Visits', (strcmp($name, 'Visits') == 0));
+		writeLink('Visits/', 'Visits', (strcmp($name, 'Visits') == 0));
 	}
 	
-	writeLink('Rules', 'Rules', (strcmp($name, 'Rules') == 0));
+	writeLink('Rules/', 'Rules', (strcmp($name, 'Rules') == 0));
 	
-	writeLink('FAQ', 'FAQ', (strcmp($name, 'FAQ') == 0));
+	writeLink('FAQ/', 'FAQ', (strcmp($name, 'FAQ') == 0));
 	
-	writeLink('Links', 'Links', (strcmp($name, 'Links') == 0));
+	writeLink('Links/', 'Links', (strcmp($name, 'Links') == 0));
 	
-	writeLink('Contact', 'Contact', (strcmp($name, 'Contact') == 0));
+	writeLink('Contact/', 'Contact', (strcmp($name, 'Contact') == 0));
 	
-	writeLink('Bans', 'Bans', (strcmp($name, 'Bans') == 0));
+	writeLink('Bans/', 'Bans', (strcmp($name, 'Bans') == 0));
 
 	if ($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker']))
 	{
-		writeLink('Servertracker', 'Servers', (strcmp($name, 'Servertracker') == 0));
+		writeLink('Servertracker/', 'Servers', (strcmp($name, 'Servertracker') == 0));
 	}
 	
-	writeLink('Config', 'Config', (strcmp($name, 'Config') == 0));
+	writeLink('Config/', 'Config', (strcmp($name, 'Config') == 0));
 ?>
 </ul>
 
@@ -174,6 +174,22 @@
 	if ($logged_in || !$online_users_page_viewed)
 	{
 		echo '<div class="userbuttons">' . "\n";
+		$servers = array();
+		$servers['0']['address'] = 'bzf.bzflag.net:5154';
+		$servers['0']['name'] = 'bzf:5154';
+		$servers['1']['address'] = 'bzf.bzflag.net:5158';
+		$servers['1']['name'] = 'bzf:5158';
+		
+		include (dirname(dirname(__FILE__)) . "/Servertracker/bzfquery.php");
+	//	echo '<ul class="Server"><li><a href="' . baseaddress() . 'Servertracker/?server=' . urlencode($bla) . '">' . 'bzf:5154 (' . $data['numPlayers'] . ')</a></li></ul>';
+		echo '<ul class="Servers">';
+		$n = count($servers) -1;
+		for ($i = 0; $n >= $i; $i++)
+		{
+			$data = bzfquery($servers[$i]['address']);
+			writeLink('Servertracker/?server=' . urlencode($servers[$i]['address']), ($servers[$i]['name'] . ' [' . $data['numPlayers'] . ']'));
+		}
+		echo '</ul>'; 	
 	}
 	
 	if (!$online_users_page_viewed)

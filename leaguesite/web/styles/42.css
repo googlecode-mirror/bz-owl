@@ -209,6 +209,37 @@ ul.navigation a:hover
 		color: #005981;
 }
 
+ul.Servers:before
+{
+	content: "Servers: ";
+	color: black;
+}
+
+ul.Servers
+{
+	list-style: none;
+	display: inline;
+}
+
+ul.Servers li
+{
+	list-style: none;
+	display: inline;
+	white-space: nowrap;
+}
+
+ul.Servers li:after
+{
+	content: " :: ";
+	color: black;
+}
+
+ul.Servers + span.onlineUsers:before
+{
+	content: "Website: ";
+	margin-left: 1em;
+}
+
 div.content
 {
 	color: white;
