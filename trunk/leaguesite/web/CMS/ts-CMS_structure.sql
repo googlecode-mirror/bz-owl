@@ -2,9 +2,9 @@
 # Version 2492
 # http://code.google.com/p/sequel-pro
 #
-# Host: localhost (MySQL 5.1.48)
+# Host: localhost (MySQL 5.1.49)
 # Database: testdb
-# Generation Time: 2010-08-11 14:36:48 +0200
+# Generation Time: 2010-09-05 17:27:16 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -160,7 +160,9 @@ CREATE TABLE `messages_users_connection` (
 DROP TABLE IF EXISTS `misc_data`;
 
 CREATE TABLE `misc_data` (
-  `last_maintenance` varchar(10) DEFAULT '00.00.0000'
+  `last_maintenance` varchar(10) DEFAULT '00.00.0000',
+  `last_servertracker_query` int(11) unsigned NOT NULL DEFAULT '0',
+  `last_servertracker_queryCopy` int(11) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -255,6 +257,22 @@ CREATE TABLE `players_profile` (
   KEY `playerid` (`playerid`),
   CONSTRAINT `players_profile_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='the players profile data';
+
+
+
+# Dump of table servertracker
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `servertracker`;
+
+CREATE TABLE `servertracker` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `servername` tinytext,
+  `serveraddress` tinytext NOT NULL,
+  `owner` tinytext NOT NULL,
+  `cur_players_total` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
