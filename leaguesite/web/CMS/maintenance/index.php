@@ -26,8 +26,6 @@
 		global $site;
 		global $connection;
 		
-		global $tables_locked;
-		
 		$query = 'UNLOCK TABLES';
 		if (!($site->execute_query('all!', $query, $connection)))
 		{
@@ -42,7 +40,7 @@
 		if (!($result = @$site->execute_query('all!', $query, $connection)))
 		{
 			$site->dieAndEndPage('Trying to activate autocommit failed.');
-		}		
+		}
 	}
 	
 	$query = 'LOCK TABLES `misc_data` WRITE, `teams` WRITE, `teams_overview` WRITE, `teams_permissions` WRITE, `teams_profile` WRITE';

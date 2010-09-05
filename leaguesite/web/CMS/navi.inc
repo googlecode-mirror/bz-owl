@@ -174,22 +174,27 @@
 	if ($logged_in || !$online_users_page_viewed)
 	{
 		echo '<div class="userbuttons">' . "\n";
-		$servers = array();
-		$servers['0']['address'] = 'bzf.bzflag.net:5154';
-		$servers['0']['name'] = 'bzf:5154';
-		$servers['1']['address'] = 'bzf.bzflag.net:5158';
-		$servers['1']['name'] = 'bzf:5158';
 		
-		include (dirname(dirname(__FILE__)) . "/Servertracker/bzfquery.php");
-	//	echo '<ul class="Server"><li><a href="' . baseaddress() . 'Servertracker/?server=' . urlencode($bla) . '">' . 'bzf:5154 (' . $data['numPlayers'] . ')</a></li></ul>';
+		// list of servers
 		echo '<ul class="Servers">';
-		$n = count($servers) -1;
-		for ($i = 0; $n >= $i; $i++)
+		$query = ('SELECT `id`, `servername`, `serveraddress`, `cur_players_total`'
+				  . ' FROM `servertracker`'
+				  . ' ORDER BY `id`');
+		if (!($result = $site->execute_silent_query('servertracker', $query, $connection)))
 		{
-			$data = bzfquery($servers[$i]['address']);
-			writeLink('Servertracker/?server=' . urlencode($servers[$i]['address']), ($servers[$i]['name'] . ' [' . $data['numPlayers'] . ']'));
+			$site->dieAndEndPageNoBox('Could not find out servername and serveraddress to be updated.');
 		}
-		echo '</ul>'; 	
+		while ($row = mysql_fetch_array($result))
+		{
+			writeLink('Servertracker/?server=' . urlencode($row['serveraddress']), ($row['servername'] . ' [' . $row['cur_players_total'] . ']'));
+		}
+		mysql_free_result($result);
+		
+		// run the update script:
+		// >/dev/null pipes output to nowhere
+		// & lets the script run in the background
+		exec(dirname(__FILE__) . '/servertracker_query_backend.php >/dev/null &');
+		echo '</ul>';
 	}
 	
 	if (!$online_users_page_viewed)
