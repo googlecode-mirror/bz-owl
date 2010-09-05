@@ -129,7 +129,7 @@
 					  . ' LIMIT 1');
 			
 			// execute the update query
-			@$site->execute_silent_query('servertracker', $query, $connection);
+			@$site->execute_query('servertracker', $query, $connection);
 		}
 		mysql_free_result($result);
 		
