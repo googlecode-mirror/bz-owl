@@ -228,7 +228,7 @@ ul.Servers li
 	white-space: nowrap;
 }
 
-ul.Servers li:after
+ul.Servers li:not(:last-child):after
 {
 	content: " :: ";
 	color: black;
