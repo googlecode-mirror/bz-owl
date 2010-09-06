@@ -176,8 +176,8 @@
 		echo '<div class="userbuttons">' . "\n";
 		
 		// list of servers
-		echo '<ul class="Servers">';
-		$query = ('SELECT `id`, `servername`, `serveraddress`, `cur_players_total`'
+		echo '<ul class="Servers">Offi servers: ';
+		$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
 				  . ' FROM `servertracker`'
 				  . ' ORDER BY `id`');
 		if (!($result = $site->execute_silent_query('servertracker', $query, $connection)))
@@ -186,7 +186,7 @@
 		}
 		while ($row = mysql_fetch_array($result))
 		{
-			writeLink('Servertracker/?server=' . urlencode($row['serveraddress']), ($row['servername'] . ' [' . $row['cur_players_total'] . ']'));
+			writeLink('Servertracker/', ('{' . $row['cur_players_total'] . '}'));
 		}
 		mysql_free_result($result);
 		

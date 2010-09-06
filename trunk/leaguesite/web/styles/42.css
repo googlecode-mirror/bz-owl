@@ -209,16 +209,11 @@ ul.navigation a:hover
 		color: #005981;
 }
 
-ul.Servers:before
-{
-	content: "Servers: ";
-	color: black;
-}
-
 ul.Servers
 {
 	list-style: none;
 	display: inline;
+	color: black;
 }
 
 ul.Servers li
