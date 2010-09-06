@@ -176,7 +176,7 @@
 		echo '<div class="userbuttons">' . "\n";
 		
 		// list of servers
-		echo '<ul class="Servers">Servers: ';
+		echo '<ul class="Servers">Match servers: ';
 		$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
 				  . ' FROM `servertracker`'
 				  . ' ORDER BY `id`');
@@ -186,7 +186,13 @@
 		}
 		while ($row = mysql_fetch_array($result))
 		{
-			writeLink('Servertracker/', ($row['cur_players_total'] . ' tanks'));
+			if (intval($row['cur_players_total']) === 1)
+			{
+				writeLink('Servertracker/', $row['cur_players_total'] . ' player');
+			} else
+			{
+				writeLink('Servertracker/', $row['cur_players_total'] . ' players');
+			}
 		}
 		mysql_free_result($result);
 		
@@ -209,10 +215,10 @@
 		$n_users = (mysql_fetch_array($result));
 		if (intval($n_users['num_players']) === 1)
 		{
-			echo '<a href="' . baseaddress() . 'Online/' . '">' . '1 online user</a>';
+			echo '<a href="' . baseaddress() . 'Online/' . '">' . '1 user</a>';
 		} else
 		{
-			echo '<a href="' . baseaddress() . 'Online/' . '">' . $n_users['num_players'] . ' online users</a>';
+			echo '<a href="' . baseaddress() . 'Online/' . '">' . $n_users['num_players'] . ' users</a>';
 		}
 		echo '</span>' . "\n";
 		

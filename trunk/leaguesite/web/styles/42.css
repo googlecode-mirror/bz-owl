@@ -216,6 +216,11 @@ ul.Servers
 	color: black;
 }
 
+ul.Servers:after
+{
+	content: "-";
+}
+
 ul.Servers li
 {
 	list-style: none;
@@ -223,16 +228,10 @@ ul.Servers li
 	white-space: nowrap;
 }
 
-ul.Servers li:not(:last-child):after
-{
-	content: " :: ";
-	color: black;
-}
-
 ul.Servers + span.onlineUsers:before
 {
 	content: "Website: ";
-	margin-left: 1em;
+	margin-left: 0.25em;
 }
 
 div.content
