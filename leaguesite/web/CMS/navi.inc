@@ -176,7 +176,7 @@
 		echo '<div class="userbuttons">' . "\n";
 		
 		// list of servers
-		echo '<ul class="Servers">Offi servers: ';
+		echo '<ul class="Servers">Servers: ';
 		$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
 				  . ' FROM `servertracker`'
 				  . ' ORDER BY `id`');
@@ -186,7 +186,7 @@
 		}
 		while ($row = mysql_fetch_array($result))
 		{
-			writeLink('Servertracker/', ('{' . $row['cur_players_total'] . '}'));
+			writeLink('Servertracker/', ($row['cur_players_total'] . ' tanks'));
 		}
 		mysql_free_result($result);
 		
