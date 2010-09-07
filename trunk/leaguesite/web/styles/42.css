@@ -218,7 +218,7 @@ ul.Servers
 
 ul.Servers:after
 {
-	content: "-";
+	content: "- ";
 }
 
 ul.Servers li
@@ -231,7 +231,6 @@ ul.Servers li
 ul.Servers + span.onlineUsers:before
 {
 	content: "Website: ";
-	margin-left: 0.25em;
 }
 
 div.content
