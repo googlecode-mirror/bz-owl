@@ -188,10 +188,10 @@
 		{
 			if (intval($row['cur_players_total']) === 1)
 			{
-				writeLink('Servertracker/', $row['cur_players_total'] . ' player');
+				writeLink('Servertracker/', strval($row['cur_players_total']) . ' player');
 			} else
 			{
-				writeLink('Servertracker/', $row['cur_players_total'] . ' players');
+				writeLink('Servertracker/', strval($row['cur_players_total']) . ' players');
 			}
 		}
 		mysql_free_result($result);
