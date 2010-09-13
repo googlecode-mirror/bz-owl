@@ -45,26 +45,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	allow_add_messages();
 	allow_delete_messages();
 	
-	
-	
-	// FIXME: Remove that after public test!
-	// permissions for news page
-	allow_add_news();
-	allow_edit_news();
-	allow_delete_news();
-	
-	// permissions for bans page
-	allow_add_bans();
-	allow_edit_bans();
-	allow_delete_bans();
-	
-	// permissions for team page
-	allow_reactivate_teams();
-	
-	// match permissions
-	allow_add_match();
-	allow_edit_match();
-	
 	// server tracker permissions
 	allow_watch_servertracker();
 	
