@@ -36,7 +36,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	// because login worked
 		
 	// since we use a global login for auth any user should be in that group
-	$_SESSION['username'] = $args[1];
+	$_SESSION['username'] = $info['username'];
 	$external_login_id = $info['bzid'];
 	$_SESSION['bzid'] = $external_login_id;
 	$_SESSION['user_logged_in'] = true;
