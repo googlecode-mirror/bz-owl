@@ -176,7 +176,7 @@
 		echo '<div class="userbuttons">' . "\n";
 		
 		// list of servers
-		echo '<ul class="Servers">Match servers: ';
+		echo '<span class="Servers">Match servers: ';
 		$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
 				  . ' FROM `servertracker`'
 				  . ' ORDER BY `id`');
@@ -188,10 +188,10 @@
 		{
 			if (intval($row['cur_players_total']) === 1)
 			{
-				writeLink('Servertracker/', strval($row['cur_players_total']) . ' player');
+				echo '<a href="' . baseaddress() . 'Servertracker/">' . '2 user</a>';
 			} else
 			{
-				writeLink('Servertracker/', strval($row['cur_players_total']) . ' players');
+				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' user</a>';
 			}
 		}
 		mysql_free_result($result);
@@ -200,12 +200,12 @@
 		// >/dev/null pipes output to nowhere
 		// & lets the script run in the background
 		exec('php ' . dirname(__FILE__) . '/cli/servertracker_query_backend.php >/dev/null &');
-		echo '</ul>';
+		echo '</span> ';
 	}
 	
 	if (!$online_users_page_viewed)
 	{
-		echo '<span class="onlineUsers">';
+		echo '<span class="onlineUsers">Website: ';
 		$query = 'SELECT count(`playerid`) AS `num_players` FROM `online_users`';
 		if (!($result = @$site->execute_silent_query('online_users', $query, $connection)))
 		{

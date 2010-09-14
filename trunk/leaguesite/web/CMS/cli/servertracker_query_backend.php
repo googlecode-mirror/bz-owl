@@ -2,19 +2,20 @@
 	// this file is only called in the background and inserts current server population data into the database
 	
 	init();
+	echo 'init done' . "\n";
 	if (is_update_needed())
 	{
-		echo 'servers queried';
+		echo 'servers queried' . "\n";
 		query_servers();
 	}
-	echo 'updated';
+	echo 'updated' . "\n";
 	
 	function init()
 	{
 		global $site;
 		global $connection;
 		
-		require_once ((dirname(__FILE__) . '/siteinfo.php'));
+		require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 		$site = new siteinfo();
 		
 		$connection = $site->connect_to_db();
@@ -114,7 +115,7 @@
 		}
 		
 		// need to include game specific backend
-		include (dirname(dirname(__FILE__)) . "/Servertracker/bzfquery.php");
+		include (dirname(dirname(dirname(__FILE__))) . "/Servertracker/bzfquery.php");
 		
 		// update each entry
 		while ($row = mysql_fetch_array($result))

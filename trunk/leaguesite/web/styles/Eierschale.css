@@ -188,6 +188,25 @@ ul.navigation a:hover
 		color: #005981;
 }
 
+span.Servers
+{
+	list-style: none;
+	display: inline;
+	color: black;
+}
+
+span.Servers:after
+{
+	content: " - ";
+}
+
+span.Servers li
+{
+	list-style: none;
+	display: inline;
+	white-space: nowrap;
+}
+
 div.content
 {
 	color: black;
