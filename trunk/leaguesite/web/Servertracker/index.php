@@ -42,7 +42,7 @@
 	
 	require '../stylesheet.inc';
 	
-	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players" type="text/css"');
+	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players.css" type="text/css"');
 	// perhaps exclude email string, depending on browser
 	$object = new siteinfo();
 	if ($object->mobile_version())
