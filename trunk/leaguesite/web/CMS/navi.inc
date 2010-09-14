@@ -199,7 +199,7 @@
 		// run the update script:
 		// >/dev/null pipes output to nowhere
 		// & lets the script run in the background
-		exec('php ' . dirname(__FILE__) . '/servertracker_query_backend.php >/dev/null &');
+		exec('php ' . dirname(__FILE__) . '/cli/servertracker_query_backend.php >/dev/null &');
 		echo '</ul>';
 	}
 	

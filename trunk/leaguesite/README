@@ -24,7 +24,7 @@ Note that in this example commands it is assumed you would use the default path 
 Now you need to set up the relational database management system.
 At the moment only using mysql is possible.
 
-A database structure dump can be found in ts-CMS_structure.sql within the CMS dir.
+A database structure dump can be found in ts-CMS_structure.sql within this directory.
 To avoid concurrent access and performance issues it is recommended to use a database only for this league software.
 
 It is highly recommended to use a BBCode library. See the CMS/nbbc-wrapper.php example file.
@@ -35,5 +35,5 @@ Updates
 By using svn up you should get a new version of the source code, if available.
 However the database structure may has changed. It is planned to provide an updater between major stable versions.
 
-If you upgrade your BBCode library it is recommended to run CMS/bbcode-library-updater.php but keep in mind
+If you upgrade your BBCode library it is recommended to run the bbcode-library-updater.php (requires the website to be in the web dir) but keep in mind
 this will break legacy data in the database.
