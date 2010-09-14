@@ -38,7 +38,7 @@ background-color:#444;
 -moz-border-radius:5px;
 -webkit-border-radius:5px;
 border-radius:5px;
-margin-top:5px;
+margin-top:10px;
 text-align:left;
 }
 
@@ -177,7 +177,8 @@ background-color:#444;
 border:1px solid #777;
 margin-top:20px;
 text-align:left;
-padding:5px;
+padding:10px;
+min-height:200px;
 }
 
 div.article {
@@ -376,27 +377,40 @@ padding-right:.25em;
 text-align:center;
 }
 
-a.button:before {
+/*a.button:before {
 content:"[";
 }
 
 a.button:after {
 content:"]";
+}*/
+
+a.button, a.button:active, a.button:visited, a.button:focus {
+font-weight:700;
+background-color:#333;
+padding:3px;
+border:2px solid #999;
+-webkit-border-radius:5px;
+-moz-border-radius:5px;
+border-radius:5px;
+font-size:10pt;
+}
+a.button:hover {
+background-color:#444;
 }
 
 div.userbuttons {
-width:100%;
 text-align: right;
-margin-bottom: 10px;
 font-size: 10pt;
-font-weight:700;
 overflow: hidden;
-background: #444;
+float:right;
+margin-bottom:10px;
+background:#333;
+padding:5px;
 -moz-border-radius:5px;
 -webkit-border-radius:5px;
 border-radius:5px;
 border:1px solid #777;
-height:30px;
 }
 
 div.author {
@@ -505,19 +519,20 @@ white-space: nowrap;
 }
 
 
-span.onlineUsers,span.logout {
-margin:5px;
+span.onlineUsers:before,span.logout:before {
+margin-right:5px;
+content:"-";
 }
 
 ul.Servers + span.onlineUsers:before {
 content: "Website: ";
 }
-span.logout:before {
+/*span.logout:before {
 content: "[";
 }
 span.logout:after {
 content:"]";
-}
+}*/
 
 
 div.online_user,table.nested_table {
@@ -545,4 +560,11 @@ width: 9em; text-align: right; float: left; padding: 1mm 2mm 0 0;
 }
  * + div.team_change {
 margin-top: 0.2em; margin-left: -8em;
+}
+
+span.edit_and_delete_links {
+text-align:left;
+font-size:10pt;
+display:block;
+margin-bottom:-10px;
 }
