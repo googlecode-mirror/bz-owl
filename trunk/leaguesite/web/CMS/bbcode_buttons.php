@@ -10,7 +10,7 @@
 			// check for bbcode library
 			if ($site->bbcode_lib_available())
 			{
-				echo "\n" . '<script type="text/javascript" src="' . baseaddress() . 'bbcode_buttons"></script>' . "\n";
+				echo "\n" . '<script type="text/javascript" src="' . baseaddress() . 'bbcode_buttons.js"></script>' . "\n";
 				$site->write_self_closing_tag('input type="button" name="bold" value="b" '
 											  . 'style="font-weight: bold;" '
 											  . 'onclick="' . "insert('[b]', '[/b]', '$form_number', '$element_name')" . '"');

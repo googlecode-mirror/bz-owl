@@ -6,11 +6,12 @@
 	@session_start();
 	
 	$display_page_title = 'Webleague DB importer';
-	require_once (dirname(dirname(__FILE__)) . 'web/CMS/index.inc');
+	require_once (dirname(__FILE__) . '/web/CMS/index.inc');
 	//	require realpath('../CMS/navi.inc');
 	
 	if (!isset($site))
 	{
+		require_once (dirname(__FILE__) . '/web/CMS/siteinfo.php');
 		$site = new siteinfo();
 	}
 	
