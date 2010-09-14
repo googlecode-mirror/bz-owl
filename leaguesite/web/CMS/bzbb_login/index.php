@@ -9,7 +9,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	// groups used for permissions
 	// each group can use the fine grained permission system
-	$groups = Array ('VERIFIED','GU-LEAGUE.ADMINS', 'TS.ADMIN');
+	$groups = Array ('VERIFIED','GU-LEAGUE.ADMINS');
 	$args = explode (',', urldecode($_GET['bzbbauth']));
 	// $args[0] is token, $args[1] is callsign
 	if (!$info = validate_token ($args[0], $args[1], $groups, false))
@@ -76,6 +76,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_change_debug_sql();
 		
 		// permissions for news page
+		allow_set_different_news_author();
 		allow_add_news();
 		allow_edit_news();
 		allow_delete_news();
@@ -99,67 +100,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		
 		// visits log permissions
 		allow_view_user_visits();
-		
-		// match permissions
-		allow_add_match();
-		allow_edit_match();
-		allow_delete_match();
-		
-		// server tracker permissions
-		allow_watch_servertracker();
-		
-		// aux permissions
-		is_admin();
-	}
-	
-	// test only for TS.ADMIN group
-	$group_test = array_slice($groups, -1, 1);
-	foreach ($info['groups'] as $one_group)
-	{
-		// case insensitive comparison
-		if (strcasecmp($one_group, $group_test[0]) === 0)
-		{
-			$in_group = true;
-			break;
-		}
-	}
-	if ($in_group === true)
-	{
-		if ($site->debug_sql())
-		{
-			echo '<p>ts.admin detected</p>';
-		}
-		// TS.ADMIN group
-		
-		// can change debug sql setting
-		allow_change_debug_sql();
-		
-		// permissions for news page
-		allow_set_different_news_author();
-		allow_add_news();
-		allow_edit_news();
-		allow_delete_news();
-		
-		// permissions for all static pages
-		allow_edit_static_pages();
-		
-		// permissions for bans page
-		allow_set_different_bans_author();
-		allow_add_bans();
-		allow_edit_bans();
-		allow_delete_bans();
-		
-		// permissions for team page
-		allow_kick_any_team_members();
-		allow_edit_any_team_profile();
-		allow_invite_in_any_team();
-		allow_delete_any_team();
-		allow_reactivate_teams();
-		
-		// user permissions
-		allow_edit_any_user_profile();
-		allow_add_admin_comments_to_user_profile();
-		allow_ban_any_user();
 		
 		// match permissions
 		allow_add_match();
