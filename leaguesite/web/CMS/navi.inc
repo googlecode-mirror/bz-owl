@@ -188,7 +188,7 @@
 		{
 			if (intval($row['cur_players_total']) === 1)
 			{
-				echo '<a href="' . baseaddress() . 'Servertracker/">' . '2 user</a>';
+				echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 user</a>';
 			} else
 			{
 				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' user</a>';
