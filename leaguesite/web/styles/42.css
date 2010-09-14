@@ -209,28 +209,23 @@ ul.navigation a:hover
 		color: #005981;
 }
 
-ul.Servers
+span.Servers
 {
 	list-style: none;
 	display: inline;
 	color: black;
 }
 
-ul.Servers:after
+span.Servers:after
 {
 	content: " - ";
 }
 
-ul.Servers li
+span.Servers li
 {
 	list-style: none;
 	display: inline;
 	white-space: nowrap;
-}
-
-ul.Servers + span.onlineUsers:before
-{
-	content: "Website: ";
 }
 
 div.content

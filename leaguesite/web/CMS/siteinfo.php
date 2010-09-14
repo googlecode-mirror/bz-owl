@@ -89,6 +89,7 @@
 		function connect_to_db()
 		{
 			$link = $this->loudless_connect_to_db();
+			
 			if (!$link)
 			{
 				echo '<p>Could not connect to database.</p>' . "\n";
@@ -97,6 +98,7 @@
 					echo 'Raw error: ' . mysql_error();
 				}
 			}
+			
 			$this->selectDB($this->db_used_name(), $link);
 			return $link;
 		}
