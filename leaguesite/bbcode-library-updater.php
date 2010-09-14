@@ -6,16 +6,21 @@
 	@session_start();
 	
 	$display_page_title = 'BBCode libary updater';
-	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
+	require_once (dirname(__FILE__) . '/web/CMS/index.inc');
 	
 	if (!isset($site))
 	{
+		require_once (dirname(__FILE__) . '/web/CMS/siteinfo.php');
 		$site = new siteinfo();
 	}
 	
-	$connection = $site->connect_to_db();
+	if (!isset($connection))
+	{
+		$connection = $site->connect_to_db();
+	}
+	
 	$randomkey_name = 'randomkey_user';
-	$viewerid = (int) getUserID();
+	$viewerid = intval(getUserID());
 	
 	if ($viewerid < 1)
 	{

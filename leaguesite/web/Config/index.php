@@ -71,7 +71,7 @@
 		// we have a new stylesheet chosen by user
 		echo '  <link href="../styles/';
 		echo $stylesheet;
-		echo '" rel="stylesheet" type="text/css">' . "\n";
+		echo '.css" rel="stylesheet" type="text/css">' . "\n";
 	} else
 	{
 		// use previously used stylesheet
