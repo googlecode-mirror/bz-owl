@@ -32,14 +32,13 @@ padding:5px;
 }
 
 table.big {
-min-width:800px;
+width:100%;
 border:1px solid #777;
 background-color:#444;
 -moz-border-radius:5px;
 -webkit-border-radius:5px;
 border-radius:5px;
-margin-left:auto;
-margin-right:auto;
+margin-top:5px;
 text-align:left;
 }
 
@@ -52,14 +51,9 @@ background-color:#444;
 }
 
 ul.navigation {
-/*background-image:url(../styles/background_tile_stripe.png);*/
 text-align:center;
-/*list-style:none;*/
 background:#333;
-/*display:block;*/
-/*padding:5px 20px 5px 20px;*/
 padding:5px;
-/*margin:0 0.2em 0.5em 151px;*/
 position:fixed;
 top:-16px;
 left:0;
@@ -132,8 +126,7 @@ margin-top:10px;
 
 div.content {
 clear:both;
-margin-left:9em;
-min-height:25em;
+min-height:200px;
 text-align:center;
 width:auto;
 }
@@ -390,8 +383,18 @@ content:"]";
 }
 
 div.userbuttons {
-padding-top:20px;
-text-align:right;
+width:100%;
+text-align: right;
+margin-bottom: 10px;
+font-size: 10pt;
+font-weight:700;
+overflow: hidden;
+background: #444;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+border:1px solid #777;
+height:30px;
 }
 
 div.author {
@@ -403,14 +406,10 @@ content:"* ";
 }
 
 div.logo {
-/*background: url(GUlogo.png) no-repeat fixed 8px 8px;
-width: auto;
-height: 600px;
-top:50px;
-display: inline-block;
-position: fixed;
-padding-right: 500px;*/
-background-image:url(GUlogo.png);
+background:url("GUlogoQUER.png") no-repeat scroll center center transparent;
+height:121px;
+margin-bottom:1px;
+margin-top:30px;
 }
 
 div.msg_send > input[type=button],div.msg_ann > input[type=button],div.msg_edit > input[type=button] {
@@ -490,38 +489,34 @@ form p#edit_user_suspended_status_description,div.edit_user_suspended_status_sen
 display:inline;
 }
 
+
 ul.Servers {
-font-size:10pt;
-font-weight:700;
-background-color:#333;
-border:1px solid #777;
--moz-border-radius:5px;
--webkit-border-radius:5px;
-border-radius:5px;
-padding:5px;
-list-style:none;
+display: inline;
 float:left;
-margin-left:150px;
-text-align:left;
+padding:5px;
 }
+
+ul.Servers li{
+list-style: none;
+display: inline;
+white-space: nowrap;
+}
+
 
 span.onlineUsers,span.logout {
-font-weight:700;
-font-size:10pt;
-background-color:#333;
-border:1px solid #777;
--moz-border-radius:5px;
--webkit-border-radius:5px;
-border-radius:5px;
-padding:5px;
-float:right;
-margin-top:10px;
-margin-right:5px;
+margin:5px;
 }
 
-/*ul.navigation:before,ul.navigation li:after {
-content:" | ";
-}*/
+ul.Servers + span.onlineUsers:before {
+content: "Website: ";
+}
+span.logout:before {
+content: "[";
+}
+span.logout:after {
+content:"]";
+}
+
 
 div.online_user,table.nested_table {
 text-align:center;
