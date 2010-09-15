@@ -191,7 +191,7 @@
 				echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 user</a>';
 			} else
 			{
-				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' user</a>';
+				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' users</a>';
 			}
 		}
 		mysql_free_result($result);
