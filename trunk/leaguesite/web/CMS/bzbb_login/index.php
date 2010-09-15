@@ -81,6 +81,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_edit_news();
 		allow_delete_news();
 		
+		// permissions for all static pages
+		allow_edit_static_pages();
+		
 		// permissions for bans page
 		allow_add_bans();
 		allow_edit_bans();
