@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.50)
 # Database: testdb
-# Generation Time: 2010-09-15 16:29:02 +0200
+# Generation Time: 2010-09-15 20:17:36 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -96,14 +96,13 @@ CREATE TABLE `matches` (
 DROP TABLE IF EXISTS `matches_edit_stats`;
 
 CREATE TABLE `matches_edit_stats` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL,
   `playerid` int(11) unsigned NOT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `team1_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team1_points` int(11) NOT NULL DEFAULT '0',
   `team2_points` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
   KEY `timestamp` (`timestamp`),
   KEY `playerid` (`playerid`),
   CONSTRAINT `matches_edit_stats_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

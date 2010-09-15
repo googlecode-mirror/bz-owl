@@ -1648,15 +1648,17 @@
 				show_score_changes($team_stats_changes, $teams, $n_teams);
 				// we're done
 				echo '<p>All team scores were updated sucessfully.</p>' . "\n";
+				// unlock all tables so site will still work
+				unlock_tables();
+				// do maintenance after match table has been changed
+				// a check inside the maintenance logic will make sure it will be only performed one time per day at max
+				require_once('../CMS/maintenance/index.php');
 			} else
 			{
 				echo '<p>There were no team scores changed.</p>';
+				// unlock all tables so site will still work
+				unlock_tables();
 			}
-			// unlock all tables so site will still work
-			unlock_tables();
-			// do maintenance after match table has been changed
-			// a check inside the maintenance logic will make sure it will be only performed one time per day at max
-			require_once('../CMS/maintenance/index.php');
 			$site->dieAndEndPage();
 		} else
 		{
