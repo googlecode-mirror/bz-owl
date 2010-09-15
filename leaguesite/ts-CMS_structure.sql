@@ -2,9 +2,9 @@
 # Version 2492
 # http://code.google.com/p/sequel-pro
 #
-# Host: localhost (MySQL 5.1.49)
+# Host: localhost (MySQL 5.1.50)
 # Database: testdb
-# Generation Time: 2010-09-05 17:27:16 +0200
+# Generation Time: 2010-09-15 16:29:02 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -121,7 +121,7 @@ CREATE TABLE `messages_storage` (
   `author_id` int(11) unsigned NOT NULL,
   `subject` varchar(50) NOT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `message` varchar(2000) NOT NULL,
+  `message` text NOT NULL,
   `from_team` tinyint(1) unsigned NOT NULL,
   `recipients` text NOT NULL,
   PRIMARY KEY (`id`),
@@ -161,8 +161,7 @@ DROP TABLE IF EXISTS `misc_data`;
 
 CREATE TABLE `misc_data` (
   `last_maintenance` varchar(10) DEFAULT '00.00.0000',
-  `last_servertracker_query` int(11) unsigned NOT NULL DEFAULT '0',
-  `last_servertracker_queryCopy` int(11) unsigned NOT NULL DEFAULT '0'
+  `last_servertracker_query` int(11) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
