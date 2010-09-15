@@ -23,7 +23,7 @@ padding:5px;
 }
 
 table.big td {
-padding:5px;
+padding:4px;
 }
 
 table.big th {
@@ -32,6 +32,7 @@ padding:5px;
 }
 
 table.big {
+font-size:11pt;
 width:100%;
 border:1px solid #777;
 background-color:#444;
