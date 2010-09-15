@@ -148,8 +148,6 @@
 			$num_active_teams = count($teamid) -1;
 		}
 		
-		print_r($teamid);
-		
 		$team_activity45 = array();
 		$timestamp = strtotime('-45 days');
 		$timestamp = strftime('%Y-%m-%d %H:%M:%S', $timestamp);
