@@ -1579,9 +1579,8 @@
 			$n_teams = ((int) count($teams)) - 2;
 			for ($i = 0; $i <= $n_teams; $i++)
 			{
-				$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]);
+				$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$i]) . ' OR ';
 			}
-			$query .= ' OR ';
 			$n_teams++;
 			$query .= '`teamid`=' . sqlSafeStringQuotes($teams[$n_teams]);
 			$query .= ') AND `teams_overview`.`teamid`=`teams`.`id`';
