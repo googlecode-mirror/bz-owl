@@ -40,8 +40,9 @@
 			$saved_timestamp = $row['last_activity'];
 			$old_timestamp = strtotime($saved_timestamp);
 			$now = (int) strtotime("now");
-			// is entry more than two hours old?
-			if ($now - $old_timestamp > (60*60*2))
+			// is entry more than two hours old? (60*60*2)
+			// FIXME: session expires after 50 minutes (60*50)
+			if ($now - $old_timestamp > (60*50))
 			{
 				$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
 				$query .= sqlSafeStringQuotes($saved_timestamp);
@@ -188,10 +189,10 @@
 		{
 			if (intval($row['cur_players_total']) === 1)
 			{
-				echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 user</a>';
+				echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 player</a>';
 			} else
 			{
-				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' users</a>';
+				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' players</a>';
 			}
 		}
 		mysql_free_result($result);
