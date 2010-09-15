@@ -1533,7 +1533,7 @@
 				if (!($diff === 0))
 				{
 					$query = 'UPDATE `matches` SET `team1_new_score`=' . sqlSafeStringQuotes($team1_new_score);
-					$query .= ',`team2_new_score`=' . "'" . sqlSafeString($team2_new_score) . "'";
+					$query .= ',`team2_new_score`=' . sqlSafeStringQuotes($team2_new_score);
 					// use current row id to access the entry
 					$query .= ' WHERE `id`=' . sqlSafeStringQuotes($row['id']);
 					// only one row needs to be updated
