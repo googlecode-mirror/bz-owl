@@ -1193,7 +1193,7 @@
 			// update match draw, won and lost count (match edited case)
 			
 			// first find out which team won the match before editing the table
-			$query = '';
+			
 			// find out the appropriate team id list for the edited match
 //			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`, team1_new_score, team2_new_score FROM `matches`';
 			$query = 'SELECT `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` FROM `matches`';
