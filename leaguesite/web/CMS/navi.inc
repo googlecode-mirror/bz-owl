@@ -240,6 +240,11 @@
 		echo '<a href="' . baseaddress() . 'Logout/' . '">Logout</a>';
 		echo '</span>' . "\n";
 	}
-	echo '</div>' . "\n\n" ;
+	
+	// close userbutton div
+	if ($logged_in || !$online_users_page_viewed)
+	{
+		echo '</div>' . "\n\n" ;
+	}
 ?>
 <div class="content">
