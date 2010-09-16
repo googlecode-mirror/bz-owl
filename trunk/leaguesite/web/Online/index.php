@@ -63,7 +63,9 @@
 					$datetime2 = new DateTime(date('Y-m-d H:i:s'));
 					
 					$diff = $datetime1->diff($datetime2);
-					$diff = $diff->format('%Y-%m-%d %H:%i:%s');
+					// parameters different than date's
+					// see also http://www.php.net/manual/en/dateinterval.format.php
+					$diff = $diff->format('%Y-%M-%D %H:%I:%S');
 					$cmp_diff = explode(' ', $diff);
 					$cmp_diff = explode(':', $cmp_diff[1]);
 					if ((intval($cmp_diff[0]) > 0)
