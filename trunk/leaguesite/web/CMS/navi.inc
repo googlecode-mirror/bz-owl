@@ -41,8 +41,9 @@
 			$old_timestamp = strtotime($saved_timestamp);
 			$now = (int) strtotime("now");
 			// is entry more than two hours old? (60*60*2)
-			// FIXME: session expires after 50 minutes (60*50)
-			if ($now - $old_timestamp > (60*50))
+			// FIXME: would need to set session expiration date directly inside code
+			// FIXME: and not in the webserver setting
+			if ($now - $old_timestamp > (60*60*2))
 			{
 				$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
 				$query .= sqlSafeStringQuotes($saved_timestamp);
@@ -106,15 +107,21 @@
 	$name = $site->base_name();
 	
 	// public_html on FreeBSD or Sites on Mac OS X
+	$topDir = 'public_html';
 	// top level dir depends on siteconfig
-	$ganzOben = (strcmp($name, 'public_html') == 0) || (strcmp($name, 'Sites') == 0) || (strcmp($name, 'leaguesite') == 0) || (strcmp($name, 'ts') == 0);
+	$pos = strrpos(dirname(dirname(__FILE__)), '/');
+	if ($pos !== false)
+	{
+		$topDir = substr(dirname(dirname(__FILE__)), $pos+1);;
+	}
+	$topDir = strcmp($name, $topDir) === 0;
 	
 	if (!$logged_in)
 	{
 		writeLink('Login/', 'Login', (strcmp($name, 'Login') == 0));
 	}
 	
-	if ($ganzOben)
+	if ($topDir)
 	{
 		echo '<li>Home</li>' . "\n";
 	} else
