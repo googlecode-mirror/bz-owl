@@ -427,6 +427,9 @@
 				{
 					echo '&amp;search_result_amount=' . strval($num_results);
 				}
+			} elseif (isset($_GET['profile']))
+			{
+				echo '$amp;profile=' . htmlent($_GET['profile']);
 			}
 			
 			echo '">Previous visits</a>' . "\n";
@@ -452,6 +455,9 @@
 				{
 					echo '&amp;search_result_amount=' . strval($num_results);
 				}
+			} elseif (isset($_GET['profile']))
+			{
+				echo '$amp;profile=' . htmlent($_GET['profile']);
 			}
 			
 			echo '">Next visits</a>' . "\n";
