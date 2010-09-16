@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.50)
 # Database: testdb
-# Generation Time: 2010-09-15 20:17:36 +0200
+# Generation Time: 2010-09-15 20:22:15 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -103,9 +103,9 @@ CREATE TABLE `matches_edit_stats` (
   `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team1_points` int(11) NOT NULL DEFAULT '0',
   `team2_points` int(11) NOT NULL DEFAULT '0',
-  KEY `timestamp` (`timestamp`),
+  KEY `id` (`id`),
   KEY `playerid` (`playerid`),
-  CONSTRAINT `matches_edit_stats_ibfk_1` FOREIGN KEY (`playerid`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `timestamp` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The match editing history';
 
 
