@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.50)
 # Database: testdb
-# Generation Time: 2010-09-15 20:22:15 +0200
+# Generation Time: 2010-09-16 23:54:37 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -244,8 +244,8 @@ CREATE TABLE `players_profile` (
   `playerid` int(11) unsigned NOT NULL DEFAULT '0',
   `location` int(11) NOT NULL DEFAULT '1',
   `UTC` tinyint(2) NOT NULL DEFAULT '0',
-  `user_comment` varchar(1000) NOT NULL DEFAULT '',
-  `raw_user_comment` varchar(1000) NOT NULL DEFAULT '',
+  `user_comment` varchar(1500) NOT NULL DEFAULT '',
+  `raw_user_comment` varchar(1500) NOT NULL DEFAULT '',
   `admin_comments` mediumtext NOT NULL,
   `raw_admin_comments` mediumtext NOT NULL,
   `joined` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
