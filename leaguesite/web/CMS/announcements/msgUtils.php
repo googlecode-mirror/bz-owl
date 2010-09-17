@@ -67,8 +67,14 @@
 		// display a single message (either in inbox or outbox) in all its glory
 		while($row = mysql_fetch_array($result))
 		{
-			$team_message_from_team_id = $row['from_team'];
-			
+			// find out the sending team
+			$team_message_from_team_id = intval($row['from_team']);
+			// from_team is 1 if it is a team message, 0 otherwise
+			if ($team_message_from_team_id > 0)
+			{
+				$team_message_from_team_id = intval($row['recipients']);
+			}
+				
 			echo '<div class="msg_view_full">' . "\n";
 			
 			echo '	<div class="msg_header_full">' . "\n";
@@ -247,7 +253,7 @@
 					{
 						if ($can_reply)
 						{
-							if ($team_message_from_team_id)
+							if ($team_message_from_team_id > 0)
 							{
 								// the message actually came from a team
 								echo '<form class="msg_buttons" action="' . baseaddress() . $site->base_name() . '/?add&amp;reply=team&amp;id=' . htmlent($id);
