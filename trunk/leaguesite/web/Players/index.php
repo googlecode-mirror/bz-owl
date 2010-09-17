@@ -169,7 +169,7 @@
 				$site->dieAndEndPage('');
 			}
 			
-			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($viewerid) . "'" . ' LIMIT 1';
+			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . sqlSafeStringQuotes($viewerid) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
@@ -192,7 +192,7 @@
 		}
 		
 		// check invite permission
-		if ((!($profile > 0) || !($leader_of_team_with_id < 1)) && !($allow_edit_any_user_profile))
+		if ((($profile < 1) || ($leader_of_team_with_id < 1)) && !($allow_edit_any_user_profile))
 		{
 			$site->dieAndEndPage('You (id='. sqlSafeString($viewerid) . ') are not allowed to invite the user with id ' . sqlSafeString($profile) . '.');
 		}		
