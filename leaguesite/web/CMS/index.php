@@ -55,7 +55,7 @@
 	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
 		// user explicitly does not want an external login and confirmed it already
-		if (!(isset($_GET['local_login_wanted']) && $_GET['local_login_wanted']))
+		if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 		{
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
@@ -65,7 +65,7 @@
 		
 		if (!( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) ))
 		{
-			if (!(isset($_GET['local_login_wanted']) && $_GET['local_login_wanted']))
+			if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 			{
 				echo '<strong>or</strong>';
 				$site->write_self_closing_tag('br');

@@ -31,7 +31,7 @@
 	$viewerid = (int) getUserID();
 	
 	$allow_edit_any_user_profile = false;
-	if (isset($_GET['profile']) || isset($_GET['edit']))
+	if (isset($_GET['profile']) || isset($_GET['edit']) || isset($_GET['invite']))
 	{
 		if (isset($_SESSION['allow_edit_any_user_profile']))
 		{
@@ -145,6 +145,7 @@
 		
 		if (!strcmp($suspended_status, 'active') === 0)
 		{
+			echo '<div class="static_page_box">' . "\n";
 			echo '<p>You may not invite deleted, disabled or banned users</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
@@ -165,6 +166,7 @@
 			// users are not supposed to invite themselves
 			if ($viewerid === $profile)
 			{
+				echo '<div class="static_page_box">' . "\n";
 				echo '<p>You are not allowed to invite yourself.</p>' . "\n";
 				$site->dieAndEndPage('');
 			}
@@ -172,6 +174,7 @@
 			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . sqlSafeStringQuotes($viewerid) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
+				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
 			}
 			
@@ -181,6 +184,7 @@
 			if ($rows > (int) 1)
 			{
 				show_overview_and_profile_button();
+				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('There is more than one team with the id ' . sqlSafeString($teamid) . ' in the database! This is a database problem, please report it to admins!');
 			}
 			
@@ -192,8 +196,9 @@
 		}
 		
 		// check invite permission
-		if ((($profile < 1) || ($leader_of_team_with_id < 1)) && !($allow_edit_any_user_profile))
+		if (($profile < 1) || (($leader_of_team_with_id < 1) && !($allow_edit_any_user_profile)))
 		{
+			echo '<div class="static_page_box">' . "\n";
 			$site->dieAndEndPage('You (id='. sqlSafeString($viewerid) . ') are not allowed to invite the user with id ' . sqlSafeString($profile) . '.');
 		}		
 		
@@ -209,6 +214,7 @@
 			// TODO: implement preview
 			if (($confirmed < 1) || ($confirmed > 2))
 			{
+				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('Your (id='. $viewerid. ') attempt to insert wrong data into the form was detected.');
 			}
 						
@@ -221,6 +227,7 @@
 			
 			if (!($randomkeysmatch))
 			{
+				echo '<div class="static_page_box">' . "\n";
 				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
 				$site->dieAndEndPage('');
 			}
@@ -248,6 +255,7 @@
 				
 				if ($rows < 1)
 				{
+					echo '<div class="static_page_box">' . "\n";
 					echo '<p>The specified team does not exist and thus the invitation was cancelled.</p>' . "\n";
 					$site->dieAndEndPage('');
 				}
@@ -255,6 +263,7 @@
 			
 			if ($invited_to_team < 1)
 			{
+				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('You do not have permission to invite players to a team!');
 			}
 			
@@ -341,6 +350,7 @@
 				$site->dieAndEndPage('');
 			}
 			
+			echo '<div class="static_page_box">' . "\n";
 			echo '<p>The player was invited successfully.</p>' . "\n";
 			
 			// invitation and notification was sent
@@ -349,8 +359,11 @@
 		
 		if ($allow_invite_in_any_team || ($leader_of_team_with_id > 0))
 		{
+			echo '<div class="static_page_box">' . "\n";
 			echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?invite=' . htmlentities(urlencode($profile)) . '">' . "\n";
-			echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
+			echo '<div>';
+			$site->write_self_closing_tag('input type="hidden" name="confirmed" value="1"');
+			echo '</div>' . "\n";
 			
 			// display team picker in case the user can invite a player to any team
 			if ($allow_invite_in_any_team)
@@ -406,17 +419,21 @@
 					echo '</option>' . "\n";
 				}
 				
-				echo '</select></span>' . "\n";			
+				echo '</select></span></p>' . "\n";			
 			}
 			
 			$new_randomkey_name = $randomkey_name . microtime();
 			$new_randomkey = $site->set_key($new_randomkey_name);
-			echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
-			echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
-			echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
+			echo '<div>';
+			$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
+			echo '</div>' . "\n";
+			echo '<div>';
+			$site->write_self_closing_tag('input type="hidden" name="' . htmlentities($randomkey_name) . '" value="'
+										  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
+			echo '</div>' . "\n";
 			
 			// find out the player's name
-			$query = 'SELECT `name` FROM `players` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
+			$query = 'SELECT `name` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('players', $query, $connection)))
 			{
 				echo '</form>' . "\n";
@@ -431,7 +448,9 @@
 			}
 			
 			echo '<p style="display:inline">Do you really want to invite ' . $player_name . '?</p>' . "\n";
-			echo '<div style="display:inline"><input type="submit" name="invite_player" value="Invite the player" id="send"></div>' . "\n";
+			echo '<div style="display:inline">';
+			$site->write_self_closing_tag('input type="submit" name="invite_player" value="Invite the player" id="send"');
+			echo '</div>' . "\n";
 			echo '</form>' . "\n";
 			$site->dieAndEndPage('');
 		}
