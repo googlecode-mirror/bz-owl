@@ -13,7 +13,7 @@
 	$db_imported = new db_import;
 	$account_old_website = htmlent($db_imported->old_website());
 	
-	if (!(isset($_GET['local_login_wanted']) && $_GET['local_login_wanted']))
+	if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 	{
 		echo '<form action="' . baseaddress() . 'Login/'. '" method="get">' . "\n";
 		echo '<p class="first_p">' . "\n";
@@ -27,7 +27,7 @@
 		echo '</p>' . "\n";
 		echo '</form>' . "\n";
 	}
-	if (isset($_GET['local_login_wanted']) && $_GET['local_login_wanted'])
+	if (isset($_POST['local_login_wanted']) && $_POST['local_login_wanted'])
 	{
 		echo '<div class="static_page_box">' . "\n";
 		
