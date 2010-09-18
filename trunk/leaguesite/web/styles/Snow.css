@@ -1,6 +1,6 @@
 /* @override
 	http://vps1.moooo.org/ts/styles/Snow.css
-		http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Snow.css
+	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Snow.css
 */
 
 body
@@ -681,6 +681,16 @@ span.onlineUsers
 {
 	color: #240500;
 	text-shadow: silver 1px 1px 2px;
+}
+
+span.Servers + span.logout:before
+{
+	content: " - ";
+}
+
+span.onlineUsers + span.logout:before
+{
+	content: " - ";
 }
 
 span.logout

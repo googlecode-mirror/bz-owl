@@ -1,6 +1,6 @@
 /* @override
 	http://vps1.moooo.org/ts/styles/White.css
-		http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/White.css
+	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/White.css
 */
 
 body
@@ -663,6 +663,7 @@ span.logout
 {
 	color: #240500;
 	text-shadow: silver 1px 1px 2px;
+	margin-left: 0.5em;
 }
 
 div.msg_view_button_list

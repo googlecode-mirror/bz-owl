@@ -234,7 +234,7 @@
 	
 	if ($logged_in)
 	{
-		echo '<span class="logout">';
+		echo ' <span class="logout">';
 		echo '<a href="' . baseaddress() . 'Logout/' . '">Logout</a>';
 		echo '</span>' . "\n";
 	}
