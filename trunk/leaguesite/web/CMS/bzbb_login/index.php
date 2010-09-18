@@ -9,7 +9,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	// groups used for permissions
 	// each group can use the fine grained permission system
-	$groups = Array ('VERIFIED','GU-LEAGUE.ADMINS');
+	$groups = Array ('VERIFIED','GU-LEAGUE.REFEREES','GU-LEAGUE.ADMINS');
 	$args = explode (',', urldecode($_GET['bzbbauth']));
 	// $args[0] is token, $args[1] is callsign
 	if (!$info = validate_token ($args[0], $args[1], $groups, false))
@@ -48,6 +48,33 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	// server tracker permissions
 	allow_watch_servertracker();
 	
+	
+	// test only for GU-LEAGUE.ADMINS group
+	$group_test = array_slice($groups, 1, 1);
+	$in_group = false;
+	foreach ($info['groups'] as $one_group)
+	{
+		// case insensitive comparison
+		if (strcasecmp($one_group, $group_test[0]) === 0)
+		{
+			$in_group = true;
+			break;
+		}
+	}
+	unset($one_group);
+	
+	if ($in_group === true)
+	{
+		if ($site->debug_sql())
+		{
+			echo '<p>gu league referee detected</p>';
+		}
+		// GU-LEAGUE.ADMINS group
+		
+		// match permissions
+		allow_add_match();
+		allow_edit_match();
+	}
 	
 	
 	// test only for GU-LEAGUE.ADMINS group
