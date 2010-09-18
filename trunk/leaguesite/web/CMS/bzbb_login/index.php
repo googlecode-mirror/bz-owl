@@ -69,17 +69,15 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		{
 			echo '<p>gu league referee detected</p>';
 		}
-		// GU-LEAGUE.ADMINS group
+		// GU-LEAGUE.REFEREES group
 		
 		// match permissions
 		allow_add_match();
 		allow_edit_match();
 	}
 	
-	
-	// test only for GU-LEAGUE.ADMINS group
-	$group_test = array_slice($groups, 1, 1);
-	$in_group = false;
+	// test only for TS.ADMIN group
+	$group_test = array_slice($groups, -1, 1);
 	foreach ($info['groups'] as $one_group)
 	{
 		// case insensitive comparison
@@ -89,8 +87,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 			break;
 		}
 	}
-	unset($one_group);
-	
 	if ($in_group === true)
 	{
 		if ($site->debug_sql())
@@ -103,13 +99,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_change_debug_sql();
 		
 		// permissions for news page
-		allow_set_different_news_author();
 		allow_add_news();
 		allow_edit_news();
 		allow_delete_news();
-		
-		// permissions for all static pages
-		allow_edit_static_pages();
 		
 		// permissions for bans page
 		allow_add_bans();
