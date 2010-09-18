@@ -892,7 +892,7 @@
 			// we don't know the team, find it out by tracing it using the playerid
 			$playerid = (int) $_GET['remove'];
 			$query = 'SELECT `teams`.`id` FROM `players`, `teams` WHERE `players`.`id`=';
-			$query .= "'" . sqlSafeString($playerid) . "'";
+			$query .= sqlSafeStringQuotes($playerid);
 			$query .= ' AND `players`.`teamid` = `teams`.`id` LIMIT 0,1';
 			if (!($result = @$site->execute_query('players, teams', $query, $connection)))
 			{
@@ -907,7 +907,7 @@
 			mysql_free_result($result);
 		}
 		
-		$query = 'SELECT `leader_playerid` FROM `teams` WHERE `id`=' . "'" .  sqlSafeString($teamid) . "'" . ' LIMIT 0,1';
+		$query = 'SELECT `leader_playerid` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($teamid) . ' LIMIT 0,1';
 		if (!($result = @$site->execute_query('teams', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -1831,7 +1831,7 @@
 					echo '<td>';
 					if ($allow_edit_match)
 					{
-						echo '<a class="button" href="./?edit=' . htmlspecialchars($row['id']) . '">Edit match result</a>';
+						echo '<a class="button" href="../Matches/?edit=' . htmlspecialchars($row['id']) . '">Edit match result</a>';
 					}
 					if ($allow_edit_match && $allow_delete_match)
 					{
@@ -1839,7 +1839,7 @@
 					}
 					if ($allow_delete_match)
 					{
-						echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a>';
+						echo '<a class="button" href="../Matches/?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a>';
 					}
 					echo '</td>' . "\n";
 				}
