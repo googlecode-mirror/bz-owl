@@ -179,41 +179,39 @@
 		$online_users_page_viewed = false;
 	}
 	
-	if ($logged_in || !$online_users_page_viewed)
+	echo '<div class="userbuttons">' . "\n";
+	echo '<span class="date">' . date('Y-m-d H:i:s T') . '</span>';
+	
+	// list of servers
+	echo ' <span class="Servers">Match servers: ';
+	$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
+			  . ' FROM `servertracker`'
+			  . ' ORDER BY `id`');
+	if (!($result = $site->execute_silent_query('servertracker', $query, $connection)))
 	{
-		echo '<div class="userbuttons">' . "\n";
-		
-		// list of servers
-		echo '<span class="Servers">Match servers: ';
-		$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
-				  . ' FROM `servertracker`'
-				  . ' ORDER BY `id`');
-		if (!($result = $site->execute_silent_query('servertracker', $query, $connection)))
-		{
-			$site->dieAndEndPageNoBox('Could not find out servername and serveraddress to be updated.');
-		}
-		while ($row = mysql_fetch_array($result))
-		{
-			if (intval($row['cur_players_total']) === 1)
-			{
-				echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 player</a>';
-			} else
-			{
-				echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' players</a>';
-			}
-		}
-		mysql_free_result($result);
-		
-		// run the update script:
-		// >/dev/null pipes output to nowhere
-		// & lets the script run in the background
-		exec('php ' . dirname(__FILE__) . '/cli/servertracker_query_backend.php >/dev/null &');
-		echo '</span> ';
+		$site->dieAndEndPageNoBox('Could not find out servername and serveraddress to be updated.');
 	}
+	while ($row = mysql_fetch_array($result))
+	{
+		if (intval($row['cur_players_total']) === 1)
+		{
+			echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 player</a>';
+		} else
+		{
+			echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' players</a>';
+		}
+	}
+	mysql_free_result($result);
+	
+	// run the update script:
+	// >/dev/null pipes output to nowhere
+	// & lets the script run in the background
+	exec('php ' . dirname(__FILE__) . '/cli/servertracker_query_backend.php >/dev/null &');
+	echo '</span>';
 	
 	if (!$online_users_page_viewed)
 	{
-		echo '<span class="onlineUsers">Website: ';
+		echo ' <span class="onlineUsers">Website: ';
 		$query = 'SELECT count(`playerid`) AS `num_players` FROM `online_users`';
 		if (!($result = @$site->execute_silent_query('online_users', $query, $connection)))
 		{
@@ -242,9 +240,8 @@
 	}
 	
 	// close userbutton div
-	if ($logged_in || !$online_users_page_viewed)
-	{
-		echo '</div>' . "\n\n" ;
-	}
+	echo "\n" . '</div>';
 ?>
+
+
 <div class="content">

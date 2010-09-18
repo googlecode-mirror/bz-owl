@@ -1,6 +1,6 @@
 /* @override 
 	http://vps1.moooo.org/ts/styles/Eierschale
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Eierschale.css
+	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Eierschale.css
 */
 
 body
@@ -188,25 +188,6 @@ ul.navigation a:hover
 		color: #005981;
 }
 
-span.Servers
-{
-	list-style: none;
-	display: inline;
-	color: black;
-}
-
-span.Servers:after
-{
-	content: " - ";
-}
-
-span.Servers li
-{
-	list-style: none;
-	display: inline;
-	white-space: nowrap;
-}
-
 div.content
 {
 	color: black;
@@ -215,6 +196,7 @@ div.content
 	margin-left: 151px;
 }
 
+
 div.userbuttons
 {
 	text-align: right;
@@ -222,6 +204,17 @@ div.userbuttons
 	font-size: 0.9em;
 	margin-right: 0.5em;
 	overflow: hidden;
+}
+
+span.date
+{
+	float: left;
+	margin-left: 11em;
+}
+
+span.Servers + span.onlineUsers:before
+{
+	content: " - ";
 }
 
 div.online_user
