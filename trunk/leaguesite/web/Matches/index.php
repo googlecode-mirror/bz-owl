@@ -409,7 +409,7 @@
 			{
 				echo ' ';
 			}
-			if ($allow_edit_match)
+			if ($allow_delete_match)
 			{
 				echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($match_entry['id'])) . '">Delete match</a>';
 			}
