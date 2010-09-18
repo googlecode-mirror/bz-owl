@@ -906,6 +906,11 @@ span.onlineUsers
 	color: #240500;
 }
 
+span.Servers + span.logout:before
+{
+	content: " - ";
+}
+
 span.onlineUsers + span.logout:before
 {
 	content: " - ";

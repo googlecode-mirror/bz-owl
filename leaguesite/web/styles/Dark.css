@@ -512,27 +512,15 @@ display:inline;
 }
 
 
-ul.Servers {
-display: inline;
-float:left;
-padding:5px;
+span.Servers {
+margin-right:5px;
 }
-
-ul.Servers li{
-list-style: none;
-display: inline;
-white-space: nowrap;
-}
-
 
 span.onlineUsers:before,span.logout:before {
 margin-right:5px;
 content:"-";
 }
 
-ul.Servers + span.onlineUsers:before {
-content: "Website: ";
-}
 /*span.logout:before {
 content: "[";
 }
