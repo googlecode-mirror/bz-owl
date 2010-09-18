@@ -1837,7 +1837,7 @@
 					{
 						echo ' ';
 					}
-					if ($allow_edit_match)
+					if ($allow_delete_match)
 					{
 						echo '<a class="button" href="./?delete=' . htmlspecialchars(urlencode($row['id'])) . '">Delete match</a>';
 					}
