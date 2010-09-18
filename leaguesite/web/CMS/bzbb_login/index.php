@@ -49,6 +49,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	allow_watch_servertracker();
 	
 	
+	
 	// test only for GU-LEAGUE.ADMINS group
 	$group_test = array_slice($groups, 1, 1);
 	$in_group = false;
@@ -76,7 +77,8 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_edit_match();
 	}
 	
-	// test only for TS.ADMIN group
+	// test only for GU-LEAGUE.ADMINS group
+	$in_group = false;
 	$group_test = array_slice($groups, -1, 1);
 	foreach ($info['groups'] as $one_group)
 	{
