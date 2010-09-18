@@ -15,7 +15,7 @@
 	
 	if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 	{
-		echo '<form action="' . baseaddress() . 'Login/'. '" method="get">' . "\n";
+		echo '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
 		echo '<p class="first_p">' . "\n";
 		if ($site->force_external_login_when_trying_local_login())
 		{
