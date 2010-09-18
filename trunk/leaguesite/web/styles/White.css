@@ -1,4 +1,7 @@
-/* @override http://192.168.1.10/~spiele/league_svn/ts/styles/White.css */
+/* @override
+	http://vps1.moooo.org/ts/styles/White.css
+		http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/White.css
+*/
 
 body
 {
@@ -642,6 +645,13 @@ div.p
 }
 
 /* common links */
+
+span.date
+{
+	float: left
+	;
+	margin-left: 2.1em;
+}
 
 span.onlineUsers
 {

@@ -1,5 +1,5 @@
 /* @override 
-	http://vps1.moooo.org/ts/styles/42
+	http://vps1.moooo.org/ts/styles/42.css
 	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/42.css
 */
 
@@ -209,43 +209,34 @@ ul.navigation a:hover
 		color: #005981;
 }
 
-span.Servers
-{
-	list-style: none;
-	display: inline;
-	color: black;
-}
-
-span.Servers:after
-{
-	content: " - ";
-}
-
-span.Servers li
-{
-	list-style: none;
-	display: inline;
-	white-space: nowrap;
-}
-
 div.content
 {
 	color: white;
 	text-align: left;
 }
 
+
 div.userbuttons
 {
 	text-align: right;
+	color: black;
 	margin-bottom: 1em;
 	font-size: 0.9em;
 	overflow: hidden;
 	background-color: #dedede;
-	padding-right: 0.5em;
 	margin-top: -0.7em;
 	margin-right: 0.25em;
-	padding-top: 0.2em;
-	padding-bottom: 0.2em;
+	padding: 0.2em 0.5em;
+}
+
+div.userbuttons span.date
+{
+	float: left;
+}
+
+span.Servers + span.onlineUsers:before
+{
+	content: " - ";
 }
 
 div.online_user

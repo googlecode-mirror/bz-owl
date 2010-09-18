@@ -1,22 +1,12 @@
 /* @override
-	http://192.168.1.10/~spiele/league_svn/ts/styles/Snow.css
-	http://vps1.moooo.org/ts/styles/Eierschale
+	http://vps1.moooo.org/ts/styles/Snow.css
+		http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Snow.css
 */
 
 body
 {
 	background: #fafafa url(snow.png) repeat scroll;
 	color: black;
-}
-
-body:after
-{
-	position: relative;
-	content: "This theme uses copyrighted (2010) artwork. Not to be re-used without permission.";
-	float: none;
-	display: block;
-	text-align: center;
-	opacity: 0.41;
 }
 
 p.first_p
@@ -92,25 +82,6 @@ ul.navigation a:active
 	text-decoration : underline;
 }
 
-span.Servers
-{
-	list-style: none;
-	display: inline;
-	color: black;
-}
-
-span.Servers:after
-{
-	content: " - ";
-}
-
-span.Servers li
-{
-	list-style: none;
-	display: inline;
-	white-space: nowrap;
-}
-
 div.content
 {
 	color: black;
@@ -121,9 +92,21 @@ div.content
 	clear: none;
 }
 
+
 div.userbuttons
 {
 	text-align: right;
+}
+
+span.date
+{
+	float: left;
+	margin-left: 3em;
+}
+
+span.Servers + span.onlineUsers:before
+{
+	content: " - ";
 }
 
 div.online_user

@@ -395,6 +395,7 @@ border:2px solid #999;
 -moz-border-radius:5px;
 border-radius:5px;
 font-size:10pt;
+white-space: nowrap;
 }
 a.button:hover {
 background-color:#444;
@@ -438,6 +439,10 @@ display:inline-block;
 margin-bottom:1em;
 min-width:25em;
 overflow:visible;
+}
+
+div.team_area:last-of-type {
+display: block;
 }
 
 div.msg_view_full {
