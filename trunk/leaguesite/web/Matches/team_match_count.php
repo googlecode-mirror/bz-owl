@@ -477,7 +477,10 @@
 		
 		if (!($number_teams_mapped >= 2))
 		{
-			echo "call3";
+			if ($site->debug_sql())
+			{
+				echo "call3";
+			}
 		}
 			// old teams in old order, swap new teams
 			if (cmp_team_participated_change($team1_points_before, $team2_points_before,
