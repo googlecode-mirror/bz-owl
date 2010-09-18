@@ -107,12 +107,12 @@
 		// major problem nowadays are the error messages that would be shown that include username and password if not handled
 		function loudless_connect_to_db()
 		{
-			return $link = @mysql_connect('127.0.0.1', $this->mysqluser(), $this->mysqlpw());
+			return $link = @mysql_connect('localhost', $this->mysqluser(), $this->mysqlpw());
 		}
 		
 		function loudless_pconnect_to_db()
 		{
-			return $link = @mysql_pconnect('127.0.0.1', $this->mysqluser(), $this->mysqlpw());
+			return $link = @mysql_pconnect('localhost', $this->mysqluser(), $this->mysqlpw());
 		}
 		
 		function db_used_name()
