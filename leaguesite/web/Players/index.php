@@ -269,10 +269,10 @@
 			
 			// invitate the player to team
 			$query = 'INSERT INTO `invitations` (`invited_playerid`, `teamid`, `expiration`) VALUES ';
-			$query .= '(' . "'" . sqlSafeString($profile) . "'" . ', ' . "'" . sqlSafeString ($invited_to_team). "'";
+			$query .= '(' . sqlSafeStringQuotes($profile) . ', ' . sqlSafeStringQuotes($invited_to_team);
 			$sevendayslater = strtotime('+7 days');
 			$sevendayslater = strftime('%Y-%m-%d %H:%M:%S', $sevendayslater);
-			$query .= ', ' . "'" . sqlSafeString($sevendayslater) . "'" . ')';
+			$query .= ', ' . sqlSafeStringQuotes($sevendayslater) . ')';
 			if (!($result = @$site->execute_query('invitations', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
