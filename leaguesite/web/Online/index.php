@@ -15,13 +15,39 @@
 		$site = new siteinfo();
 	}
 	
+	function showTimeSince($gettime) {
+        $gettime = time() - $gettime;
+        $d = floor($gettime / (24 * 3600));
+        $gettime = $gettime - ($d * (24 * 3600));
+        $h = floor($gettime / (3600));
+        $gettime = $gettime - ($h * (3600));
+        $m = floor($gettime / (60));
+        $gettime = $gettime - ($m * 60);
+        $s = $gettime;
+        if ($d != 0) $rtn .= $d.'d ';
+        if ($h != 0) $rtn .= $h.'h ';
+        if ($m != 0) $rtn .= $m.'m ';
+        if ($s != 0) $rtn .= $s.'s';
+		if ($rtn == "") $rtn = '0s';
+        return $rtn;
+	}
+	
+	function convert_datetime($str) {
+		list($date, $time) = explode(' ', $str);
+		list($year, $month, $day) = explode('-', $date);
+		list($hour, $minute, $second) = explode(':', $time);
+
+		$ts = mktime($hour, $minute, $second, $month, $day, $year);
+		return $ts;
+	}
+	
 	echo '<div class="static_page_box">' . "\n";
 	
 	$connection = $site->connect_to_db();
 	$table_name = 'online_users';
 	
 	$onlineUsers = false;
-	$query = 'SELECT * FROM `' . sqlSafeString($table_name) . '`';	
+	$query = 'SELECT * FROM `' . sqlSafeString($table_name) . '` ORDER BY last_activity DESC';	
 	if ($result = (@$site->execute_query($table_name, $query, $connection)))
 	{
 		$onlineUsers = true;
@@ -41,42 +67,9 @@
 			echo '<div class="online_user">No logged in user at the moment.</div>';
 		} else
 		{
-			
-			date_default_timezone_set($site->used_timezone());
-			// convert $result resource to array
-			$users = Array();
-			while($row = mysql_fetch_array($result))
-			{
-				$users[] = Array( 'playerid' => $row['playerid'], 'username' => $row['username'], 'last_activity' => $row['last_activity']);
-			}
-			
-			// output the contents of array
-			foreach ($users as $v1)
-			{
-				echo '<div class="online_user"><a href="../Players/' . '?profile=' . ((int) htmlentities($v1['playerid'])) .'">';
-				echo htmlentities($v1['username']) . '</a>';
-				
-				// class DateTime is available with PHP version 5.3 and later
-				if (phpversion() >= '5.3')
-				{
-					$datetime1 = new DateTime($v1['last_activity']);
-					$datetime2 = new DateTime(date('Y-m-d H:i:s'));
-					
-					$diff = $datetime1->diff($datetime2);
-					// parameters different than date's
-					// see also http://www.php.net/manual/en/dateinterval.format.php
-					$diff = $diff->format('%Y-%M-%D %H:%I:%S');
-					$cmp_diff = explode(' ', $diff);
-					$cmp_diff = explode(':', $cmp_diff[1]);
-					if ((intval($cmp_diff[0]) > 0)
-						|| (intval($cmp_diff[1]) > 0)
-						|| (intval($cmp_diff[2]) > 0))
-					{
-						echo ' ' . $cmp_diff[0] . ':' . $cmp_diff[1] . ':' . $cmp_diff[2] . ' idle';
-					}
-					
-				}
-				echo ' (last access at ' . htmlentities($v1['last_activity']) . ' ' . date('T') . ')</div>';
+			while ($row = mysql_fetch_object($result)) {
+				echo '<div class="online_user"><a href="'.basepath().'Players/?profile='.$row->playerid.'">'.htmlentities($row->username).'</a> - ';
+				echo showTimeSince(convert_datetime($row->last_activity)).'</div>';
 			}
 		}
 		mysql_free_result($result);
