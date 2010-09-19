@@ -919,7 +919,7 @@
 		{
 			while($row = mysql_fetch_array($result))
 			{
-				$team_leader_id = (int) ($row['leader_playerid']);
+				$team_leader_id = intval($row['leader_playerid']);
 			}
 		}
 		
@@ -1387,14 +1387,23 @@
 	
 	if (isset($_GET['remove']))
 	{
+		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="static_page_box">' . "\n";
+		
 		$playerid_to_remove = (int) $_GET['remove'];
 		
 		if ($viewerid < 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
 			echo '<p>You must login to remove a player from team.</p>' . "\n";
 			$site->dieAndEndPage('');
-		}		
+		}
+		
+		// team captain can not kick himself
+		if ($playerid === $team_leader_id)
+		{
+			echo '<p>You may not kick yourself from the team because you are the team leader.</p>' . "\n";
+			$site->dieAndEndPage('');
+		}
 		
 		// has the kick request been confirmed?
 		$confirmed = 0;
@@ -1414,7 +1423,6 @@
 			$randomkeysmatch = $site->compare_keys($randomkey_name, $new_randomkey_name);			
 			if (!($randomkeysmatch))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
 				$site->dieAndEndPage('');
 			}
@@ -1422,8 +1430,8 @@
 			if ($display_user_kick_from_team_buttons || (($viewerid > 0) && ($viewerid === $playerid_to_remove)))
 			{
 				// user is allowed to kick members from team
-				$query = 'UPDATE `players` SET `teamid`=' . "'" . sqlSafeString('0') . "'";
-				$query .= ' WHERE `id`=' . "'" . sqlSafeString((int) $viewerid) . "'";
+				$query = 'UPDATE `players` SET `teamid`=' . sqlSafeStringQuotes('0');
+				$query .= ' WHERE `id`=' . sqlSafeStringQuotes(intval($playerid));
 				if (!($result = @$site->execute_query('players', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
@@ -1445,7 +1453,6 @@
 										 . htmlentities($join_team_id)) . ')';
 				}
 				
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				if ($playerid_to_remove === $viewerid)
 				{
 					echo '<p>You successfully left the team!</p>';
