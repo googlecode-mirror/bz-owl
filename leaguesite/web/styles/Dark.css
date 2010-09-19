@@ -511,23 +511,10 @@ form p#edit_user_suspended_status_description,div.edit_user_suspended_status_sen
 display:inline;
 }
 
-
-span.Servers {
-margin-right:5px;
-}
-
-span.onlineUsers:before,span.logout:before {
+span.onlineUsers:before,span.logout:before,span.Servers:before {
 margin-right:5px;
 content:"-";
 }
-
-/*span.logout:before {
-content: "[";
-}
-span.logout:after {
-content:"]";
-}*/
-
 
 div.online_user,table.nested_table {
 text-align:center;
