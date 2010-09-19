@@ -320,7 +320,8 @@
 			$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
 			$query .= '(' . sqlSafeStringQuotes ('0');
 			$query .= ', ' . sqlSafeStringQuotes(('Invitation to team ' . $team_name)) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n" . 'The invitation will expire in 7 days.'));
+			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n\n" . 
+			"<a href=\"".basepath()."Teams/?join=$invited_to_team\">Click here to accept the invitation.</a>\n\nYou must leave your current team before accepting an invitation to a new team.\n\nThe invitation will expire in 7 days."));
 			$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($profile) . ')';
 			if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
 			{
