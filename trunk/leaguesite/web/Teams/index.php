@@ -1616,7 +1616,7 @@
 			echo '	<tr>' . "\n";
 			echo '		<th>Wins</th>' . "\n";
 			echo '		<th>Draws</th>' . "\n";
-			echo '		<th>Losts</th>' . "\n";
+			echo '		<th>Losses</th>' . "\n";
 			echo '		<th>Total</th>' . "\n";
 			echo '	</tr>' . "\n";
 			
