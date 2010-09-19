@@ -747,7 +747,7 @@
 			{
 				// check for invite!
 				$query = 'SELECT `invited_playerid`, `expiration` FROM `invitations` WHERE `teamid`=' . "'" . sqlSafeString($join_team_id) . "'";
-				$query .= ' AND `invited_playerid`=' . "'" . sqlSafeString($viewerid) . "'" . ' ORDER BY `expiration`';
+				$query .= ' AND `invited_playerid`=' . sqlSafeStringQuotes($viewerid) . ' ORDER BY `expiration`';
 				if (!($result = @$site->execute_query('invitations', $query, $connection)))
 				{
 					// query was bad, error message was already given in $site->execute_query(...)
@@ -830,7 +830,7 @@
 		echo '<div class="static_page_box">' . "\n";
 		
 		$query = 'SELECT `name` FROM `teams`';
-		$query .= ' WHERE `id`=' . "'" . sqlSafeString($join_team_id) . "'";
+		$query .= ' WHERE `id`=' . sqlSafeStringQuotes($join_team_id);
 		if (!($result = @$site->execute_query('teams', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -976,7 +976,7 @@
 			// do the team deletion
 			// the team is only marked as deleted because team history is kept
 			$query = 'SELECT `deleted` FROM `teams_overview`';
-			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
+			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 			$query .= ' LIMIT 1';
 			if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 			{
@@ -989,13 +989,12 @@
 				if (((int) $row['deleted'] === 1) || ((int) $row['deleted'] === 2) || ((int) $row['deleted'] === 3))
 				{
 					// mark deleted team as active
-					$query = 'UPDATE `teams_overview` SET `deleted`=' . "'" . sqlSafeString('2') . "'";
-					$query .= ' ,`member_count`=' . "'" . '0' . "'";
-					$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
+					$query = ('UPDATE `teams_overview` SET `deleted`=' . sqlSafeStringQuotes('2')
+							  . ' ,`member_count`=' . sqlSafeStringQuotes('0')
+							  . ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid));
 					if (!($result_update = @$site->execute_query('teams_overview', $query, $connection)))
 					{
-						// query was bad, error message was already given in $site->execute_query(...)
-						$site->dieAndEndPage('');
+						$site->dieAndEndPage('Could not mark deleted team #' . sqlSafeStringQuotes($teamid) . ' as active.');
 					}
 					
 				}
@@ -1003,29 +1002,28 @@
 				if ((int) $row['deleted'] === 0)
 				{
 					// delete (for real) the new team
-					$query = 'DELETE FROM `teams` WHERE `id`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($teamid);
 					// execute query, ignore result
 					@$site->execute_query('teams', $query, $connection);
-					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 					// execute query, ignore result
 					@$site->execute_query('teams_overview', $query, $connection);
-					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 					// execute query, ignore result
 					@$site->execute_query('teams_permissions', $query, $connection);
-					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 					// execute query, ignore result
 					@$site->execute_query('teams_profile', $query, $connection);	
 				}
 			}
 			
 			// mark who was where, to easily restore an unwanted team deletion
-			$query = 'UPDATE `players` SET `last_teamid`=' . "'" . sqlSafeString($teamid) . "'";
-			$query .= ', `teamid`=' . "'" . sqlSafeString('0') . "'";
-			$query .= ' WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
+			$query = 'UPDATE `players` SET `last_teamid`=' . sqlSafeStringQuotes($teamid);
+			$query .= ', `teamid`=' . sqlSafeStringQuotes('0');
+			$query .= ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 			if (!($result_update = @$site->execute_query('players', $query, $connection)))
 			{
-				// query was bad, error message was already given in $site->execute_query(...)
-				$site->dieAndEndPage('');
+				$site->dieAndEndPage('Could not set previous team information for team #' . sqlSafeStringQuotes($teamid) . '.');
 			}
 			
 			// always remember who deleted what
@@ -1884,7 +1882,7 @@
 		// show pending invitations
 		if (($team_leader_id > 0) && $viewerid === $team_leader_id || $allow_invite_in_any_team)
 		{
-			$query = 'SELECT `invited_playerid`, `expiration` FROM `invitations` WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
+			$query = 'SELECT `invited_playerid`, `expiration` FROM `invitations` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 			$query .= ' ORDER BY `expiration`';
 			if (!($result = @$site->execute_query('invitations', $query, $connection)))
 			{
@@ -2407,10 +2405,7 @@
 			// is the player invited to the team?
 			$query = 'SELECT `teamid` FROM `invitations` WHERE `invited_playerid`=' . sqlSafeStringQuotes($viewerid);
 			// is the invitation expired?
-			$query .= ' AND expiration>' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-			// there should be only one invitation
-			// FIXME: enforce that there will be only one invitation in the player list source code
-			$query .= ' LIMIT 1';
+			$query .= ' AND `expiration`>' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
 			if (!($result = @$site->execute_query('invitations', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)

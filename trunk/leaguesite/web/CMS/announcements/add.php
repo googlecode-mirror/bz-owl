@@ -428,7 +428,7 @@
 						{
 							$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
 							$query .= "'" . $user_id . "'" . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', ';
-							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes(htmlent($announcement)) . ', 1, ' . sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid'])) . ')';
+							$query .= sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($announcement) . ', 1, ' . sqlSafeStringQuotes((int) htmlspecialchars_decode($_POST['teamid'])) . ')';
 						} else
 						{
 							$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES (';
@@ -890,7 +890,8 @@
 										$subject = 'Re: ' . $row['subject'];
 									}
 									// citation signs, like in email
-									$announcement = '> ' . str_replace("\n","\n> ",$row['message']) . "\n\n";
+//									$announcement = '> ' . str_replace("\n","\n> ",$row['message']) . "\n\n";
+									$announcement = '> ' . str_replace("\n","\n> ", htmlent_decode($row['message'])) . "\n";
 								}
 								mysql_free_result($result);
 							}
