@@ -1325,7 +1325,7 @@
 		echo '</p>' . "\n";
 		
 		// any teamless player allowed to join?
-		$query = 'SELECT `any_teamless_player_can_join` FROM `teams_overview` WHERE `teamid`=' . "'" . sqlSafeString($teamid) . "'";
+		$query = 'SELECT `any_teamless_player_can_join` FROM `teams_overview` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -1403,6 +1403,29 @@
 		{
 			echo '<p>You may not kick yourself from the team because you are the team leader.</p>' . "\n";
 			$site->dieAndEndPage('');
+		}
+		
+		// team captain can only kick his own team members
+		if (!get_allow_kick_any_team_members())
+		{
+			$query = ('SELECT `teamid` FROM `players`'
+					  . ' WHERE `teamid`=(SELECT `teamid` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($viewerid) . ')'
+					  . ' AND `id`=' . sqlSafeStringQuotes($playerid));
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not find out who belongs to same team of player with id ' . $viewerid);
+			}
+			$player_to_kick_in_same_team = false;
+			while($row = mysql_fetch_array($result))
+			{
+				$player_to_kick_in_same_team = true;
+			}
+			
+			if (!$player_to_kick_in_same_team)
+			{
+				echo '<p>You can only kick your own teammates from the team.</p>' . "\n";
+				$site->dieAndEndPage('');
+			}
 		}
 		
 		// has the kick request been confirmed?
