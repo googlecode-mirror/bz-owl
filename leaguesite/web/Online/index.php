@@ -16,6 +16,7 @@
 	}
 	
 	function showTimeSince($gettime) {
+		$rtn = "";
         $gettime = time() - $gettime;
         $d = floor($gettime / (24 * 3600));
         $gettime = $gettime - ($d * (24 * 3600));
