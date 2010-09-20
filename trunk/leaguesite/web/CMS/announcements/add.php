@@ -882,7 +882,7 @@
 								{
 									// add a 'Re: ' before the subject if there is none already
 									// like in email
-									if (strncmp('Re: ', 'r', 3) === 0)
+									if (strncmp('Re: ', $row['subject'], 3) === 0)
 									{
 										$subject = $row['subject'];
 									} else
@@ -890,7 +890,6 @@
 										$subject = 'Re: ' . $row['subject'];
 									}
 									// citation signs, like in email
-//									$announcement = '> ' . str_replace("\n","\n> ",$row['message']) . "\n\n";
 									$announcement = '> ' . str_replace("\n","\n> ", htmlent_decode($row['message'])) . "\n";
 								}
 								mysql_free_result($result);
