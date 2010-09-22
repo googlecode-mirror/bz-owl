@@ -65,13 +65,15 @@
 		// by definition this is a joke but online guests are not shown by default
 		if ($rows < 1)
 		{
-			echo '<div class="online_user">No logged in user at the moment.</div>';
+			echo '<div class="online_user">There are currently no users logged in.</div>';
 		} else
 		{
+			echo '<table class="online_user">';
 			while ($row = mysql_fetch_object($result)) {
-				echo '<div class="online_user"><a href="'.basepath().'Players/?profile='.$row->playerid.'">'.htmlentities($row->username).'</a> - ';
-				echo showTimeSince(convert_datetime($row->last_activity)).'</div>';
+				echo '<tr><td><a href="'.basepath().'Players/?profile='.$row->playerid.'">'.htmlentities($row->username).'</a></td><td>';
+				echo '(idle: '.showTimeSince(convert_datetime($row->last_activity)).')</td></tr>';
 			}
+			echo '</table>';
 		}
 		mysql_free_result($result);
 	}
