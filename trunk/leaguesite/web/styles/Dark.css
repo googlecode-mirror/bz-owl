@@ -520,6 +520,14 @@ div.online_user,table.nested_table {
 text-align:center;
 }
 
+table.online_user {
+margin:auto;
+}
+
+table.online_user td {
+padding:5px;
+}
+
 span.msg_subject,a.msg_overview_unread:link,a.msg_overview_unread:visited {
 font-weight:700;
 }
