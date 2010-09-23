@@ -1,6 +1,5 @@
 <?php
-	// always be careful with $_SERVER['PHP_SELF']) because custom links can change the original page
-	if (preg_match("/update_match_stats.php/i", $_SERVER['PHP_SELF']))
+	if (!isset($site))
 	{
 		die("This file is meant to be only included by other files!");
 	}

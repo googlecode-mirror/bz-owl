@@ -80,10 +80,14 @@
 	{
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
-		include_once('match_list_changing_logic.php');
-		// all the operations requested have been dealt with
+		
+		require('match_form.php');
 		$site->dieAndEndPage();
+//		include_once('match_list_changing_logic.php');
+//		// all the operations requested have been dealt with
+//		$site->dieAndEndPage();
 	}
+	
 	
 	
 	// form letting search for team name or time
