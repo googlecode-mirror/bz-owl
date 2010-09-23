@@ -107,10 +107,13 @@
 		// folder is NULL in case a message is either being deleted or being sent
 		if (!($folder === NULL) && (!(strcmp($folder, 'outbox') === 0)))
 		{
-			// mark the message as read
-			$query = 'UPDATE LOW_PRIORITY `messages_users_connection` SET `msg_status`=';
-			$query .= sqlSafeStringQuotes('read') . ' WHERE `msgid`=' . sqlSafeStringQuotes($id);
-			$query .= ' AND `in_' . $folder . '`=' . "'" . '1' . "'";
+			// mark the message as read for the current user
+			$query = ('UPDATE LOW_PRIORITY `messages_users_connection`'
+					  . 'SET `msg_status`=' . sqlSafeStringQuotes('read')
+					  . ' WHERE `msgid`=' . sqlSafeStringQuotes($id)
+					  . ' AND `in_' . $folder . '`=' . sqlSafeStringQuotes('1')
+					  . ' AND `playerid`=' . sqlSafeStringQuotes(getUserID())
+					  . ' LIMIT 1');
 			// TODO: find out why connection isn't set up proper
 			// TODO: when this function is called from final deletion step in delete.php
 			$connection = $site->connect_to_db();
