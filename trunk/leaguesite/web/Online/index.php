@@ -25,11 +25,12 @@
         $m = floor($gettime / (60));
         $gettime = $gettime - ($m * 60);
         $s = $gettime;
+		$rtn = '';
         if ($d != 0) $rtn .= $d.'d ';
         if ($h != 0) $rtn .= $h.'h ';
         if ($m != 0) $rtn .= $m.'m ';
         if ($s != 0) $rtn .= $s.'s';
-		if ($rtn == "") $rtn = '0s';
+		if ($rtn == '') $rtn = '0s';
         return $rtn;
 	}
 	
