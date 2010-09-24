@@ -444,26 +444,6 @@
 					}
 				}
 				
-				// local login tried but external login forced in settings
-				if (isset($internal_login_id) && $site->force_external_login_when_trying_local_login())
-				{
-					if (strlen($msg) > 0)
-					{
-						$msg .= '</p><p>';
-					}
-					$msg .= '<span class="unread_messages">Local logins are disabled on this website. You should ';
-					if (isset($module['bzbb']) && ($module['bzbb']))
-					{
-						$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
-						$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
-						$msg .= '">login using your my.bzflag.org/bb/ (forum) account';
-					} else
-					{
-						$msg .= '<a href="./">login using your external account';
-					}
-					$msg .= '</a>.</span>' . "\n";
-					die_with_no_login($msg);
-				}
 				echo $msg;
 			}
 		}
