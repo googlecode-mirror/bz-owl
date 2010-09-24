@@ -50,6 +50,7 @@
 			$site->dieAndEndPage(('Could not get id for name ' . sqlSafeString($loginname)));
 		}
 		
+		
 		// initialise with reserved player id 0 (no player)
 		$playerid = (int) 0;
 		$convert_to_external_login = true;
@@ -63,21 +64,23 @@
 		}
 		mysql_free_result($result);
 		
+		// local login tried but external login forced in settings
 		if (!$convert_to_external_login && $site->force_external_login_when_trying_local_login())
 		{
-			$msg = '<span class="unread_messages">Local logins are disabled on this website. You should ';
+			$msg = '<span class="unread_messages">You already enabled ';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
 				$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 				$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
-				$msg .= '">login using your my.bzflag.org/bb/ (forum) account';
+				$msg .= '">global (my.bzflag.org/bb/) login</a>';
 			} else
 			{
-				$msg .= '<a href="./">login using your external account';
+				$msg .= 'external logins';
 			}
-			$msg .= '</a>.</span>' . "\n";
+			$msg .= ' for this account.</span>' . "\n";
 			die_with_no_login($msg);
 		}
+		
 		
 		if (intval($playerid) === 0)
 		{
