@@ -406,9 +406,10 @@
 		global $match_time;
 		
 		// displays match form
-		$query = 'SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`';
-		$query .= ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')';
-		$query .= ' AND `teams`.`id`=`teams_overview`.`teamid`';
+		$query = ('SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`'
+				  . ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')'
+				  . ' AND `teams`.`id`=`teams_overview`.`teamid`'
+				  . ' ORDER BY `teams`.`name`');
 		if (!($result = @$site->execute_query('teams, teams_overview', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
