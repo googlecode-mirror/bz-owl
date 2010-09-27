@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.50)
 # Database: testdb
-# Generation Time: 2010-09-16 23:54:37 +0200
+# Generation Time: 2010-09-27 11:07:23 +0200
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -57,7 +57,7 @@ CREATE TABLE `invitations` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `invited_playerid` int(11) unsigned NOT NULL DEFAULT '0',
   `teamid` int(11) unsigned NOT NULL DEFAULT '0',
-  `expiration` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `expiration` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   KEY `invited_playerid` (`invited_playerid`),
   KEY `teamid` (`teamid`),
@@ -96,14 +96,16 @@ CREATE TABLE `matches` (
 DROP TABLE IF EXISTS `matches_edit_stats`;
 
 CREATE TABLE `matches_edit_stats` (
-  `id` int(11) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `match_id` int(11) unsigned NOT NULL,
   `playerid` int(11) unsigned NOT NULL,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `team1_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team2_teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `team1_points` int(11) NOT NULL DEFAULT '0',
   `team2_points` int(11) NOT NULL DEFAULT '0',
-  KEY `id` (`id`),
+  PRIMARY KEY (`id`),
+  KEY `match_id` (`match_id`),
   KEY `playerid` (`playerid`),
   KEY `timestamp` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The match editing history';
@@ -314,7 +316,7 @@ CREATE TABLE `teams_overview` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `teamid` int(11) unsigned NOT NULL DEFAULT '0',
   `score` int(11) NOT NULL DEFAULT '1200',
-  `num_matches_played` int(11) DEFAULT NULL,
+  `num_matches_played` int(11) unsigned NOT NULL DEFAULT '0',
   `activity` varchar(20) NOT NULL DEFAULT '0.00 (0.00)',
   `member_count` int(11) unsigned NOT NULL DEFAULT '1',
   `any_teamless_player_can_join` tinyint(1) NOT NULL DEFAULT '1',
