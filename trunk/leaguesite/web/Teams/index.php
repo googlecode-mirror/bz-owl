@@ -2189,7 +2189,7 @@
 					  + $match_stats[$match_stats_keys[$i]]['lost']);
 			$match_stats[$match_stats_keys[$i]]['total'] = $total;
 			$ratio = $match_stats[$match_stats_keys[$i]]['won'] / $total;
-			$match_stats[$match_stats_keys[$i]]['won ratio'] = round($ratio*100, 0);
+			$match_stats[$match_stats_keys[$i]]['won ratio'] = round($ratio*100, 2);
 		}
 		
 		// sort the array
@@ -2273,11 +2273,14 @@
 	// list the non deleted teams
 	// example query: SELECT `teamid`,`name`, `score`, `member_count`,`activity`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
 	// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
-	$query = 'SELECT `teamid`,`name`, `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join` FROM `teams`, `teams_overview` ';
-	$query .= 'WHERE `teams`.`id` = `teams_overview`.`teamid`';
-	$query .= ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'";
-	$query .= ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')';
-	$query .= ' ORDER BY `score` DESC';
+	$query = ('SELECT `teamid`,`teams`.`name` AS `name`,`leader_playerid`,'
+	. ' (SELECT `name` FROM `players` WHERE `players`.`id`=`leader_playerid` LIMIT 1) AS `leader_name`,'
+	. ' `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join`'
+	.  ' FROM `teams`, `teams_overview` '
+	.  'WHERE `teams`.`id` = `teams_overview`.`teamid`'
+	. ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'"
+	. ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')'
+	. ' ORDER BY `score` DESC');
 	if ($result = @$site->execute_query('teams_overview', $query, $connection))
 	{
 		$rows = (int) mysql_num_rows($result);
@@ -2316,6 +2319,7 @@
 			echo '	<th>Score</th>' . "\n";
 			echo '	<th>Matches</th>' . "\n";
 			echo '	<th>Members</th>' . "\n";
+			echo '	<th>Leader</th>' . "\n";
 			echo '	<th>Activity</th>' . "\n";
 			if ($player_teamless)
 			{
@@ -2338,6 +2342,7 @@
 				echo '	<td>' . $team['score'] . '</td>' . "\n";
 				echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
 				echo '	<td>' . $team['member_count'] . '</td>' . "\n";
+				echo '	<td><a href="'. basepath() . '/Players/?profile=' . $team['leader_playerid'] . '">' . $team['leader_name'] . '</a></td>' . "\n";
 				echo '	<td>' . $team['activity'] . '</td>' . "\n";
 				if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
 				{					
@@ -2381,6 +2386,8 @@
 				$inactive_teams[$row['teamid']]['score'] = $row['score'];
 				$inactive_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
 				$inactive_teams[$row['teamid']]['member_count'] = $row['member_count'];
+				$inactive_teams[$row['teamid']]['leader_playerid'] = $row['leader_playerid'];
+				$inactive_teams[$row['teamid']]['leader_name'] = $row['leader_name'];
 				$inactive_teams[$row['teamid']]['activity'] = $row['activity'];
 				$inactive_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
 				
@@ -2392,6 +2399,7 @@
 				$active_teams[$row['teamid']]['score'] = $row['score'];
 				$active_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
 				$active_teams[$row['teamid']]['member_count'] = $row['member_count'];
+				$active_teams[$row['teamid']]['leader_playerid'] = $row['leader_playerid'];
 				$active_teams[$row['teamid']]['activity'] = $row['activity'];
 				$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
 			}
