@@ -1166,7 +1166,6 @@
 					mysql_free_result($result);
 					// team name not used -> set team name to it
 					$name = cleanTeamName($_POST['edit_team_name']);
-					die('name is "' . $name . '"!');
 					if ($name === false)
 					{
 						// team name not clean -> do not change to team name to it
