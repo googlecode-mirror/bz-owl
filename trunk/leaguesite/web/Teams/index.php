@@ -2400,6 +2400,7 @@
 				$active_teams[$row['teamid']]['num_matches_played'] = $row['num_matches_played'];
 				$active_teams[$row['teamid']]['member_count'] = $row['member_count'];
 				$active_teams[$row['teamid']]['leader_playerid'] = $row['leader_playerid'];
+				$active_teams[$row['teamid']]['leader_name'] = $row['leader_name'];
 				$active_teams[$row['teamid']]['activity'] = $row['activity'];
 				$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
 			}
