@@ -5,20 +5,6 @@
 	ini_set('session.gc_maxlifetime', '7200');
 	session_start();
 	
-//	if (!(isset($_SESSION['IsGoodVisitor'])) || !($_SESSION['IsGoodVisitor']))
-//	{
-//		// IP bestimmen
-//		$ip = getenv('REMOTE_ADDR');
-//		
-//		// IP aufloesen und Host bestimmen
-//		$host = gethostbyaddr($ip);
-//		//$host = 'blablub.versanet.de';
-//		if ((! preg_match("/.(arcor-ip.net|versanet.de)/", $host))
-//			&& (! preg_match("/|192.168.(0|1|2|3|4|5|6|7|8|9).(0|1|2|3|4|5|6|7|8|9)/", $ip)))
-//		{
-//			die('Kein Zutritt!');
-//		}
-//	}
 	require_once '../CMS/siteinfo.php';
 	$site = new siteinfo();
 	
@@ -59,14 +45,12 @@
 	echo '<div class="static_page_box">' . "\n";
 	if (!($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker'])))
 	{
-		echo '<p>You have no permission to view this page.</p>' . "\n";
+		echo '<p>You need to be logged in in order to view this page.</p>' . "\n";
 		$site->dieAndEndPage();
 	}
 	$use_internal_db = true;
 	
 	require 'list.php';
-	//formatbzfquery("bzflagr.net:5154");
-	//echo '<hr>' . "\n";
 	
 	$connection = $object->loudless_pconnect_to_db();
 	
@@ -140,52 +124,52 @@
 		date_default_timezone_set($site->used_timezone());
 		
 		$heute = date("d.m.y");
-		$datei = 'maintenance.txt';
+		$file = 'maintenance.txt';
 		
-		if (is_writable($datei)) {
+		if (is_writable($file)) {
 			
-			// Wir öffnen $filename im "Anhänge" - Modus.
-			// Der Dateizeiger befindet sich am Ende der Datei, und
-			// dort wird $somecontent später mit fwrite() geschrieben.
-			if (!$handle = fopen($datei, "r")) {
-				print "Kann die Datei $datei nicht öffnen";
+			// we open $filename in "attachemt" - mode.
+			// pointer is at end of the file
+			// there $somecontent will be saved later using fwrite()
+			if (!$handle = fopen($file, "r")) {
+				print "Can not open file $file";
 				exit;
 			}
 		} else {
-			print "Die Datei $datei ist nicht schreibbar";
+			print "File $file is not writeable";
 		}
 		
-		// lese die ersten 10 Zeichen
+		// read first 10 chars
 		$text = fread($handle, 10);
 		
-		// Ist DB auf dem Stand von heute?
+		// is DB info current?
 		if (strcasecmp($text, $heute) == 0)
 		{
-			// Nichts zu tun
+			// nothing to do
 			die();
 		}
 		
-		// Datenbank auswaehlen
+		// select database
 		mysql_select_db("playerlist", $connection);
 		
-		// Daten loeschen, wenn nicht mehr aktuell
-		// teure Operation
+		// delete database data if information not current
+		// expensive operation
 		$query = 'TRUNCATE teams';
 		$result = mysql_query($query, $connection);
 		if (!$result)
 		{
 			print mysql_error();
-			die("<br>\nQuery $query ist ungültiges SQL.");
+			die("<br>\nQuery $query is not valid SQL.");
 		}
 		$query = 'TRUNCATE players';
 		$result = mysql_query($query, $connection);
 		if (!$result)
 		{
 			print mysql_error();
-			die("<br>\nQuery $query ist ungültiges SQL.");
+			die("<br>\nQuery $query is not valid SQL.");
 		}
 		
-		$row = 1; // Anzahl der Felder
+		$row = 1; // number of rows
 		// create a new cURL resource
 		$ch = curl_init();
 		
@@ -224,7 +208,7 @@
 			
 			
 			$num = count ($data); // Felder im Array $data werden gezaehlt
-			$row++; // Anzahl der Arrays wird inkrementiert
+			$row++; // increment number of arrays
 			
 			if ($num == 2)
 			{
@@ -239,9 +223,7 @@
 			// teams
 			if ($num == 2)
 			{
-				// mysql_real_escape_string zerschießt " in /"
 				$teamid = mysql_real_escape_string((int) (str_replace('TE: ', '', $data[0])));
-				
 				$name = '"' . mysql_real_escape_string(htmlentities($data[1])) . '"';
 				
 				$query = 'INSERT INTO teams (teamid, name) Values(' . $teamid . ',' . $name . ')';
@@ -250,7 +232,7 @@
 				if (!$result)
 				{
 					print mysql_error();
-					die("<br>\nQuery $query ist ung&uuml;ltiges SQL.");
+					die("<br>\nQuery $query is not valid SQL.");
 				}
 			}
 			
@@ -267,24 +249,24 @@
 				if (!$result)
 				{
 					print mysql_error();
-					die("<br>\nQuery $query ist ung&uuml;ltiges SQL.");
+					die("<br>\nQuery $query is not valid SQL.");
 				}
 			}
 		}
 		
 		if (!(strcasecmp($text, $heute) == 0))
 		{
-			// Inhalt leeren
+			// delete content
 			if (!fclose($handle)) {
-				print "Kann die Datei $datei nicht schlie&szlig;en";
+				print "Can not close file $file";
 				exit;
 			}
-			if (!$handle = fopen($datei, 'w')) {
-				print "Kann die Datei $datei nicht &ouml;ffnen";
+			if (!$handle = fopen($file, 'w')) {
+				print "Can not open file $file";
 				exit;
 			}
 			if (!fwrite($handle, $heute)) {
-				print "Kann in die Datei $datei nicht schreiben";
+				print "Can not write to file $file";
 				exit;
 			}
 			@fclose($handle);
