@@ -2342,7 +2342,7 @@
 				echo '	<td>' . $team['score'] . '</td>' . "\n";
 				echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
 				echo '	<td>' . $team['member_count'] . '</td>' . "\n";
-				echo '	<td><a href="'. basepath() . '/Players/?profile=' . $team['leader_playerid'] . '">' . $team['leader_name'] . '</a></td>' . "\n";
+				echo '	<td><a href="'. basepath() . '/Players/?profile=' . $team['leader_playerid'] . '">' . htmlent($team['leader_name']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['activity'] . '</td>' . "\n";
 				if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
 				{					
