@@ -1049,10 +1049,13 @@
 			{
 				if (((int) $row['deleted'] === 1) || ((int) $row['deleted'] === 2) || ((int) $row['deleted'] === 3))
 				{
-					// mark deleted team as active
-					$query = ('UPDATE `teams_overview` SET `deleted`=' . sqlSafeStringQuotes('2')
-							  . ' ,`member_count`=' . sqlSafeStringQuotes('0')
-							  . ' WHERE `teamid`=' . sqlSafeStringQuotes($teamid));
+					// mark team as deleted (2)
+					$query = ('UPDATE `teams`,`teams_overview`'
+							  . ' SET `teams_overview`.`deleted`=' . sqlSafeStringQuotes('2')
+							  . ' ,`teams_overview`.`member_count`=' . sqlSafeStringQuotes('0')
+                                                          . ',`teams`.`leader_playerid`=' . sqlSafeStringQuotes('0')
+							  . ' WHERE `teams_overview`.`teamid`=' . sqlSafeStringQuotes($teamid)
+							  . ' AND `teams`.`id`=`teams_overview`.`teamid`');
 					if (!($result_update = @$site->execute_query('teams_overview', $query, $connection)))
 					{
 						$site->dieAndEndPage('Could not mark deleted team #' . sqlSafeStringQuotes($teamid) . ' as active.');
