@@ -2275,9 +2275,10 @@
 	// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
 	$query = ('SELECT `teamid`,`teams`.`name` AS `name`,`leader_playerid`,'
 	. ' (SELECT `name` FROM `players` WHERE `players`.`id`=`leader_playerid` LIMIT 1) AS `leader_name`,'
-	. ' `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join`'
-	.  ' FROM `teams`, `teams_overview` '
-	.  'WHERE `teams`.`id` = `teams_overview`.`teamid`'
+	. ' `score`,`num_matches_played`,`activity`, `member_count`,`any_teamless_player_can_join`,'
+	. ' (SELECT `created` from `teams_profile` WHERE `teams_profile`.`teamid` = `teams`.`id` LIMIT 1) AS `created`'
+	. ' FROM `teams`, `teams_overview`'
+	. ' WHERE `teams`.`id` = `teams_overview`.`teamid`'
 	. ' AND (`teams_overview`.`deleted`=' . "'" . '0' . "'"
 	. ' OR `teams_overview`.`deleted`=' . "'" . '1' . "'" . ')'
 	. ' ORDER BY `score` DESC');
@@ -2321,6 +2322,7 @@
 			echo '	<th>Members</th>' . "\n";
 			echo '	<th>Leader</th>' . "\n";
 			echo '	<th>Activity</th>' . "\n";
+			echo '	<th>Creation Date</th>' . "\n";
 			if ($player_teamless)
 			{
 				echo '	<th>Allowed actions</th>' . "\n";
@@ -2340,10 +2342,12 @@
 					echo $team['name'] . '</a></td>' . "\n";
 				}
 				echo '	<td>' . $team['score'] . '</td>' . "\n";
-				echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
+				//echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
+				echo '	<td><a href="' .basepath() . 'Matches/?search_string=' . $team['name'] . '&search_type=team+name&search_result_amount=20&search=Search' . '">' . htmlent($team['num_matches_played']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['member_count'] . '</td>' . "\n";
-				echo '	<td><a href="'. basepath() . '/Players/?profile=' . $team['leader_playerid'] . '">' . htmlent($team['leader_name']) . '</a></td>' . "\n";
+				echo '	<td><a href="'. basepath() . 'Players/?profile=' . $team['leader_playerid'] . '">' . htmlent($team['leader_name']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['activity'] . '</td>' . "\n";
+				echo '	<td>' . $team['created'] . '</td>' . "\n";
 				if (($viewerid > 0) && ((int) $team['any_teamless_player_can_join'] === 1))
 				{					
 					// take care of potential database problems
@@ -2389,6 +2393,7 @@
 				$inactive_teams[$row['teamid']]['leader_playerid'] = $row['leader_playerid'];
 				$inactive_teams[$row['teamid']]['leader_name'] = $row['leader_name'];
 				$inactive_teams[$row['teamid']]['activity'] = $row['activity'];
+				$inactive_teams[$row['teamid']]['created'] = $row['created'];
 				$inactive_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
 				
 			} else
@@ -2402,6 +2407,7 @@
 				$active_teams[$row['teamid']]['leader_playerid'] = $row['leader_playerid'];
 				$active_teams[$row['teamid']]['leader_name'] = $row['leader_name'];
 				$active_teams[$row['teamid']]['activity'] = $row['activity'];
+				$active_teams[$row['teamid']]['created'] = $row['created'];
 				$active_teams[$row['teamid']]['any_teamless_player_can_join'] = $row['any_teamless_player_can_join'];
 			}
 		}
