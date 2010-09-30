@@ -57,59 +57,61 @@
 	
 	function rankingLogo($score)
 	{
+		
+		echo $score;
 		switch ($score)
 		{
 			case ($score >1900):
-				echo '<span class="score1900">' . $score . '</span>';
+				echo '<span class="score1900"></span>';
 				break;
 			
 			case ($score >1800):
-				echo '<span class="score1800">' . $score . '</span>';
+				echo '<span class="score1800"></span>';
 				break;
 			
 			case ($score >1700):
-				echo '<span class="score1700">' . $score . '</span>';
+				echo '<span class="score1700"></span>';
 				break;
 			
 			case ($score >1600):
-				echo '<span class="score1600">' . $score . '</span>';
+				echo '<span class="score1600"></span>';
 				break;
 			
 			case ($score >1500):
-				echo '<span class="score1500">' . $score . '</span>';
+				echo '<span class="score1500"></span>';
 				break;
 			
 			case ($score >1400):
-				echo '<span class="score1400">' . $score . '</span>';
+				echo '<span class="score1400"></span>';
 				break;
 			
 			case ($score >1300):
-				echo '<span class="score1300">' . $score . '</span>';
+				echo '<span class="score1300"></span>';
 				break;
 			
 			case ($score >1200):
-				echo '<span class="score1200">' . $score . '</span>';
+				echo '<span class="score1200"></span>';
 				break;
 			
 			case ($score >1100):
-				echo '<span class="score1100">' . $score . '</span>';
+				echo '<span class="score1100"></span>';
 				break;
 			
 			case ($score >1000):
-				echo '<span class="score1000">' . $score . '</span>';
+				echo '<span class="score1000"></span>';
 				break;
 			
 			case ($score >900):
-				echo '<span class="score900">' . $score . '</span>';
+				echo '<span class="score900"></span>';
 				break;
 			
 			case ($score >800):
 				
-				echo '<span class="score800">' . $score . '</span>';
+				echo '<span class="score800"></span>';
 				break;
 			
 			case ($score >700):
-				echo '<span class="score700">' . $score . '</span>';
+				echo '<span class="score700"></span>';
 				break;
 		}
 	}
