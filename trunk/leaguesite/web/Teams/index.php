@@ -57,7 +57,6 @@
 	
 	function rankingLogo($score)
 	{
-		
 		echo $score;
 		switch ($score)
 		{
