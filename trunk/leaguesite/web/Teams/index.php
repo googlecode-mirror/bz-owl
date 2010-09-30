@@ -55,6 +55,66 @@
 	}
 	
 	
+	function rankingLogo($score)
+	{
+		switch ($score)
+		{
+			case ($score >1900):
+				echo '<span class="score1900">' . $score . '</span>';
+				break;
+			
+			case ($score >1800):
+				echo '<span class="score1800">' . $score . '</span>';
+				break;
+			
+			case ($score >1700):
+				echo '<span class="score1700">' . $score . '</span>';
+				break;
+			
+			case ($score >1600):
+				echo '<span class="score1600">' . $score . '</span>';
+				break;
+			
+			case ($score >1500):
+				echo '<span class="score1500">' . $score . '</span>';
+				break;
+			
+			case ($score >1400):
+				echo '<span class="score1400">' . $score . '</span>';
+				break;
+			
+			case ($score >1300):
+				echo '<span class="score1300">' . $score . '</span>';
+				break;
+			
+			case ($score >1200):
+				echo '<span class="score1200">' . $score . '</span>';
+				break;
+			
+			case ($score >1100):
+				echo '<span class="score1100">' . $score . '</span>';
+				break;
+			
+			case ($score >1000):
+				echo '<span class="score1000">' . $score . '</span>';
+				break;
+			
+			case ($score >900):
+				echo '<span class="score900">' . $score . '</span>';
+				break;
+			
+			case ($score >800):
+				
+				echo '<span class="score800">' . $score . '</span>';
+				break;
+			
+			case ($score >700):
+				echo '<span class="score700">' . $score . '</span>';
+				break;
+		}
+	}
+	
+	
 	function checkNumberRows($result, $site)
 	{				
 		if (mysql_num_rows($result) > 1)	
@@ -1596,9 +1656,11 @@
 			if (!(strcmp(($row['logo_url']), '') === 0))
 			{
 				// user entered a logo
-				$site->write_self_closing_tag('img class="team_logo" src="' . htmlentities($row['logo_url']) . '" style="max-width:300px; max-height:200px" alt="team logo"');
+				$site->write_self_closing_tag('img class="team_logo" src="' . htmlent($row['logo_url']) . '" style="max-width:300px; max-height:200px" alt="team logo"');
 			}
-			echo '		<span class="team_score">Rating: ' . $row['score'] . '</span>' . "\n";
+			echo '		<span class="team_score">Rating: ';
+			rankingLogo($row['score']);
+			echo '</span>' . "\n";
 			echo '		<div class="team_activity"><span class="team_activity_announcement">Activity: </span><span class="team_activity">'
 				 . strval($row['activity']) . '</span></div>' . "\n";
 			$number_team_members = (int) $row['member_count'];
@@ -2341,7 +2403,9 @@
 				{
 					echo $team['name'] . '</a></td>' . "\n";
 				}
-				echo '	<td>' . $team['score'] . '</td>' . "\n";
+				echo '	<td>';
+				rankingLogo($team['score']);
+				echo '</td>' . "\n";
 				//echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
 				echo '	<td><a href="' .basepath() . 'Matches/?search_string=' . $team['name'] . '&search_type=team+name&search_result_amount=20&search=Search' . '">' . htmlent($team['num_matches_played']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['member_count'] . '</td>' . "\n";

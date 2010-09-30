@@ -445,6 +445,10 @@
 				}
 				
 				echo $msg;
+				if ($site->force_external_login_when_trying_local_login())
+				{
+					die_with_no_login('');
+				}
 			}
 		}
 		
