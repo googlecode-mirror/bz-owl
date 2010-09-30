@@ -2290,7 +2290,7 @@
 			
 			echo '<td>' . $match_stats[$match_stats_keys[$i]]['lost'] . '</td>';
 			
-			echo '<td>' . $match_stats[$match_stats_keys[$i]]['won ratio'] . ' %</td>';
+			echo '<td>' . number_format($match_stats[$match_stats_keys[$i]]['won ratio'], 2) . ' %</td>';
 			
 			echo '</tr>' . "\n";
 		}
