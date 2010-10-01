@@ -520,6 +520,15 @@
 			}
 		}
 		
+		// is match older than 2 months?
+		$eightWeeksAgo = (int) strtotime('now -8 weeks');
+		if (((int) $specifiedTime) <= $eightWeeksAgo)
+		{
+				echo ('<p>You tried to enter, edit or delete a match that is older than 8 weeks.'
+					  . 'Only matches played in the last 8 weeks can be entered, edited or deleted.</p>' . "\n");
+				$confirmed = 0;
+		}
+		
 		// check if there is already a match entered at that time
 		// scores depend on the order, two matches done at the same time lead to undefined behaviour
 		$query = 'SELECT `timestamp` FROM `matches` WHERE `timestamp`=' . sqlSafeStringQuotes($timestamp);
