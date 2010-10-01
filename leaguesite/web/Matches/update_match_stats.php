@@ -16,6 +16,16 @@
 								 . sqlSafeString($team_id1) . ' and ' . sqlSafeString($team_id2) . ' could not be updated due to a sql problem!');
 		}
 		
+		// mark both participating teams as active
+		$query = ('UPDATE `teams_overview` SET `deleted`=' . sqlSafeStringQuotes('1')
+				  . ' WHERE `teamid`=' . sqlSafeStringQuotes($team_id1) . ' OR `teamid`=' . sqlSafeStringQuotes($team_id2)
+				  . ' LIMIT 2');
+		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
+		{
+			$site->dieAndEndPage('Could not mark team with id ' . sqlSafeString($teamid) . ' as active!');
+		}
+		
+		
 		// increase match win count for teams that participated
 		if ($team1_points > $team2_points)
 		{
