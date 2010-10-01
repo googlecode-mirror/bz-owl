@@ -23,7 +23,7 @@
 		$result_callsign = 'Unknown player!';
 		
 		// read each entry, row by row
-		while($row = mysql_fetch_array($result))
+		while ($row = mysql_fetch_array($result))
 		{
 			$result_callsign = '<a href="../Players/?profile=' . htmlspecialchars($item) . '">' .$row['name'] . '</a>';
 		}

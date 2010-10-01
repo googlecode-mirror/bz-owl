@@ -388,6 +388,12 @@
 				// TODO: implement logging here!
 			}
 		}
+		
+		
+		function favicon_path()
+		{
+			return favicon();
+		}
 	}
 	
 	class db_import
