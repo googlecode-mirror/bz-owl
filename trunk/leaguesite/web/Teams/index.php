@@ -369,7 +369,7 @@
 				$site->dieAndEndPage('');
 			}
 			
-			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . "'" . sqlSafeString($viewerid) . "'";
+			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . sqlSafeStringQuotes($viewerid);
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -547,7 +547,7 @@
 		if ((int) mysql_num_rows($result_teams) < 1)
 		{
 			// not deleted team yet
-			echo '<p>There is not a single deleted team in the database</p>' . "\n";
+			echo '<p>There is not a single deleted team in the database.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
