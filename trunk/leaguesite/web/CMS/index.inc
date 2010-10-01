@@ -21,6 +21,14 @@
 	$site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"');
 
 	require (dirname(dirname(__FILE__)) . '/stylesheet.inc');
+	
+	// display favicon, if specified
+	if (!(strcmp($site->favicon_path(), '') === 0))
+	{
+		echo '	';
+		echo $site->write_self_closing_tag('link rel="icon" type="image/png" href="' . $site->favicon_path() . '"');
+	}
+	
 	echo '	<title>';
 	// display the title specified in $page_title
 	// the latter is defined in the script that includes this file

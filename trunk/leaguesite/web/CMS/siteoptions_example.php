@@ -103,6 +103,12 @@
 		return 'Parse';
 	}
 	
+	function favicon()
+	{
+		// either return an empty string or path to favicon
+		return '';
+	}
+	
 	class pw_secret
 	{
 		function mysqlpw_secret()
