@@ -429,7 +429,7 @@
 				}
 			} elseif (isset($_GET['profile']))
 			{
-				echo '$amp;profile=' . htmlent($_GET['profile']);
+				echo '&amp;profile=' . htmlent($_GET['profile']);
 			}
 			
 			echo '">Previous visits</a>' . "\n";
