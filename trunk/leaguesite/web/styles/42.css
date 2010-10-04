@@ -8,6 +8,8 @@ body
 	background: #323333 url(42_misc/BG.png) repeat fixed;
 	color: white;
 	max-width: 100em;
+	margin-left: 2.5%;
+	margin-right: 2.5%;
 }
 
 /* wrap lines when there is not enough space */
