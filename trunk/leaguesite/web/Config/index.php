@@ -143,7 +143,7 @@
 		}
 	}
 ?>
-<p>Special thanks: Upsetter and zaphod for a lot of input, zaphod for the logo; brad for hosting and svn repository.</p>
+<p>Special thanks: Upsetter and zaphod for a lot of input, zaphod for the logos and icons; brad for hosting and svn repository and orbit for the favicon.</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	
 	// the address depends on where the file resides
