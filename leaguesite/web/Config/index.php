@@ -77,6 +77,12 @@
 		// use previously used stylesheet
 		include '../stylesheet.inc';
 	}
+	
+	if (!(strcmp($site->favicon_path(), '') === 0))
+	{
+		echo '	';
+		echo $site->write_self_closing_tag('link rel="icon" type="image/png" href="' . $site->favicon_path() . '"');
+	}
 ?>
 <title>Config</title>
 </head>
