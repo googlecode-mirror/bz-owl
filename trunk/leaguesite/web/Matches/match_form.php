@@ -53,6 +53,14 @@
 			{
 				$site->dieAndEndPage('Could not look up the data of match #' . sqlSafeString($match_id) . '.');
 			}
+			
+			// check if match exists
+			if (mysql_num_rows($result) < 1)
+			{
+				echo '<p>This match does not exist in database.</p><p><a class="button" href="./">Back to match overview</a></p>' . "\n";
+				$site->dieAndEndPage();
+			}
+			
 			// compute both time and day from timestamp data
 			while($row = mysql_fetch_array($result))
 			{

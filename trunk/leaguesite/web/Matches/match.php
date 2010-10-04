@@ -143,9 +143,13 @@
 							   $team1_id_old, $team2_id_old,
 							   $team_id1, $team_id2);
 		
-		// find out old score
-		$team1_score = get_score_at_that_time($team_id1, $timestamp_old);
-		$team2_score = get_score_at_that_time($team_id2, $timestamp_old);
+		
+		// find out oldest timestamp involved
+		$oldest_timestamp = $timestamp_old;
+		if ((strtotime($timestamp_old) - strtotime($timestamp)) >= 0)
+		{
+			$oldest_timestamp = $timestamp;
+		}
 		
 		// old match data variables no longer needed
 		unset($playerid_old);
@@ -156,6 +160,10 @@
 		unset($team1_points_old);
 		unset($team2_points_old);
 		
+		
+		// find out old score
+		$team1_score = get_score_at_that_time($team_id1, $timestamp);
+		$team2_score = get_score_at_that_time($team_id2, $timestamp);
 		
 		// we got the score for both team 1 and team 2 at that point and did the preparation
 		// thus we can edit the match at this point
@@ -190,7 +198,7 @@
 		// trigger score updates for newer matches
 		update_later_matches($team_id1, $team_id2,
 							 $team1_caps, $team2_caps,
-							 $timestamp, $team_stats_changes,
+							 $oldest_timestamp, $team_stats_changes,
 							 $viewerid);
 		
 		show_score_changes($team_stats_changes, array_keys($team_stats_changes));
@@ -672,7 +680,7 @@
 			
 			if ($caps_a > $caps_b) // team a wins
 			{
-				$score= 1;
+				$score = 1;
 			} else if ($caps_a == $caps_b) // draw
 			{
 				$score = 0.5;
@@ -680,15 +688,14 @@
 			{
 				$score = 0;
 			}
-			$diff=50*($score-$prob);
-			
-			// do not forget to round the values to integers
-			$score_a = round($score_a + $diff);
-			$score_b = round($score_b - $diff);
 			
 			// do not compute absolute value of rounded difference
 			// as we need a signed integer to track score changes
-			$diff = round($diff);
+			$diff=floor(50*($score-$prob));
+			
+			// do not forget to round the values to integers
+			$score_a = $score_a + $diff;
+			$score_b = $score_b - $diff;
 		}
 		
 		if ($site->debug_sql())
