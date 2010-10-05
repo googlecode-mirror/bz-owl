@@ -19,8 +19,6 @@
 		$connection = $site->connect_to_db();
 	}
 	
-	$settings = new maintenance_settings;
-	
 	function unlock_tables_maint()
 	{
 		global $site;
@@ -218,9 +216,12 @@
 	// set up a class to have a unique namespace
 	class maintenance
 	{		
-		function cleanup_teams($site, $connection, $two_months_in_past)
+		function cleanup_teams($two_months_in_past)
 		{
 			global $settings;
+			global $site;
+			global $connection;
+			
 			
 			// teams cleanup
 			if ($settings->maintain_teams_not_matching_anymore())
@@ -377,6 +378,8 @@
 			global $today;
 			echo '<p>Performing maintenance...</p>';
 			
+			$settings = new maintenance_settings();
+			
 			// flag stuff
 			$query = 'SELECT `id` FROM `countries` WHERE `id`=' . sqlSafeStringQuotes('1');
 			if (!($result = @$site->execute_query('countries', $query, $connection)))
@@ -477,12 +480,12 @@
 			
 			
 			// date of 2 months in past will help during maintenance
-			$two_months_in_past = strtotime('-2 months');
+			$two_months_in_past = strtotime('-3 months');
 			$two_months_in_past = strftime('%Y-%m-%d %H:%M:%S', $two_months_in_past);
 			
 			// clean teams first
 			// if team gets deleted players will be maintained later
-			$this->cleanup_teams($site, $connection, $two_months_in_past);
+			$this->cleanup_teams($two_months_in_past);
 			
 			
 			// maintain players now
@@ -490,15 +493,15 @@
 			// get player id of teamless players that have not been logged-in in the last 2 months
 			$query = 'SELECT `playerid` FROM `players`, `players_profile`';
 			$query .= ' WHERE `players`.`teamid`=' . sqlSafeStringQuotes('0');
-			$query .= 'AND `players`.`status`=' . sqlSafeStringQuotes('active');
+			$query .= ' AND `players`.`status`=' . sqlSafeStringQuotes('active');
 			$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
-			$query .= 'AND `players_profile`.`last_login`<' . sqlSafeStringQuotes($two_months_in_past);
+			$query .= ' AND `players_profile`.`last_login`<' . sqlSafeStringQuotes($two_months_in_past);
 			
 			// execute query
 			if (!($result = @$site->execute_query('players, players_profile', $query, $connection)))
 			{
 				unlock_tables_maint();
-				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of 2 months long inactive players failed.');
+				$site->dieAndEndPage('MAINTENANCE ERROR: getting list of 3 months long inactive players failed.');
 			}
 			
 			// store inactive players in an array
