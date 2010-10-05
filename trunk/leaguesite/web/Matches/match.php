@@ -4,7 +4,6 @@
 		die('This file is meant to be only included by other files!');
 	}
 	
-	
 	function enter_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp)
 	{
 		global $site;
@@ -59,6 +58,9 @@
 		
 		// done with entering that match
 		unlock_tables();
+		
+		require_once ('../CMS/maintenance/index.php');
+		update_activity();
 		
 		echo '<p>The match was entered successfully.</p>' . "\n";
 		echo '<a class="button" href="./">Enter another match</a>' . "\n";
@@ -206,6 +208,9 @@
 		// done with entering that match
 		unlock_tables();
 		
+		require_once ('../CMS/maintenance/index.php');
+		update_activity();
+		
 		echo '<p>The match was edited successfully.</p>' . "\n";
 		$site->dieAndEndPage();
 	}
@@ -340,6 +345,9 @@
 		
 		// done with entering that match
 		unlock_tables();
+		
+		require_once ('../CMS/maintenance/index.php');
+		update_activity();
 		
 		echo '<p>The match was deleted successfully.</p>' . "\n";
 		$site->dieAndEndPage();
