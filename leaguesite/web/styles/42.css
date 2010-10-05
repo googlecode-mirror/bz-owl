@@ -3,6 +3,8 @@
 	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/42.css
 */
 
+@import url("42_misc/rankings.css");
+
 body
 {
 	background: #323333 url(42_misc/BG.png) repeat fixed;
