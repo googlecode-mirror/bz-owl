@@ -17,6 +17,14 @@ table tr:nth-child(odd) span
 	margin-bottom: -5px;
 }
 
+div.team_header span.team_score span
+{
+	display: inline-block;
+	position: relative;
+	top: 0.2em;
+	margin-top: -0.2em;
+}
+
 span.score700
 {
 	background-image: url(700.png) no-repeat;
