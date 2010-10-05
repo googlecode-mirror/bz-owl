@@ -957,20 +957,21 @@ form.search_bar
 }
 
 /* some links should be displayed as butttons */
-a.button:before
+a.button
 {
-    content: "[";
+	border: 1px solid #c84015;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	padding-right: 0.5em;
+	padding-left: 0.5em;
 }
+
 
 /*form.search_bar + a.button*/
 div.content > a.button
 {
 	color: #dedede;
-}
-
-a.button:after
-{
-    content: "]";
 }
 
 /* remove underline from links */
