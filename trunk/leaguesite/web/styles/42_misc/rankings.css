@@ -1,6 +1,14 @@
 /* @override http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/42_misc/rankings.css */
 
-table tr:nth-child(even) span
+ {
+	
+}
+
+#table_team_members_inactive_teams caption {
+	
+}
+
+table#table_team_members_active_teams.big tr:nth-child(even) span, table#table_team_members_inactive_teams tr:nth-child(even) span
 {
 	display: inline-block;
 	padding-right: 19px;
