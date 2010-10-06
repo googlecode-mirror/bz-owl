@@ -972,15 +972,21 @@ div.content > a.button, div.content > span > a.button
 	border-radius: 1em;
 	padding-right: 0.5em;
 	padding-left: 0.5em;
-	border: 2px outset #a13310;
 	background-attachment: scroll;
 	display: inline-block;
+	border-top: 2px solid #c84015;
+	border-right: 2px solid #74250c;
+	border-bottom: 2px solid #74250c;
+	border-left: 2px solid #c84015;
 }
 
 div.content > a.button:hover, div.content > span > a.button:hover
 {
 	color: #ddd;
-	border: 2px inset #c84015;
+	border-bottom: 2px solid #c84015;
+	border-right: 2px solid #c84015;
+	border-top: 2px solid #74250c;
+	border-left: 2px solid #74250c;
 }
 
 table a.button:before
