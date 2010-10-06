@@ -424,7 +424,7 @@ a#new_entry.button + br +br + span
 	display: block;
 	text-align: right;
 	margin-bottom: 0.15em;
-	margin-top: -2.25em;
+	margin-top: -2.6em;
 }
 
 span.edit_and_delete_links
@@ -960,19 +960,37 @@ form.search_bar
 a.button
 {
 	white-space: nowrap;
-	border: 1px solid #c84015;
+	display: inline-block;
+	margin-bottom: 1px;
+}
+
+div.content > a.button, div.content > span > a.button
+{
+	color: #ddd;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
 	border-radius: 1em;
 	padding-right: 0.5em;
 	padding-left: 0.5em;
+	border: 2px outset #a13310;
+	background-attachment: scroll;
+	display: inline-block;
 }
 
-
-/*form.search_bar + a.button*/
-div.content > a.button
+div.content > a.button:hover, div.content > span > a.button:hover
 {
-	color: #dedede;
+	color: #ddd;
+	border: 2px inset #c84015;
+}
+
+table a.button:before
+{
+	content: "[";
+}
+
+table a.button:after
+{
+	content: "]";
 }
 
 /* remove underline from links */
