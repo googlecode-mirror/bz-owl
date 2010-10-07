@@ -1717,10 +1717,32 @@
 		
 		
 		// show the members of team!
+		// only admins, team leader and members of the team in question can see last logins
+		$query = ('SELECT `id` AS `is_member_of_team` FROM `players`'
+			  . ' WHERE `players`.`id`=' . sqlSafeStringQuotes($viewerid)
+			  . ' AND `players`.`teamid`=' . sqlSafeStringQuotes($profile)
+			  . ' LIMIT 1');
+		if (!($result = @$site->execute_query('players', $query, $connection)))
+		{
+			$site->dieAndEndPage('Could not find out if player #' . sqlSafeString($viewerid)
+						. ' belongs to team #' . sqlSafeString($profile));
+		}
+		
+		$team_member = false;
+		while ($row = mysql_fetch_array($result))
+		{
+			if (intval($row['is_member_of_team']) > 0)
+			{
+				$team_member = true;
+			}
+		}
+		mysql_free_result($result);
+		
 		// example query: SELECT `players`.`id`, `name`, `location`
 		// FROM `players`, `players_profile` WHERE `players`.`teamid`='1' AND `players`.`id`=`players_profile`.`playerid`
-		$query = 'SELECT `players`.`id`, `name`, `location` FROM `players`, `players_profile` WHERE `players`.`teamid`=' . sqlSafeStringQuotes($profile);
-		$query .= '  AND `players`.`id`=`players_profile`.`playerid`';
+		$query = ('SELECT `players`.`id`, `name`, `location`, `last_login`'
+			  . ' FROM `players`, `players_profile` WHERE `players`.`teamid`=' . sqlSafeStringQuotes($profile)
+			  . '  AND `players`.`id`=`players_profile`.`playerid`');
 		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 		{
 			// query was bad, error message was already given in $site->execute_query(...)
@@ -1732,13 +1754,16 @@
 		echo '	<th>Name</th>' . "\n";
 		echo '	<th>Location</th>' . "\n";
 		echo '	<th>Permissions</th>' . "\n";
-		if ($display_user_kick_from_team_buttons)
+		if ($team_member || $display_user_kick_from_team_buttons)
 		{
-			echo '<th>Allowed actions</th>' . "\n";
-		}		
+			echo '	<th>Last Login</th>' . "\n";
+			echo '	<th>Allowed actions</th>' . "\n";
+		}
 		echo '</tr>' . "\n\n";
+
 		while ($row = mysql_fetch_array($result))
 		{
+			echo '</tr>' . "\n\n";
 			echo '<tr class="teams_members_overview">' . "\n";
 			echo '<td>';
 			echo '<a href="../Players?profile=';
@@ -1778,6 +1803,10 @@
 			}
 			echo '</td>' . "\n";
 			
+			if ($team_member || $display_user_kick_from_team_buttons)
+			{
+				echo '	<td>' . $row['last_login'] . '</td>' . "\n";
+			}
 			// team leader can't be removed from team
 			if (($team_leader_id > 0) && ($currentId !== $team_leader_id))
 			{
