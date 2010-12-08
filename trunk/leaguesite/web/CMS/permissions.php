@@ -59,6 +59,10 @@
 		// server tracker permissions
 		$_SESSION['allow_watch_servertracker'] = false;
 		
+		// TODO permissions
+		$_SESSION['allow_view_todo'] = false;
+		$_SESSION['allow_edit_todo'] = false;
+		
 		// aux permissions
 		$_SESSION['IsAdmin'] = false;
 	}
@@ -274,6 +278,22 @@
 		if (!($_SESSION['allow_watch_servertracker']))
 		{
 			$_SESSION['allow_watch_servertracker'] = true;
+		}
+	}
+	
+	function allow_view_todo()
+	{
+		if (!($_SESSION['allow_view_todo']))
+		{
+			$_SESSION['allow_view_todo'] = true;
+		}
+	}
+	
+	function allow_edit_todo()
+	{
+		if (!($_SESSION['allow_edit_todo']))
+		{
+			$_SESSION['allow_edit_todo'] = true;
 		}
 	}
 	

@@ -164,6 +164,14 @@
 ?>
 </p>
 </form>
+
+<?php
+	if ((isset($_SESSION['allow_view_todo'])) && ($_SESSION['allow_view_todo']))
+	{
+		echo '<a href="../TODO">View TODO</a>';
+	}
+?>
+
 </div>
 <?php
 	if (file_exists('../.svn/entries'))
