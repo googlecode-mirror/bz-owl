@@ -40,7 +40,7 @@
 		echo '</div>' . "\n";
 		
 		
-		// user sent back because of wrong data in the form for instance
+		// user got sent back because of wrong data in the form for instance
 		if (isset($_POST['team_id1']) && isset($_POST['team_id2']) && isset($_POST['team1_points']) && isset($_POST['team2_points']))
 		{
 			show_form($_POST['team_id1'], $_POST['team_id2'], $_POST['team1_points'], $_POST['team2_points'], $readonly=false);
@@ -112,6 +112,12 @@
 		// display confirmation form
 		open_form();
 		
+		if ($similarMatchFound)
+		{
+			// include confirmation about similar match
+			$site->write_self_closing_tag('input type="hidden" name="similar_match" value="1"');
+		}
+		
 		// pass team id's as $_POST (passing it with readonly <select> doesn't work somehow)
 		$site->write_self_closing_tag('input type="hidden" name="team_id1" value="'
 									  . htmlspecialchars($team_id1) . '"');
@@ -170,17 +176,16 @@
 		global $site;
 		global $match_id;
 		
+		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="';
 		if (isset($_GET['enter']))
 		{
-			$site->write_self_closing_tag('form enctype="application/x-www-form-urlencoded" method="post" action="?enter"');
+			echo '?enter">';
 		} elseif (isset($_GET['edit']))
 		{
-			$site->write_self_closing_tag('form enctype="application/x-www-form-urlencoded"'
-										  . ' method="post" action="?edit=' . urlencode($match_id) . '"');
+			echo '?edit=' . urlencode($match_id) . '">';
 		} else
 		{
-			$site->write_self_closing_tag('form enctype="application/x-www-form-urlencoded"'
-										  . ' method="post" action="?delete=' . urlencode($match_id) . '"');
+			echo '?delete=' . urlencode($match_id) . '">';
 		}
 	}
 	
@@ -214,7 +219,7 @@
 		$comparisonOperator = '>';
 		if (!($newerMatches))
 		{
-			$comparisonOperator = '<';
+			$comparisonOperator = '<=';
 		}
 		
 		// similar match entered already?
@@ -250,40 +255,33 @@
 			// we can save comparisons using a helper variable
 			$team_ids_swapped = false;
 			$timestamp = $row['timestamp'];
-			$team_id1_matches = (((int) strcmp($row['team1_teamid'],$team_id1)) === 0);
+			$team_id1_matches = (intval($row['team1_teamid']) === $team_id1);
 			if (!$team_id1_matches)
 			{
 				$team_ids_swapped = true;
-				$team_id1_matches = (((int) strcmp($row['team1_teamid'],$team_id2)) === 0);
+				$team_id1_matches = (intval($row['team1_teamid']) === $team_id2);
 			}
 			
 			if ($team_ids_swapped)
 			{
-				$team_id2_matches = (((int) strcmp($row['team2_teamid'],$team_id1)) === 0);
+				$team_id2_matches = (intval($row['team2_teamid']) === $team_id1);
 			} else
 			{
-				$team_id2_matches = (((int) strcmp($row['team2_teamid'],$team_id2)) === 0);
+				$team_id2_matches = (intval($row['team2_teamid']) === $team_id2);
 			}
 			
-			// same thing with the points
+			// use helper variable to save some comparisons of points
 			if ($team_ids_swapped)
 			{
-				$team1_points_matches = (((int) strcmp($row['team1_points'],$team2_points)) === 0);
+				$team1_points_matches = (intval($row['team1_points']) === $team2_points);
+				$team2_points_matches = (intval($row['team2_points']) === $team1_points);
 			} else
 			{
-				$team1_points_matches = (((int) strcmp($row['team2_teamid'],$team1_points)) === 0);
-			}
-			
-			if ($team_ids_swapped)
-			{
-				$team2_points_matches = (((int) strcmp($row['team2_points'],$team1_points)) === 0);
-			} else
-			{
-				$team2_points_matches = (((int) strcmp($row['team2_teamid'],$team2_points)) === 0);
+				$team1_points_matches = (intval($row['team1_points']) === $team1_points);
+				$team2_points_matches = (intval($row['team2_points']) === $team2_points);
 			}
 		}
 		mysql_free_result($result);
-		
 		
 		// if similar match was found warn the user
 		if ($team_id1_matches && $team_id2_matches && $team1_points_matches && $team2_points_matches)
@@ -298,11 +296,32 @@
 			}
 			echo ' match in the database is quite similar:</p>';
 			// use the post data as much as possible instead of looking up the same data in the database
-			echo '<p>At ' . $timestamp . ' teams ';
-			team_name_from_id($site, $connection, $team_id1);
+			echo '<p><strong>' . $timestamp . '</strong> ';
+			
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id1) . ' LIMIT 1';
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not find out name of team #' . sqlSafeString($team_id1) . '.');
+			}
+			while ($row = mysql_fetch_array($result))
+			{
+				team_name_from_id($team_id1, htmlent($row['name']));
+			}
+			mysql_free_result($result);
+			
 			echo ' - ';
-			team_name_from_id($site, $connection, $team_id2);
-			echo ' with result ' . htmlentities($team1_points) . ' - ' . htmlentities($team2_points) . '</p>';
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id2) . ' LIMIT 1';
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not find out name of team #' . sqlSafeString($team_id2) . '.');
+			}
+			while ($row = mysql_fetch_array($result))
+			{
+				team_name_from_id($team_id2, htmlent($row['name']));
+			}
+			mysql_free_result($result);
+			
+			echo ' with result <strong>' . $team1_points . ' - ' . $team2_points . '</strong>.</p>';
 			echo "\n";
 			return true;
 		}
@@ -370,6 +389,7 @@
 		global $team2_caps;
 		global $timestamp;
 		global $match_id;
+		global $similarMatchFound;
 		
 		// sanitise match id
 		if (isset($_GET['edit']))
@@ -393,7 +413,10 @@
 		{
 			$team_id1 = 0;
 		}
-			
+		if ($team_id1 < 1)
+		{
+			$team_id1 = 0;
+		}
 		
 		if (isset($_POST['match_team_id2']))
 		{
@@ -405,14 +428,59 @@
 		{
 			$team_id2 = 0;
 		}
-		
-		// teams are the same (and chosen by user)
-		if ((($team_id1 > 0) && ($team_id2 > 0)) && ($team_id1 === $team_id2))
+		if ($team_id2 < 1)
 		{
-			echo '<p>In order to be an official match, teams would have to be different!</p>';
-			$confirmed = 0;
+			$team_id2 = 0;
 		}
 		
+		
+		// do the teams exist?
+		
+		// teams specified?
+		if (!isset($_GET['delete']) && ($team_id1 > 0 && $team_id2 > 0))
+		{
+			$team_exists = 0;
+			$query = 'SELECT COUNT(`id`) as `team_exists` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id1) . ' LIMIT 1';
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not find out name of team #' . sqlSafeString($team_id1) . '.');
+			}
+			while ($row = mysql_fetch_array($result))
+			{
+				$team_exits = intval($row['team_exists']);
+			}
+			mysql_free_result($result);
+			if ($team_exits === 0)
+			{
+				echo '<p>Error: The specified team #1 does not exist</p>';
+				$confirmed = 0;
+			}
+			
+			// reset variable for team 2
+			$team_exits = 0;
+			$query = 'SELECT COUNT(`id`) as `team_exists` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id2) . ' LIMIT 1';
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not find out name of team #' . sqlSafeString($team_id2) . '.');
+			}
+			while ($row = mysql_fetch_array($result))
+			{
+				$team_exits = intval($row['team_exists']);
+			}
+			mysql_free_result($result);
+			if ($team_exits === 0)
+			{
+				echo '<p>Error: The specified team #2 does not exist</p>';
+				$confirmed = 0;
+			}
+			
+			// teams are the same (and chosen by user)
+			if ((($team_id1 > 0) && ($team_id2 > 0)) && ($team_id1 === $team_id2))
+			{
+				echo '<p>In order to be an official match, teams would have to be different!</p>';
+				$confirmed = 0;
+			}
+		}
 		
 		// sanitise score variables
 		
@@ -591,7 +659,6 @@
 			}
 		}
 		
-		
 		// check for similar match in database and warn user if at least one was found
 		// skip warning if already warned (no infinite warning loop)
 		if ($confirmed > 1 && !isset($_POST['similar_match']))
@@ -614,7 +681,8 @@
 			
 			if ($similarMatchFound)
 			{
-				$site->write_self_closing_tag('input type="hidden" name="similar_match" value="1"');
+				// ask for confirmation again and do not go ahead automatically
+				$confirmed = 1;
 			}
 		}
 		
