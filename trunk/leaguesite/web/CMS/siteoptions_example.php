@@ -34,7 +34,7 @@
 	{
 		if (strcmp($section, 'bans') === 0)
 		{
-			return 'GU League admins';
+			return 'GU League Council';
 		} else
 		{
 			return '';
