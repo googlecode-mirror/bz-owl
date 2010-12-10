@@ -17,7 +17,7 @@
 			// strip whitespace or other characters from the end of the name
 			$cleaned_name = rtrim($name);
 			// "(teamless)" is a reserved name
-			if (strcmp($_POST['edit_team_name'], '(teamless)') === 0)
+			if (strcasecmp($_POST['edit_team_name'], '(teamless)') === 0)
 			{
 				$cleaned_name = '';
 			}
