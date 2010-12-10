@@ -1072,6 +1072,9 @@
 	if ($search_player_sort)
 	{
 		$query .= ' ORDER BY `players`.`name`, `team_name`';
+	} elseif ($search_bzid_sort)
+	{
+		$query .= ' ORDER BY `players`.`external_playerid`, `players`.`name`, `team_name`';
 	} elseif ($search_joined_sort)
 	{
 		$query .= ' ORDER BY `players_profile`.`joined`, `team_name`, `players`.`name`';
