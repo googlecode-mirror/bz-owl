@@ -18,7 +18,7 @@
 	}
 	while ($row = mysql_fetch_array($result))
 	{
-		echo 'TE: ' . $row['id'] . ', ' . $row['name'] . "\n";
+		echo 'TE: ' . $row['id'] . ', ' . htmlent_decode($row['name']) . "\n";
 	}
 	mysql_free_result($result);
 	
@@ -30,7 +30,7 @@
 	}
 	while ($row = mysql_fetch_array($result))
 	{
-		echo 'PL: ' . $row['teamid'] . ', ' . $row['id' ]. ', ' . $row['name'] . "\n";
+		echo 'PL: ' . $row['teamid'] . ', ' . $row['id' ]. ', ' . htmlent_decode($row['name']) . "\n";
 	}
 	mysql_free_result($result);
 	
