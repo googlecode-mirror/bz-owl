@@ -875,7 +875,7 @@
 	echo '</span></div> ' . "\n";
 	
 	// looking for either team name or time
-	echo '<div style="display:inline"><label for="player_search_type">sort by:</label> ' . "\n";
+	echo '<div style="display:inline"><label for="player_search_type">result type:</label> ' . "\n";
 	echo '<span><select id="player_search_type" name="search_type">';
 	
 	if (isset($_GET['search']))
