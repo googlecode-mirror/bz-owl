@@ -1030,7 +1030,7 @@
 	// tables involved
 	$query .= ' FROM `players`, `players_profile`';
 	// include table teams if team search performed
-	if ($search_team_sort)
+	if ($search_team_sort && (strcmp($search_expression, '(teamless)') !== 0))
 	{
 		$query .= ', `teams`';
 	}
