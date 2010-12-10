@@ -330,7 +330,7 @@
 			if ($name === false)
 			{
 				// team name not clean -> do not create team with its name
-				$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') tried to create a new team a non allowed team name.'
+				$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') tried to create a new team a with non allowed team name.'
 									 . ' A team name must not end with whitespace and must not contain non-printable characters'
 									 . ' as well as being not equal to the reserved name "(teamless)".');
 				
