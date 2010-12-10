@@ -16,6 +16,13 @@
 		{
 			// strip whitespace or other characters from the end of the name
 			$cleaned_name = rtrim($name);
+			// "(teamless)" is a reserved name
+			if (strcmp($_POST['edit_team_name'], '(teamless)') === 0)
+			{
+				$cleaned_name = '';
+			}
+			
+			// check if cleaned team name is different than user entered team name
 			if (strcmp($name, $cleaned_name) === 0)
 			{
 				return htmlent($name);
@@ -318,8 +325,19 @@
 
 			}
 			
+			// do not allow "(teamless)" as team name (refers to all teamless players)
+			$name = cleanTeamName($_POST['edit_team_name']);
+			if ($name === false)
+			{
+				// team name not clean -> do not create team with its name
+				$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') tried to create a new team a non allowed team name.'
+									 . ' A team name must not end with whitespace and must not contain non-printable characters'
+									 . ' as well as being not equal to the reserved name "(teamless)".');
+				
+			}
+			
 			// is the team name already used?
-			$query = 'SELECT `name` FROM `teams` WHERE `name`=' . sqlSafeStringQuotes(htmlent($_POST['edit_team_name'])) . ' LIMIT 1';
+			$query = 'SELECT `name` FROM `teams` WHERE `name`=' . sqlSafeStringQuotes(htmlent($name)) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -362,7 +380,7 @@
 			mysql_free_result($result);
 			
 			// create the team itself
-			$query = 'INSERT INTO `teams` (`name`, `leader_playerid`) VALUES (' . sqlSafeStringQuotes($_POST['edit_team_name']) . ', ' . sqlSafeStringQuotes($viewerid) . ')';
+			$query = 'INSERT INTO `teams` (`name`, `leader_playerid`) VALUES (' . sqlSafeStringQuotes($name) . ', ' . sqlSafeStringQuotes($viewerid) . ')';
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
 				// query was bad, error message was already given in $site->execute_query(...)
@@ -1195,7 +1213,7 @@
 				$site->dieAndEndPage('');
 			}
 			
-			// update the team name
+			// update the team name if new team name is not equal to "(teamless)"
 			if (isset($_POST['edit_team_name']))
 			{
 				// is the team name already used?
@@ -1234,7 +1252,8 @@
 					{
 						// team name not clean -> do not change to team name to it
 						echo ('<p>The team name was not changed because there are issues with it.'
-							  . ' A team name must not end with whitespace and must not contain non-printable characters.</p>' . "\n");
+							  . ' A team name must not end with whitespace and must not contain non-printable characters'
+							  . ' as well as being not equal to the reserved name "(teamless)".</p>' . "\n");
 					} else
 					{
 						$query = 'UPDATE `teams` SET `name`=' . sqlSafeStringQuotes($name);
