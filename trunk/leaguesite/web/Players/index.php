@@ -878,40 +878,46 @@
 	echo '<div style="display:inline"><label for="player_search_type">sort by:</label> ' . "\n";
 	echo '<span><select id="player_search_type" name="search_type">';
 	
-	$search_string = '';
-	if (isset($_GET['search_string']))
+	if (isset($_GET['search']))
 	{
-		$search_string = $_GET['search_string'];
-		$search_string = str_replace('*', '%', $search_string);
-		if (!(strcmp(substr($search_string, -1), '%') === 0))
+		// search for nothing by default
+		$search_expression = '';
+		if (isset($_GET['search_string']))
 		{
-			$search_string .= '%';
+			$search_expression = $_GET['search_string'];
+		}
+		// people like to use * as wildcard
+		$search_expression = str_replace('*', '%', $search_expression);
+		
+		if (strcmp('', $search_expression) === 0)
+		{
+			$search_expression = '%';
 		}
 	}
 	
 	// avoid to let the user enter a custom table column at all costs
-	// only let them switch between team name and time search
+	// only let them switch between player name, team name, bzid and joined time search
 	
-	// search for team name by default
-	$search_sort = '';
-	$search_team_sort = false;
-	$search_joined_sort = false;
+	// search for player name by default
 	$search_player_sort = false;
+	$search_team_sort = false;
+	$search_bzid_sort = false;
+	$search_joined_sort = false;
 	if (isset($_GET['search_type']))
 	{
 		switch ($_GET['search_type'])
 		{
 			case 'player': $search_player_sort = true; break;
 			case 'team': $search_team_sort = true; break;
+			case 'bzid': $search_bzid_sort = true; break;
 			case 'joined': $search_joined_sort = true; break;
-			default: $search_team_sort = true;
+			default: $search_player_sort = true;
 		}
 	}
 	
 	echo '<option';
 	if ($search_player_sort)
 	{
-		$search_sort = 'player';
 		echo ' selected="selected"';
 	}
 	echo ' value="player"';
@@ -920,16 +926,22 @@
 	echo '<option';
 	if ($search_team_sort)
 	{
-		$search_sort = 'team';
 		echo ' selected="selected"';
 	}
 	echo ' value="team"';
 	echo '>team name</option>';
 	
 	echo '<option';
+	if ($search_bzid_sort)
+	{
+		echo ' selected="selected"';
+	}
+	echo ' value="bzid"';
+	echo '>bzid</option>';
+	
+	echo '<option';
 	if ($search_joined_sort)
 	{
-		$search_sort = 'time';
 		echo ' selected="selected"';
 	}
 	echo '>joined</option>';
@@ -1016,7 +1028,12 @@
 	// player first joined date
 	$query .= ',`players_profile`.`joined`';
 	// tables involved
-	$query .= ' FROM `players`,`players_profile`';
+	$query .= ' FROM `players`, `players_profile`';
+	// include table teams if team search performed
+	if ($search_team_sort)
+	{
+		$query .= ', `teams`';
+	}
 	// do not display deleted players during maintenance
 	$query .= ' WHERE `players`.`status`<>' . sqlSafeStringQuotes('deleted');
 	if ($search_teamless)
@@ -1026,9 +1043,28 @@
 	{
 		$query .= ' AND `players`.`teamid`<>' . sqlSafeStringQuotes('0');
 	}
-	if (isset($_GET['search_string']) && !(strcmp($search_string, '') === 0))
+	if (isset($_GET['search_string']) && !(strcmp($search_expression, '') === 0))
 	{
-		$query .= ' AND `players`.`name` LIKE ' . sqlSafeStringQuotes($search_string);
+		if ($search_player_sort)
+		{
+			$query .= ' AND `players`.`name` LIKE ' . sqlSafeStringQuotes($search_expression);
+		} elseif ($search_team_sort)
+		{
+			if (strcmp($search_expression, '(teamless)') === 0)
+			{
+				$query .= ' AND `players`.`teamid`=' . sqlSafeStringQuotes('0');
+			} else
+			{
+				$query .= ' AND `teams`.`name` LIKE ' . sqlSafeStringQuotes($search_expression);
+				$query .= ' AND `teams`.`id`=`players`.`teamid`';
+			}
+		} elseif ($search_bzid_sort)
+		{
+			$query .= ' AND `players`.`external_playerid` LIKE ' . sqlSafeStringQuotes($search_expression);
+		} else // $search_joined_sort 
+		{
+			$query .= ' AND `players_profile`.`joined` LIKE ' . sqlSafeStringQuotes($search_expression);
+		}
 	}
 	// the profile id of the player must match the actual player id (profile must belong to the same player)
 	$query .= ' AND `players_profile`.`playerid`=`players`.`id`';
