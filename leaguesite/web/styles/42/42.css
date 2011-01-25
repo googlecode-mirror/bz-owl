@@ -1,8 +1,3 @@
-/* @override 
-	http://vps1.moooo.org/ts/styles/42.css
-	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/42.css
-*/
-
 @import url("42_misc/rankings.css");
 
 body
@@ -22,7 +17,7 @@ pre
 
 div.logo
 {
-	background: url(GUlogoQUER.png) no-repeat center;
+	background: url(../GUlogoQUER.png) no-repeat center;
 	margin-bottom: 1px;
 	height: 121px;
 	margin-top: -8px;
@@ -196,6 +191,12 @@ ul.navigation a
 	font-variant: normal;
 }
 
+ul.navigation a.unread
+{
+	color: #dd4718;
+}
+
+
 ul.navigation a.current_nav_entry
 {
 	color: #4e405a;
@@ -280,6 +281,7 @@ span.prev_next_msg_buttons
 
 span.unread_messages
 {
+	/* to be deleted after complete migration to template system*/
 	color: #dd4718;
 }
 

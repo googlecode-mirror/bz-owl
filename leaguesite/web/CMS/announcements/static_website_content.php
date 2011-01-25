@@ -5,8 +5,215 @@
 	session_start();
 	
 	
+	function sanityCheck(&$confirmed)
+	{
+		global $tmpl;
+		
+		if (!hasEditPermission())
+		{
+			$tmpl->setCurrentBlock('MISC');
+			$tmpl->setVariable('MSG', 'You need write permission to edit the content.');
+			$tmpl->parseCurrentBlock();
+			
+			// editing cancelled due to missing user permission
+			$confirmed = 0;
+			return 'noperm';
+		}
+		
+		
+		if (!randomKeyMatch($confirmed))
+		{
+			// automatically back to main view
+			$tmpl->setCurrentBlock('MISC');
+			$tmpl->setVariable('MSG', 'The magic key does not match, it looks like you came from somewhere else or your session expired.');
+			$tmpl->parseCurrentBlock();				
+			
+			echo 'huh';
+			// editing cancelled due to random key mismatch
+			$confirmed = 0;
+			return 'nokeymatch';
+		}
+	}
+	
+	function hasEditPermission()
+	{
+		global $entry_edit_permission;
+		
+		if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
+	
+	function randomKeyMatch(&$confirmed)
+	{
+		global $site;
+		
+		$randomKeyValue = '';
+		$randomKeyName = '';
+		
+		if ($confirmed > 0)
+		{
+			if (isset($_POST['key_name']))
+			{
+				$randomKeyName = html_entity_decode($_POST['key_name']);
+				
+				echo '$randomKeyName ' . $randomKeyName . '<br>';
+				echo '$randomKeyValue ' . $_POST[$randomKeyName] . '<br>';
+				print_r($_POST);
+				if (isset($_POST[$randomKeyName]))
+				{
+					$randomKeyValue = html_entity_decode($_POST[$randomKeyName]);
+				}
+			}
+			
+			echo '::';
+			echo $randomKeyValue . '<br>';
+			echo $randomKeyName . '<br>';
+			
+			return $randomkeysmatch = $site->validateKey($randomKeyName, $randomKeyValue);
+		}
+		
+		// no key to compare
+		return false;
+	}
+	
 	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
+	
+	// force call this template home
+	// otherwise we'd need a custom name per setup
+	// as top level dir could be named different
+	
+	if (isset($_GET['edit']))
+	{
+		$tmpl = new template('Home?edit');
+	} else
+	{
+		$tmpl = new template('Home');
+	}
+	
+	$tmpl->setCurrentBlock('CONTENT');
+	if (isset($_POST['edit_page']))
+	{
+		$tmpl->setVariable('PAGE_CONTENT', $_POST['announcement']);
+	} else
+	{
+		$tmpl->setVariable('PAGE_CONTENT', readContent($page_title, $author, $last_modified));
+	}
+	$tmpl->parseCurrentBlock();
+	
+	
+	if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
+	{
+		// user has permission to edit the page
+		if (!isset($_GET['edit']))
+		{
+			// user looks at page in read mode
+			$tmpl->setCurrentBlock('USERBUTTONS');
+			$tmpl->setVariable('PERMISSION_BASED_BUTTONS', '<a href="./?edit" class="button">edit</a>');
+			$tmpl->parseCurrentBlock();
+		}
+		
+		if (isset($_GET['edit']))
+		{
+			$tmpl->setCurrentBlock('USER_NOTE');
+			
+			if ($site->bbcode_lib_available())
+			{
+				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
+				$tmpl->parseCurrentBlock();
+				
+				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
+				$bbcode = new bbcode_buttons();
+				$bbcode->showBBCodeButtons();
+				
+				$buttons = $bbcode->showBBCodeButtons();
+				$tmpl->setCurrentBlock('STYLE_BUTTONS');
+				foreach ($buttons as $button)
+				{
+					$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
+					$tmpl->parseCurrentBlock();
+				}
+				
+				// forget no longer needed variables
+				unset($button);
+				unset($buttons);
+				unset($bbcode);
+			} else
+			{
+				if ($site->use_xtml())
+				{
+					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
+				} else
+				{
+					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
+				}
+				$tmpl->parseCurrentBlock();
+			}
+			
+			
+			// initialise variables
+			$confirmed = 1;
+			$content = '';
+			
+			// set their values in case the POST variables are set
+			if (isset($_POST["preview"]))
+			{
+				$confirmed = intval($_POST['confirmationStep']);
+			}
+			if (isset($_POST['editPageAgain']))
+			{
+				// user looked at preview but chose to edit the message again
+				$confirmed = 0;
+			}
+			if (isset($_POST['staticContent']))
+			{
+				$content = $_POST['staticContent'];
+			}
+			
+			// find out appropriare step to process
+			sanityCheck($confirmed);
+			
+			$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
+			$tmpl->setVariable('RAW_CONTENT_HERE', $content);
+			$tmpl->parseCurrentBlock();
+			
+			$randomKeyName = $randomkey_name . microtime();
+			$randomKeyName = str_replace(' ', '_', $randomKeyName);
+			$randomKeyName = str_replace('.', '_', $randomKeyName);
+			$randomkeyValue = $site->set_key($randomKeyName);
+			$tmpl->setCurrentBlock('KEY');
+			$tmpl->setVariable('KEY_NAME', $randomKeyName);
+			$tmpl->setVariable('KEY_VALUE', urlencode($_SESSION[$randomKeyName]));
+			$tmpl->parseCurrentBlock();
+			
+			
+			// there is no step lower than 1
+			if ($confirmed < 1)
+			{
+				$confirmed = 1;
+			}
+			$tmpl->setCurrentBlock('PREVIEW_VALUE');
+			$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed);
+			$tmpl->parseCurrentBlock();
+		}
+	}
+	
+	
+	// done, render page
+	$tmpl->render();
+	
+	
+	
+//	die();
+	
+	
+	
+	
 	
 	if (strcmp($page_title, '') === 0)
 	{
@@ -19,7 +226,7 @@
 	}
 	require_once (dirname(dirname(__FILE__)) . '/index.inc');
 	
-	require (dirname(dirname(__FILE__)) . '/navi.inc');
+//	require (dirname(dirname(__FILE__)) . '/navi.inc');
 	
 	$site = new siteinfo();
 	
@@ -98,13 +305,16 @@
 		}
 	}
 	
-	function readContent($page_title, $site, $connection, &$author, &$last_modified, $raw=false)
+	function readContent($page_title, &$author, &$last_modified, $raw=false)
 	{
+		global $site;
+		global $connection;
+		
 		// initialise return variable so any returned value will be always in a defined state
 		$content = '';
 		if (!$raw)
 		{
-			$content = '<p class="first_p">No content available yet.</p>';
+			$content = 'No content available yet.';
 		}
 		
 		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
@@ -249,7 +459,7 @@
 			{
 				echo '<div>Keep in mind to use BBCode instead of HTML or XHTML.</div>' . "\n";
 				echo '<div>';
-				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
+//				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
 				$bbcode = new bbcode_buttons();
 				$bbcode->showBBCodeButtons();
 				unset($bbcode);
@@ -270,7 +480,7 @@
 				$buffer = $_POST['announcement'];
 			} else
 			{
-				$buffer = readContent($page_title, $site, $connection, $author, $last_modified, true);
+				$buffer = readContent($page_title, $author, $last_modified, true);
 			}
 			echo '<div><textarea cols="75" rows="20" name="announcement">' . htmlent($buffer) . '</textarea></div>' . "\n";
 			echo '<div>';
