@@ -42,7 +42,6 @@
 	
 	if (!$auth_performed && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
-		require_once '../CMS/navi.inc';
 		echo '<div class="static_page_box">' . "\n";
 		$output_buffer .= ob_get_contents();
 		ob_end_clean();

@@ -1,8 +1,6 @@
 <?php
 	if (!isset($account_needs_to_be_converted) || !($account_needs_to_be_converted))
 	{
-		require_once '../CMS/navi.inc';
-		
 		if ((isset($_SESSION['user_logged_in'])) &&	($_SESSION['user_logged_in']))
 		{
 			echo 'already logged in';

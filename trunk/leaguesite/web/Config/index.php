@@ -12,8 +12,8 @@
 		
 		// check if theme stylesheet file does exist
 		if (!file_exists(dirname(dirname(__FILE__)) .'/styles/'
-						. str_replace(' ', '%20', htmlspecialchars($theme) . '/')
-						. str_replace(' ', '%20', htmlspecialchars($theme) . '.css')))
+						 . str_replace(' ', '%20', htmlspecialchars($theme) . '/')
+						 . str_replace(' ', '%20', htmlspecialchars($theme) . '.css')))
 		{
 			$theme = '';
 		}
@@ -58,10 +58,7 @@
 	$site = new siteinfo();
 	
 	
-	$themes = array('White', 'Snow', 'Eierschale', 'Dark', '42');
-	
-	
-	// read out installed themes
+	// read out installed themes instead of defining a fixed list in source code
 	
 	// first scan the files in the styles directory
 	$themes = scandir(dirname(dirname(__FILE__)) . '/styles/');
@@ -122,6 +119,7 @@
 	}
 	unset($s);
 	
+	
 	function RepositoryVersion()
 	{
 		if (file_exists('../.svn/entries'))
@@ -150,4 +148,4 @@
 	$tmpl->setVariable('REPOSITORYVERSION', RepositoryVersion());
 	
 	$tmpl->render();
-?>
+	?>

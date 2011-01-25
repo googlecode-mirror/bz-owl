@@ -131,7 +131,6 @@
 		}
 	}
 	
-	require realpath('../CMS/navi.inc');
 	
 	$site = new siteinfo();
 	

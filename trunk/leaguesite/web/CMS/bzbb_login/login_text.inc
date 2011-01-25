@@ -1,5 +1,4 @@
 <?php
-	require_once '../CMS/navi.inc';
 	echo '<div class="static_page_box">' . "\n";
 	echo '<p class="first_p">Please log in using your account at <a href=';
 	require_once '../CMS/siteinfo.php';

@@ -8,7 +8,6 @@
 	
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
-	require realpath('../CMS/navi.inc');
 	
 	function show_overview_and_profile_button()
 	{
