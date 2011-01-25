@@ -20,7 +20,7 @@
 	echo '<head>' . "\n";
 	$site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"');
 
-	require (dirname(dirname(__FILE__)) . '/stylesheet.inc');
+	require_once (dirname(__FILE__) . '/Layout.php');
 	
 	// display favicon, if specified
 	if (!(strcmp($site->favicon_path(), '') === 0))

@@ -3,7 +3,7 @@
 
 body {
 background-color:#000;
-background-image:url(../styles/background_tile.png);
+background-image:url(../background_tile.png);
 color:#fff;
 font-family:verdana;
 }
@@ -15,7 +15,7 @@ position:relative;
 
 table caption {
 background:rgba(210,211,235,0.54);
-background-image:url(../styles/background_tile_stripe.png);
+background-image:url(../background_tile_stripe.png);
 border:1px solid #777;
 margin-bottom:5px;
 font-weight:700;
@@ -198,7 +198,7 @@ margin-top:20px;
 
 div.article_header {
 background:rgba(210,211,235,0.54) -3px;
-background-image:url(../styles/background_tile_stripe.png);
+background-image:url(../background_tile_stripe.png);
 overflow:auto;
 padding-bottom:5px;
 padding-right:1em;
@@ -278,7 +278,7 @@ div.user_general_info_header {
 -webkit-border-radius:5px;
 border-radius:5px;
 background:rgba(210,211,235,0.54) -3px;
-background-image:url(../styles/background_tile_stripe.png);
+background-image:url(../background_tile_stripe.png);
 overflow:auto;
 font-weight:700;
 text-align:center;
@@ -428,7 +428,7 @@ content:"* ";
 }
 
 div.logo {
-background:url("GUlogoQUER.png") no-repeat scroll center center transparent;
+background:url("../GUlogoQUER.png") no-repeat scroll center center transparent;
 height:121px;
 margin-bottom:1px;
 margin-top:30px;
@@ -488,7 +488,7 @@ padding:10px;
 
 div.msg_header_full {
 background:rgba(210,211,235,0.54) -3px;
-background-image:url(../styles/background_tile_stripe.png);
+background-image:url(../background_tile_stripe.png);
 overflow:auto;
 font-weight:700;
 border:1px solid #777;
@@ -539,7 +539,7 @@ font-weight:700;
 
 div.team_profile_header_text,div.team_name {
 background:rgba(210,211,235,0.54) -3px;
-background-image:url(../styles/background_tile_stripe.png);
+background-image:url(../background_tile_stripe.png);
 border:1px solid #777;
 overflow:auto;
 text-align:center;

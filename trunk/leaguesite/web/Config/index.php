@@ -5,16 +5,25 @@
 	require realpath('../CMS/siteinfo.php');
 	@setcookie('cookies', "allowed", 0, basepath() . 'Config/', domain(), 0);
 	
-	$stylesheet = '';
-	if (isset($_GET['stylesheet']))
+	$theme = '';
+	if (isset($_GET['theme']))
 	{
-		$stylesheet=$_GET['stylesheet'];
+		$theme=$_GET['theme'];
+		
+		// check if theme stylesheet file does exist
+		if (!file_exists(dirname(dirname(__FILE__)) .'/styles/'
+						. str_replace(' ', '%20', htmlspecialchars($theme) . '/')
+						. str_replace(' ', '%20', htmlspecialchars($theme) . '.css')))
+		{
+			$theme = '';
+		}
+		
 	}
 	
-	if (strlen($stylesheet) > 0)
+	if (strlen($theme) > 0)
 	{
 		$cookies = false;
-		// if script is called again (content in $stylesheet), one can test if cookies are activated
+		// if script is called again (content in $theme), one can test if cookies are activated
 		foreach ($_COOKIE as $key => $value)
 		{
 			if (strcasecmp($key, 'cookies') == 0)
@@ -28,11 +37,11 @@
 			// cookies are not allowed -> use SIDs with GET
 			// SIDs are used elsewhere only for permission system
 			ini_set ('session.use_trans_sid', 1);
-			$_SESSION['stylesheet'] = $stylesheet;
+			$_SESSION['theme'] = $theme;
 		} else
 		{
 			ini_set ('session.use_trans_sid', 0);
-			@setcookie('stylesheet', $stylesheet, time()+60*60*24*30, basepath(), domain(), 0);
+			@setcookie('theme', $theme, time()+60*60*24*30, basepath(), domain(), 0);
 		}
 	}
 	
@@ -48,152 +57,97 @@
 	require_once '../CMS/siteinfo.php';
 	$site = new siteinfo();
 	
-	if ($site->use_xtml())
-	{
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' . "\n";
-		echo '     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-	} else
-	{
-		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"' . "\n";
-		echo '        "http://www.w3.org/TR/html4/strict.dtd">';
-	}
-	echo "\n" . '<html';
-	if ($site->use_xtml())
-	{
-		echo ' xmlns="http://www.w3.org/1999/xhtml"';
-	}
-	echo '>' . "\n";
-	echo '<head>' . "\n";
-	echo '	' . ($site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"')) . "\n";
 	
-	if (strlen($stylesheet) > 0)
-	{
-		// we have a new stylesheet chosen by user
-		echo '  <link href="../styles/';
-		echo $stylesheet;
-		echo '.css" rel="stylesheet" type="text/css">' . "\n";
-	} else
-	{
-		// use previously used stylesheet
-		include '../stylesheet.inc';
-	}
+	$themes = array('White', 'Snow', 'Eierschale', 'Dark', '42');
 	
-	if (!(strcmp($site->favicon_path(), '') === 0))
+	
+	// read out installed themes
+	
+	// first scan the files in the styles directory
+	$themes = scandir(dirname(dirname(__FILE__)) . '/styles/');
+	foreach ($themes as $i => $curFile)
 	{
-		echo '	';
-		echo $site->write_self_closing_tag('link rel="icon" type="image/png" href="' . $site->favicon_path() . '"');
-	}
-?>
-<title>Config</title>
-</head>
-<body>
-<?php
-	require realpath('../CMS/navi.inc');
-?>
-<div class="static_page_box">
-<p class="first_p">This is the user configuration section.</p>
-<?php
-	// allow turning on or off SQL debug output
-	if (isset($_SESSION['allow_change_debug_sql']) && $_SESSION['allow_change_debug_sql'])
-	{
-		// $site has been instantiated in navi.inc
-		if ($site->debug_sql())
+		// remove entry from array if it's no folder
+		if (!is_dir(dirname(dirname(__FILE__)) . '/styles/' . $curFile))
 		{
-			// SQL debuggin currently on
-			
-			if (isset($_GET['debug']))
-			{
-				if ((int) $_GET['debug'] === 0)
-				{
-					// user wishes to turn off SQL debugging
-					echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
-					$_SESSION['debug_sql'] = false;
-				} else
-				{
-					// user wishes to turn on SQL debugging
-					echo '<a href=".?debug=0">Turn off SQL debugging this session</a>' . "\n";
-					$_SESSION['debug_sql'] = true;
-				}
-			} else
-			{
-				echo '<a href=".?debug=0">Turn off SQL debugging this session</a>' . "\n";
-			}
-		} else
-		{
-			// SQL debuggin currently off
-			
-			if (isset($_GET['debug']))
-			{
-				if ((int) $_GET['debug'] === 0)
-				{
-					echo htmlent((int) $_GET['debug']);
-					// user wishes to turn off SQL debugging
-					echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
-					$_SESSION['debug_sql'] = false;
-				} else
-				{
-					// user wishes to turn on SQL debugging
-					echo '<a href=".?debug=0">Turn off SQL debugging this session</a>' . "\n";
-					$_SESSION['debug_sql'] = true;
-				}
-			} else
-			{
-				echo '<a href=".?debug=1">Turn on SQL debugging this session</a>' . "\n";
-			}
+			unset($themes[$i]);
 		}
-	}
-?>
-<p>Special thanks: Upsetter and zaphod for a lot of input, zaphod for the logos and icons; brad for hosting and svn repository and orbit for the favicon.</p>
-<form enctype="application/x-www-form-urlencoded" method="get" action="<?php
-	
-	// the address depends on where the file resides
-	$url = baseaddress() . 'Config/';
-	echo $url;
-?>">
-<p>Theme:
-	<select name="stylesheet">
-<?php
-	$styles = array('White', 'Snow', 'Eierschale', 'Dark', '42');
-	
-	foreach ($styles AS $s) {
-		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s)."</option>\n";
-	}
-	echo "</select>\n";
-	
-	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
-?>
-</p>
-</form>
-
-<?php
-	if ((isset($_SESSION['allow_view_todo'])) && ($_SESSION['allow_view_todo']))
-	{
-		echo '<a href="../TODO/">View TODO</a>';
-	}
-?>
-
-</div>
-<?php
-	if (file_exists('../.svn/entries'))
-	{
-		$handle = fopen('../.svn/entries', 'rb');
-		$counter = 1;
-		while ($rev = fscanf($handle, "%[a-zA-Z0-9,. ]%[dir]\n%[a-zA-Z0-9,.]"))
+		
+		// filter reserved directory names
+		switch ($curFile)
 		{
-			$counter++;
-			
-			if ($counter > 4)
-			{
-				// Listing some of them
-				list($svn_rev) = $rev;
-				echo '<p>SVN revision: ' . $svn_rev . '</p>' . "\n";
+			case (strcasecmp('.', $curFile) === 0):
+				unset($themes[$i]);
 				break;
-			}
+			
+			case (strcasecmp('..', $curFile) === 0):
+				unset($themes[$i]);
+				break;
+			
+			case (strcasecmp('.svn', $curFile) === 0):
+				unset($themes[$i]);
+				break;
 		}
-		fclose($handle);
-		unset($counter);
+		
+		// filter themes with no stylesheet
+		if (!file_exists(dirname(dirname(__FILE__)) . '/styles/' . $curFile . '/' . $curFile . '.css'))
+		{
+			unset($themes[$i]);
+		}
 	}
+	unset($curFile);
+	
+	
+	if (isset($theme))
+	{
+		$tmpl = new template('', $theme);
+	} else
+	{
+		$tmpl = new template('', '');
+	}
+	$tmpl->setCurrentBlock('cell');
+	
+	if (strlen($theme) > 0)
+	{
+		$s = $theme;
+	} else
+	{
+		$s = $site->getStyle();
+	}
+	foreach ($themes as $theme)
+	{
+		$tmpl->setVariable('THEME', $theme);
+		$tmpl->setVariable('SELECTED', 	($theme==$s?' selected="selected"':''));
+		$tmpl->parseCurrentBlock();
+	}
+	unset($s);
+	
+	function RepositoryVersion()
+	{
+		if (file_exists('../.svn/entries'))
+		{
+			$handle = fopen('../.svn/entries', 'rb');
+			$counter = 1;
+			while ($rev = fscanf($handle, "%[a-zA-Z0-9,. ]%[dir]\n%[a-zA-Z0-9,.]"))
+			{
+				$counter++;
+				
+				if ($counter > 4)
+				{
+					// Listing some of them
+					list($svn_rev) = $rev;
+					break;
+				}
+			}
+			fclose($handle);
+			unset($counter);
+		}
+		
+		return $svn_rev;
+	}
+	
+	$tmpl->setCurrentBlock('repository');
+	$tmpl->setVariable('REPOSITORYVERSION', RepositoryVersion());
+	
+	$tmpl->render();
 ?>
-</div>
-</body>
-</html>

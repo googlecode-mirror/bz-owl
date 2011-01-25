@@ -1,23 +1,20 @@
+<?php
+	// this file should only be included/required and not be directly accessed
+	if (!isset($site))
+	{
+		die();
+	}
+	if (!isset($_GET['theme']))
+	{
+		$site->write_self_closing_tag('link href="' . baseaddress() . 'styles/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '.css"' . ' rel="stylesheet" type="text/css"');
+	}
+?>
+
 <div class="logo"></div>
 
 <ul class="navigation">
-<?php
-	require_once 'siteinfo.php';
-	require_once 'permissions.php';
-	if (!isset($site))
-	{
-		$site = new siteinfo();
-	}
-	
-	function dieCustom($reason)
-	{
-		global $site;
-		
-		$site->log_error($reason);
-		echo $reason . "\n";
-		echo '</ul>' . "\n" . '</body>' . "\n" . '<html>' . "\n";
-		die();
-	}
+<?php	
+	require_once dirname(dirname(__FILE__)) . '/CMS/permissions.php';
 	
 	$unread_messages = false;
 	
@@ -84,26 +81,6 @@
 		$logged_in = false;
 	}
 	
-	define ('BASEPATH', baseaddress());
-	
-	function writeLink($folder, $title, $current=false)
-	{
-		echo '<li>';
-		if (!$current)
-		{
-			echo '<a href="' . (BASEPATH . $folder) . '">';
-		} elseif (count($_GET) > 0)
-		{
-			echo '<a class="current_nav_entry" href="' . (BASEPATH . $folder) . '">';
-		}
-		echo $title;
-		if (!$current || (count($_GET) > 0))
-		{
-			echo '</a>';
-		}
-		echo '</li>' . "\n";
-	}
-	
 	$name = $site->base_name();
 	
 	// public_html on FreeBSD or Sites on Mac OS X
@@ -126,7 +103,7 @@
 		echo '<li>Home</li>' . "\n";
 	} else
 	{
-		echo '<li><a href="' . BASEPATH . '">Home</a></li>' . "\n";
+		echo '<li><a href="' . baseaddress() . '">Home</a></li>' . "\n";
 	}
 	
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
