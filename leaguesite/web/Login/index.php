@@ -21,7 +21,6 @@
 		$_SESSION['user_logged_in'] = false;
 		$_SESSION['viewerid'] = -1;
 		
-		require_once '../CMS/navi.inc';
 		echo '<div class="static_page_box">' . "\n";
 		$output_buffer .= ob_get_contents();
 		ob_end_clean();
@@ -624,7 +623,6 @@
 	// $user_id is not set in case no login/registration was performed
 	if (getUserID() > 0)
 	{
-		require_once '../CMS/navi.inc';
 		echo '<div class="static_page_box">' . "\n";
 		echo '<p class="first_p">Login was successful!</p>' . "\n";
 		echo '<p>Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.</p>' . "\n";

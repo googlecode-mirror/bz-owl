@@ -26,7 +26,7 @@
 	echo '<head>' . "\n";
 	echo '	' . ($site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"'));
 	
-	require '../stylesheet.inc';
+	require '../CMS/Layout.php';
 	
 	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players.css" type="text/css"');
 	// perhaps exclude email string, depending on browser
@@ -40,8 +40,6 @@
 	echo '</head>' . "\n";
 	echo '<body>' . "\n";
 	
-	require '../CMS/navi.inc';
-    
 	echo '<div class="static_page_box">' . "\n";
 	if (!($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker'])))
 	{

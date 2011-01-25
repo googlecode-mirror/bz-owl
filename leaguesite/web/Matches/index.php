@@ -8,7 +8,6 @@
 	
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
-	require ('../CMS/navi.inc');
 	
 	$connection = $site->connect_to_db();
 	$randomkey_name = 'randomkey_matches';
