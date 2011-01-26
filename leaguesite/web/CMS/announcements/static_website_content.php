@@ -81,12 +81,24 @@
 	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
 	
+	// find stylesheet even if this thing is on.
+	if (magic_quotes_on())
+	{
+		stripslashes($_COOKIE);
+	}
+	
 	// force call this template home
 	// otherwise we'd need a custom name per setup
 	// as top level dir could be named different
 	
 	if (isset($_GET['edit']))
 	{
+		// remove the slashes if this function is sadly on
+		if (magic_quotes_on())
+		{
+			stripslashes($_POST);
+		}
+		
 		$tmpl = new template('Home?edit');
 		$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
 		if (isset($_POST['staticContent']))
