@@ -4,9 +4,17 @@
 	{
 		die('WTF! Tell the hoster to set up a sane environment This message was presented to you by siteinfo configurator.');
 	}
-	
+	function magic_quotes_on()
+	{
+		if (function_exists('get_magic_quotes_gpc') && (get_magic_quotes_gpc() === 1))
+		{
+			return true;
+		}
+		
+		return false;
+	}
 	// we don't want magic quotes, do we?
-	if (get_magic_quotes_gpc() === 1)
+	if (magic_quotes_on())
 	{
 		echo 'PHP magic quotes are supposed to be OFF for this site. Disable them please, they are gone in PHP 6 anyway.';
 		die (' Please also read <a href="http://www.php.net/manual/en/info.configuration.php#ini.magic-quotes-gpc">the manual</a>.');
