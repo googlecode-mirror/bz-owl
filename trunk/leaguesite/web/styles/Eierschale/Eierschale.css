@@ -18,7 +18,7 @@ pre
 
 div.logo
 {
-	background: url(GUlogo.png) no-repeat fixed 8px 8px;
+	background: url(../GUlogo.png) no-repeat fixed 8px 8px;
 	width: auto;
 	height: auto;
 	display: inline-block;
