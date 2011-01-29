@@ -10,11 +10,7 @@
 		global $tmpl;
 		
 		if (!hasEditPermission())
-		{
-			$tmpl->setCurrentBlock('MISC');
-			$tmpl->setVariable('MSG', 'You need write permission to edit the content.');
-			$tmpl->parseCurrentBlock();
-			
+		{			
 			// editing cancelled due to missing user permission
 			$confirmed = 0;
 			return 'noperm';
@@ -24,12 +20,6 @@
 		// no need to check for a key match if no content was supplied
 		if (($confirmed > 0) && !randomKeyMatch($confirmed))
 		{
-			// automatically back to main view
-			$tmpl->setCurrentBlock('MISC');
-			$tmpl->setVariable('MSG', 'The magic key does not match, it looks like you came from somewhere else or your session expired.');
-			$tmpl->parseCurrentBlock();				
-			
-			echo 'huh';
 			// editing cancelled due to random key mismatch
 			$confirmed = 0;
 			return 'nokeymatch';
@@ -62,18 +52,11 @@
 		{
 			$randomKeyName = html_entity_decode($_POST['key_name']);
 			
-			echo '$randomKeyName ' . $randomKeyName . '<br>';
-			echo '$randomKeyValue ' . $_POST[$randomKeyName] . '<br>';
-			print_r($_POST);
 			if (isset($_POST[$randomKeyName]))
 			{
 				$randomKeyValue = html_entity_decode($_POST[$randomKeyName]);
 			}
 		}
-		
-		echo '::';
-		echo $randomKeyValue . '<br>';
-		echo $randomKeyName . '<br>';
 		
 		return $randomkeysmatch = $site->validateKey($randomKeyName, $randomKeyValue);
 	}
@@ -187,30 +170,37 @@
 			}
 			
 			// sanity check variabless
-			if (sanityCheck($confirmed) === true)
+			$test = sanityCheck($confirmed);
+			switch ($test)
 			{
-				// step 1: showing preview
+				// use bbcode if available
+				case (true && $confirmed === 1 && $site->bbcode_lib_available()):
+					$tmpl->addMSG($site->bbcode($content));
+					break;
+					
+				// else raw output
+				case (true && $confirmed === 1 && !$site->bbcode_lib_available()):
+					$tmpl->addMSG($content);
+					break;
 				
-				if ($confirmed === 1)
-				{
-					$tmpl->setCurrentBlock('MISC');
-					if ($site->bbcode_lib_available())
-					{
-						// use bbcode if available
-						$tmpl->setVariable('MSG', $site->bbcode($content));
-					} else
-					{
-						// else raw output
-						$tmpl->setVariable('MSG', $content);
-					}
-					$tmpl->parseCurrentBlock();
-				}
+				// use this as guard to prevent selection of noperm or nokeymatch cases
+				case (strlen($test) < 2):
+					break;
 				
-				$tmpl->setCurrentBlock('PREVIEW_VALUE');
-				// increase confirmation step by one so we get to the next level
-				$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
-				$tmpl->parseCurrentBlock();
+				case 'noperm':
+					$tmpl->addMSG('You need write permission to edit the content.');
+					break;
+					
+				case 'nokeymatch':
+					$tmpl->addMSG('The magic key does not match, it looks like you came from somewhere else or your session expired.');
+					break;			
 			}
+			unset($test);
+			
+			// increase confirmation step by one so we get to the next level
+			$tmpl->setCurrentBlock('PREVIEW_VALUE');
+			$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
+			$tmpl->parseCurrentBlock();
 			
 			
 			switch ($confirmed)
@@ -230,24 +220,6 @@
 					$tmpl->parseCurrentBlock();
 			}
 			
-//			if ($confirmed < 1)
-//			{
-//				// display preview button because either validation error or no preview shown yet
-//				$tmpl->setCurrentBlock('PREVIEW_BUTTON');
-//				$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Preview');
-//				$tmpl->parseCurrentBlock();
-//			} else
-//			{
-//				$tmpl->setCurrentBlock('PREVIEW_BUTTON');
-//				$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Write changes');
-//				$tmpl->parseCurrentBlock();
-//			}
-			
-			echo 'confirmed: ' . $confirmed . '<br>';
-			
-//			$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
-//			$tmpl->setVariable('RAW_CONTENT_HERE', $content);
-//			$tmpl->parseCurrentBlock();
 			
 			$randomKeyName = $randomkey_name . microtime();
 			// convert some special chars to underscores

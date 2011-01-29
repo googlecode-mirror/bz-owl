@@ -76,6 +76,12 @@
 	class template
 	{
 		private $tpl;
+		var $msg = array();
+		
+		function addMSG($messageToAdd)
+		{
+			$this->msg[] = $messageToAdd;
+		}
 		
 		function __construct($template, $customTheme='')
 		{
@@ -231,6 +237,28 @@
 		
 		function render()
 		{
+			global $site;
+			
+			if ($site->debug_sql())
+			{
+				print_r($this->msg);
+			}
+			
+			// include status message at the end
+			// so we do not forget to display any message
+			$this->tpl->setCurrentBlock('MISC');
+			
+			if (count($this->msg) > 0)
+			{
+				foreach ($this->msg as $curMSG)
+				{
+					$this->tpl->setVariable('MSG', $curMSG);
+				}
+			}
+			
+			$this->parseCurrentBlock();
+			
+			// show all
 			$this->tpl->show();
 		}
 	}
