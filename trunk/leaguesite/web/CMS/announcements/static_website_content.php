@@ -64,13 +64,6 @@
 	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
 	
-	// find stylesheet even if this thing is on.
-	if (magic_quotes_on())
-	{
-		stripslashes($_COOKIE);
-	}
-	
-	
 	
 	// find out which template should be used
 	// fallback template is static
@@ -104,7 +97,7 @@
 	
 	if (isset($_GET['edit']))
 	{
-		// remove the slashes if this function is sadly on
+		// remove the slashes if magic quotes are sadly on
 		if (magic_quotes_on())
 		{
 			stripslashes($_POST);

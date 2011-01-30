@@ -20,6 +20,12 @@
 		die (' Please also read <a href="http://www.php.net/manual/en/info.configuration.php#ini.magic-quotes-gpc">the manual</a>.');
 	}
 	
+	// find stylesheet even if magic quotes are on.
+	if (magic_quotes_on())
+	{
+		stripslashes($_COOKIE);
+	}
+	
 	function sqlSafeString($param)
 	{
 		// use MySQL function mysql_real_escape_string, alternative could be prepared statements
