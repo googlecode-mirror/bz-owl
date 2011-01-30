@@ -83,6 +83,23 @@
 			$this->msg[] = $messageToAdd;
 		}
 		
+		function findTemplate(&$template, &$path)
+		{
+			// split the path in $template into an array
+			// overwrite $template with the last part of the array
+			// forget the last part of the array
+			// append the pieces of the array to $path
+			$pathinfo = explode('/', $template);
+			
+			if (count($pathinfo) > 0)
+			{
+				$template = $pathinfo[count($pathinfo) -1];
+				unset($pathinfo[count($pathinfo) -1]);
+				
+				$path .= '/' . implode('/', $pathinfo);
+			}
+		}
+		
 		function __construct($template, $customTheme='')
 		{
 			global $site;
@@ -98,8 +115,12 @@
 				$customTheme = $site->getStyle();
 			}
 			
+			// extract possible file paths out of $template and append it to $themeFolder
+			$themeFolder = $customTheme;
+			$this->findTemplate($template, $themeFolder);
+			
 			// init template system
-			$this->tpl = new HTML_Template_IT(dirname(dirname(__FILE__)) .'/styles/' . str_replace(' ', '%20', htmlspecialchars($customTheme)));
+			$this->tpl = new HTML_Template_IT(dirname(dirname(__FILE__)) .'/styles/' . str_replace(' ', '%20', htmlspecialchars($themeFolder)));
 			
 			// load the current template file
 			if (strcmp($template, '') === 0)
@@ -107,14 +128,13 @@
 				$template = $site->base_name();
 			}
 			
-
 			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
 			
 			// debug output used template
 			if ($site->debug_sql())
 			{
 				$this->addMSG('Used template: ' . dirname(dirname(__FILE__)) .'/styles/'
-							  . str_replace(' ', '%20', htmlspecialchars($customTheme))
+							  . str_replace(' ', '%20', htmlspecialchars($themeFolder))
 							  . '/' . $template . '.tmpl.html');
 			}
 
@@ -245,11 +265,6 @@
 		function render()
 		{
 			global $site;
-			
-			if ($site->debug_sql())
-			{
-				print_r($this->msg);
-			}
 			
 			// include status message at the end
 			// so we do not forget to display any message

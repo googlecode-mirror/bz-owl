@@ -70,7 +70,35 @@
 		stripslashes($_COOKIE);
 	}
 	
-	// force call this template home
+	
+	
+	// find out which template should be used
+	// fallback template is static
+	$templateToUse = 'static';
+	
+	// use suggested name in $page_title
+	if (isset($page_title))
+	{
+		if (strcmp($page_title, '_/') === 0)
+		{
+			// force call this template home
+			$templateToUse = 'Home';
+		} else
+		{
+			$templateToUse = $page_title;
+		}
+		
+		// revert back to default if file does not exist
+		if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
+						  . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/'
+										. $templateToUse . '.tmpl.html')))
+		{
+			$templateToUse = 'static';
+		}
+	}
+	
+	
+	
 	// otherwise we'd need a custom name per setup
 	// as top level dir could be named different
 	
@@ -81,8 +109,7 @@
 		{
 			stripslashes($_POST);
 		}
-		
-		$tmpl = new template('Home?edit');
+		$tmpl = new template($templateToUse . '?edit');
 		$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
 		if (isset($_POST['staticContent']))
 		{
@@ -93,7 +120,7 @@
 		}
 	} else
 	{
-		$tmpl = new template('Home');
+		$tmpl = new template($templateToUse);
 		$tmpl->addMSG(readContent($page_title, $author, $last_modified, false));
 	}
 	
