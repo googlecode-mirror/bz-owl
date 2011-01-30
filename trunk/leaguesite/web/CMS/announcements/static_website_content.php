@@ -94,8 +94,7 @@
 	} else
 	{
 		$tmpl = new template('Home');
-		$tmpl->setCurrentBlock('CONTENT');
-		$tmpl->setVariable('PAGE_CONTENT', readContent($page_title, $author, $last_modified, false));
+		$tmpl->addMSG(readContent($page_title, $author, $last_modified, false));
 	}
 	
 	$tmpl->parseCurrentBlock();

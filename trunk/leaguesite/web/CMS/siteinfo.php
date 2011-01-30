@@ -109,7 +109,14 @@
 			
 
 			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
-			echo dirname(dirname(__FILE__)) .'/styles/' . str_replace(' ', '%20', htmlspecialchars($customTheme)) . '/' . $template . '.tmpl.html';
+			
+			// debug output used template
+			if ($site->debug_sql())
+			{
+				$this->addMSG('Used template: ' . dirname(dirname(__FILE__)) .'/styles/'
+							  . str_replace(' ', '%20', htmlspecialchars($customTheme))
+							  . '/' . $template . '.tmpl.html');
+			}
 
 			
 			// use favicon, if available
@@ -253,10 +260,9 @@
 				foreach ($this->msg as $curMSG)
 				{
 					$this->tpl->setVariable('MSG', $curMSG);
+					$this->parseCurrentBlock();
 				}
 			}
-			
-			$this->parseCurrentBlock();
 			
 			// show all
 			$this->tpl->show();
