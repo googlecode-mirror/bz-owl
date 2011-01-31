@@ -102,7 +102,7 @@
 				$template = $pathinfo[count($pathinfo) -1];
 				unset($pathinfo[count($pathinfo) -1]);
 				
-				$path .= '/' . implode('/', $pathinfo);
+				$path .= '/' . htmlspecialchars(implode('/', $pathinfo));
 			}
 		}
 		
@@ -122,11 +122,11 @@
 			}
 			
 			// extract possible file paths out of $template and append it to $themeFolder
-			$themeFolder = $customTheme;
+			$themeFolder = dirname(dirname(__FILE__)) .'/styles/' . htmlspecialchars($customTheme);
 			$this->findTemplate($template, $themeFolder);
 			
 			// init template system
-			$this->tpl = new HTML_Template_IT(dirname(dirname(__FILE__)) .'/styles/' . str_replace(' ', '%20', htmlspecialchars($themeFolder)));
+			$this->tpl = new HTML_Template_IT($themeFolder);
 			
 			// load the current template file
 			if (strcmp($template, '') === 0)
@@ -139,9 +139,8 @@
 			// debug output used template
 			if ($site->debug_sql())
 			{
-				$this->addMSG('Used template: ' . dirname(dirname(__FILE__)) .'/styles/'
-							  . str_replace(' ', '%20', htmlspecialchars($themeFolder))
-							  . '/' . $template . '.tmpl.html');
+				$this->addMSG('Used template: ' . $themeFolder	
+							  . $template . '.tmpl.html');
 				$this->addMSG($site->return_self_closing_tag('br'));
 			}
 
