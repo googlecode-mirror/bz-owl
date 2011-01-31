@@ -16,7 +16,6 @@
 			return 'noperm';
 		}
 		
-		echo $confirmed;
 		// no need to check for a key match if no content was supplied
 		if (($confirmed > 0) && !randomKeyMatch($confirmed))
 		{
@@ -178,7 +177,7 @@
 			{
 				$confirmed = intval($_POST['confirmationStep']);
 			}
-			if (isset($_POST['editPageAgain']))
+			if (isset($_POST['editPageAgain']) && ($_POST['editPageAgain'] === 1))
 			{
 				// user looked at preview but chose to edit the message again
 				$confirmed = 0;
@@ -216,17 +215,33 @@
 			}
 			unset($test);
 			
+			
+			// there is no step lower than 0
+			if ($confirmed < 0)
+			{
+				$confirmed = 0;
+			}
+			
 			// increase confirmation step by one so we get to the next level
 			$tmpl->setCurrentBlock('PREVIEW_VALUE');
-			$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
+			if ($confirmed > 1)
+			{
+				$tmpl->setVariable('PREVIEW_VALUE_HERE', 1);
+			} else
+			{
+				$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
+			}
 			$tmpl->parseCurrentBlock();
-			
 			
 			switch ($confirmed)
 			{
 				case 1:
-					$tmpl->setCurrentBlock('PREVIEW_BUTTON');
+					$tmpl->setCurrentBlock('FORM_BUTTON');
 					$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Write changes');
+					$tmpl->parseCurrentBlock();
+					// user may decide not to submit after seeing preview
+					$tmpl->setCurrentBlock('EDIT_AGAIN');
+					$tmpl->setVariable('EDIT_AGAIN_BUTTON_TEXT', 'Edit again');
 					$tmpl->parseCurrentBlock();
 					break;
 				
@@ -234,7 +249,7 @@
 					writeContent($content, $page_title);
 				
 				default:
-					$tmpl->setCurrentBlock('PREVIEW_BUTTON');
+					$tmpl->setCurrentBlock('FORM_BUTTON');
 					$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Preview');
 					$tmpl->parseCurrentBlock();
 			}
@@ -247,17 +262,6 @@
 			$tmpl->setCurrentBlock('KEY');
 			$tmpl->setVariable('KEY_NAME', $randomKeyName);
 			$tmpl->setVariable('KEY_VALUE', urlencode($_SESSION[$randomKeyName]));
-			$tmpl->parseCurrentBlock();
-			
-			
-			// there is no step lower than 0
-			if ($confirmed < 0)
-			{
-				$confirmed = 0;
-			}
-			$tmpl->setCurrentBlock('PREVIEW_VALUE');
-			// increase confirmation step by one so we get to the next level
-			$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
 			$tmpl->parseCurrentBlock();
 		}
 	}

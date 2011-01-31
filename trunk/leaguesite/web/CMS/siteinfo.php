@@ -486,7 +486,7 @@
 			if (isset($_SESSION[$key]))
 			{
 				$randomkeysmatch = (strcmp(html_entity_decode(urldecode($_SESSION[$key])), $value) === 0);
-				echo 'test: ' . $_SESSION[$key] . ': ' . $value . ': ' . $randomkeysmatch . '<br>';
+				
 				// invalidate key & value to prevent allowing sending stuff more than once
 				if (!(strcmp($value, '') === 0))
 				{
@@ -526,6 +526,13 @@
 		function used_timezone()
 		{
 			return timezone();
+		}
+		
+		function use_xhtml()
+		{
+			// accidental misspelled version implemented before
+			// the function called use_xtml() is deprecated and will be removed in the future
+			return use_xtml();
 		}
 		
 		function use_xtml()
