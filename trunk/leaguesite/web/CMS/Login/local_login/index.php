@@ -1,5 +1,5 @@
 <?php
-	require_once '../CMS/permissions.php';
+	require_once dirname(dirname(__FILE__)) . '/permissions.php';
 			
 	$pw = '';
 	if (isset($_POST['pw']))

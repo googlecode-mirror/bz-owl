@@ -1,8 +1,8 @@
 <?php
 if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 {
-	require '../CMS/bzbb_login/checkToken.php';
-	require_once '../CMS/permissions.php';
+	require 'checkToken.php';
+	require_once dirname(dirname(__FILE__)) . '/permissions.php';
 	
 	// initialise permissions
 	no_permissions();

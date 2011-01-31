@@ -13,7 +13,7 @@
 	
 	// load description presented to user
 	$page_title = 'ts-CMS';
-	require_once 'index.inc';
+	require_once dirname(dirname(__FILE__)) . '/index.inc';
 	
 	$auth_performed = false;
 	
