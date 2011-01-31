@@ -142,6 +142,7 @@
 				$this->addMSG('Used template: ' . dirname(dirname(__FILE__)) .'/styles/'
 							  . str_replace(' ', '%20', htmlspecialchars($themeFolder))
 							  . '/' . $template . '.tmpl.html');
+				$this->addMSG($site->return_self_closing_tag('br'));
 			}
 
 			
@@ -555,16 +556,23 @@
 		
 		function write_self_closing_tag($tag)
 		{
-			echo '<';
-			echo $tag;
+			echo $this->return_self_closing_tag($tag);
+		}
+		
+		function return_self_closing_tag($tag)
+		{
+			$result = '<';
+			$result .= $tag;
 			// do we use xtml (->true) or html (->false)
 			if ($this->use_xtml())
 			{
-				echo ' /';
+				$result .= ' /';
 			}
-			echo '>';
-			echo "\n";
-		}		
+			$result .= '>';
+			$result .= "\n";
+			
+			return $result;
+		}
 		
 		function base_name()
 		{
