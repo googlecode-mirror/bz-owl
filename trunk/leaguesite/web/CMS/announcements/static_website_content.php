@@ -110,14 +110,12 @@
 		{
 			$tmpl->setVariable('RAW_CONTENT_HERE', readContent($page_title, $author, $last_modified, true));
 		}
+		$tmpl->parseCurrentBlock();
 	} else
 	{
 		$tmpl = new template($templateToUse);
 		$tmpl->addMSG(readContent($page_title, $author, $last_modified, false));
 	}
-	
-	$tmpl->parseCurrentBlock();
-	
 	
 	if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
 	{
