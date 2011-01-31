@@ -36,7 +36,7 @@
 			// each entry in the array will be a new line
 			$menu = array();
 			$menu[] = '<ul class="navigation">' . "\n";
-			require_once dirname(dirname(dirname(__FILE__))) . '/CMS/permissions.php';
+			require_once dirname(dirname(dirname(__FILE__))) . '/CMS/login/permissions.php';
 			
 			$unread_messages = false;
 			
