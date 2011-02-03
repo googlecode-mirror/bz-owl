@@ -16,16 +16,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		// login did not work, removing permissions not necessary as additional permissions where never granted
 		// after permissions were removed at the beginning of the file
-		echo '<div class="static_page_box">' . "\n";
-		$error_msg = '<p class="first_p">Login failed: The returned values could not be validated! You may check your username and password.</p>' . "\n";
-		$error_msg .= '<p>Please <a href="./">try again</a>.</p>' . "\n";
-		if (isset($site))
-		{
-			$site->dieAndEndPage($error_msg);
-		} else
-		{
-			die($error_msg);
-		}
+		
+		$tmpl->done('<p class="first_p">Login failed: The returned values could not be validated! You may check your username and password.</p>' . "\n"
+					. '<p>Please <a href="./">try again</a>.</p>' . "\n");
 	}
 	
 	// NOTE: invalid bzid should be set to -1
@@ -67,7 +60,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		if ($site->debug_sql())
 		{
-			echo '<p>gu league referee detected</p>';
+			$tmpl->addMSG('<p>gu league referee detected</p>');
 		}
 		// GU-LEAGUE.REFEREES group
 		
@@ -92,7 +85,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		if ($site->debug_sql())
 		{
-			echo '<p>gu league admin detected</p>';
+			$tmpl->addMSG('<p>gu league admin detected</p>');
 		}
 		// GU-LEAGUE.ADMINS group
 		
@@ -151,8 +144,6 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		}
 		
 		$_SESSION['external_login'] = true;
-		$external_login_id = $_SESSION['external_id'];
-//		echo '<div class="static_page_box">' . "\n";
 //		echo '<p class="first_p">Login information validated!</p>' . "\n";
 	}
 }

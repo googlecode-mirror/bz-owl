@@ -288,8 +288,16 @@
 			// show all
 			$this->tpl->show();
 		}
-	}
 		
+		// quick way to stop script and to output a message
+		function done($msg)
+		{
+			$this->addMSG($msg);
+			$this->render();
+			die();
+		}
+	}
+	
 	
 	// set up a class for less frequently used functions
 	class siteinfo
@@ -395,14 +403,24 @@
 		return $result;
 		}
 		
-		function execute_query($table, $query, $connection, $file='', $errorUserMSG='')
+		function execute_query($table, $query, $connection = 0, $file='', $errorUserMSG='')
 		{
 			// output the query in debug mode
 			if ($this->debug_sql())
 			{
 				echo '<p class="first_p">executing query: ' . htmlent($query) . '</p>' . "\n";
 			}
-			$result = mysql_query($query, $connection);
+			
+			
+			if ($connection === 0)
+			{
+				// no connection to be used specified, use last one
+				$result = mysql_query($query);
+			} else
+			{
+				// use connection specified
+				$result = mysql_query($query, $connection);
+			}
 			if (!$result)
 			{
 				// print out the raw error in debug mode
