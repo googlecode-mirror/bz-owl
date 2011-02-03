@@ -74,7 +74,6 @@
 		function getID()
 		{
 			$userid = 0;
-			print_r($_SESSION);
 			
 			if ($this->loggedIn())
 			{
@@ -96,7 +95,7 @@
 		function logout()
 		{
 			$_SESSION['user_logged_in'] = false;
-			unset($_SESSION['user_logged_in']);
+//			unset($_SESSION['user_logged_in']);
 			$_SESSION['viewerid'] = -1;
 		}
 	}
