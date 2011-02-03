@@ -25,9 +25,7 @@
 		$lenLogin = strlen($loginname);
 		if (($lenLogin > 50) || ($lenLogin < 1))
 		{
-			echo '<div class="static_page_box">' . "\n";
-			echo '<p class="first_p">User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.</p>' . "\n";
-			$site->dieAndEndPage();
+			$tmpl->done('User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.' . "\n");
 		}
 		
 		// get player id
@@ -43,9 +41,8 @@
 		// execute query
 		if (!($result = @$site->execute_query('players', $query, $connection)))
 		{
-			echo '<div class="static_page_box">' . "\n";
 			// query failed
-			$site->dieAndEndPage(('Could not get id for name ' . sqlSafeString($loginname)));
+			$tmpl->done('Could not get id for name ' . sqlSafeString($loginname));
 		}
 		
 		
@@ -76,13 +73,16 @@
 				$msg .= 'external logins';
 			}
 			$msg .= ' for this account.</span>' . "\n";
-			die_with_no_login($msg);
+			
+			$tmpl->done($msg);
 		}
 		
 		
 		if (intval($playerid) === 0)
 		{
-			die_with_no_login('The specified user is not registered. You may want to <a href="./">try logging in again</a>.');
+			$user->logout();
+			
+			$tmpl->done('The specified user is not registered. You may want to <a href="./">try logging in again</a>.');
 		}
 		
 		// get password from database in order to compare it with the user entered password
@@ -93,12 +93,11 @@
 		// execute query
 		if (!($result = @$site->execute_query('players_passwords', $query, $connection)))
 		{
-			echo '<div class="static_page_box">' . "\n";
 			// query failed
-			$site->dieAndEndPage(('Could not get password for player with id ' . sqlSafeString($playerid)));
+			$tmpl->done('Could not retrieve password for you in database.');
 		}
 		
-		// initialise without md5 (hash functions will cause collisions despite passwords will not match)
+		// initialise without md5 (hash functions could cause collisions despite passwords will not match)
 		$password_md5_encoded = false;
 		// no password is default and will not match any password set
 		$password_database = '';
@@ -119,10 +118,8 @@
 		{
 			if (($lenPw < 10) || ($lenPw > 32))
 			{
-				echo '<div class="static_page_box">' . "\n";
-				echo ('<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.'
+				$tmpl->done('<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.'
 					  . ' You may want to <a href="./">try logging in again</a>.</p>' . "\n");
-				$site->dieAndEndPage();
 			}
 		} else
 		{
@@ -133,9 +130,8 @@
 		if (!(strcmp($password_database, $pw) === 0))
 		{
 			// TODO: automatically log these cases and lock account for some hours after several unsuccessful tries
-			echo '<div class="static_page_box">' . "\n";
-			echo '<p class="first_p">Your password does not match the stored password. You may want to <a href="./">try logging in again</a>.</p>' . "\n";
-			$site->dieAndEndPage();
+			$tmpl->done('Your password does not match the stored password.'
+						. ' You may want to <a href="./">try logging in again</a>.' . "\n");
 		}
 		
 		// sanity checks passed -> login successful
@@ -149,9 +145,7 @@
 		allow_add_messages();
 		allow_delete_messages();
 		
-//		echo '<div class="static_page_box">' . "\n";
-		
 		// username and password did match but there might be circumstances
-		// where the caller decides the login was not successful, though
+		// where the caller script decides the login was not successful, though
 	}
 ?>

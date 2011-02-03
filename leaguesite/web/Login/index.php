@@ -68,15 +68,15 @@
 	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 	{
 		// is the user already registered at this site?
-		$query = 'SELECT `id`, ';
-		// only need an external login id in case an external login was performed by the viewing player
-		// but look it up to find out if user is global login enabled
-		// NOTE: this is only done as fallback in case the login module does not already handle it
-		$query .= ' `external_playerid`, ';
-		$query .= '`status` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username']);
-		// only one player tries to login so only fetch one entry, speeds up login a lot
-		$query .= ' LIMIT 1';
-		if (!($result = @$site->execute_query('players', $query, $connection)))
+		$query = ('SELECT `id`, '
+				  // only need an external login id in case an external login was performed by the viewing player
+				  // but look it up to find out if user is global login enabled
+				  // NOTE: this is only done as fallback in case the login module does not already handle it
+				  . ' `external_playerid`, '
+				  . '`status` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username'])
+				  // only one player tries to login so only fetch one entry, speeds up login a lot
+				  . ' LIMIT 1');
+		if (!($result = @$site->execute_query('players', $query)))
 		{
 			$msg = ('Could not get account data for external_playerid ' . sqlSafeString($_SESSION['external_id']) . '.');
 			die_with_no_login($msg, $msg);
@@ -101,7 +101,7 @@
 				}
 			}
 			mysql_free_result($result);
-		} elseif (isset($external_login_id) && $external_login_id)
+		} elseif (isset($_SESSION['external_id']) && $_SESSION['external_id'])
 		{
 			// name is not known, check if id is already in the database
 			// $rows_num_accounts === 0
@@ -150,7 +150,7 @@
 			mysql_free_result($result);
 		}
 		
-		if (isset($external_login_id) && $external_login_id && ($convert_to_external_login))
+		if (isset($_SESSION['external_id']) && $_SESSION['external_id'] && ($convert_to_external_login))
 		{
 			$msg .= '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
 			$msg .= 'The account you tried to login to does not support ';
@@ -345,7 +345,7 @@
 				{
 					// non-resolvable collisions found, reset username of current user
 					$query = ('SELECT `name` FROM `players` WHERE `external_playerid`='
-							  . sqlSafeStringQuotes($external_login_id) . ' LIMIT 1');
+							  . sqlSafeStringQuotes($_SESSION['external_id']) . ' LIMIT 1');
 					if (!($result = @$site->execute_query('players', $query, $connection)))
 					{
 						$msg = ('Could not find out if external_playerid is set for all accounts having name ' . sqlSafeString(htmlent($_SESSION['username'])) . '.');
@@ -623,17 +623,20 @@
 	// $user_id is not set in case no login/registration was performed
 	if (getUserID() > 0)
 	{
-		echo '<div class="static_page_box">' . "\n";
-		echo '<p class="first_p">Login was successful!</p>' . "\n";
-		echo '<p>Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.</p>' . "\n";
+		$tmpl->addMSG('<p class="first_p">Login was successful!</p>');
+		$tmpl->addMSG('<p>Your profile page can be found <a href="../Players/?profile=' . $user_id . '">here</a>.</p>');
+	} else
+	{
+		// perform a logout just in case anything went wrong.
+		logout();
 	}
 	
 	$output_buffer .= ob_get_contents();
 	ob_end_clean();
 	// write output buffer
 	echo $output_buffer;
+	
+	
+	// done, render page
+	$tmpl->render();
 ?>
-</div>
-</div>
-</body>
-</html>
