@@ -37,9 +37,9 @@
 		$query .= ' FROM `players` WHERE `name`=' . sqlSafeStringQuotes($loginname);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
-		
+		echo 'test';
 		// execute query
-		if (!($result = @$site->execute_query('players', $query, $connection)))
+		if (!($result = $site->execute_query('players', $query)))
 		{
 			// query failed
 			$tmpl->done('Could not get id for name ' . sqlSafeString($loginname));
