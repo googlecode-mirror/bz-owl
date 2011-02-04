@@ -400,7 +400,7 @@
 								}
 								
 								// get the msgid generated from database
-								$msgid = mysql_insert_id($connection);
+								$msgid = mysql_insert_id($db->getConnection());
 								
 								// unlock messages_storage because mysql_insert_id() was used and is no longer needed
 								$query = 'UNLOCK TABLES';

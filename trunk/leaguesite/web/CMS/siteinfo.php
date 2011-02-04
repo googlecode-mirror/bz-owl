@@ -108,13 +108,18 @@
 		
 		function __construct($template, $customTheme='')
 		{
+			global $db;
 			global $site;
 			global $connection;
 			
 			require_once 'TemplateSystem/HTML/Template/IT.php';
 			
 			// need db connection
-			$connection = $site->connect_to_db();
+			require 'classes/db.php';
+			$db = new database();
+			
+			$connection = $db->createConnection();
+			$db->selectDB($site->db_used_name());
 			
 			if (strcmp($customTheme, '') === 0)
 			{
@@ -390,14 +395,14 @@
 				}
 				
 				// log the error
-				$site->log_error_query($file, 'SELECT `id` FROM `players` WHERE `teamid`=' . sqlSafeStringQuotes(intval($teamid)));
+				$this->log_error_query($file, $query . sqlSafeStringQuotes(mysql_error()));
 				
 				if (strlen($errorUserMSG) > 0)
 				{
 					$site->dieAndEndPage($errorUserMSG);
 				}
 				
-				$site->dieAndEndPage('Error: Could not process query.');
+				$this->dieAndEndPage('Error: Could not process query.');
 			}
 		
 		return $result;
@@ -687,7 +692,7 @@
 		
 		function log_error_query($file, $error)
 		{
-			log_error('Error: Query failed in ' . $file . ': ' . $error);
+			$this->log_error('Error: Query failed in ' . $file . ': ' . $error);
 		}
 		
 		function log_error($error='')
