@@ -91,7 +91,7 @@
 		$query .= ' LIMIT 1';
 		
 		// execute query
-		if (!($result = @$site->execute_query('players_passwords', $query, $connection)))
+		if (!($result = @$site->execute_query('players_passwords', $query)))
 		{
 			// query failed
 			$tmpl->done('Could not retrieve password for you in database.');
