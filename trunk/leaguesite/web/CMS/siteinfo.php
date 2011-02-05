@@ -158,17 +158,7 @@
 				$this->parseCurrentBlock();
 			}
 			
-			$this->tpl->setCurrentBlock('MENU');
-			include(dirname(dirname(__FILE__)) .'/styles/' . str_replace(' ', '%20', htmlspecialchars($customTheme)) . '/menu.php');
 			
-			$menuClass = new menu();
-			$menu = $menuClass->createMenu();
-			
-			foreach ($menu as $oneMenuEntry)
-			{
-				$this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
-				$this->parseCurrentBlock();
-			}
 			
 			$this->tpl->setCurrentBlock('MAIN');
 			
@@ -276,6 +266,21 @@
 		function render()
 		{
 			global $site;
+			
+			
+			// build menu at last to prevent undesired side effects when logging in or out
+			$this->tpl->setCurrentBlock('MENU');
+			include(dirname(dirname(__FILE__)) .'/styles/' . $site->getStyle() . '/menu.php');
+			
+			$menuClass = new menu();
+			$menu = $menuClass->createMenu();
+			
+			foreach ($menu as $oneMenuEntry)
+			{
+				$this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
+				$this->parseCurrentBlock();
+			}
+			unset($oneMenuEntry);
 			
 			// include status message at the end
 			// so we do not forget to display any message
