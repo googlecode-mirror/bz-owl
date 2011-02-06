@@ -16,12 +16,12 @@
 	{
 		$msg .= '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
 		$msg .= '<p class="first_p">' . "\n";
-		if ($site->force_external_login_when_trying_local_login())
+		if ($config->value('forceExternalLoginOnly'))
 		{
-			$msg .= $site->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Update old account from ' . $account_old_website . '"');
+			$msg .= $tmpl->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Update old account from ' . $account_old_website . '"');
 		} else
 		{
-			$msg .= $site->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Local login"');
+			$msg .= $tmpl->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Local login"');
 		}
 		$msg .= '</p>' . "\n";
 		$msg .= '</form>' . "\n";
@@ -31,7 +31,7 @@
 		$msg .= '<div class="static_page_box">' . "\n";
 		
 		$msg .= '<p class="first_p">';
-		if ($site->convert_users_to_external_login())
+		if ($config->value('ConvertUsersToExternalLogin'))
 		{
 			require_once dirname(dirname(__FILE__)) . '/login_module_list.php';
 			if (isset($module['bzbb']) && ($module['bzbb']))

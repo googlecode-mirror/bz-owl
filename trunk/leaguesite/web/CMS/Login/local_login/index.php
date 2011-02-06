@@ -30,20 +30,15 @@
 		
 		// get player id
 		$query = 'SELECT `id`';
-		if ($site->force_external_login_when_trying_local_login())
+		if ($config->value('forceExternalLoginOnly'))
 		{
 			$query .= ', `external_playerid` ';
 		}
 		$query .= ' FROM `players` WHERE `name`=' . sqlSafeStringQuotes($loginname);
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
-		echo 'test';
 		// execute query
-		if (!($result = $site->execute_query('players', $query)))
-		{
-			// query failed
-			$tmpl->done('Could not get id for name ' . sqlSafeString($loginname));
-		}
+		$result = $db->SQL($query);
 		
 		
 		// initialise with reserved player id 0 (no player)
@@ -52,7 +47,7 @@
 		while($row = mysql_fetch_array($result))
 		{
 			$playerid = $row['id'];
-			if ($site->force_external_login_when_trying_local_login() && !(strcmp(($row['external_playerid']), '') === 0))
+			if ($config->value('forceExternalLoginOnly') && !(strcmp(($row['external_playerid']), '') === 0))
 			{
 				$convert_to_external_login = false;
 			}
@@ -60,7 +55,7 @@
 		mysql_free_result($result);
 		
 		// local login tried but external login forced in settings
-		if (!$convert_to_external_login && $site->force_external_login_when_trying_local_login())
+		if (!$convert_to_external_login && $config->value('forceExternalLoginOnly'))
 		{
 			$msg = '<span class="unread_messages">You already enabled ';
 			if (isset($module['bzbb']) && ($module['bzbb']))

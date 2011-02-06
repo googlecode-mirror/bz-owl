@@ -164,7 +164,7 @@
 			}
 			
 			// user is logged in -> show logout option
-			if ($user->getID() > 0)
+			if ($user->loggedIn())
 			{
 				$this->tpl->setCurrentBlock('LOGOUT');
 				$this->tpl->setVariable('LOGOUTURL', (baseaddress() . 'Logout/'));
