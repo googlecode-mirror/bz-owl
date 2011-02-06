@@ -24,11 +24,6 @@
 		{
 			global $config;
 			
-			function selectDB($db)
-			{
-				mysql_select_db($db, $this->connection);
-			}
-			
 			if (isset($_SESSION['debugSQL']))
 			{
 				return ($_SESSION['debugSQL']);

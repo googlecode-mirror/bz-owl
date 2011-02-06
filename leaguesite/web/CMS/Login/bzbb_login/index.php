@@ -58,7 +58,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	if ($in_group === true)
 	{
-		if ($site->debug_sql())
+		if ($db->getDebugSQL())
 		{
 			$tmpl->addMSG('<p>gu league referee detected</p>');
 		}
@@ -83,7 +83,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	}
 	if ($in_group === true)
 	{
-		if ($site->debug_sql())
+		if ($db->getDebugSQL())
 		{
 			$tmpl->addMSG('<p>gu league admin detected</p>');
 		}

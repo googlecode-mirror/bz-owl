@@ -49,13 +49,13 @@
 				// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
 				$query = ('UPDATE LOW_PRIORITY `online_users` SET `last_activity`='
 						  . sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ' WHERE `playerid`=' . sqlSafeStringQuotes($user->getID()));
-				mysql_query($query, $connection);
+				$db->SQL($query);
 				
 				// are there unread messages?
 				// are there unread messages?
 				$query = ('SELECT `id` FROM `messages_users_connection` WHERE `msg_status`='
 						  . sqlSafeStringQuotes('new')
-						  . ' AND `playerid`=' . sqlSafeStringQuotes(getUserID())
+						  . ' AND `playerid`=' . sqlSafeStringQuotes($user->getID())
 						  . ' LIMIT 1');
 				$result = $db->SQL($query);
 				$rows = (int) mysql_num_rows($result);
