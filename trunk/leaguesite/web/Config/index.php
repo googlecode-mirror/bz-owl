@@ -2,8 +2,9 @@
 	// set a cookie to test if client accepts cookies
 	$output_buffer = '';
 	ob_start();
-	require realpath('../CMS/siteinfo.php');
-	@setcookie('cookies', "allowed", 0, basepath() . 'Config/', domain(), 0);
+	require dirname(dirname(__FILE__)) . '/CMS/site.php';
+	$site = new site();
+	@setcookie('cookies', 'allowed', 0, $config->value('basepath') . 'Config/', domain(), 0);
 	
 	$theme = '';
 	if (isset($_GET['theme']))
@@ -41,7 +42,7 @@
 		} else
 		{
 			ini_set ('session.use_trans_sid', 0);
-			@setcookie('theme', $theme, time()+60*60*24*30, basepath(), domain(), 0);
+			@setcookie('theme', $theme, time()+60*60*24*30, $config->value('basepath'), domain(), 0);
 		}
 	}
 	
@@ -53,10 +54,6 @@
 	ob_end_clean();
 	// write output buffer
 	echo $output_buffer;
-	
-	require_once '../CMS/siteinfo.php';
-	$site = new siteinfo();
-	
 	
 	// read out installed themes instead of defining a fixed list in source code
 	
@@ -109,7 +106,7 @@
 		$s = $theme;
 	} else
 	{
-		$s = $site->getStyle();
+		$s = $user->getStyle();
 	}
 	foreach ($themes as $theme)
 	{
@@ -148,4 +145,4 @@
 	$tmpl->setVariable('REPOSITORYVERSION', RepositoryVersion());
 	
 	$tmpl->render();
-	?>
+?>

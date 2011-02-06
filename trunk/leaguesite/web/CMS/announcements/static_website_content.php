@@ -60,8 +60,8 @@
 		return $randomkeysmatch = $site->validateKey($randomKeyName, $randomKeyValue);
 	}
 	
-	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
-	$site = new siteinfo();
+	require_once (dirname(dirname(__FILE__)) . '/site.php');
+	$site = new site();
 	
 	
 	// find out which template should be used
@@ -82,7 +82,7 @@
 		
 		// revert back to default if file does not exist
 		if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
-						  . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/'
+						  . str_replace(' ', '%20', htmlspecialchars($user->getStyle())) . '/'
 										. $templateToUse . '.tmpl.html')))
 		{
 			$templateToUse = 'static';
@@ -275,6 +275,7 @@
 	function readContent($page_title, &$author, &$last_modified, $raw=false)
 	{
 		global $site;
+		global $db;
 		global $connection;
 		
 		// initialise return variable so any returned value will be always in a defined state
@@ -285,10 +286,7 @@
 		}
 		
 		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		if (!($result = @$site->execute_query('static_pages', $query, $connection)))
-		{
-			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
-		}
+		$result = $db->SQL($query);
 		
 		// process query result array
 		while ($row = mysql_fetch_array($result))
@@ -318,7 +316,7 @@
 		{
 			// empty content
 			$query = 'DELETE FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
-			if (!($result = @$site->execute_query('static_pages', $query, $connection)))
+			if (!($result = $db->SQL($query)))
 			{
 				$site->dieAndEndPage('An error occured deleting content for page ' . $page_title . '!');
 			}
@@ -326,7 +324,7 @@
 		}
 		
 		$query = 'SELECT `id` FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		if (!($result = @$site->execute_query('static_pages', $query, $connection)))
+		if (!($result = $db->SQL('static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
 		}
@@ -368,7 +366,7 @@
 			$query .= ' LIMIT 1';
 		}
 		
-		if (!($result = @$site->execute_query('static_pages', $query, $connection)))
+		if (!($result = $db->SQL('static_pages', $query, $connection)))
 		{
 			$site->dieAndEndPage('An error occured updating content for page ' . $page_title
 								 . ' by user ' . sqlSafeString(getUserID()) . '!');
