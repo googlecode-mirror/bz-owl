@@ -13,24 +13,23 @@
 	// init siteinfo class if not already done
 	if (!isset($site))
 	{
-		require_once dirname(dirname(__FILE__)) . '/siteinfo.php';
-		$site = new siteinfo();
+		require_once dirname(dirname(__FILE__)) . '/site.php';
+		$site = new site();
 	}
 	
-	
-	require dirname(dirname(__FILE__)) . '/classes/user.php';
-	$user = new user();
+//	require dirname(dirname(__FILE__)) . '/classes/user.php';
+//	$user = new user();
 	
 	
 	// magic quote band-aid for POST variables
-	if (magic_quotes_on())
+	if ($site->magic_quotes_on())
 	{
 		stripslashes($_POST);
 	}
 	
 	
 	$tmpl = new template('Login');
-	
+
 	// no need to do anything
 	if ($user->loggedIn())
 	{
@@ -159,8 +158,8 @@
 				if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']) && isset($module['local']) && ($module['local']))
 				{
 					$tmpl->addMSG('<strong>or</strong>');
-					$tmpl->addMSG($site->return_self_closing_tag('br'));
-					$tmpl->addMSG($site->return_self_closing_tag('br'));
+					$tmpl->addMSG($tmpl->return_self_closing_tag('br'));
+					$tmpl->addMSG($tmpl->return_self_closing_tag('br'));
 				}
 			}
 			
