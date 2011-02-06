@@ -29,8 +29,10 @@
 		
 		function createMenu()
 		{
+			global $config;
+			global $user;
+			global $db;
 			global $site;
-			global $connection;
 			
 			// menu is returned as array
 			// each entry in the array will be a new line
@@ -40,18 +42,14 @@
 			
 			$unread_messages = false;
 			
-			// set the date and time
-			date_default_timezone_set($site->used_timezone());
-			
 			// update activity data
 			$logged_in = true;
-			if (getUserID() > 0)
+			if ($user->getID() > 0)
 			{
 				// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
-				$query = 'UPDATE LOW_PRIORITY `online_users` SET `last_activity`=';
-				$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ' WHERE `playerid`=' . sqlSafeStringQuotes(getUserID());
-				@mysql_select_db($site->db_used_name(), $connection);
-				@mysql_query($query, $connection);
+				$query = ('UPDATE LOW_PRIORITY `online_users` SET `last_activity`='
+						  . sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ' WHERE `playerid`=' . sqlSafeStringQuotes($user->getID()));
+				mysql_query($query, $connection);
 				
 				// are there unread messages?
 				// are there unread messages?
@@ -59,8 +57,8 @@
 						  . sqlSafeStringQuotes('new')
 						  . ' AND `playerid`=' . sqlSafeStringQuotes(getUserID())
 						  . ' LIMIT 1');
-				$result = @mysql_query($query, $connection);
-				$rows = (int) @mysql_num_rows($result);
+				$result = $db->SQL($query);
+				$rows = (int) mysql_num_rows($result);
 				if ($rows > 0)
 				{
 					$unread_messages = true;
@@ -71,7 +69,7 @@
 				$logged_in = false;
 			}
 			
-			$name = $site->base_name();
+			$name = $site->basename();
 			
 			// public_html on FreeBSD or Sites on Mac OS X
 			$topDir = 'public_html';
@@ -146,6 +144,7 @@
 			$menu[] = $this->writeLink('Config/', 'Config', (strcmp($name, 'Config') == 0));
 			
 			$menu[] = '</ul>';
+			
 			return $menu;
 		}
 	}
