@@ -44,6 +44,35 @@
 			$name = $path['basename'];
 			return $name;
 		}
+		
+		function setKey($randomkey_name)
+		{
+			// this should be good enough as all we need is something that can not be guessed without many tries
+			return $_SESSION[$randomkey_name] = rand(0, getrandmax());
+		}
+		
+		function validateKey($key, $value)
+		{
+			if (isset($_SESSION[$key]))
+			{
+				$randomkeysmatch = (strcmp(html_entity_decode(urldecode($_SESSION[$key])), $value) === 0);
+				
+				// invalidate key & value to prevent allowing sending stuff more than once
+				if (!(strcmp($value, '') === 0))
+				{
+					unset ($_SESSION[$key]);
+					unset ($_SESSION[$value]);
+				} else
+				{
+					// never return true on empty key & value combination
+					return false;
+				}
+				
+				return $randomkeysmatch;
+			}
+			
+			return false;
+		}
 	}
 	
 	// add a few functions to global namespace

@@ -144,7 +144,7 @@
 					{
 						$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
 						$query .= sqlSafeStringQuotes($saved_timestamp);
-						$result_delete = @$site->execute_silent_query('online_users', $query, $connection, __FILE__);
+						$result_delete = $db->SQL($query, __FILE__);
 					}
 				}
 			}
@@ -251,6 +251,70 @@
 			$result .= "\n";
 			
 			return $result;
+		}
+		
+		// give ability to use a limited custom style
+		function bbcode($string)
+		{
+			if (strcmp(bbcode_lib_path(), '') === 0)
+			{
+				// no bbcode library specified
+				return $this->linebreaks(htmlent($string));
+			}
+			// load the library
+			require_once (bbcode_lib_path());
+			
+			if (strcmp(bbcode_command(), '') === 0)
+			{
+				// no command that starts the parser
+				return $this->linebreaks(htmlent($string));
+			} else
+			{
+				$parse_command = bbcode_command();
+			}
+			
+			if (!(strcmp(bbcode_class(), '') === 0))
+			{
+				// no class specified
+				// this is no error, it only means the library stuff isn't started by a command in a class
+				$bbcode_class = bbcode_class();
+				$bbcode_instance = new $bbcode_class;
+			}
+			
+			// execute the bbcode algorithm
+			if (isset($bbcode_class))
+			{
+				if (bbcode_sets_linebreaks())
+				{
+					return $bbcode_instance->$parse_command($string);
+				} else
+				{
+					return $this->linebreaks($bbcode_instance->$parse_command($string));
+				}
+			} else
+			{
+				if (bbcode_sets_linebreaks())
+				{
+					return $parse_command($string);
+				} else
+				{
+					return $this->linebreaks($parse_command($string));
+				}
+			}
+		}
+		
+		// add linebreaks to input, thus enable usage of multiple lines
+		function linebreaks($text)
+		{
+			global $config;
+			
+			if (phpversion() >= ('5.3'))
+			{
+				return nl2br($text, ($config->value('useXhtml')));
+			} else
+			{
+				return nl2br($text);
+			}
 		}
 	}
 	
