@@ -97,7 +97,7 @@
 	if (isset($_GET['edit']))
 	{
 		// remove the slashes if magic quotes are sadly on
-		if (magic_quotes_on())
+		if ($site->magic_quotes_on())
 		{
 			stripslashes($_POST);
 		}
@@ -132,7 +132,7 @@
 		{
 			$tmpl->setCurrentBlock('USER_NOTE');
 			
-			if ($site->bbcode_lib_available())
+			if ($config->value('bbcodeLibAvailable'))
 			{
 				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
 				$tmpl->parseCurrentBlock();
@@ -190,12 +190,12 @@
 			switch ($test)
 			{
 				// use bbcode if available
-				case (true && $confirmed === 1 && $site->bbcode_lib_available()):
-					$tmpl->addMSG($site->bbcode($content));
+				case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
+					$tmpl->addMSG($tmpl->bbcode($content));
 					break;
 					
 				// else raw output
-				case (true && $confirmed === 1 && !$site->bbcode_lib_available()):
+				case (true && $confirmed === 1 && !$config->value('bbcodeLibAvailable')):
 					$tmpl->addMSG($content);
 					break;
 				
@@ -245,6 +245,7 @@
 				
 				case 2:
 					writeContent($content, $page_title);
+					$tmpl->addMSG('Changes written successfully.' . $tmpl->linebreaks("\n\n"));
 				
 				default:
 					$tmpl->setCurrentBlock('FORM_BUTTON');
@@ -256,7 +257,7 @@
 			$randomKeyName = $randomkey_name . microtime();
 			// convert some special chars to underscores
 			$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
-			$randomkeyValue = $site->set_key($randomKeyName);
+			$randomkeyValue = $site->setKey($randomKeyName);
 			$tmpl->setCurrentBlock('KEY');
 			$tmpl->setVariable('KEY_NAME', $randomKeyName);
 			$tmpl->setVariable('KEY_VALUE', urlencode($_SESSION[$randomKeyName]));
@@ -268,15 +269,11 @@
 	// done, render page
 	$tmpl->render();
 	
-	
-	
-	die();
-	
 	function readContent($page_title, &$author, &$last_modified, $raw=false)
 	{
 		global $site;
 		global $db;
-		global $connection;
+		global $config;
 		
 		// initialise return variable so any returned value will be always in a defined state
 		$content = '';
@@ -293,7 +290,7 @@
 		{	 
 			$author = $row['author'];
 			$last_modified = $row['last_modified'];
-			if ($raw && $site->bbcode_lib_available())
+			if ($raw && $config->value('bbcodeLibAvailable'))
 			{
 				$content = $row['raw_content'];
 			} else
@@ -309,25 +306,22 @@
 	
 	function writeContent(&$content, $page_title)
 	{
-		global $connection;
 		global $site;
+		global $config;
+		global $user;
+		global $tmpl;
+		global $db;
 		
 		if (strcmp($content, '') === 0)
 		{
 			// empty content
 			$query = 'DELETE FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
-			if (!($result = $db->SQL($query)))
-			{
-				$site->dieAndEndPage('An error occured deleting content for page ' . $page_title . '!');
-			}
+			$db->SQL($query);
 			return;
 		}
 		
 		$query = 'SELECT `id` FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		if (!($result = $db->SQL('static_pages', $query, $connection)))
-		{
-			$site->dieAndEndPage('An error occured getting content for page ' . $page_title . '!');
-		}
+		$result = $db->SQL($query);
 		
 		// number of rows
 		$rows = (int) mysql_num_rows($result);
@@ -336,14 +330,13 @@
 		{
 			// no entry in table regarding current page
 			// thus insert new data
-			// getUserID() is a function from siteinfo.php that identifies the current user
 			$query = ('INSERT INTO `static_pages` (`author`, `page_name`, `raw_content`, `content`, `last_modified`) VALUES ('
-					  . sqlSafeStringQuotes(getUserID())
+					  . sqlSafeStringQuotes($user->getID())
 					  . ', ' . sqlSafeStringQuotes($page_title)
 					  . ', ' . sqlSafeStringQuotes($content));
-			if ($site->bbcode_lib_available())
+			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', ' . sqlSafeStringQuotes($site->bbcode($content));
+				$query .= ', ' . sqlSafeStringQuotes($tmpl->bbcode($content));
 			} else
 			{
 				$query .= ', ' . sqlSafeStringQuotes($content);
@@ -352,11 +345,11 @@
 		} else
 		{
 			// either 1 or more entries found, just assume there is only one
-			$query = ('UPDATE `static_pages` SET `author`=' . sqlSafeStringQuotes(getUserID())
+			$query = ('UPDATE `static_pages` SET `author`=' . sqlSafeStringQuotes($user->getID())
 					  . ', `raw_content`=' . sqlSafeStringQuotes($content));
-			if ($site->bbcode_lib_available())
+			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', `content`=' . sqlSafeStringQuotes($site->bbcode($content));
+				$query .= ', `content`=' . sqlSafeStringQuotes($tmpl->bbcode($content));
 			} else
 			{
 				$query .= ', `content`=' . sqlSafeStringQuotes($content);
@@ -366,9 +359,5 @@
 			$query .= ' LIMIT 1';
 		}
 		
-		if (!($result = $db->SQL('static_pages', $query, $connection)))
-		{
-			$site->dieAndEndPage('An error occured updating content for page ' . $page_title
-								 . ' by user ' . sqlSafeString(getUserID()) . '!');
-		}
+		$result = $db->SQL($query);
 	}
