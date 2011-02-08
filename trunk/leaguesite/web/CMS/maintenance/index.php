@@ -322,16 +322,16 @@
 				if (!$cur_team_active && $curTeamNew)
 				{
 					// delete (for real) the new team
-					$query = 'DELETE FROM `teams` WHERE `id`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams` WHERE `id`=' . "'" . ($curTeam) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams', $query, $connection);
-					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . "'" . ($curTeam) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams_overview', $query, $connection);
-					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . "'" . ($curTeam) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams_permissions', $query, $connection);
-					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . "'" . ($teamid) . "'";
+					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . "'" . ($curTeam) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams_profile', $query, $connection);						
 				}
