@@ -10,6 +10,12 @@
 			global $user;
 			global $tmpl;
 			
+			// setup session
+			ini_set ('session.use_trans_sid', 0);
+			ini_set ('session.name', 'SID');
+			ini_set('session.gc_maxlifetime', '7200');
+			session_start();
+			
 			// database connectivity
 			include dirname(__FILE__) . '/classes/config.php';
 			$config = new config();
@@ -26,6 +32,7 @@
 			// do not init it, as db information is needed
 			// to find out what template should be used
 			require dirname(__FILE__) . '/classes/tmpl.php';
+			$tmpl = new template();
 		}
 		
 		function magic_quotes_on()
@@ -88,18 +95,4 @@
 	{
 		return html_entity_decode($string, ENT_COMPAT, 'UTF-8');
 	}
-	
-	// escaping shortcut
-	function sqlSafeString($param)
-	{
-		// use MySQL function mysql_real_escape_string, alternative could be prepared statements
-		return (NULL === $param ? "NULL" : mysql_real_escape_string ($param));
-	}
-	
-	function sqlSafeStringQuotes($param)
-	{
-		// use sqlSafeString and append quotes before and after the result
-		return ("'" . sqlSafeString($param) . "'");
-	}
-	
 ?>

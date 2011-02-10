@@ -1,10 +1,4 @@
 <?php
-	ini_set ('session.use_trans_sid', 0);
-	ini_set ('session.name', 'SID');
-	ini_set('session.gc_maxlifetime', '7200');
-	session_start();
-	
-	
 	function sanityCheck(&$confirmed)
 	{
 		global $tmpl;
@@ -282,12 +276,12 @@
 			$content = 'No content available yet.';
 		}
 		
-		$query = 'SELECT * FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		$result = $db->SQL($query);
+		$query = $db->prepare('SELECT * FROM `static_pages` WHERE `page_name`=? LIMIT 1');
+		$result = $db->execute($query, $page_title);
 		
 		// process query result array
-		while ($row = mysql_fetch_array($result))
-		{	 
+		while ($row = $db->fetchNextRow($query))
+		{
 			$author = $row['author'];
 			$last_modified = $row['last_modified'];
 			if ($raw && $config->value('bbcodeLibAvailable'))
@@ -298,8 +292,6 @@
 				$content = $row['content'];
 			}
 		}
-		
-		mysql_free_result($result);
 		
 		return $content;
 	}
@@ -315,13 +307,13 @@
 		if (strcmp($content, '') === 0)
 		{
 			// empty content
-			$query = 'DELETE FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
-			$db->SQL($query);
+			$query = $db->prepare('DELETE FROM `static_pages` WHERE `page_name`=?');
+			$db->execute($query, $page_title);
 			return;
 		}
 		
-		$query = 'SELECT `id` FROM `static_pages` WHERE `page_name`=' . sqlSafeStringQuotes($page_title) . ' LIMIT 1';
-		$result = $db->SQL($query);
+		$query = $db->prepare('SELECT `id` FROM `static_pages` WHERE `page_name`=? LIMIT 1');
+		$result = $db->execute($query, $page_title);
 		
 		// number of rows
 		$rows = (int) mysql_num_rows($result);
@@ -331,31 +323,34 @@
 			// no entry in table regarding current page
 			// thus insert new data
 			$query = ('INSERT INTO `static_pages` (`author`, `page_name`, `raw_content`, `content`, `last_modified`) VALUES ('
-					  . sqlSafeStringQuotes($user->getID())
-					  . ', ' . sqlSafeStringQuotes($page_title)
-					  . ', ' . sqlSafeStringQuotes($content));
+					  . $db->escape($user->getID())
+					  . ', ' . $db->escape($page_title)
+					  . ', ' . $db->escape($content));
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', ' . sqlSafeStringQuotes($tmpl->bbcode($content));
+				$query .= ', ' . $db->escape($tmpl->bbcode($content));
 			} else
 			{
-				$query .= ', ' . sqlSafeStringQuotes($content);
+				$query .= ', ' . $db->escape($content);
 			}
-			$query .= ', ' . sqlSafeStringQuotes($date_format) . ')';
+			$query .= ', ' . $db->escape($date_format) . ')';
+			
+//			$db->prepare($query);
+//			$db->execute();
 		} else
 		{
 			// either 1 or more entries found, just assume there is only one
-			$query = ('UPDATE `static_pages` SET `author`=' . sqlSafeStringQuotes($user->getID())
-					  . ', `raw_content`=' . sqlSafeStringQuotes($content));
+			$query = ('UPDATE `static_pages` SET `author`=' . $db->escape($user->getID())
+					  . ', `raw_content`=' . $db->escape($content));
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', `content`=' . sqlSafeStringQuotes($tmpl->bbcode($content));
+				$query .= ', `content`=' . $db->escape($tmpl->bbcode($content));
 			} else
 			{
-				$query .= ', `content`=' . sqlSafeStringQuotes($content);
+				$query .= ', `content`=' . $db->escape($content);
 			}			
-			$query .= ', `last_modified`=' . sqlSafeStringQuotes($date_format);
-			$query .= ' WHERE `page_name`=' . sqlSafeStringQuotes($page_title);
+			$query .= ', `last_modified`=' . $db->escape($date_format);
+			$query .= ' WHERE `page_name`=' . $db->escape($page_title);
 			$query .= ' LIMIT 1';
 		}
 		

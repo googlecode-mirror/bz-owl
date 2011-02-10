@@ -46,10 +46,6 @@
 		}
 	}
 	
-	ini_set ('session.name', 'SID');
-	ini_set('session.gc_maxlifetime', '7200');
-	session_start();
-	
 	$output_buffer .= ob_get_contents();
 	ob_end_clean();
 	// write output buffer
@@ -94,11 +90,13 @@
 	
 	if (isset($theme))
 	{
-		$tmpl = new template('', $theme);
+		$tmpl->setTemplate('', $theme);
 	} else
 	{
-		$tmpl = new template('', '');
+		$tmpl->setTemplate('', '');
 	}
+	
+	
 	$tmpl->setCurrentBlock('cell');
 	
 	if (strlen($theme) > 0)

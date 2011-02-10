@@ -1,8 +1,9 @@
 <?php
-	// handle database related data
+	// handle database related data and functions
 	class database
 	{
 		private $connection;
+		private $pdo;
 		
 		// id > 0 means a user is logged in
 		function getConnection()
@@ -15,11 +16,22 @@
 			global $site;
 			global $config;
 			
-			return $this->connection = mysql_pconnect($config->value('dbHost')
-													  , $config->value('dbUser')
-													  , $config->value('dbPw'));
+			return $this->pdo = new PDO(
+								  'mysql:host='. $config->value('dbHost') . ';dbname=' . $config->value('dbName'),
+								  $config->value('dbUser'),
+								  $config->value('dbPw'),
+								  array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+			
+//			return $this->connection = mysql_pconnect($config->value('dbHost')
+//													  , $config->value('dbUser')
+//													  , $config->value('dbPw'));
 		}
-	
+		
+		function logError($error)
+		{
+			// TODO: implement it
+		}
+		
 		function getDebugSQL()
 		{
 			global $config;
@@ -35,10 +47,16 @@
 		
 		function selectDB($db, $connection=false)
 		{
-			// choose database
-			if (!(mysql_select_db($db, $this->connection)))
+			if (isset($this->pdo))
 			{
-				die('<p>Could not select database!<p>');
+				$this->SQL('USE `' . $db . '`');
+			} else
+			{
+				// choose database
+				if (!(mysql_select_db($db, $this->connection)))
+				{
+					die('<p>Could not select database!<p>');
+				}
 			}
 			return true;
 		}
@@ -47,7 +65,13 @@
 		{
 			global $tmpl;
 			
-			$result = mysql_query($query, $this->connection);
+			if ($this->getDebugSQL() && isset($tmpl))
+			{
+				$tmpl->addMSG('executing query: '. $query);
+			}
+			
+			$result = $this->pdo->query($query);
+//			$result = mysql_query($query, $this->connection);
 			
 			if (!$result)
 			{
@@ -61,10 +85,10 @@
 				// log the error
 				if ($file !== false)
 				{
-					$this->logError($file, $query . sqlSafeStringQuotes(mysql_error()));
+					$this->logError($file, $query . $this->escape(mysql_error()));
 				} else
 				{
-					$this->logError($query . sqlSafeStringQuotes(mysql_error()));
+					$this->logError($query . $this->escape(mysql_error()));
 				}
 				
 				if (strlen($errorUserMSG) > 0)
@@ -76,6 +100,39 @@
 			}
 			
 			return $result;
+		}
+		
+		
+		function execute($query, $inputParameters)
+		{
+			if (!is_array($inputParameters))
+			{
+				$inputParameters = array ($inputParameters);
+			}
+			$result = $query->execute($inputParameters);
+			
+			return $result;
+		}
+		
+		function prepare($query)
+		{
+			return $this->pdo->prepare($query);;
+		}
+		
+		function fetchNextRow($queryResult)
+		{
+			$queryResult->errorInfo();
+			return $queryResult->fetch();
+		}
+		
+		function fetchAll($queryResult)
+		{
+			return $queryResult->fetchAll();
+		}
+		
+		function rowCount($queryResult)
+		{
+			return $queryResult->rowCount();
 		}
 	}
 	
