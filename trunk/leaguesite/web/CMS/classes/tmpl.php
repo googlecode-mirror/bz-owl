@@ -27,18 +27,13 @@
 			}
 		}
 		
-		function __construct($template, $customTheme='')
+		function setTemplate($template, $customTheme='')
 		{
 			global $db;
 			global $site;
 			global $config;
 			global $user;
 			global $connection;
-			
-			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
-			
-			$connection = $db->createConnection();
-			$db->selectDB($config->value('dbName'));
 			
 			if (strcmp($customTheme, '') === 0)
 			{
@@ -70,7 +65,7 @@
 					$this->addMSG($this->return_self_closing_tag('br'));
 				} else
 				{
-				echo 'Used template: ' . $themeFolder . $template . '.tmpl.html';
+					echo 'Used template: ' . $themeFolder . $template . '.tmpl.html';
 				}
 			}
 			
@@ -115,7 +110,7 @@
 					  . ' FROM `servertracker`'
 					  . ' ORDER BY `id`');
 			$result = $db->SQL($query, __FILE__);
-			while ($row = mysql_fetch_array($result))
+			while ($row = $db->fetchNextRow($result))
 			{
 				if (intval($row['cur_players_total']) === 1)
 				{
@@ -125,14 +120,13 @@
 					$this->tpl->setVariable('ONLINE_PLAYERS', (strval($row['cur_players_total']) . ' players'));
 				}
 			}
-			mysql_free_result($result);
 			
 			// remove expired sessions from the list of online users
 			$query ='SELECT `playerid`, `last_activity` FROM `online_users`';
 			$result = $db->SQL($query, __FILE__);
-			if (((int) mysql_num_rows($result)) > 0)
+			if (((int) $db->rowCount($result)) > 0)
 			{
-				while($row = mysql_fetch_array($result))
+				while($row = $db->fetchNextRow($result))
 				{
 					$saved_timestamp = $row['last_activity'];
 					$old_timestamp = strtotime($saved_timestamp);
@@ -148,13 +142,12 @@
 					}
 				}
 			}
-			mysql_free_result($result);
 			
 			// count active sessions
 			$query = 'SELECT count(`playerid`) AS `num_players` FROM `online_users`';
 			$result = $db->SQL($query, __FILE__);
 			
-			$n_users = (mysql_fetch_array($result));
+			$n_users = ($db->fetchNextRow($result));
 			if (intval($n_users['num_players']) === 1)
 			{
 				$this->tpl->setVariable('ONLINE_USERS', '1 user');
@@ -169,6 +162,23 @@
 				$this->tpl->setCurrentBlock('LOGOUT');
 				$this->tpl->setVariable('LOGOUTURL', (baseaddress() . 'Logout/'));
 				$this->parseCurrentBlock();
+			}
+		}
+		
+		function __construct($template='', $customTheme='')
+		{
+			global $db;
+			global $config;
+			global $connection;
+			
+			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
+			
+			$connection = $db->createConnection();
+			$db->selectDB($config->value('dbName'));
+			
+			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
+			{
+				$this->setTemplate($template, $customTheme);
 			}
 		}
 		

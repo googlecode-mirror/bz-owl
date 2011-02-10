@@ -3,9 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-<!-- BEGIN MAIN -->	<link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
+	<!-- BEGIN MAIN --><link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
 	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
-<title>Config</title>
+<title>Home</title>
 </head>
 <body>
 <div class="logo"></div>
@@ -17,24 +17,34 @@
 	<span class="Servers">Match servers: <a href="{BASEURL}Servertracker/">{ONLINE_PLAYERS}</a></span>
 	<span class="onlineUsers">Website: <a href="{BASEURL}Online/">{ONLINE_USERS}</a></span>
 	<!-- BEGIN LOGOUT --><span class="logout"><a href="{LOGOUTURL}">Logout</a></span><!-- END LOGOUT -->
-</div>
+</div><!-- END MAIN -->
 
 <div class="content">
+<!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
 <div class="static_page_box">
 <!-- BEGIN MISC -->{MSG}<!-- END MISC -->
-<p class="first_p">This is the user configuration section.</p>
-<p>Special thanks: Upsetter and zaphod for a lot of input, zaphod for the logos and icons; brad for hosting and svn repository and orbit for the favicon.</p>
-<form enctype="application/x-www-form-urlencoded" method="get" action="{BASEURL}Config/"><!-- END MAIN -->
-<p>Theme:
-	<select name="theme">
-	<!-- BEGIN cell --><option value="{THEME}"{SELECTED}>{THEME}</option>
-	<!-- END cell --></select>
-<input type="submit" value="Submit changes" />
-</p>
-</form>
-
 </div>
-<!-- BEGIN repository --><p>SVN revision: {REPOSITORYVERSION}</p><!-- END repository -->
+
+
+<table id="table_msg_overview" class="big">
+<caption>Messages in outbox</caption>
+<tr>
+	<th>Author</th>
+	<th>Subject</th>
+	<th>Date</th>
+
+	<th>Recipient(s)</th>
+</tr>
+
+<!-- BEGIN PMLIST -->
+<tr class="msg_overview">
+	<td class="msg_overview_author"><a href="{USER_PROFILE_LINK}">{USER_NAME}</a></td>
+	<td class="msg_overview_subject"><a href="{MSG_LINK}">{MSG_SUBJECT}</a></td>
+	<td class="msg_overview_timestamp">{MSG_TIME}</td>
+	<td class="msg_overview_recipients"><a href="{MSG_RECIPIENTS_LINK}">{MSG_RECIPIENTS}</a></td>
+</tr><!-- END PMLIST -->
+</table>
+
 </div>
 </body>
 </html>

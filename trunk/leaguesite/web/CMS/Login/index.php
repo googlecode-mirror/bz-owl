@@ -1,12 +1,4 @@
 <?php
-	// do not attach SID to URL as this can cause security problems
-	// especially when a user shares an URL that includes a SID
-	// use cookies as workaround
-	ini_set ('session.use_trans_sid', 0);
-	ini_set ('session.name', 'SID');
-	ini_set('session.gc_maxlifetime', '7200');
-	@session_start();
-	
 	require_once 'login_module_list.php';
 	$module = active_login_modules();
 	
