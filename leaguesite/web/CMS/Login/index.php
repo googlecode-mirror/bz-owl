@@ -180,9 +180,8 @@
 		if ($user->loggedIn())
 		{
 			// delete expired invitations
-			$query = 'DELETE LOW_PRIORITY FROM `invitations` WHERE `expiration`<=';
-			$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-			if (!$result = $db->SQL($query))
+			$query = $db->prepare('DELETE LOW_PRIORITY FROM `invitations` WHERE `expiration`<=');
+			if (!$result = $db->execute($query, date('Y-m-d H:i:s')))
 			{
 				$msg .= 'Could not delete expired invitations.';
 				logoutAndAbort($msg);
@@ -589,13 +588,15 @@
 				// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194')
 				// AND (`external_playerid` <> '') AND (`status`='active' OR `status`='deleted')
 				// FIXME: sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
-				$query = 'SELECT `external_playerid` FROM `players` WHERE (`name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username'])) . ')';
-				$query .= ' AND (`external_playerid` <> ' . sqlSafeStringQuotes($_SESSION['external_id']) . ')';
-				// do not update users with local login
-				$query .= ' AND (`external_playerid` <> ' . "''" . ')';
-				// skip updates for banned or disabled accounts (inappropriate callsign for instance)
-				$query .= ' AND (`status`=' . sqlSafeStringQuotes('active') . ' OR `status`=' . sqlSafeStringQuotes('deleted') . ')';
-				if ($result = $db->SQL($query))
+				$query = ('SELECT `external_playerid` FROM `players` WHERE (`name`=?'
+						  . ' AND (`external_playerid` <> ?)'
+						  // do not update users with local login
+						  . ' AND (`external_playerid` <> ' . "''" . ')'
+						  // skip updates for banned or disabled accounts (inappropriate callsign for instance)
+						  . ' AND (`status`=? OR `status`=?)');
+				$query = $db->prepare($query);
+				$args = array(htmlent($_SESSION['username']), $_SESSION['external_id'], 'active', 'deleted');
+				if ($result = $db->execute($query, $db->quoteArray($args)))
 				{
 					$errno = 0;
 					$errstr = '';
@@ -605,7 +606,8 @@
 						$ch = curl_init();
 						
 						// set URL and other appropriate options
-						curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value=' . sqlSafeString((int) $row['external_playerid']));
+						curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value='
+									  . "'" . (intval($row['external_playerid'])) . "'");
 						curl_setopt($ch, CURLOPT_HEADER, 0);
 						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 						
@@ -616,18 +618,20 @@
 						curl_close($ch);
 						
 						// update the entry with the result from the bzidtools2.php script
+						$query = $db->prepare('UPDATE `players` SET `name`=? WHERE `external_playerid`=?');
 						if ((strlen($output) > 10) && (strcmp(substr($output, 0, 9), 'SUCCESS: ') === 0))
 						{
 							// example query: UPDATE `players` SET `name`='moep' WHERE `external_playerid`='external_id';
-							$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent(substr($output, 9)));
+							$args = array(htmlent(substr($output, 9)), intval($row['bzid']));
 						} else
 						{
-							// example query: UPDATE `players` SET `name`='moep ERROR: SELECT username_clean FROM bzbb3_users WHERE user_id=uidhere' WHERE `external_playerid`='external_id';
-							$query = 'UPDATE `players` SET `name`=' . sqlSafeStringQuotes(htmlent($_SESSION['username']) . ' ' . htmlent($output));
+							// example query: UPDATE `players` SET `name`=
+							// 'moep ERROR: SELECT username_clean FROM bzbb3_users WHERE user_id=uidhere'
+							// WHERE `external_playerid`='external_id';
+							$args = array(htmlent($_SESSION['username']) . ' ' . htmlent($output), intval($row['bzid']));
 						}
-						$query .= ' WHERE `external_playerid`=' . sqlSafeStringQuotes((int) $row['bzid']);
 						
-						if (!($update_result = $db->SQL($query)))
+						if (!($update_result = $update_result = $db->execute($query, $db->quoteArray($args))))
 						{
 							// trying to update the players old callsign failed
 							$msg = ('Unfortunately there seems to be a database problem which prevents the system from updating the old callsign of another user.'
@@ -651,31 +655,28 @@
 		if (isset($_SESSION['user_logged_in']) && ($_SESSION['user_logged_in']))
 		{
 			// update last login entry
-			$query = 'UPDATE `players_profile` SET `last_login`=' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+			$query = $db->prepare('UPDATE `players_profile` SET `last_login`=? WHERE `playerid`=? LIMIT 1');
+			
 			if (isset($_SESSION['external_login']) && ($_SESSION['external_login']))
 			{
-				$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($user_id);
+				$args = array(date('Y-m-d H:i:s'), $user_id);
 			} else
 			{
-				$query .= ' WHERE `playerid`=' . sqlSafeStringQuotes($internal_login_id);
+				$args = array(date('Y-m-d H:i:s'), $internal_login_id);
 			}
-			// only one user account needs to be updated
-			$query .= ' LIMIT 1';
-			$db->SQL($query);		
+			
+			$db->execute($query, $db->quoteArray($args));
 		}
 		
 		
 		if ((!(isset($_SESSION['user_in_online_list'])) || !($_SESSION['user_in_online_list'])) &&  ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in'])))
 		{
 			$_SESSION['user_in_online_list'] = true;
-			$curDate = sqlSafeStringQuotes(date('Y-m-d H:i:s'));
+			$curDate = "'" . (date('Y-m-d H:i:s')) . "'";
 			
 			// find out if table exists
-			$query = 'SHOW TABLES LIKE ' . "'" . 'online_users' . "'";
-			$result = @mysql_query($query);
-			$rows = @mysql_num_rows($result);
-			// done
-			mysql_free_result($result);
+			$result = $db->SQL('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
+			$rows = $db->rowCount($result);
 			
 			$onlineUsers = false;
 			if ($rows > 0)

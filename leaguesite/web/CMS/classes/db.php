@@ -45,6 +45,16 @@
 			}
 		}
 		
+		function quoteArrayValues(array $ar)
+		{
+			foreach($ar as &$oneValue)
+			{
+				$oneValue = "'" . $oneValue . "'";
+			}
+			
+			return $ar;
+		}
+		
 		function selectDB($db, $connection=false)
 		{
 			if (isset($this->pdo))

@@ -63,7 +63,7 @@
 							  . ' AND `messages_users_connection`.`playerid`=?'
 							  . ' AND `in_' . $folder . '`=' . "'" . '1' . "'"
 							  . ' ORDER BY `messages_users_connection`.`id` ');
-		$result = $db->execute($query, array($config->value('displayedSystemUsername'), $user->getID()));
+		$result = $db->execute($query, $db->quoteArray(array($config->value('displayedSystemUsername'), $user->getID())));
 		
 		$tmpl->setCurrentBlock('PMLIST');
 		while ($row = $db->fetchNextRow($query))
