@@ -110,7 +110,7 @@
 					  . ' FROM `servertracker`'
 					  . ' ORDER BY `id`');
 			$result = $db->SQL($query, __FILE__);
-			while ($row = $db->fetchNextRow($result))
+			while ($row = $db->fetchRow($result))
 			{
 				if (intval($row['cur_players_total']) === 1)
 				{
@@ -126,7 +126,7 @@
 			$result = $db->SQL($query, __FILE__);
 			if (((int) $db->rowCount($result)) > 0)
 			{
-				while($row = $db->fetchNextRow($result))
+				while($row = $db->fetchRow($result))
 				{
 					$saved_timestamp = $row['last_activity'];
 					$old_timestamp = strtotime($saved_timestamp);
@@ -147,7 +147,7 @@
 			$query = 'SELECT count(`playerid`) AS `num_players` FROM `online_users`';
 			$result = $db->SQL($query, __FILE__);
 			
-			$n_users = ($db->fetchNextRow($result));
+			$n_users = ($db->fetchRow($result));
 			if (intval($n_users['num_players']) === 1)
 			{
 				$this->tpl->setVariable('ONLINE_USERS', '1 user');
@@ -174,7 +174,7 @@
 			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
 			
 			$connection = $db->createConnection();
-			$db->selectDB($config->value('dbName'));
+/* 			$db->selectDB($config->value('dbName')); */
 			
 			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
 			{
