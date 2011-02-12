@@ -2,7 +2,6 @@
 	// this file is supposed to load and init all common classes
 	class site
 	{
-		
 		function __construct()
 		{
 			global $config;
