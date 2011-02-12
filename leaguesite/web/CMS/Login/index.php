@@ -167,10 +167,10 @@
 	
 	function doAllTheRest()
 	{
+		global $config;
 		global $site;
 		global $tmpl;
 		global $user;
-		global $config;
 		global $db;
 		
 		// set the date and time
@@ -180,7 +180,7 @@
 		if ($user->loggedIn())
 		{
 			// delete expired invitations
-			$query = $db->prepare('DELETE LOW_PRIORITY FROM `invitations` WHERE `expiration`<=');
+			$query = $db->prepare('DELETE LOW_PRIORITY FROM `invitations` WHERE `expiration`<=?');
 			if (!$result = $db->execute($query, date('Y-m-d H:i:s')))
 			{
 				$msg .= 'Could not delete expired invitations.';
@@ -197,17 +197,17 @@
 		if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 		{
 			// is the user already registered at this site?
-			$query = ('SELECT `id`, '
+			$query = $db->prepare('SELECT `id`, '
 					  // only need an external login id in case an external login was performed by the viewing player
 					  // but look it up to find out if user is global login enabled
 					  // NOTE: this is only done as fallback in case the login module does not already handle it
 					  . ' `external_playerid`, '
-					  . '`status` FROM `players` WHERE `name`=' . sqlSafeStringQuotes($_SESSION['username'])
+					  . '`status` FROM `players` WHERE `name`=?'
 					  // only one player tries to login so only fetch one entry, speeds up login a lot
 					  . ' LIMIT 1');
-			if (!($result = $db->SQL($query)))
+			if (!($result = $db->execute($query, $_SESSION['username'])))
 			{
-				$msg = ('Could not get account data for external_playerid ' . sqlSafeString($_SESSION['external_id']) . '.');
+				$msg = ('Could not get account data for external_playerid ' . $db->quote($_SESSION['external_id']) . '.');
 				logoutAndAbort($msg);
 			}
 			
@@ -235,7 +235,7 @@
 				// name is not known, check if id is already in the database
 				// $rows_num_accounts === 0
 				$query = 'SELECT `id`, `status` FROM `players` WHERE `external_playerid`=' . sqlSafeStringQuotes($_SESSION['external_id']) . ' LIMIT 1';
-				if (!($result = @$db->SQL($query)))
+				if (!($result = $db->SQL($query)))
 				{
 					$msg = ('Could not find out if player already has an account with id ' . sqlSafeString($_SESSION['external_id']) . ' (renamed user?).');
 					logoutAndAbort($msg);
@@ -566,14 +566,17 @@
 									. ' which prevents the system from setting your external playerid (id='
 									. htmlent($user_id)
 									. '). The bzidtool2.php call was '
-									. sqlSafeStringQuotes($url)
+									. htmlent($url)
 									. '. Please report this to an admin.');
+							// log the problem
+							$db->logError($db->quote($msg));
+							
 							logoutAndAbort($msg);
 						}
 					}
 					
 					echo $msg;
-					if ($site->force_external_login_when_trying_local_login())
+					if ($config->value('forceExternalLoginOnly'))
 					{
 						logoutAndAbort('');
 					}
@@ -596,7 +599,7 @@
 						  . ' AND (`status`=? OR `status`=?)');
 				$query = $db->prepare($query);
 				$args = array(htmlent($_SESSION['username']), $_SESSION['external_id'], 'active', 'deleted');
-				if ($result = $db->execute($query, $db->quoteArray($args)))
+				if ($result = $db->execute($query, $args))
 				{
 					$errno = 0;
 					$errstr = '';
@@ -631,7 +634,7 @@
 							$args = array(htmlent($_SESSION['username']) . ' ' . htmlent($output), intval($row['bzid']));
 						}
 						
-						if (!($update_result = $update_result = $db->execute($query, $db->quoteArray($args))))
+						if (!($update_result = $update_result = $db->execute($query, $args)))
 						{
 							// trying to update the players old callsign failed
 							$msg = ('Unfortunately there seems to be a database problem which prevents the system from updating the old callsign of another user.'
@@ -665,7 +668,7 @@
 				$args = array(date('Y-m-d H:i:s'), $internal_login_id);
 			}
 			
-			$db->execute($query, $db->quoteArray($args));
+			$db->execute($query, $args);
 		}
 		
 		

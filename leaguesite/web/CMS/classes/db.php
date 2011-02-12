@@ -45,14 +45,9 @@
 			}
 		}
 		
-		function quoteArrayValues(array $ar)
+		function quote($string)
 		{
-			foreach($ar as &$oneValue)
-			{
-				$oneValue = "'" . $oneValue . "'";
-			}
-			
-			return $ar;
+			return $this->pdo->quote($string);
 		}
 		
 		function selectDB($db, $connection=false)

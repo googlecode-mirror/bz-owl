@@ -34,17 +34,18 @@
 		{
 			$query .= ', `external_playerid` ';
 		}
-		$query .= ' FROM `players` WHERE `name`=' . sqlSafeStringQuotes($loginname);
+		$query .= ' FROM `players` WHERE `name`=?';
 		// only one player tries to login so only fetch one entry, speeds up login a lot
 		$query .= ' LIMIT 1';
-		// execute query
-		$result = $db->SQL($query);
+		
+		$query = $db->prepare($query)
+		$result = $db->execute($query, $loginname);
 		
 		
 		// initialise with reserved player id 0 (no player)
 		$playerid = (int) 0;
 		$convert_to_external_login = true;
-		while($row = mysql_fetch_array($result))
+		while($row = $db->fetchNextRow($result))
 		{
 			$playerid = $row['id'];
 			if ($config->value('forceExternalLoginOnly') && !(strcmp(($row['external_playerid']), '') === 0))
@@ -52,7 +53,6 @@
 				$convert_to_external_login = false;
 			}
 		}
-		mysql_free_result($result);
 		
 		// local login tried but external login forced in settings
 		if (!$convert_to_external_login && $config->value('forceExternalLoginOnly'))
@@ -81,12 +81,13 @@
 		}
 		
 		// get password from database in order to compare it with the user entered password
-		$query = 'SELECT `password`, `password_encoding` FROM `players_passwords` WHERE `playerid`=' . sqlSafeStringQuotes($playerid);
-		// only one player tries to login so only fetch one entry, speeds up login a lot
-		$query .= ' LIMIT 1';
+		$query = ('SELECT `password`, `password_encoding` FROM `players_passwords` WHERE `playerid`=?';
+				  // only one player tries to login so only fetch one entry, speeds up login a lot
+				  . ' LIMIT 1');
 		
 		// execute query
-		if (!($result = @$site->execute_query('players_passwords', $query)))
+		$db->prepare($query);
+		if (!($result = $db->execute($query, $playerid)))
 		{
 			// query failed
 			$tmpl->done('Could not retrieve password for you in database.');
@@ -96,7 +97,7 @@
 		$password_md5_encoded = false;
 		// no password is default and will not match any password set
 		$password_database = '';
-		while($row = mysql_fetch_array($result))
+		while($row = $db->fetchNextRow($result))
 		{
 			if (strcmp($row['password_encoding'],'md5') === 0)
 			{
@@ -104,7 +105,6 @@
 			}
 			$password_database = $row['password'];
 		}
-		mysql_free_result($result);
 		
 		$lenPw = strlen($pw);
 		
