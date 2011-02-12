@@ -50,6 +50,13 @@
 			return $this->pdo->quote($string);
 		}
 		
+		function free(PDOStatement $queryResult)
+		{
+			// might be needed to execute next statement
+			// depending on database driver
+			$queryResult->closeCursor();
+		}
+		
 		function selectDB($db, $connection=false)
 		{
 			if (isset($this->pdo))
@@ -108,7 +115,7 @@
 		}
 		
 		
-		function execute($query, $inputParameters)
+		function execute(PDOStatement &$query, $inputParameters)
 		{
 			if (!is_array($inputParameters))
 			{
@@ -124,18 +131,18 @@
 			return $this->pdo->prepare($query);;
 		}
 		
-		function fetchNextRow($queryResult)
+		function fetchRow(PDOStatement $queryResult)
 		{
 			$queryResult->errorInfo();
 			return $queryResult->fetch();
 		}
 		
-		function fetchAll($queryResult)
+		function fetchAll(PDOStatement $queryResult)
 		{
 			return $queryResult->fetchAll();
 		}
 		
-		function rowCount($queryResult)
+		function rowCount(PDOStatement $queryResult)
 		{
 			return $queryResult->rowCount();
 		}

@@ -1,10 +1,10 @@
 <?php
 	// send private message to players and teams
 	// if an error occurs, $error will contain its description and the function will return false
-	function sendPrivateMSG($players=Array(), $teams=Array(),
+	function sendPrivateMSG($players=array(), $teams=array(),
 							$author_id=0, $subject='Enter subject here',
-							$timespamp, $message, $from_team,
-							$msg_replied_team, $ReplyToMSGID, &$error='')
+							$timespamp, $message, $from_team=0,
+							$msg_replied_team=0, $ReplyToMSGID=0, &$error='')
 	{
 		
 		// remove duplicates

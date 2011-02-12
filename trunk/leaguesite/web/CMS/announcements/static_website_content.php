@@ -280,7 +280,7 @@
 		$result = $db->execute($query, $page_title);
 		
 		// process query result array
-		while ($row = $db->fetchNextRow($query))
+		while ($row = $db->fetchRow($query))
 		{
 			$author = $row['author'];
 			$last_modified = $row['last_modified'];
