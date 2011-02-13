@@ -68,17 +68,17 @@
 		$tmpl->setCurrentBlock('PMLIST');
 		while ($row = $db->fetchRow($query))
 		{
-			$tmpl->setVariable('USER_PROFILE_LINK', (baseaddress() . 'Players/?profile=' . $row['author_id']));
+			$tmpl->setVariable('USER_PROFILE_LINK', ($config->value('baseaddress') . 'Players/?profile=' . $row['author_id']));
 			$tmpl->setVariable('USER_NAME', $row['author']);
-			$tmpl->setVariable('MSG_LINK', (baseaddress() . 'Messages/?view=' . $row['msgid']));
+			$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress') . 'Messages/?view=' . $row['msgid']));
 			$tmpl->setVariable('MSG_SUBJECT', $row['subject']);
 			$tmpl->setVariable('MSG_TIME', $row['timestamp']);
 			if (strcmp($row['from_team'], '0') === 0)
 			{
-				$tmpl->setVariable('MSG_RECIPIENTS_LINK', (baseaddress() . 'Players/?profile=' . $row['recipients']));
+				$tmpl->setVariable('MSG_RECIPIENTS_LINK', ($config->value('baseaddress') . 'Players/?profile=' . $row['recipients']));
 			} else
 			{
-				$tmpl->setVariable('MSG_RECIPIENTS_LINK', (baseaddress() . 'Teams/?'));
+				$tmpl->setVariable('MSG_RECIPIENTS_LINK', ($config->value('baseaddress') . 'Teams/?'));
 			}
 			$recipients = explode(' ', $row['recipients']);
 			array_walk($recipients, 'displayRecipient', (strcmp($row['from_team'], '0') === 0));
