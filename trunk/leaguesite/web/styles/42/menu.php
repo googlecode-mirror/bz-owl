@@ -3,6 +3,8 @@
 	{
 		function writeLink($folder, $title, $current=false, $unread=false)
 		{
+			global $config;
+			
 			$link = '<li>';
 			if (!$current)
 			{
@@ -11,10 +13,10 @@
 				{
 					$link .= 'class="unread" ';
 				}
-				$link .= 'href="' . (baseaddress() . $folder) . '">';
+				$link .= 'href="' . ($config->value('baseaddress') . $folder) . '">';
 			} elseif (count($_GET) > 0)
 			{
-				$link .= '<a class="current_nav_entry" href="' . (baseaddress() . $folder) . '">';
+				$link .= '<a class="current_nav_entry" href="' . ($config->value('baseaddress') . $folder) . '">';
 			}
 			$link .= $title;
 			if (!$current || (count($_GET) > 0))
@@ -92,11 +94,11 @@
 					$menu[] = '<li>Home</li>' . "\n";
 				} else
 				{
-					$menu[] = '<li><a class="current_nav_entry" href="' . (baseaddress()) . '">Home</a></li>' . "\n";
+					$menu[] = '<li><a class="current_nav_entry" href="' . ($config->value('baseaddress')) . '">Home</a></li>' . "\n";
 				}
 			} else
 			{
-				$menu[] = '<li><a href="' . baseaddress() . '">Home</a></li>' . "\n";
+				$menu[] = '<li><a href="' . $config->value('baseaddress') . '">Home</a></li>' . "\n";
 			}
 			
 			if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
