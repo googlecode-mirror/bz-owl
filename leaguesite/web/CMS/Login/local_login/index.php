@@ -60,7 +60,7 @@
 			$msg = '<span class="unread_messages">You already enabled ';
 			if (isset($module['bzbb']) && ($module['bzbb']))
 			{
-				$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
+				$url = urlencode($config->value('baseaddress') . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 				$msg .= '<a href="' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;						
 				$msg .= '">global (my.bzflag.org/bb/) login</a>';
 			} else

@@ -1,6 +1,6 @@
 <?php
 	$msg = '<p class="first_p">Please log in using your account at <a href=';
-	$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
+	$url = urlencode($config->value('baseaddress') . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 	
 	// process login information
 	require dirname(__FILE__) . '/index.php';

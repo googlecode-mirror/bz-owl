@@ -5,7 +5,7 @@
 		global $config;
 		global $tmpl;
 		
-		$msg = '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
+		$msg = '<form action="' . $config->value('baseaddress') . 'Login/'. '" method="post">' . "\n";
 		$msg .= '<div class="p">Name:</div>' . "\n";
 		$msg .= '<p class="first_p">' . "\n";
 		$msg .= $tmpl->return_self_closing_tag('input type="text" class="small_input_field" name="loginname" value="" maxlength="300"');
