@@ -83,7 +83,7 @@
 			$this->tpl->setCurrentBlock('MAIN');
 			
 			// links should point to current locations
-			$this->tpl->setVariable('BASEURL', baseaddress());
+			$this->tpl->setVariable('BASEURL', $config->value('baseaddress'));
 			
 			// point to currently used theme
 			if (strcmp($customTheme, '') === 0)
@@ -160,7 +160,7 @@
 			if ($user->loggedIn())
 			{
 				$this->tpl->setCurrentBlock('LOGOUT');
-				$this->tpl->setVariable('LOGOUTURL', (baseaddress() . 'Logout/'));
+				$this->tpl->setVariable('LOGOUTURL', ($config->value('baseaddress') . 'Logout/'));
 				$this->parseCurrentBlock();
 			}
 		}
