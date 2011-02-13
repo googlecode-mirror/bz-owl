@@ -5,7 +5,6 @@
 		private $connection;
 		private $pdo;
 		
-		// id > 0 means a user is logged in
 		function getConnection()
 		{
 			return $this->connection;
@@ -79,7 +78,6 @@
 			}
 			
 			$result = $this->pdo->query($query);
-//			$result = mysql_query($query, $this->connection);
 			
 			if (!$result)
 			{
@@ -146,20 +144,6 @@
 		function errorInfo(PDOStatement $queryResult)
 		{
 			return $queryResult->errorInfo();
-		}
-	}
-	
-	
-	// misc class
-	class db_import
-	{
-		function db_import_name()
-		{
-			return database_to_be_imported();
-		}
-		function old_website()
-		{
-			return old_website_name();
 		}
 	}
 ?>
