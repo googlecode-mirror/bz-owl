@@ -34,7 +34,7 @@
 			$query = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
 		}
 		$result = $db->execute($query, $recipient);
-//		$row = $db->fetchNextRow($result);
+//		$row = $db->fetchRow($result);
 //		
 //		return $row['name'];
 	}
@@ -63,10 +63,10 @@
 							  . ' AND `messages_users_connection`.`playerid`=?'
 							  . ' AND `in_' . $folder . '`=' . "'" . '1' . "'"
 							  . ' ORDER BY `messages_users_connection`.`id` ');
-		$result = $db->execute($query, $db->quoteArray(array($config->value('displayedSystemUsername'), $user->getID())));
+		$result = $db->execute($query, array($config->value('displayedSystemUsername'), $user->getID()));
 		
 		$tmpl->setCurrentBlock('PMLIST');
-		while ($row = $db->fetchNextRow($query))
+		while ($row = $db->fetchRow($query))
 		{
 			$tmpl->setVariable('USER_PROFILE_LINK', (baseaddress() . 'Players/?profile=' . $row['author_id']));
 			$tmpl->setVariable('USER_NAME', $row['author']);

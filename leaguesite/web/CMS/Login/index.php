@@ -310,7 +310,8 @@
 			if (isset($_SESSION['viewerid']) && ((int) $_SESSION['viewerid'] === (int) 0)
 				&& ((strcmp($suspended_mode, 'login disabled') === 0) || strcmp($suspended_mode, 'banned') === 0))
 			{
-				$msg .= 'There is a user that got banned/disabled by admins with the same username in the database already. Please choose a different username!';
+				$msg .= ('There is a user that got banned/disabled by admins with the same username'
+						. ' in the database already. Please choose a different username!');
 				logoutAndAbort($msg);
 			}
 			// dealing only with the current player from this point on
@@ -565,70 +566,71 @@
 				// example query: SELECT `external_playerid` FROM `players` WHERE (`name`='ts') AND (`external_playerid` <> '1194')
 				// AND (`external_playerid` <> '') AND (`status`='active' OR `status`='deleted')
 				// FIXME: sql query should be case insensitive (SELECT COLLATION(VERSION()) returns utf8_general_ci)
-				$query = ('SELECT `external_playerid` FROM `players` WHERE (`name`=?'
+				$query = ('SELECT `external_playerid` FROM `players` WHERE (`name`=?)'
 						  . ' AND (`external_playerid` <> ?)'
 						  // do not update users with local login
-						  . ' AND (`external_playerid` <> ' . "''" . ')'
+						  . ' AND (`external_playerid` <> ' . $db->quote('') . ')'
 						  // skip updates for banned or disabled accounts (inappropriate callsign for instance)
 						  . ' AND (`status`=? OR `status`=?)');
 				$query = $db->prepare($query);
 				$args = array(htmlent($_SESSION['username']), $_SESSION['external_id'], 'active', 'deleted');
-				if ($db->execute($query, $args))
-				{
-					$errno = 0;
-					$errstr = '';
-					while($row = $db->fetchRow($query))
-					{
-						// create a new cURL resource
-						$ch = curl_init();
-						
-						// set URL and other appropriate options
-						curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value='
-									  . "'" . (intval($row['external_playerid'])) . "'");
-						curl_setopt($ch, CURLOPT_HEADER, 0);
-						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-						
-						// grab URL and pass it to the browser
-						$output = curl_exec($ch);
-						
-						// close cURL resource, and free up system resources
-						curl_close($ch);
-						
-						// update the entry with the result from the bzidtools2.php script
-						$query = $db->prepare('UPDATE `players` SET `name`=? WHERE `external_playerid`=?');
-						if ((strlen($output) > 10) && (strcmp(substr($output, 0, 9), 'SUCCESS: ') === 0))
-						{
-							// example query: UPDATE `players` SET `name`='moep' WHERE `external_playerid`='external_id';
-							$args = array(htmlent(substr($output, 9)), intval($row['bzid']));
-						} else
-						{
-							// example query: UPDATE `players` SET `name`=
-							// 'moep ERROR: SELECT username_clean FROM bzbb3_users WHERE user_id=uidhere'
-							// WHERE `external_playerid`='external_id';
-							$args = array(htmlent($_SESSION['username']) . ' ' . htmlent($output), intval($row['bzid']));
-						}
-						
-						// FIXME: critical section, if db driver needs a free before executing next statement
-						// this code would raise an error.
-						if (!$db->execute($query, $args))
-						{
-							// trying to update the players old callsign failed
-							$msg = ('Unfortunately there seems to be a database problem which prevents'
-									. ' the system from updating the old callsign of another user.'
-									. ' However you currently own that callsign so now there will be two'
-									. ' users with the callsign in the table and people will'
-									. 'have problems to distinguish you two!</p>'
-									. '<p>Please report this to an admin.');
-							logoutAndAbort($msg);
-						}
-					}
-					$db->free($query);
-				} else
+				if (!$db->execute($query, $args))
 				{
 					$msg = ('Finding other members who had the same name '
 							. $db->quote(htmlent($_SESSION['username']))
 							. 'failed. This is a database problem. Please report this to an admin!');
 					logoutAndAbort($msg);
+				}
+				
+				$errno = 0;
+				$errstr = '';
+				$rows = $db->fetchAll($query);
+				$db->free($query);
+				$n = count($rows);
+				for ($i = 0; $i < $n; $i++)
+				{
+					// create a new cURL resource
+					$ch = curl_init();
+					
+					// set URL and other appropriate options
+					curl_setopt($ch, CURLOPT_URL, 'http://my.bzflag.org/bzidtools2.php?action=name&value='
+								. "'" . (intval($row['external_playerid'])) . "'");
+					curl_setopt($ch, CURLOPT_HEADER, 0);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					
+					// grab URL and pass it to the browser
+					$output = curl_exec($ch);
+					
+					// close cURL resource, and free up system resources
+					curl_close($ch);
+					
+					// update the entry with the result from the bzidtools2.php script
+					$query = $db->prepare('UPDATE `players` SET `name`=? WHERE `external_playerid`=?');
+					if ((strlen($output) > 10) && (strcmp(substr($output, 0, 9), 'SUCCESS: ') === 0))
+					{
+						// example query: UPDATE `players` SET `name`='moep' WHERE `external_playerid`='external_id';
+						$args = array(htmlent(substr($output, 9)), intval($rows[$i]['bzid']));
+					} else
+					{
+						// example query: UPDATE `players` SET `name`=
+						// 'moep ERROR: SELECT username_clean FROM bzbb3_users WHERE user_id=uidhere'
+						// WHERE `external_playerid`='external_id';
+						$args = array(htmlent($_SESSION['username']) . ' ' . htmlent($output), intval($rows[$i]['bzid']));
+					}
+					
+					// FIXME: critical section, if db driver needs a free before executing next statement
+					// this code would raise an error.
+					if (!$db->execute($query, $args))
+					{
+						// trying to update the players old callsign failed
+						$msg = ('Unfortunately there seems to be a database problem which prevents'
+								. ' the system from updating the old callsign of another user.'
+								. ' However you currently own that callsign so now there will be two'
+								. ' users with the callsign in the table and people will'
+								. 'have problems to distinguish you two!</p>'
+								. '<p>Please report this to an admin.');
+						logoutAndAbort($msg);
+					}
 				}
 			}
 		}

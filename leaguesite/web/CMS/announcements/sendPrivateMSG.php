@@ -43,7 +43,7 @@
 					  . sqlSafeStringQuotes($user_id) . ', ' . sqlSafeStringQuotes(htmlent($subject)) . ', '
 					  . sqlSafeStringQuotes($timestamp) . ', ' . sqlSafeStringQuotes($message) . ', ' . $from_team . ', '
 					  . sqlSafeStringQuotes(implode(' ', ($utils->getRecipientsIDs()))) . ')');
-			$result = @$site->execute_query('messages_storage', $query, $connection, __FILE__);
+			$result = $site->execute_query('messages_storage', $query, $connection, __FILE__);
 			$rowId = (int) mysql_insert_id($connection);
 			
 			// put message in people's inbox

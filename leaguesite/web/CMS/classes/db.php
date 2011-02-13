@@ -21,10 +21,6 @@
 								  $config->value('dbUser'),
 								  $config->value('dbPw'),
 								  array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-			
-//			return $this->connection = mysql_pconnect($config->value('dbHost')
-//													  , $config->value('dbUser')
-//													  , $config->value('dbPw'));
 		}
 		
 		function logError($error)
@@ -145,6 +141,11 @@
 		function rowCount(PDOStatement $queryResult)
 		{
 			return $queryResult->rowCount();
+		}
+		
+		function errorInfo(PDOStatement $queryResult)
+		{
+			return $queryResult->errorInfo();
 		}
 	}
 	

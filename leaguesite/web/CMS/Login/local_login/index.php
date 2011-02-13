@@ -39,13 +39,13 @@
 		$query .= ' LIMIT 1';
 		
 		$query = $db->prepare($query);
-		$result = $db->execute($query, $loginname);
+		$db->execute($query, $loginname);
 		
 		
 		// initialise with reserved player id 0 (no player)
 		$playerid = (int) 0;
 		$convert_to_external_login = true;
-		while($row = $db->fetchNextRow($result))
+		while($row = $db->fetchRow($query))
 		{
 			$playerid = $row['id'];
 			if ($config->value('forceExternalLoginOnly') && !(strcmp(($row['external_playerid']), '') === 0))
@@ -87,7 +87,7 @@
 		
 		// execute query
 		$db->prepare($query);
-		if (!($result = $db->execute($query, $playerid)))
+		if (!$db->execute($query, $playerid))
 		{
 			// query failed
 			$tmpl->done('Could not retrieve password for you in database.');
@@ -97,7 +97,7 @@
 		$password_md5_encoded = false;
 		// no password is default and will not match any password set
 		$password_database = '';
-		while($row = $db->fetchNextRow($result))
+		while($row = $db->fetchRow($query))
 		{
 			if (strcmp($row['password_encoding'],'md5') === 0)
 			{
