@@ -284,7 +284,7 @@
 			
 			if (isset($_SESSION['external_id']) && $_SESSION['external_id'] && ($convert_to_external_login))
 			{
-				$msg .= '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
+				$msg .= '<form action="' . $config->value('baseaddress') . 'Login/'. '" method="post">' . "\n";
 				$msg .= 'The account you tried to login to does not support ';
 				if (isset($module['bzbb']) && ($module['bzbb']))
 				{

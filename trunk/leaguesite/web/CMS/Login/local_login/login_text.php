@@ -14,7 +14,7 @@
 	
 	if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 	{
-		$msg .= '<form action="' . baseaddress() . 'Login/'. '" method="post">' . "\n";
+		$msg .= '<form action="' . $config->value('baseaddress') . 'Login/'. '" method="post">' . "\n";
 		$msg .= '<p class="first_p">' . "\n";
 		if ($config->value('forceExternalLoginOnly'))
 		{
