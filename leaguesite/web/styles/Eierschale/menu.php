@@ -1,9 +1,10 @@
 <?php
 	class menu
 	{
-		
 		function writeLink($folder, $title, $current=false, $unread=false)
 		{
+			global $config;
+			
 			$link = '<li>';
 			if (!$current)
 			{
@@ -12,10 +13,10 @@
 				{
 					$link .= 'class="unread" ';
 				}
-				$link .= 'href="' . (baseaddress() . $folder) . '">';
+				$link .= 'href="' . ($config->value('baseaddress') . $folder) . '">';
 			} elseif (count($_GET) > 0)
 			{
-				$link .= '<a class="current_nav_entry" href="' . (baseaddress() . $folder) . '">';
+				$link .= '<a class="current_nav_entry" href="' . ($config->value('baseaddress') . $folder) . '">';
 			}
 			$link .= $title;
 			if (!$current || (count($_GET) > 0))
@@ -47,23 +48,21 @@
 			if ($user->getID() > 0)
 			{
 				// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
-				$query = ('UPDATE LOW_PRIORITY `online_users` SET `last_activity`='
-						  . sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ' WHERE `playerid`=' . sqlSafeStringQuotes($user->getID()));
-				$db->SQL($query);
+				$query = $db->prepare('UPDATE LOW_PRIORITY `online_users` SET `last_activity`=?'
+						  . ' WHERE `playerid`=?');
+				$db->execute($query, array(date('Y-m-d H:i:s'), $user->getID()));
 				
 				// are there unread messages?
-				// are there unread messages?
-				$query = ('SELECT `id` FROM `messages_users_connection` WHERE `msg_status`='
-						  . sqlSafeStringQuotes('new')
-						  . ' AND `playerid`=' . sqlSafeStringQuotes($user->getID())
+				$query = $db->prepare('SELECT `id` FROM `messages_users_connection` WHERE `msg_status`=?'
+						  . ' AND `playerid`=?'
 						  . ' LIMIT 1');
-				$result = $db->SQL($query);
-				$rows = (int) mysql_num_rows($result);
+				
+				$result = $db->execute($query, array('new', $user->getID()));;
+				$rows = $query->rowCount();
 				if ($rows > 0)
 				{
 					$unread_messages = true;
 				}
-				mysql_free_result($result);
 			} else
 			{
 				$logged_in = false;
@@ -95,11 +94,11 @@
 					$menu[] = '<li>Home</li>' . "\n";
 				} else
 				{
-					$menu[] = '<li><a class="current_nav_entry" href="' . (baseaddress()) . '">Home</a></li>' . "\n";
+					$menu[] = '<li><a class="current_nav_entry" href="' . ($config->value('baseaddress')) . '">Home</a></li>' . "\n";
 				}
 			} else
 			{
-				$menu[] = '<li><a href="' . baseaddress() . '">Home</a></li>' . "\n";
+				$menu[] = '<li><a href="' . $config->value('baseaddress') . '">Home</a></li>' . "\n";
 			}
 			
 			if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
