@@ -4,7 +4,7 @@
 	ob_start();
 	require dirname(dirname(__FILE__)) . '/CMS/site.php';
 	$site = new site();
-	@setcookie('cookies', 'allowed', 0, $config->value('basepath') . 'Config/', domain(), 0);
+	@setcookie('cookies', 'allowed', 0, $config->value('basepath') . 'Config/', $config->value('domain'), 0);
 	
 	$theme = '';
 	if (isset($_GET['theme']))
@@ -42,7 +42,7 @@
 		} else
 		{
 			ini_set ('session.use_trans_sid', 0);
-			@setcookie('theme', $theme, time()+60*60*24*30, $config->value('basepath'), domain(), 0);
+			@setcookie('theme', $theme, time()+60*60*24*30, $config->value('basepath'), $config->value('domain'), 0);
 		}
 	}
 	
