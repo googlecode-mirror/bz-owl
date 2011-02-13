@@ -7,42 +7,34 @@
 					 'dbUser' => 'insert database user here',
 					 'dbPw' => 'insert database password here',
 					 'dbName' => 'ts-CMS',
+					 // nl2br needs php newer or equal to 4.0.5 to support xhtml
+					 // if php version is higher or equal to 4.0.5 but lower than 5.3
+					 // then xhtml will be always on
+					 // if php version is lower than 4.0.5 then xhtml will be always off
+					 // see http://www.php.net/manual/en/function.nl2br.php
 					 'useXhtml' => true,
 					 // either return an empty string or path to favicon
 					 'favicon' => '',
-					 'timezone' => 'CET',
+					 // set the timezone used
+					 // look at http://www.php.net/manual/en/timezones.php
+					 // for a complete list of supported timezones
+					 'timezone' => 'UTC',
 					 'debugSQL' => true,
-					 'domain' => domain(),
-					 'basepath' => basepath(),
-					 'baseaddress' => baseaddress(),
+					 'domain' => 'example.com',
+					 'basepath' => '/',
+					 'baseaddress' => 'http://example.com/',
 					 'forceExternalLoginOnly' => true,
 					 'convertUsersToExternalLogin' => true,
-					 'timezone' => 'CET'
+					 'bbcodeLibAvailable' => true,
+					 'displayedSystemUsername' => 'CTF League System',
+					 // the name displayed in mails sent by the system
+					 'oldWebsiteName' => 'gu.bzleague.com'
 					 );
-	}
-	
-    function domain()
-	{
-		return '127.0.0.1';
-	}
-	
-	function basepath()
-	{
-		return '/~user/';
-	}
-	
-	function baseaddress()
-	{
-		return 'http://' . domain() . basepath();
 	}
 	
 	function database_to_be_imported()
 	{
 		return 'bzleague_guleague';
-	}
-	function old_website_name()
-	{
-		return 'gu.bzleague.com';
 	}
 	
 	// make posts anonymous
@@ -56,31 +48,6 @@
 			return '';
 		}
 	}
-	
-	// the name displayed in mails sent by the system
-	function system_username()
-	{
-		return 'CTF League System';
-	}
-	
-	function timezone()
-	{
-		// set the timezone used
-		// values like Europe/Berlin or UTC are accepted
-		// look at http://www.php.net/manual/en/timezones.php
-		// for a complete list of supported timezones
-		return 'Europe/Berlin';
-	}
-	
-    function xhtml_on()
-    {
-		// nl2br needs php newer or equal to 4.0.5 to support xhtml
-		// if php version is higher or equal to 4.0.5 but lower than 5.3
-		// then xhtml will be always on
-		// if php version is lower than 4.0.5 then xhtml will be always off
-		// see http://www.php.net/manual/en/function.nl2br.php
-		return true;
-    }
     
 	function bbcode_lib_path()
 	{

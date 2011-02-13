@@ -7,8 +7,7 @@
 		}
 	}
 	
-	$db_imported = new db_import;
-	$account_old_website = htmlent($db_imported->old_website());
+	$account_old_website = htmlent($config->value('oldWebsiteName'));
 	
 	$msg = '';
 	
