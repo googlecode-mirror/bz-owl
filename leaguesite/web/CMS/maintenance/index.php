@@ -96,6 +96,9 @@
 			update_activity($teams);
 		}
 		
+		// force update activity stats
+		update_activity();
+		
 		// nothing else to do
 		// stop silently
 		unlock_tables_maint();
@@ -106,7 +109,6 @@
 	$maint = new maintenance();
 	$maint->do_maintenance($site, $connection);
 	update_activity();
-	
 	
 	function update_activity($teamid=false)
 	{

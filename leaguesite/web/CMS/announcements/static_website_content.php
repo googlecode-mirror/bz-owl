@@ -57,6 +57,7 @@
 	require_once (dirname(dirname(__FILE__)) . '/site.php');
 	$site = new site();
 	
+	$tmpl->setTitle($display_page_title);
 	
 	// find out which template should be used
 	// fallback template is static
@@ -95,7 +96,7 @@
 		{
 			stripslashes($_POST);
 		}
-		$tmpl = new template($templateToUse . '?edit');
+		$tmpl->setTemplate($templateToUse . '?edit');
 		$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
 		if (isset($_POST['staticContent']))
 		{
@@ -107,7 +108,7 @@
 		$tmpl->parseCurrentBlock();
 	} else
 	{
-		$tmpl = new template($templateToUse);
+		$tmpl->setTemplate($templateToUse);
 		$tmpl->addMSG(readContent($page_title, $author, $last_modified, false));
 	}
 	

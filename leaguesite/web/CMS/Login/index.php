@@ -9,9 +9,6 @@
 		$site = new site();
 	}
 	
-//	require dirname(dirname(__FILE__)) . '/classes/user.php';
-//	$user = new user();
-	
 	
 	// magic quote band-aid for POST variables
 	if ($site->magic_quotes_on())
@@ -21,7 +18,7 @@
 	
 	
 	$tmpl = new template('Login');
-
+	
 	// no need to do anything
 	if ($user->loggedIn())
 	{

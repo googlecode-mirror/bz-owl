@@ -38,5 +38,5 @@
 	$entry_edit_permission = 'allow_edit_messages';
 	$entry_delete_permission = 'allow_delete_messages';
 	
-	include_once('../CMS/announcements/index.php');
+	include_once('../CMS/pm/index.php');
 ?>

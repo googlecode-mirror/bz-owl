@@ -60,7 +60,6 @@
 		unlock_tables();
 		
 		require_once ('../CMS/maintenance/index.php');
-		update_activity();
 		
 		echo '<p>The match was entered successfully.</p>' . "\n";
 		echo '<a class="button" href="./">Enter another match</a>' . "\n";
@@ -209,7 +208,6 @@
 		unlock_tables();
 		
 		require_once ('../CMS/maintenance/index.php');
-		update_activity();
 		
 		echo '<p>The match was edited successfully.</p>' . "\n";
 		$site->dieAndEndPage();
@@ -347,7 +345,6 @@
 		unlock_tables();
 		
 		require_once ('../CMS/maintenance/index.php');
-		update_activity();
 		
 		echo '<p>The match was deleted successfully.</p>' . "\n";
 		$site->dieAndEndPage();

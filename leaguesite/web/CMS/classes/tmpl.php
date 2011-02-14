@@ -3,7 +3,8 @@
 	class template
 	{
 		private $tpl;
-		var $msg = array();
+		private $title = '';
+		private $msg = array();
 		
 		function addMSG($messageToAdd)
 		{
@@ -24,6 +25,15 @@
 				unset($pathinfo[count($pathinfo) -1]);
 				
 				$path .= '/' . htmlspecialchars(implode('/', $pathinfo));
+			}
+		}
+		
+		function setTitle($title)
+		{
+			// set the title of the page
+			if (is_string($title))
+			{
+				$this->title = $title;
 			}
 		}
 		
@@ -174,7 +184,6 @@
 			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
 			
 			$connection = $db->createConnection();
-/* 			$db->selectDB($config->value('dbName')); */
 			
 			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
 			{
@@ -185,7 +194,7 @@
 		function setCurrentBlock($block)
 		{
 			// Assign data to the inner block
-			$this->tpl->setCurrentBlock($block);
+			return $this->tpl->setCurrentBlock($block);
 		}
 		
 		function setVariable($data, $cell)
@@ -198,11 +207,10 @@
 			$this->tpl->parseCurrentBlock();
 		}
 		
-		function render()
+		private function buildMenu()
 		{
 			global $user;
 			
-			// build menu at last to prevent undesired side effects when logging in or out
 			$this->tpl->setCurrentBlock('MENU');
 			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
 			
@@ -215,6 +223,29 @@
 				$this->parseCurrentBlock();
 			}
 			unset($oneMenuEntry);
+		}
+		
+		
+		private function buildTitle()
+		{
+			// set a custom title, if title set
+			if (strlen($this->title) > 0)
+			{
+				if ($this->tpl->setCurrentBlock('TITLE_AREA') === true)
+				{
+					$this->tpl->setVariable('TITLE', $this->title);
+					$this->parseCurrentBlock();
+				}
+			}
+		}
+		
+		function render()
+		{
+			// build title
+			$this->buildTitle();
+			
+			// build menu at last to prevent undesired side effects when logging in or out
+			$this->buildMenu();
 			
 			// include status message at the end
 			// so we do not forget to display any message
@@ -228,6 +259,7 @@
 					$this->parseCurrentBlock();
 				}
 			}
+			
 			
 			// show all
 			$this->tpl->show();
