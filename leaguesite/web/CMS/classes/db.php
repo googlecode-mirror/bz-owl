@@ -141,6 +141,12 @@
 			return $queryResult->rowCount();
 		}
 		
+		function exec($query)
+		{
+			// executes $query and returns number of result rows
+			return $this->pdo->exec($query);
+		}
+		
 		function errorInfo(PDOStatement $queryResult)
 		{
 			return $queryResult->errorInfo();

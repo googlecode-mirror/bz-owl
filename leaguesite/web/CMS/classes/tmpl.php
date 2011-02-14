@@ -132,13 +132,15 @@
 			}
 			
 			// remove expired sessions from the list of online users
-			$query ='SELECT `playerid`, `last_activity` FROM `online_users`';
-			$result = $db->SQL($query, __FILE__);
-			if (((int) $db->rowCount($result)) > 0)
+			$query = 'SELECT `playerid`, `last_activity` FROM `online_users`';
+			$query = $db->SQL($query);
+			$rows = $db->fetchAll($query);
+			$n = count($rows);
+			if ($n > 0)
 			{
-				while($row = $db->fetchRow($result))
+				for ($i = 0; $i < $n; $i++)
 				{
-					$saved_timestamp = $row['last_activity'];
+					$saved_timestamp = $rows[$i]['last_activity'];
 					$old_timestamp = strtotime($saved_timestamp);
 					$now = (int) strtotime("now");
 					// is entry more than two hours old? (60*60*2)
@@ -146,9 +148,8 @@
 					// FIXME: and not in the webserver setting
 					if ($now - $old_timestamp > (60*60*2))
 					{
-						$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
-						$query .= sqlSafeStringQuotes($saved_timestamp);
-						$result_delete = $db->SQL($query, __FILE__);
+						$query = $db->prepare('DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=?');
+						$db->execute($query, $saved_timestamp);
 					}
 				}
 			}

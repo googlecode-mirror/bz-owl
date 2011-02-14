@@ -615,8 +615,6 @@
 						$args = array(htmlent($_SESSION['username']) . ' ' . htmlent($output), intval($rows[$i]['bzid']));
 					}
 					
-					// FIXME: critical section, if db driver needs a free before executing next statement
-					// this code would raise an error.
 					if (!$db->execute($query, $args))
 					{
 						// trying to update the players old callsign failed
@@ -656,9 +654,7 @@
 			$curDate = "'" . (date('Y-m-d H:i:s')) . "'";
 			
 			// find out if table exists
-			// FIXME: use PDO exec shortcut
-			$query = $db->SQL('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
-			$rows = $db->rowCount($query);
+			$rows = $db->exec('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
 			
 			$onlineUsers = false;
 			if ($rows > 0)
@@ -672,7 +668,6 @@
 			if ($onlineUsers)
 			{
 				$query = $db->prepare('SELECT * FROM `online_users` WHERE `playerid`=?');
-				// FIXME: use PDO exec as shortcut for rowCount
 				$db->execute($query, $user_id);
 				$rows = $db->rowCount($query);
 				// done
@@ -705,11 +700,14 @@
 				$query = $db->prepare($query);
 				if ($db->execute($query, array($user_id, 2)))
 				{
+					$rows = $db->fetchAll($query);
+					$db->free($query);
+					$n = count($rows);
+					for ($i = 0; $i < $n; $i++)
 					while($row = $db->fetchRow($query))
 					{
-						if ((int) $row['deleted'] === 1)
+						if ((int) $rows[$i]['deleted'] === 1)
 						{
-							// FIXME: $db->free needed depending on db driver, restructure code to make that possible
 							// mark who was where, to easily restore an unwanted team deletion
 							$query = $db->prepare('UPDATE `players` SET `last_teamid`=`players`.`teamid`'
 												  . ', `teamid`=? WHERE `id`=?');

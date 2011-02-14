@@ -21,22 +21,31 @@
 		return true;
 	}
 	
-	function displayRecipient($recipient, $fromTeam=false)
+	function displayRecipient($recipient, $key, $team=false)
 	{
+		global $config;
 		global $tmpl;
 		global $db;
 		
-		if ($fromTeam)
+		if ($team)
 		{
 			$query = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
+			$tmpl->setVariable('MSG_ONE_RECIPIENT_LINK', ($config->value('baseaddress')
+														  . 'Teams/?profile=' . htmlent($recipient)));
 		} else
 		{
 			$query = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
+			$tmpl->setVariable('MSG_ONE_RECIPIENT_LINK', ($config->value('baseaddress')
+														  . 'Players/?profile=' . htmlent($recipient)));
 		}
-		$result = $db->execute($query, $recipient);
-//		$row = $db->fetchRow($result);
-//		
-//		return $row['name'];
+		
+		$db->execute($query, $recipient);
+		$recipientName = $db->fetchAll($query);
+		$db->free($query);
+		
+		$tmpl->setVariable('MSG_ONE_RECIPIENT', $recipientName['0']['name']);
+		
+		$tmpl->parseCurrentBlock();
 	}
 	
 	function showMails($folder)
@@ -62,7 +71,7 @@
 							  . ' WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`'
 							  . ' AND `messages_users_connection`.`playerid`=?'
 							  . ' AND `in_' . $folder . '`=' . "'" . '1' . "'"
-							  . ' ORDER BY `messages_users_connection`.`id` ');
+							  . ' ORDER BY `messages_users_connection`.`id` DESC');
 		$result = $db->execute($query, array($config->value('displayedSystemUsername'), $user->getID()));
 		
 		$tmpl->setCurrentBlock('PMLIST');
@@ -73,18 +82,14 @@
 			$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress') . 'Messages/?view=' . $row['msgid']));
 			$tmpl->setVariable('MSG_SUBJECT', $row['subject']);
 			$tmpl->setVariable('MSG_TIME', $row['timestamp']);
-			if (strcmp($row['from_team'], '0') === 0)
-			{
-				$tmpl->setVariable('MSG_RECIPIENTS_LINK', ($config->value('baseaddress') . 'Players/?profile=' . $row['recipients']));
-			} else
-			{
-				$tmpl->setVariable('MSG_RECIPIENTS_LINK', ($config->value('baseaddress') . 'Teams/?'));
-			}
+			
+			$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 			$recipients = explode(' ', $row['recipients']);
-			array_walk($recipients, 'displayRecipient', (strcmp($row['from_team'], '0') === 0));
-//			$tmpl->setVariable('MSG_RECIPIENTS', $recipients);
+			$fromTeam = strcmp($row['from_team'], '0') !== 0;
+			array_walk($recipients, 'displayRecipient', $fromTeam);			
 			
 			
+			$tmpl->setCurrentBlock('PMLIST');
 			$tmpl->parseCurrentBlock();
 		}
 	}
