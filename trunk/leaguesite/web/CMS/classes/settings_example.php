@@ -28,7 +28,13 @@
 					 'bbcodeLibAvailable' => true,
 					 'displayedSystemUsername' => 'CTF League System',
 					 // the name displayed in mails sent by the system
-					 'oldWebsiteName' => 'gu.bzleague.com'
+					 'oldWebsiteName' => 'gu.bzleague.com',
+					 'bbcodeLibPath' => (dirname(__FILE__)) . '/nbbc-wrapper.php',
+					 'bbcodeClass' => 'wrapper',
+					 'bbcodeSetsLinebreaks' => true,
+					 'bbcodeCommand' => 'Parse',
+					 'timezone' => 'CET',
+					 'test' => true
 					 );
 	}
 	
