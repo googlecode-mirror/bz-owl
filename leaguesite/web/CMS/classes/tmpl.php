@@ -296,52 +296,54 @@
 			return $result;
 		}
 		
-		// give ability to use a limited custom style
-		function bbcode($string)
+		// process bbcode
+		function encodeBBCode($bbcode)
 		{
-			if (strcmp(bbcode_lib_path(), '') === 0)
+			global $config;
+			
+			if (strcmp($config->value('bbcodeLibPath'), '') === 0)
 			{
 				// no bbcode library specified
-				return $this->linebreaks(htmlent($string));
+				return $this->linebreaks(htmlent($bbcode));
 			}
 			// load the library
-			require_once (bbcode_lib_path());
+			require_once ($config->value('bbcodeLibPath'));
 			
-			if (strcmp(bbcode_command(), '') === 0)
+			if (strcmp($config->value('bbcodeCommand'), '') === 0)
 			{
 				// no command that starts the parser
-				return $this->linebreaks(htmlent($string));
+				return $this->linebreaks(htmlent($bbcode));
 			} else
 			{
-				$parse_command = bbcode_command();
+				$parse_command = $config->value('bbcodeCommand');
 			}
 			
-			if (!(strcmp(bbcode_class(), '') === 0))
+			if (!(strcmp($config->value('bbcodeClass'), '') === 0))
 			{
 				// no class specified
 				// this is no error, it only means the library stuff isn't started by a command in a class
-				$bbcode_class = bbcode_class();
+				$bbcode_class = $config->value('bbcodeClass');
 				$bbcode_instance = new $bbcode_class;
 			}
 			
 			// execute the bbcode algorithm
 			if (isset($bbcode_class))
 			{
-				if (bbcode_sets_linebreaks())
+				if ($config->value('bbcodeSetsLinebreaks'))
 				{
-					return $bbcode_instance->$parse_command($string);
+					return $bbcode_instance->$parse_command($bbcode);
 				} else
 				{
-					return $this->linebreaks($bbcode_instance->$parse_command($string));
+					return $this->linebreaks($bbcode_instance->$parse_command($bbcode));
 				}
 			} else
 			{
-				if (bbcode_sets_linebreaks())
+				if ($config->value('bbcodeSetsLinebreaks'))
 				{
-					return $parse_command($string);
+					return $parse_command($bbcode);
 				} else
 				{
-					return $this->linebreaks($parse_command($string));
+					return $this->linebreaks($parse_command($bbcode));
 				}
 			}
 		}

@@ -5,7 +5,7 @@
 <meta content="text/html; charset=utf-8" http-equiv="content-type" />
 	<!-- BEGIN MAIN --><link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
 	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
-<title>Mail Overview</title>
+<title><!-- BEGIN TITLE_AREA -->{TITLE}<!-- END TITLE_AREA --></title>
 </head>
 <body>
 <div class="logo"></div>
@@ -26,27 +26,19 @@
 <!-- BEGIN MISC -->{MSG}<!-- END MISC -->
 </div>
 
-
-<table id="table_msg_overview" class="big">
-<caption>Messages in outbox</caption>
-<tr>
-	<th>Author</th>
-	<th>Subject</th>
-	<th>Date</th>
-
-	<th>Recipient(s)</th>
-</tr>
-
-<!-- BEGIN PMLIST -->
-<tr class="msg_overview">
-	<td class="msg_overview_author"><a href="{USER_PROFILE_LINK}">{USER_NAME}</a></td>
-	<td class="msg_overview_subject"><a href="{MSG_LINK}">{MSG_SUBJECT}</a></td>
-	<td class="msg_overview_timestamp">{MSG_TIME}</td>
-	<td class="msg_overview_recipients"><!-- BEGIN MSG_RECIPIENTS -->
-		<a href="{MSG_ONE_RECIPIENT_LINK}">{MSG_ONE_RECIPIENT}</a> <!-- END MSG_RECIPIENTS -->
-	</td>
-</tr><!-- END PMLIST -->
-</table>
+<!-- BEGIN PMVIEW -->
+<div class="msg_area"><div class="msg_view_full">
+	<div class="msg_header_full">
+		<span class="msg_subject">{PM_SUBJECT}</span>
+		<span class="msg_author"> by {PM_AUTHOR}</span>
+		<span class="msg_author"> to {PM_RECIPIENTS}</span>
+		<span class="msg_timestamp"> at {PM_TIME}</span>
+	</div>
+	<div class="msg_contents">
+		{PM_CONTENT}
+	</div>
+</div>
+<!-- END PMVIEW -->
 
 </div>
 </body>
