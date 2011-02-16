@@ -81,14 +81,18 @@
 			$tmpl->setCurrentBlock('PMVIEW');
 			$tmpl->setVariable('PM_SUBJECT', $rows[0]['subject']);
 			$tmpl->setVariable('PM_AUTHOR', $rows[0]['author']);
+			
 			// collect recipient list
-			$tmpl->setVariable('PM_RECIPIENTS', $rows[0]['author']);
+			$tmpl->setCurrentBlock('MSG_RECIPIENTS');
+			$recipients = explode(' ', $rows[0]['recipients']);
+			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
+			array_walk($recipients, 'self::displayRecipient', $fromTeam);		
+			
+			// back to PMVIEW
+			$tmpl->setCurrentBlock('PMVIEW');
 			$tmpl->setVariable('PM_TIME', $rows[0]['timestamp']);
 			$tmpl->setVariable('PM_CONTENT', $tmpl->encodeBBCode($rows[0]['message']));
-			$tmpl->parseCurrentBlock();
-			
-			
-			print_r($rows);
+			$tmpl->parseCurrentBlock();			
 		}
 		
 		function showMails($folder)
