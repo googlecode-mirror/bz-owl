@@ -40,6 +40,28 @@
 		{PM_CONTENT}
 	</div>
 </div>
+
+<div class="msg_view_button_list">
+
+<!-- BEGIN REPLY_TEAM -->
+<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=team&amp;id={MSGID}&amp;teamid={TEAMID}" method="post">
+<p><input type="submit" value="Reply to team" />
+</p>
+</form>
+<!-- END REPLY_TEAM -->
+
+<!-- BEGIN REPLY_PLAYERS -->
+<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=players&amp;id={MSGID}" method="post">
+<p><input type="submit" value="Reply to {REPLY_PLAYER_OR_PLAYERS}" />
+</p>
+</form>
+<!-- END REPLY_PLAYERS -->
+
+<form class="msg_buttons" action="{BASEADDRESS}Messages/?delete=390726&amp;folder=inbox" method="post">
+<p><input type="submit" value="Delete this message" />
+</p>
+</form>
+</div>
 <!-- END PMVIEW -->
 
 </div>
