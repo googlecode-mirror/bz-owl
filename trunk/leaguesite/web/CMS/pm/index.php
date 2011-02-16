@@ -1,4 +1,13 @@
 <?php
+	// FIXME: FALLBACK FOR NOW
+	if (isset($_GET['add']) || isset($_GET['edit']) || isset($_GET['delete']))
+	{
+		require_once dirname(dirname(__FILE__)) . '/siteinfo.php';
+		$site = new siteinfo();
+		
+		include dirname(dirname(__FILE__)) . '/announcements/index.php';
+	}
+	
 	require_once (dirname(dirname(__FILE__)) . '/site.php');
 	$site = new site();
 	
@@ -16,8 +25,6 @@
 	{
 		$folder = 'outbox';
 	}
-	
-	
 	
 	if (isset($_GET['add']))
 	{

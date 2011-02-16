@@ -86,13 +86,39 @@
 			$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 			$recipients = explode(' ', $rows[0]['recipients']);
 			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
-			array_walk($recipients, 'self::displayRecipient', $fromTeam);		
+			array_walk($recipients, 'self::displayRecipient', $fromTeam);
+			
+			
+			// reply buttons
+			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
+			if ($fromTeam)
+			{
+				$tmpl->setCurrentBlock('REPLY_TEAM');
+			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
+				$tmpl->setVariable('MSGID', intval($_GET['view']));
+				$tmpl->setVariable('TEAMID', intval($recipients[0]));
+				$tmpl->parseCurrentBlock();
+			}
+			
+			$tmpl->setCurrentBlock('REPLY_PLAYERS');
+			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
+			$tmpl->setVariable('MSGID', intval($_GET['view']));
+			if (count($recipients) > 0)
+			{
+				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'players');
+			} else
+			{
+				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'player');
+			}
+			$tmpl->parseCurrentBlock();
+			
 			
 			// back to PMVIEW
 			$tmpl->setCurrentBlock('PMVIEW');
 			$tmpl->setVariable('PM_TIME', $rows[0]['timestamp']);
 			$tmpl->setVariable('PM_CONTENT', $tmpl->encodeBBCode($rows[0]['message']));
-			$tmpl->parseCurrentBlock();			
+			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
+			$tmpl->parseCurrentBlock();
 		}
 		
 		function showMails($folder)
@@ -105,6 +131,12 @@
 			// set the template
 			$tmpl->setTemplate('PMList');
 			
+			if ($_SESSION['allow_add_messages'])
+			{
+				$tmpl->setCurrentBlock('USERBUTTONS');
+				$tmpl->setVariable('PERMISSION_BASED_BUTTONS', '<a class="button" href="./?add">New Mail</a>');
+				$tmpl->parseCurrentBlock();
+			}
 			
 			// show the overview
 			$query = $db->prepare('SELECT `messages_users_connection`.`msgid`'
@@ -134,12 +166,13 @@
 				$tmpl->setVariable('MSG_SUBJECT', $row['subject']);
 				$tmpl->setVariable('MSG_TIME', $row['timestamp']);
 				
+				// collect recipient list
 				$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 				$recipients = explode(' ', $row['recipients']);
 				$fromTeam = strcmp($row['from_team'], '0') !== 0;
 				array_walk($recipients, 'self::displayRecipient', $fromTeam);
 				
-				
+				// back to PMLIST
 				$tmpl->setCurrentBlock('PMLIST');
 				$tmpl->parseCurrentBlock();
 			}
