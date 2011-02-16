@@ -31,7 +31,9 @@
 	<div class="msg_header_full">
 		<span class="msg_subject">{PM_SUBJECT}</span>
 		<span class="msg_author"> by {PM_AUTHOR}</span>
-		<span class="msg_author"> to {PM_RECIPIENTS}</span>
+		<span class="msg_author"> to <!-- BEGIN MSG_RECIPIENTS -->
+			<a href="{MSG_ONE_RECIPIENT_LINK}">{MSG_ONE_RECIPIENT}</a><!-- END MSG_RECIPIENTS -->
+		</span>
 		<span class="msg_timestamp"> at {PM_TIME}</span>
 	</div>
 	<div class="msg_contents">
