@@ -185,7 +185,9 @@
 			{
 				// use bbcode if available
 				case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
-					$tmpl->addMSG($tmpl->encodeBBCode($content));
+					$tmpl->setCurrentBlock('PREVIEW');
+					$tmpl->setVariable('PREVIEW_CONTENT', $tmpl->encodeBBCode($content));
+					$tmpl->parseCurrentBlock();
 					break;
 					
 				// else raw output
@@ -313,44 +315,44 @@
 		}
 		
 		$query = $db->prepare('SELECT `id` FROM `static_pages` WHERE `page_name`=? LIMIT 1');
-		$result = $db->execute($query, $page_title);
+		$db->execute($query, $page_title);
 		
 		// number of rows
-		$rows = (int) mysql_num_rows($result);
+		$rows = $db->rowCount($query);
 		$date_format = date('Y-m-d H:i:s');
 		if ($rows < ((int) 1))
 		{
 			// no entry in table regarding current page
 			// thus insert new data
 			$query = ('INSERT INTO `static_pages` (`author`, `page_name`, `raw_content`, `content`, `last_modified`) VALUES ('
-					  . $db->escape($user->getID())
-					  . ', ' . $db->escape($page_title)
-					  . ', ' . $db->escape($content));
+					  . $db->quote($user->getID())
+					  . ', ' . $db->quote($page_title)
+					  . ', ' . $db->quote($content));
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', ' . $db->escape($tmpl->encodeBBCode($content));
+				$query .= ', ' . $db->quote($tmpl->encodeBBCode($content));
 			} else
 			{
-				$query .= ', ' . $db->escape($content);
+				$query .= ', ' . $db->quote($content);
 			}
-			$query .= ', ' . $db->escape($date_format) . ')';
+			$query .= ', ' . $db->quote($date_format) . ')';
 			
 //			$db->prepare($query);
 //			$db->execute();
 		} else
 		{
 			// either 1 or more entries found, just assume there is only one
-			$query = ('UPDATE `static_pages` SET `author`=' . $db->escape($user->getID())
-					  . ', `raw_content`=' . $db->escape($content));
+			$query = ('UPDATE `static_pages` SET `author`=' . $db->quote($user->getID())
+					  . ', `raw_content`=' . $db->quote($content));
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', `content`=' . $db->escape($tmpl->encodeBBCode($content));
+				$query .= ', `content`=' . $db->quote($tmpl->encodeBBCode($content));
 			} else
 			{
-				$query .= ', `content`=' . $db->escape($content);
+				$query .= ', `content`=' . $db->quote($content);
 			}			
-			$query .= ', `last_modified`=' . $db->escape($date_format);
-			$query .= ' WHERE `page_name`=' . $db->escape($page_title);
+			$query .= ', `last_modified`=' . $db->quote($date_format);
+			$query .= ' WHERE `page_name`=' . $db->quote($page_title);
 			$query .= ' LIMIT 1';
 		}
 		
