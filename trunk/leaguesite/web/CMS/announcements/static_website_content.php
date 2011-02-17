@@ -150,7 +150,7 @@
 				unset($bbcode);
 			} else
 			{
-				if ($site->use_xtml())
+				if ($config->value('useXhtml'))
 				{
 					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
 				} else
@@ -186,7 +186,7 @@
 			{
 				// use bbcode if available
 				case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
-					$tmpl->addMSG($tmpl->bbcode($content));
+					$tmpl->addMSG($tmpl->encodeBBCode($content));
 					break;
 					
 				// else raw output
@@ -329,7 +329,7 @@
 					  . ', ' . $db->escape($content));
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', ' . $db->escape($tmpl->bbcode($content));
+				$query .= ', ' . $db->escape($tmpl->encodeBBCode($content));
 			} else
 			{
 				$query .= ', ' . $db->escape($content);
@@ -345,7 +345,7 @@
 					  . ', `raw_content`=' . $db->escape($content));
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$query .= ', `content`=' . $db->escape($tmpl->bbcode($content));
+				$query .= ', `content`=' . $db->escape($tmpl->encodeBBCode($content));
 			} else
 			{
 				$query .= ', `content`=' . $db->escape($content);
