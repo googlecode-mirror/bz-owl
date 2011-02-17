@@ -86,7 +86,7 @@
 				  . ' LIMIT 1');
 		
 		// execute query
-		$db->prepare($query);
+		$query = $db->prepare($query);
 		if (!$db->execute($query, $playerid))
 		{
 			// query failed
