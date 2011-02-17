@@ -134,9 +134,8 @@
 				
 				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
 				$bbcode = new bbcode_buttons();
-				$bbcode->showBBCodeButtons();
 				
-				$buttons = $bbcode->showBBCodeButtons();
+				$buttons = $bbcode->showBBCodeButtons('staticContent');
 				$tmpl->setCurrentBlock('STYLE_BUTTONS');
 				foreach ($buttons as $button)
 				{
