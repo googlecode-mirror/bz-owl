@@ -16,7 +16,7 @@
 				if ($config->value('bbcodeLibAvailable'))
 				{
 					$buttons = array();
-					$buttons[] = '<script type="text/javascript" src="' . baseaddress() . 'bbcode_buttons.js"></script>' . "\n";
+					$buttons[] = '<script type="text/javascript" src="' . $config->value('baseaddress') . 'bbcode_buttons.js"></script>' . "\n";
 					$buttons[] = ('<input type="button" name="bold" value="b" '
 								  . 'style="font-weight: bold;" '
 								  . 'onclick="' . "insert('[b]', '[/b]', '$form_number', '$element_name')" . '" />');
