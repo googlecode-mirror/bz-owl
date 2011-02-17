@@ -62,6 +62,22 @@
 			$tmpl->parseCurrentBlock();
 		}
 		
+		function folderNav($folder)
+		{
+			global $tmpl;
+			
+			// show currently selected mail folder
+			if (strcmp($folder, 'inbox') === 0)
+			{
+				$tmpl->touchBlock('INBOX_SELECTED');
+				$tmpl->touchBlock('OUTBOX_NOT_SELECTED');
+			} else
+			{
+				$tmpl->touchBlock('INBOX_NOT_SELECTED');
+				$tmpl->touchBlock('OUTBOX_SELECTED');
+			}
+		}
+		
 		function showMail($folder, $id)
 		{
 			global $config;
@@ -72,6 +88,9 @@
 			// set the template
 			$tmpl->setTemplate('PMView');
 			$tmpl->setTitle('Mail #' . $id);
+			
+			// show currently selected mail folder
+			$this->folderNav($folder);			
 			
 			// collect the necessary data
 			$query = $db->prepare('SELECT `subject`'
@@ -92,18 +111,9 @@
 			$rows = $db->fetchAll($query);
 			$db->free($query);
 			
+			
 			// create PM navigation
 			$tmpl->setCurrentBlock('PMNAV');
-			if (strcmp($folder, 'inbox') === 0)
-			{
-				$tmpl->touchBlock('INBOX_SELECTED');
-				$tmpl->touchBlock('OUTBOX_NOT_SELECTED');
-			} else
-			{
-				$tmpl->touchBlock('INBOX_NOT_SELECTED');
-				$tmpl->touchBlock('OUTBOX_SELECTED');
-			}
-			
 			$query = $db->prepare('SELECT `msgid` FROM `messages_users_connection`'
 								  . ' WHERE `playerid`=? AND `msgid`<?'
 								  . ' AND `in_' . $folder . '`=' . "'1'"
@@ -181,6 +191,15 @@
 			$tmpl->setVariable('PM_CONTENT', $tmpl->encodeBBCode($rows[0]['message']));
 			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
 			$tmpl->parseCurrentBlock();
+			
+			// mark the message as read for the current user
+			$query = $db->prepare('UPDATE LOW_PRIORITY `messages_users_connection`'
+								  . 'SET `msg_status`=' . "'read'"
+								  . ' WHERE `msgid`=?'
+								  . ' AND `in_' . $folder . '`=' . "'1'"
+								  . ' AND `playerid`=?'
+								  . ' LIMIT 1');
+			$db->execute($query, array($id, $user->getID()));
 		}
 		
 		function showMails($folder)
@@ -199,6 +218,9 @@
 				$tmpl->setVariable('PERMISSION_BASED_BUTTONS', '<a class="button" href="./?add">New Mail</a>');
 				$tmpl->parseCurrentBlock();
 			}
+			
+			// show currently selected mail folder
+			$this->folderNav($folder);
 			
 			// show the overview
 			$offset = 0;

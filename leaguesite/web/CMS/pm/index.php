@@ -6,6 +6,8 @@
 		$site = new siteinfo();
 		
 		include dirname(dirname(__FILE__)) . '/announcements/index.php';
+		
+		die();
 	}
 	
 	require_once (dirname(dirname(__FILE__)) . '/site.php');
