@@ -22,9 +22,10 @@
 <div class="content">
 <!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
 
-<div class="static_page_box">
-<!-- BEGIN MISC -->{MSG}<!-- END MISC -->
-</div>
+<!-- BEGIN MISC --><div class="static_page_box">
+{MSG}
+</div><br />
+<!-- END MISC -->
 
 
 <table id="table_msg_overview" class="big">
@@ -43,10 +44,15 @@
 	<td class="msg_overview_subject"><a href="{MSG_LINK}">{MSG_SUBJECT}</a></td>
 	<td class="msg_overview_timestamp">{MSG_TIME}</td>
 	<td class="msg_overview_recipients"><!-- BEGIN MSG_RECIPIENTS -->
-		<a href="{MSG_ONE_RECIPIENT_LINK}">{MSG_ONE_RECIPIENT}</a><!-- END MSG_RECIPIENTS -->
+		{MSG_ONE_RECIPIENT}<!-- END MSG_RECIPIENTS -->
 	</td>
 </tr><!-- END PMLIST -->
 </table>
+
+<!-- BEGIN PM_NAV_BUTTONS --><p>
+<!-- BEGIN PREV_BUTTON -->	<a class="button" href="./?folder={MSG_FOLDER}&amp;i={OFFSET_PREV}">Previous messages</a><!-- END PREV_BUTTON --><!-- BEGIN NEXT_BUTTON -->
+	<a class="button" href="./?folder={MSG_FOLDER}&amp;i={OFFSET_NEXT}">Next messages</a><!-- END NEXT_BUTTON -->
+</p><!-- END PM_NAV_BUTTONS -->
 
 </div>
 </body>

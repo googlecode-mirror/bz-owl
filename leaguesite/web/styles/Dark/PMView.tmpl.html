@@ -22,9 +22,26 @@
 <div class="content">
 <!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
 
-<div class="static_page_box">
-<!-- BEGIN MISC -->{MSG}<!-- END MISC -->
+<!-- BEGIN MISC --><div class="static_page_box">
+{MSG}
+</div><br />
+<!-- END MISC -->
+
+<!-- BEGIN PMNAV -->
+<div class="msg_nav">
+<span class="folder_selection">
+<!-- BEGIN INBOX_SELECTED --><a href="./?folder=inbox">inbox!</a> <!-- END INBOX_SELECTED -->
+<!-- BEGIN INBOX_NOT_SELECTED --><a href="./?folder=inbox">inbox</a> <!-- END INBOX_NOT_SELECTED -->
+<!-- BEGIN OUTBOX_SELECTED --><a href="./?folder=outbox">outbox!</a> <!-- END OUTBOX_SELECTED -->
+<!-- BEGIN OUTBOX_NOT_SELECTED --><a href="./?folder=outbox">outbox</a> <!-- END OUTBOX_NOT_SELECTED -->
+</span>
 </div>
+
+<span class="prev_next_msg_buttons">
+<!-- BEGIN PREV_MSG --><a class="button" id="prev_msg" href="./?folder=inbox&amp;view={MSGID}">Previous message</a><!-- END PREV_MSG -->
+<!-- BEGIN NEXT_MSG --><a class="button" id="next_msg" href="./?folder=inbox&amp;view={MSGID}">Next message</a><!-- END NEXT_MSG -->
+</span></div>
+<!-- END PMNAV -->
 
 <!-- BEGIN PMVIEW -->
 <div class="msg_area"><div class="msg_view_full">
@@ -32,7 +49,7 @@
 		<span class="msg_subject">{PM_SUBJECT}</span>
 		<span class="msg_author"> by {PM_AUTHOR}</span>
 		<span class="msg_author"> to <!-- BEGIN MSG_RECIPIENTS -->
-			<a href="{MSG_ONE_RECIPIENT_LINK}">{MSG_ONE_RECIPIENT}</a><!-- END MSG_RECIPIENTS -->
+			{MSG_ONE_RECIPIENT}<!-- END MSG_RECIPIENTS -->
 		</span>
 		<span class="msg_timestamp"> at {PM_TIME}</span>
 	</div>

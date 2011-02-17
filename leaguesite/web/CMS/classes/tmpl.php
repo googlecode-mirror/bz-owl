@@ -240,6 +240,11 @@
 			}
 		}
 		
+		function touchBlock($block)
+		{
+			$this->tpl->touchBlock($block);
+		}
+		
 		function render()
 		{
 			// build title

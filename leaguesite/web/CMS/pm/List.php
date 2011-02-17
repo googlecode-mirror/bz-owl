@@ -32,20 +32,32 @@
 			if ($team)
 			{
 				$query = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
-				$tmpl->setVariable('MSG_ONE_RECIPIENT_LINK', ($config->value('baseaddress')
-															  . 'Teams/?profile=' . htmlent($recipient)));
+				$db->execute($query, $recipient);
+				$recipientName = $db->fetchAll($query);
+				$db->free($query);
+				
+				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
+																	   . 'Teams/?profile=' . htmlent($recipient)) . '">'
+								   . $recipientName['0']['name'] . '</a>');
 			} else
 			{
 				$query = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
-				$tmpl->setVariable('MSG_ONE_RECIPIENT_LINK', ($config->value('baseaddress')
-															  . 'Players/?profile=' . htmlent($recipient)));
+				$db->execute($query, $recipient);
+				$recipientName = $db->fetchAll($query);
+				$db->free($query);
+				
+				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
+																	   . 'Players/?profile=' . htmlent($recipient)) . '">'
+								   . $recipientName['0']['name'] . '</a>');
 			}
 			
 			$db->execute($query, $recipient);
 			$recipientName = $db->fetchAll($query);
 			$db->free($query);
 			
-			$tmpl->setVariable('MSG_ONE_RECIPIENT', $recipientName['0']['name']);
+			$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
+																   . 'Players/?profile=' . htmlent($recipient)) . '">'
+							   . $recipientName['0']['name'] . '</a>');
 			
 			$tmpl->parseCurrentBlock();
 		}
@@ -78,7 +90,57 @@
 			$db->execute($query, array($config->value('displaySystemUsername'), $user->getID(), $id));
 			
 			$rows = $db->fetchAll($query);
+			$db->free($query);
+			
+			// create PM navigation
+			$tmpl->setCurrentBlock('PMNAV');
+			if (strcmp($folder, 'inbox') === 0)
+			{
+				$tmpl->touchBlock('INBOX_SELECTED');
+				$tmpl->touchBlock('OUTBOX_NOT_SELECTED');
+			} else
+			{
+				$tmpl->touchBlock('INBOX_NOT_SELECTED');
+				$tmpl->touchBlock('OUTBOX_SELECTED');
+			}
+			
+			$query = $db->prepare('SELECT `msgid` FROM `messages_users_connection`'
+								  . ' WHERE `playerid`=? AND `msgid`<?'
+								  . ' AND `in_' . $folder . '`=' . "'1'"
+								  . ' ORDER BY `id` DESC LIMIT 1');
+			$db->execute($query, array($user->getID(), intval($_GET['view'])));
+			$prevMSG = $db->fetchAll($query);
+			$db->free($query);
+			if (count($prevMSG) > 0)
+			{
+				$tmpl->setCurrentBlock('PREV_MSG');
+				$tmpl->setVariable('MSGID', $prevMSG[0]['msgid']);
+				$tmpl->parseCurrentBlock();
+			}
+			unset($prevMSG);
+			
+			$query = $db->prepare('SELECT `msgid` FROM `messages_users_connection`'
+								  . ' WHERE `playerid`=? AND `msgid`>?'
+								  . ' AND `in_' . $folder . '`=' . "'1'"
+								  . ' ORDER BY `id` LIMIT 1');
+			$db->execute($query, array($user->getID(), intval($_GET['view'])));
+			$nextMSG = $db->fetchAll($query);
+			$db->free($query);
+			if (count($nextMSG) > 0)
+			{
+				$tmpl->setCurrentBlock('NEXT_MSG');
+				$tmpl->setVariable('MSGID', $nextMSG[0]['msgid']);
+				$tmpl->parseCurrentBlock();
+			}
+			unset($nextMSG);
+//			$tmpl->setCurrentBlock('PMNAV');
+//			$tmpl->parseCurrentBlock();
+			
+			
+			// create PM view
 			$tmpl->setCurrentBlock('PMVIEW');
+			$tmpl->setVariable('PM_SUBJECT', $rows[0]['subject']);
+			
 			$tmpl->setVariable('PM_SUBJECT', $rows[0]['subject']);
 			$tmpl->setVariable('PM_AUTHOR', $rows[0]['author']);
 			
@@ -94,7 +156,7 @@
 			if ($fromTeam)
 			{
 				$tmpl->setCurrentBlock('REPLY_TEAM');
-			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
+				$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
 				$tmpl->setVariable('MSGID', intval($_GET['view']));
 				$tmpl->setVariable('TEAMID', intval($recipients[0]));
 				$tmpl->parseCurrentBlock();
@@ -139,6 +201,11 @@
 			}
 			
 			// show the overview
+			$offset = 0;
+			if (isset($_GET['i']))
+			{
+				$offset = intval($_GET['i']);
+			}
 			$query = $db->prepare('SELECT `messages_users_connection`.`msgid`'
 								  . ',`messages_storage`.`author_id`'
 								  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
@@ -154,27 +221,75 @@
 								  . ' WHERE `messages_storage`.`id`=`messages_users_connection`.`msgid`'
 								  . ' AND `messages_users_connection`.`playerid`=?'
 								  . ' AND `in_' . $folder . '`=' . "'1'"
-								  . ' ORDER BY `messages_users_connection`.`id` DESC');
+								  . ' ORDER BY `messages_users_connection`.`id` DESC'
+								  . ' LIMIT ' . $offset . ', 201');
 			$db->execute($query, array($config->value('displayedSystemUsername'), $user->getID()));
+			$rows = $db->fetchAll($query);
+			$db->free($query);
 			
-			$tmpl->setCurrentBlock('PMLIST');
-			while ($row = $db->fetchRow($query))
+			$n = count($rows);
+			// last row is only a lookup row
+			// to find out whether to display next messages button
+			$showNextMSGButton = false;
+			if ($n > 200)
 			{
-				$tmpl->setVariable('USER_PROFILE_LINK', ($config->value('baseaddress') . 'Players/?profile=' . $row['author_id']));
-				$tmpl->setVariable('USER_NAME', $row['author']);
-				$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress') . 'Messages/?view=' . $row['msgid']));
-				$tmpl->setVariable('MSG_SUBJECT', $row['subject']);
-				$tmpl->setVariable('MSG_TIME', $row['timestamp']);
-				
-				// collect recipient list
-				$tmpl->setCurrentBlock('MSG_RECIPIENTS');
-				$recipients = explode(' ', $row['recipients']);
-				$fromTeam = strcmp($row['from_team'], '0') !== 0;
-				array_walk($recipients, 'self::displayRecipient', $fromTeam);
-				
-				// back to PMLIST
+				$n = 200;
+				$showNextMSGButton = true;
+			}
+			if ($n > 0)
+			{
 				$tmpl->setCurrentBlock('PMLIST');
-				$tmpl->parseCurrentBlock();
+				for ($i = 0; $i < $n; $i++)
+				{
+					$tmpl->setVariable('USER_PROFILE_LINK', ($config->value('baseaddress')
+									  . 'Players/?profile=' . $rows[$i]['author_id']));
+					$tmpl->setVariable('USER_NAME', $rows[$i]['author']);
+					$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
+									  . 'Messages/?view=' . $rows[$i]['msgid']));
+					$tmpl->setVariable('MSG_SUBJECT', $rows[$i]['subject']);
+					$tmpl->setVariable('MSG_TIME', $rows[$i]['timestamp']);
+					
+					// collect recipient list
+					$tmpl->setCurrentBlock('MSG_RECIPIENTS');
+					$recipients = explode(' ', $rows[$i]['recipients']);
+					$fromTeam = strcmp($rows[$i]['from_team'], '0') !== 0;
+					array_walk($recipients, 'self::displayRecipient', $fromTeam);
+					$tmpl->parseCurrentBlock();
+					
+					
+					// back to PMLIST
+					$tmpl->setCurrentBlock('PMLIST');
+					$tmpl->parseCurrentBlock();
+				}
+				
+				if ($offset > 0 || $showNextMSGButton)
+				{
+					$tmpl->setCurrentBlock('PM_NAV_BUTTONS');
+					if ($offset > 0)
+					{
+						// show previous messages
+						$tmpl->setCurrentBlock('PREV_BUTTON');
+						$tmpl->setVariable('MSG_FOLDER', $folder);
+						$tmpl->setVariable('OFFSET_PREV', intval($offset-200));
+						$tmpl->parseCurrentBlock();
+					}
+					if ($showNextMSGButton)
+					{
+						// show next messages
+						$tmpl->setCurrentBlock('NEXT_BUTTON');
+						$tmpl->setVariable('MSG_FOLDER', $folder);
+						$tmpl->setVariable('OFFSET_NEXT', strval($offset+200));
+						$tmpl->parseCurrentBlock();
+					}
+					$tmpl->setCurrentBlock('PM_NAV_BUTTONS');
+					$tmpl->parseCurrentBlock();
+				}
+			} elseif ($offset > 0)
+			{
+				$tmpl->addMSG('No additional messages in ' . htmlent($folder) . 'found.');
+			} else
+			{
+				$tmpl->addMSG('No messages in ' . htmlent($folder) . '.');
 			}
 		}
 		
