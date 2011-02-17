@@ -71,8 +71,7 @@
 				if (file_exists($themeFolder . $template . '.tmpl.html'))
 				{
 					$this->addMSG('Used template: ' . $themeFolder
-								  . $template . '.tmpl.html');
-					$this->addMSG($this->return_self_closing_tag('br'));
+								  . $template . '.tmpl.html' . $this->return_self_closing_tag('br'));
 				} else
 				{
 					echo 'Used template: ' . $themeFolder . $template . '.tmpl.html';
@@ -242,7 +241,7 @@
 		
 		function touchBlock($block)
 		{
-			$this->tpl->touchBlock($block);
+			return $this->tpl->touchBlock($block);
 		}
 		
 		function render()
