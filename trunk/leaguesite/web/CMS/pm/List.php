@@ -121,6 +121,7 @@
 			$db->execute($query, array($user->getID(), intval($_GET['view'])));
 			$prevMSG = $db->fetchAll($query);
 			$db->free($query);
+			
 			if (count($prevMSG) > 0)
 			{
 				$tmpl->setCurrentBlock('PREV_MSG');
@@ -175,7 +176,7 @@
 			$tmpl->setCurrentBlock('REPLY_PLAYERS');
 			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
 			$tmpl->setVariable('MSGID', intval($_GET['view']));
-			if (count($recipients) > 0)
+			if (count($recipients) > 1)
 			{
 				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'players');
 			} else
@@ -190,6 +191,8 @@
 			$tmpl->setVariable('PM_TIME', $rows[0]['timestamp']);
 			$tmpl->setVariable('PM_CONTENT', $tmpl->encodeBBCode($rows[0]['message']));
 			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
+			$tmpl->setVariable('MSGID', $id);
+			$tmpl->setVariable('MSG_FOLDER', $folder);
 			$tmpl->parseCurrentBlock();
 			
 			// mark the message as read for the current user
@@ -228,7 +231,7 @@
 			{
 				$offset = intval($_GET['i']);
 			}
-			$query = $db->prepare('SELECT `messages_users_connection`.`msgid`'
+			$query = $db->prepare('SELECT `messages_storage`.`id`'
 								  . ',`messages_storage`.`author_id`'
 								  . ',IF(`messages_storage`.`author_id`<>0,(SELECT `name` FROM `players` WHERE `id`=`author_id`)'
 								  . ',?) AS `author`'
@@ -258,16 +261,27 @@
 				$n = 200;
 				$showNextMSGButton = true;
 			}
+			
 			if ($n > 0)
 			{
+				$tmpl->setCurrentBlock('PMTABLE');
+				$tmpl->setVariable('MSG_FOLDER', $folder);
 				$tmpl->setCurrentBlock('PMLIST');
 				for ($i = 0; $i < $n; $i++)
 				{
 					$tmpl->setVariable('USER_PROFILE_LINK', ($config->value('baseaddress')
 									  . 'Players/?profile=' . $rows[$i]['author_id']));
 					$tmpl->setVariable('USER_NAME', $rows[$i]['author']);
-					$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
-									  . 'Messages/?view=' . $rows[$i]['msgid']));
+					if (strcmp($folder, 'inbox') !== 0)
+					{
+						$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
+														. 'Messages/?view=' . $rows[$i]['id']
+														. '&amp;folder=' . $folder));
+					} else
+					{
+						$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
+														. 'Messages/?view=' . $rows[$i]['id']));
+					}
 					$tmpl->setVariable('MSG_SUBJECT', $rows[$i]['subject']);
 					$tmpl->setVariable('MSG_TIME', $rows[$i]['timestamp']);
 					
@@ -278,12 +292,11 @@
 					array_walk($recipients, 'self::displayRecipient', $fromTeam);
 					$tmpl->parseCurrentBlock();
 					
-					
 					// back to PMLIST
 					$tmpl->setCurrentBlock('PMLIST');
 					$tmpl->parseCurrentBlock();
 				}
-				
+								
 				if ($offset > 0 || $showNextMSGButton)
 				{
 					$tmpl->setCurrentBlock('PM_NAV_BUTTONS');
