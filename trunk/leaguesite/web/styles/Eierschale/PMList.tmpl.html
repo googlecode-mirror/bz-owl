@@ -27,8 +27,16 @@
 </div><br />
 <!-- END MISC -->
 
+<div class="msg_nav">
+<span class="folder_selection">
+<!-- BEGIN INBOX_SELECTED --><a href="./?folder=inbox">inbox!</a> <!-- END INBOX_SELECTED -->
+<!-- BEGIN INBOX_NOT_SELECTED --><a href="./?folder=inbox">inbox</a> <!-- END INBOX_NOT_SELECTED -->
+<!-- BEGIN OUTBOX_SELECTED --><a href="./?folder=outbox">outbox!</a> <!-- END OUTBOX_SELECTED -->
+<!-- BEGIN OUTBOX_NOT_SELECTED --><a href="./?folder=outbox">outbox</a> <!-- END OUTBOX_NOT_SELECTED -->
+</span>
+</div>
 
-<table id="table_msg_overview" class="big">
+<!-- BEGIN PM_TABLE --><table id="table_msg_overview" class="big">
 <caption>Messages in outbox</caption>
 <tr>
 	<th>Author</th>
@@ -47,7 +55,7 @@
 		{MSG_ONE_RECIPIENT}<!-- END MSG_RECIPIENTS -->
 	</td>
 </tr><!-- END PMLIST -->
-</table>
+</table><!-- END PM_TABLE -->
 
 <!-- BEGIN PM_NAV_BUTTONS --><p>
 <!-- BEGIN PREV_BUTTON -->	<a class="button" href="./?folder={MSG_FOLDER}&amp;i={OFFSET_PREV}">Previous messages</a><!-- END PREV_BUTTON --><!-- BEGIN NEXT_BUTTON -->
