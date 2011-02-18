@@ -9,4 +9,5 @@
 	$msg .= '">my.bzflag.org (BZBB)</a>.</p>' . "\n";
 	
 	$tmpl->addMSG($msg);
+	$msg = '';
 ?>

@@ -61,6 +61,7 @@
 		
 		$user->logout();
 		$tmpl->done($msg);
+		die();
 	}
 	
 	function loadLoginModule()
@@ -142,11 +143,11 @@
 			{
 				if (isset($module['bzbb']) && ($module['bzbb']))
 				{
-					include 'bzbb_login/login_text.php';
+					include_once('bzbb_login/login_text.php');
 				}
 			}
 			
-			if (!( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) ))
+			if (!(isset($_GET['bzbbauth'])) ||  !($_GET['bzbbauth']))
 			{
 				if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']) && isset($module['local']) && ($module['local']))
 				{
@@ -154,12 +155,13 @@
 					$tmpl->addMSG($tmpl->return_self_closing_tag('br'));
 					$tmpl->addMSG($tmpl->return_self_closing_tag('br'));
 				}
+				
+				if (isset($module['local']) && ($module['local']))
+				{
+					include_once(dirname(__FILE__) . '/local_login/login_text.php');
+				}
 			}
 			
-			if (isset($module['local']) && ($module['local']))
-			{
-				include_once 'local_login/login_text.php';
-			}
 		}
 	}
 	
@@ -172,6 +174,9 @@
 		global $tmpl;
 		global $user;
 		global $db;
+		
+		// init message
+		$msg = '';
 		
 		// set the date and time
 		date_default_timezone_set($config->value('timezone'));
@@ -238,7 +243,7 @@
 				$query = $db->prepare($query);
 				if (!$db->execute($query, $_SESSION['external_id']))
 				{
-					$msg = ('Could not find out if player already has an account with id '
+					$msg .= ('Could not find out if player already has an account with id '
 							. $db->quote($_SESSION['external_id']) . ' (renamed user?).');
 					logoutAndAbort($msg);
 				}
@@ -295,15 +300,21 @@
 				}
 				$msg .= '. You may update the account first by using your local login.</p>' . "\n";
 				$msg .= '<p>In case someone other than you owns the local account then you need to contact an admin to solve the problem.' . "\n";
-				
-				$output_buffer2 = '';
-				ob_start();
 				$account_needs_to_be_converted = true;
-				include_once(dirname(__FILE__) . '/local_login/login_text.php');
-				// write output buffer to message and clean buffer
-				$msg .= ob_get_clean() . "\n";
-				ob_end_clean();
-				
+				$msg .= '<form action="' . $config->value('baseaddress') . 'Login/'. '" method="post">' . "\n";
+				$msg .= '<p class="first_p">' . "\n";
+				if ($config->value('forceExternalLoginOnly'))
+				{
+					$msg .= $tmpl->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Update old account from '
+														   . htmlent($config->value('oldWebsiteName')) . '"');
+				} else
+				{
+					$msg .= $tmpl->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Local login"');
+				}
+				$msg .= '</p>' . "\n";
+				$msg .= '</form>' . "\n";
+//				include_once(dirname(__FILE__) . '/local_login/login_text.php');
+
 				logoutAndAbort($msg);
 			}
 			
@@ -385,7 +396,7 @@
 								
 								
 								// send the welcome message
-								include dirname(dirname(__FILE__)) . '/announcements/sendPrivateMSG';
+								include dirname(dirname(__FILE__)) . '/announcements/sendPrivateMSG.php';
 								sendPrivateMSG(array($author_id), array(), 'Welcome!',
 											  'Welcome and thanks for registering at this website!' . "\n"
 											  . 'In the FAQ you can find the most important informations'

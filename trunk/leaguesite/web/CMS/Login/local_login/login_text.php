@@ -9,7 +9,10 @@
 	
 	$account_old_website = htmlent($config->value('oldWebsiteName'));
 	
-	$msg = '';
+	if (!isset($msg))
+	{
+		$msg = '';
+	}
 	
 	if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
 	{
