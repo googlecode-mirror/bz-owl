@@ -55,10 +55,10 @@
 			// init template system
 			$this->tpl = new HTML_Template_IT($themeFolder);
 			
-			// load the current template file
+			// fallback if template specified is empty
 			if (strcmp($template, '') === 0)
 			{
-				$template = $config->value('basename');
+				$template = 'NoPerm';
 			}
 			
 			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
