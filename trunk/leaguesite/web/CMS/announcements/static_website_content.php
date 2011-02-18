@@ -21,6 +21,80 @@
 		return true;
 	}
 	
+	function insertEditText($readonly=false)
+	{
+		global $tmpl;
+		global $page_title;
+		global $author;
+		global $last_modified;
+		
+		$content = '';
+		if (isset($_POST['staticContent']))
+		{
+			$content = $_POST['staticContent'];
+		} else
+		{
+			$content = readContent($page_title, $author, $last_modified, true);
+		}
+		
+		switch($readonly)
+		{
+			case true:
+				$tmpl->setCurrentBlock('EDIT_HIDDEN_WHILE_PREVIEW');
+				$tmpl->setVariable('RAW_CONTENT_HERE',  htmlspecialchars($content, ENT_COMPAT, 'UTF-8'));
+				$tmpl->parseCurrentBlock();
+				break;
+				
+			default:
+				$tmpl->touchBlock('EDIT_AREA');
+				$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
+				$tmpl->setVariable('RAW_CONTENT_HERE', htmlspecialchars($content, ENT_COMPAT, 'UTF-8'));
+				$tmpl->parseCurrentBlock();
+				editor();
+				break;
+		}
+	}
+	
+	function editor()
+	{
+		global $config;
+		global $tmpl;
+		
+		$tmpl->setCurrentBlock('USER_NOTE');
+		
+		if ($config->value('bbcodeLibAvailable'))
+		{
+			$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
+			$tmpl->parseCurrentBlock();
+			
+			include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
+			$bbcode = new bbcode_buttons();
+			
+			$buttons = $bbcode->showBBCodeButtons('staticContent');
+			$tmpl->setCurrentBlock('STYLE_BUTTONS');
+			foreach ($buttons as $button)
+			{
+				$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
+				$tmpl->parseCurrentBlock();
+			}
+			
+			// forget no longer needed variables
+			unset($button);
+			unset($buttons);
+			unset($bbcode);
+		} else
+		{
+			if ($config->value('useXhtml'))
+			{
+				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
+			} else
+			{
+				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
+			}
+			$tmpl->parseCurrentBlock();
+		}	
+	}
+	
 	function hasEditPermission()
 	{
 		global $entry_edit_permission;
@@ -78,7 +152,7 @@
 		// revert back to default if file does not exist
 		if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
 						  . str_replace(' ', '%20', htmlspecialchars($user->getStyle())) . '/'
-										. $templateToUse . '.tmpl.html')))
+						  . $templateToUse . '.tmpl.html')))
 		{
 			$templateToUse = 'static';
 		}
@@ -97,15 +171,6 @@
 			stripslashes($_POST);
 		}
 		$tmpl->setTemplate($templateToUse . '?edit');
-		$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
-		if (isset($_POST['staticContent']))
-		{
-			$tmpl->setVariable('RAW_CONTENT_HERE', $_POST['staticContent']);
-		} else
-		{
-			$tmpl->setVariable('RAW_CONTENT_HERE', readContent($page_title, $author, $last_modified, true));
-		}
-		$tmpl->parseCurrentBlock();
 	} else
 	{
 		$tmpl->setTemplate($templateToUse);
@@ -125,41 +190,6 @@
 		
 		if (isset($_GET['edit']))
 		{
-			$tmpl->setCurrentBlock('USER_NOTE');
-			
-			if ($config->value('bbcodeLibAvailable'))
-			{
-				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
-				$tmpl->parseCurrentBlock();
-				
-				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
-				$bbcode = new bbcode_buttons();
-				
-				$buttons = $bbcode->showBBCodeButtons('staticContent');
-				$tmpl->setCurrentBlock('STYLE_BUTTONS');
-				foreach ($buttons as $button)
-				{
-					$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
-					$tmpl->parseCurrentBlock();
-				}
-				
-				// forget no longer needed variables
-				unset($button);
-				unset($buttons);
-				unset($bbcode);
-			} else
-			{
-				if ($config->value('useXhtml'))
-				{
-					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
-				} else
-				{
-					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
-				}
-				$tmpl->parseCurrentBlock();
-			}
-			
-			
 			// initialise variables
 			$confirmed = 0;
 			$content = '';
@@ -169,14 +199,14 @@
 			{
 				$confirmed = intval($_POST['confirmationStep']);
 			}
-			if (isset($_POST['editPageAgain']) && ($_POST['editPageAgain'] === 1))
+			if (isset($_POST['editPageAgain']) && strlen($_POST['editPageAgain']) > 0)
 			{
 				// user looked at preview but chose to edit the message again
 				$confirmed = 0;
 			}
 			if (isset($_POST['staticContent']))
 			{
-				$content = $_POST['staticContent'];
+				$content = htmlspecialchars_decode($_POST['staticContent'], ENT_COMPAT);
 			}
 			
 			// sanity check variabless
@@ -185,25 +215,27 @@
 			{
 				// use bbcode if available
 				case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
-					$tmpl->setCurrentBlock('PREVIEW');
-					$tmpl->setVariable('PREVIEW_CONTENT', $tmpl->encodeBBCode($content));
-					$tmpl->parseCurrentBlock();
+					insertEditText(true);
+					$tmpl->addMSG($tmpl->encodeBBCode($content));
 					break;
 					
-				// else raw output
+					// else raw output
 				case (true && $confirmed === 1 && !$config->value('bbcodeLibAvailable')):
+					insertEditText(true);
 					$tmpl->addMSG($content);
 					break;
-				
-				// use this as guard to prevent selection of noperm or nokeymatch cases
+					
+					// use this as guard to prevent selection of noperm or nokeymatch cases
 				case (strlen($test) < 2):
+					insertEditText(false);
 					break;
-				
+					
 				case 'noperm':
 					$tmpl->addMSG('You need write permission to edit the content.');
 					break;
 					
 				case 'nokeymatch':
+					insertEditText(false);
 					$tmpl->addMSG('The magic key does not match, it looks like you came from somewhere else or your session expired.');
 					break;			
 			}
@@ -238,11 +270,11 @@
 					$tmpl->setVariable('EDIT_AGAIN_BUTTON_TEXT', 'Edit again');
 					$tmpl->parseCurrentBlock();
 					break;
-				
+					
 				case 2:
 					writeContent($content, $page_title);
 					$tmpl->addMSG('Changes written successfully.' . $tmpl->linebreaks("\n\n"));
-				
+					
 				default:
 					$tmpl->setCurrentBlock('FORM_BUTTON');
 					$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Preview');
@@ -337,8 +369,8 @@
 			}
 			$query .= ', ' . $db->quote($date_format) . ')';
 			
-//			$db->prepare($query);
-//			$db->execute();
+			//			$db->prepare($query);
+			//			$db->execute();
 		} else
 		{
 			// either 1 or more entries found, just assume there is only one
