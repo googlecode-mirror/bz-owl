@@ -661,7 +661,7 @@
 			$query = $db->SQL('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
 			$numRows = count($db->fetchAll($query));
 			$db->free($query);
-			echo 'rows:' . $numRows;
+			
 			$onlineUsers = false;
 			if ($numRows > 0)
 			{
