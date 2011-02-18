@@ -90,10 +90,10 @@
 	
 	if (isset($theme))
 	{
-		$tmpl->setTemplate('', $theme);
+		$tmpl->setTemplate('Config', $theme);
 	} else
 	{
-		$tmpl->setTemplate('', '');
+		$tmpl->setTemplate('Config', '');
 	}
 	
 	
