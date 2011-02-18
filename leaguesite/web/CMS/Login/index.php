@@ -299,7 +299,7 @@
 				$output_buffer2 = '';
 				ob_start();
 				$account_needs_to_be_converted = true;
-				include_once('../CMS/local_login/login_text.inc');
+				include_once(dirname(__FILE__) . '/local_login/login_text.php');
 				// write output buffer to message and clean buffer
 				$msg .= ob_get_clean() . "\n";
 				ob_end_clean();
