@@ -39,11 +39,9 @@
 		
 		function setTemplate($template, $customTheme='')
 		{
-			global $db;
-			global $site;
 			global $config;
 			global $user;
-			global $connection;
+			global $db;
 			
 			if (strcmp($customTheme, '') === 0)
 			{
@@ -60,7 +58,7 @@
 			// load the current template file
 			if (strcmp($template, '') === 0)
 			{
-				$template = $site->basename();
+				$template = $config->value('basename');
 			}
 			
 			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
@@ -97,17 +95,71 @@
 			// point to currently used theme
 			if (strcmp($customTheme, '') === 0)
 			{
-				$this->tpl->setVariable('CUR_THEME', str_replace(' ', '%20', htmlspecialchars($site->getStyle())));
+				$this->tpl->setVariable('CUR_THEME', str_replace(' ', '%20', htmlspecialchars($user->getStyle())));
 			} else
 			{
 				$this->tpl->setVariable('CUR_THEME', $customTheme);
 			}
+		}
+		
+		function __construct($template='', $customTheme='')
+		{
+			global $db;
+			global $config;
+			global $connection;
+			
+			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
+			
+			$connection = $db->createConnection();
+			
+			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
+			{
+				$this->setTemplate($template, $customTheme);
+			}
+		}
+		
+		function setCurrentBlock($block)
+		{
+			// Assign data to the inner block
+			return $this->tpl->setCurrentBlock($block);
+		}
+		
+		function setVariable($data, $cell)
+		{
+			$this->tpl->setVariable($data, $cell);
+		}
+		
+		function parseCurrentBlock()
+		{
+			$this->tpl->parseCurrentBlock();
+		}
+		
+		private function buildMenu()
+		{
+			global $config;
+			global $user;
+			global $db;
 			
 			// set the date and time
 			date_default_timezone_set($config->value('timezone'));
 			$this->tpl->setVariable('DATE', date('Y-m-d H:i:s T'));
 			
+			
+			$this->tpl->setCurrentBlock('MENU');
+			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
+			
+			$menuClass = new menu();
+			$menu = $menuClass->createMenu();
+			
+			foreach ($menu as $oneMenuEntry)
+			{
+				$this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
+				$this->parseCurrentBlock();
+			}
+			unset($oneMenuEntry);
+			
 			// count online players on match servers
+			$this->tpl->setCurrentBlock('MAIN');
 			
 			// run the update script:
 			// >/dev/null pipes output to nowhere
@@ -173,56 +225,6 @@
 				$this->tpl->setVariable('LOGOUTURL', ($config->value('baseaddress') . 'Logout/'));
 				$this->parseCurrentBlock();
 			}
-		}
-		
-		function __construct($template='', $customTheme='')
-		{
-			global $db;
-			global $config;
-			global $connection;
-			
-			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
-			
-			$connection = $db->createConnection();
-			
-			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
-			{
-				$this->setTemplate($template, $customTheme);
-			}
-		}
-		
-		function setCurrentBlock($block)
-		{
-			// Assign data to the inner block
-			return $this->tpl->setCurrentBlock($block);
-		}
-		
-		function setVariable($data, $cell)
-		{
-			$this->tpl->setVariable($data, $cell);
-		}
-		
-		function parseCurrentBlock()
-		{
-			$this->tpl->parseCurrentBlock();
-		}
-		
-		private function buildMenu()
-		{
-			global $user;
-			
-			$this->tpl->setCurrentBlock('MENU');
-			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
-			
-			$menuClass = new menu();
-			$menu = $menuClass->createMenu();
-			
-			foreach ($menu as $oneMenuEntry)
-			{
-				$this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
-				$this->parseCurrentBlock();
-			}
-			unset($oneMenuEntry);
 		}
 		
 		
