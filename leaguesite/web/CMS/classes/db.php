@@ -144,6 +144,7 @@
 		function exec($query)
 		{
 			// executes $query and returns number of result rows
+			// do not use on SELECT queries
 			return $this->pdo->exec($query);
 		}
 		

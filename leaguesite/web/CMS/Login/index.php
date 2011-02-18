@@ -658,10 +658,12 @@
 			$curDate = "'" . (date('Y-m-d H:i:s')) . "'";
 			
 			// find out if table exists
-			$rows = $db->exec('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
-			
+			$query = $db->SQL('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
+			$numRows = count($db->fetchAll($query));
+			$db->free($query);
+			echo 'rows:' . $numRows;
 			$onlineUsers = false;
-			if ($rows > 0)
+			if ($numRows > 0)
 			{
 				// no need to create table in case it does not exist
 				// any interested viewer looking at the online page will create it
@@ -707,14 +709,13 @@
 					$rows = $db->fetchAll($query);
 					$db->free($query);
 					$n = count($rows);
+					// mark who was where, to easily restore an unwanted team deletion
+					$query = $db->prepare('UPDATE `players` SET `last_teamid`=`players`.`teamid`'
+										  . ', `teamid`=? WHERE `id`=?');
 					for ($i = 0; $i < $n; $i++)
-					while($row = $db->fetchRow($query))
 					{
 						if ((int) $rows[$i]['deleted'] === 1)
 						{
-							// mark who was where, to easily restore an unwanted team deletion
-							$query = $db->prepare('UPDATE `players` SET `last_teamid`=`players`.`teamid`'
-												  . ', `teamid`=? WHERE `id`=?');
 							
 							$db->execute($query, array(0, $user_id));
 						}
