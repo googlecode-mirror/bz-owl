@@ -65,6 +65,7 @@
 	
 	function loadLoginModule()
 	{
+		global $internal_login_id;
 		global $module;
 		global $config;
 		global $site;
@@ -164,6 +165,8 @@
 	
 	function doAllTheRest()
 	{
+		global $internal_login_id;
+				
 		global $config;
 		global $site;
 		global $tmpl;
@@ -202,7 +205,7 @@
 					  . '`status` FROM `players` WHERE `name`=?'
 					  // only one player tries to login so only fetch one entry, speeds up login a lot
 					  . ' LIMIT 1');
-			if (!($db->execute($query, $_SESSION['username'])))
+			if (!$db->execute($query, $_SESSION['username']))
 			{
 				$msg = ('Could not get account data for external_playerid ' . $db->quote($_SESSION['external_id']) . '.');
 				logoutAndAbort($msg);
@@ -429,6 +432,7 @@
 								. $db->quote(htmlent($_SESSION['username'])) . '.');
 						logoutAndAbort($msg);
 					}
+					
 					$local_name_collisions = false;
 					while ($row = $db->fetchRow($query))
 					{
@@ -523,7 +527,7 @@
 										. '). Please report this to an admin.');
 								logoutAndAbort($msg);
 							}
-							$msg .= 'Congratulations, you enabled ';
+							$msg = 'Congratulations, you enabled ';
 							if (isset($module['bzbb']) && ($module['bzbb']))
 							{
 								$msg .= 'the my.bzflag.org/bb/ (global) login';
@@ -547,7 +551,7 @@
 						}
 					}
 					
-					echo $msg;
+					$tmpl->addMSG($msg);
 					if ($config->value('forceExternalLoginOnly'))
 					{
 						logoutAndAbort('');
