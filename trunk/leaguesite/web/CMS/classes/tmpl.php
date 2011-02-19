@@ -11,7 +11,13 @@
 			$this->msg[] = $messageToAdd;
 		}
 		
-		function findTemplate(&$template, &$path)
+		function existsTemplate($theme, $template)
+		{
+			return file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
+							   . $theme . '/' . $template . '.tmpl.html');
+		}
+		
+		function findTemplate(&$template, &$path='')
 		{
 			// split the path in $template into an array
 			// overwrite $template with the last part of the array
@@ -147,6 +153,8 @@
 			
 			$this->tpl->setCurrentBlock('MENU');
 			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
+			$this->addMSG('Used menu: ' . dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle()
+						  . '/menu.php' . $this->return_self_closing_tag('br'));
 			
 			$menuClass = new menu();
 			$menu = $menuClass->createMenu();

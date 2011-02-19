@@ -23,33 +23,18 @@
 	
 	if (strlen($theme) > 0)
 	{
-		$cookies = false;
-		// if script is called again (content in $theme), one can test if cookies are activated
-		foreach ($_COOKIE as $key => $value)
+		if ($tmpl->existsTemplate($theme, 'Config'))
 		{
-			if (strcasecmp($key, 'cookies') == 0)
-			{
-				// cookies are activated
-				$cookies = true;
-			}
-		}
-		if ($cookies == false)
-		{
-			// cookies are not allowed -> use SIDs with GET
-			// SIDs are used elsewhere only for permission system
-			ini_set ('session.use_trans_sid', 1);
 			$_SESSION['theme'] = $theme;
-		} else
-		{
-			ini_set ('session.use_trans_sid', 0);
 			@setcookie('theme', $theme, time()+60*60*24*30, $config->value('basepath'), $config->value('domain'), 0);
-		}
+  		}
 	}
 	
 	$output_buffer .= ob_get_contents();
 	ob_end_clean();
 	// write output buffer
 	echo $output_buffer;
+	
 	
 	// read out installed themes instead of defining a fixed list in source code
 	
@@ -61,6 +46,7 @@
 		if (!is_dir(dirname(dirname(__FILE__)) . '/styles/' . $curFile))
 		{
 			unset($themes[$i]);
+			continue;
 		}
 		
 		// filter reserved directory names
@@ -80,7 +66,7 @@
 		}
 		
 		// filter themes with no stylesheet
-		if (!file_exists(dirname(dirname(__FILE__)) . '/styles/' . $curFile . '/' . $curFile . '.css'))
+		if (isset($themes[$i]) && !file_exists(dirname(dirname(__FILE__)) . '/styles/' . $curFile . '/' . $curFile . '.css'))
 		{
 			unset($themes[$i]);
 		}

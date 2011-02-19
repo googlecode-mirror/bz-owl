@@ -20,8 +20,6 @@
 		
 		function getStyle()
 		{
-			global $site;
-			
 			if ($this->getMobile())
 			{
 				$default_style = 'White';
@@ -45,7 +43,7 @@
 				$style = $_SESSION['theme'];
 			}
 			
-			if (!(file_exists(dirname(dirname(__FILE__)) . '/styles/' . $style . '/' . $style . '.css')))
+			if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/' . $style . '/' . $style . '.css')))
 			{
 				// stylesheet in question does not exist, go back to default
 				$style = $default_style;
