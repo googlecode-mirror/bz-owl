@@ -17,7 +17,7 @@
 							   . $theme . '/' . $template . '.tmpl.html');
 		}
 		
-		function findTemplate(&$template, &$path='')
+		function findTemplate(&$template, &$path)
 		{
 			// split the path in $template into an array
 			// overwrite $template with the last part of the array
