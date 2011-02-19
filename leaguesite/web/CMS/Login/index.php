@@ -1,14 +1,12 @@
 <?php
-	require_once 'login_module_list.php';
-	$module = active_login_modules();
-	
 	// init siteinfo class if not already done
 	if (!isset($site))
 	{
 		require_once dirname(dirname(__FILE__)) . '/site.php';
 		$site = new site();
 	}
-	
+	require_once 'login_module_list.php';
+	$module = active_login_modules();
 	
 	// magic quote band-aid for POST variables
 	if ($site->magic_quotes_on())
@@ -168,7 +166,8 @@
 	function doAllTheRest()
 	{
 		global $internal_login_id;
-				
+		global $module;
+		
 		global $config;
 		global $site;
 		global $tmpl;
@@ -541,7 +540,8 @@
 							$msg = 'Congratulations, you enabled ';
 							if (isset($module['bzbb']) && ($module['bzbb']))
 							{
-								$msg .= 'the my.bzflag.org/bb/ (global) login';
+								$msg .= ('the <a href="' . $module['bzbb']
+										 . '">my.bzflag.org/bb/ (global) login</a>');
 							} else
 							{
 								$msg .= 'external logins';
