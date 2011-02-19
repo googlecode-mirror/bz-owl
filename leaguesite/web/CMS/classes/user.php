@@ -28,34 +28,60 @@
 				$default_style = '42';
 			}
 			
-			$style = $default_style;
-			foreach ($_COOKIE as $key => $value)
+			$theme = $default_style;
+			if (isset($_SESSION['theme']))
 			{
-				if (strcasecmp($key, 'theme') == 0)
+				// use theme chosen this session
+				$theme = $_SESSION['theme'];
+			} else
+			{
+				// otherwise use cookie
+				foreach ($_COOKIE as $key => $value)
 				{
-					// cookies turned on
-					$style = $value;
+					if (strcasecmp($key, 'theme') == 0)
+					{
+						// cookies turned on
+						$theme = $value;
+					}
 				}
 			}
 			
-			if (isset($_SESSION['theme']))
-			{
-				$style = $_SESSION['theme'];
-			}
-			
-			if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/' . $style . '/' . $style . '.css')))
+			if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/' . $theme . '/' . $theme . '.css')))
 			{
 				// stylesheet in question does not exist, go back to default
-				$style = $default_style;
+				$theme = $default_style;
+				
+				// save theme
+				$this->saveTheme($theme);
 			}
 			
-			if (strcasecmp($style, '') == 0)
+			if (strcasecmp($theme, '') == 0)
 			{
 				// nothing is set, go back to default
-				$style = $default_style;
+				$theme = $default_style;
 			}
 			
-			return $style;
+			if (!(isset($_SESSION['themeSaved'])) || !$_SESSION['themeSaved'])
+			{
+				$this->saveTheme($theme);
+			}
+			
+			return $theme;
+		}
+		
+		function saveTheme($theme)
+		{
+			global $config;
+			
+			// save theme for two months
+			setcookie('theme', $theme, time()+60*60*24*30*2, $config->value('basepath'), $config->value('domain'), 0);
+			
+			// save it in session based variable if setting cookie failed
+			// it could fail because user did not accept cookie for instance
+			$_SESSION['theme'] = $theme;
+			
+			// mark it saved
+			$_SESSION['themeSaved'] = true;
 		}
 		
 		

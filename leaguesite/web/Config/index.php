@@ -25,8 +25,7 @@
 	{
 		if ($tmpl->existsTemplate($theme, 'Config'))
 		{
-			$_SESSION['theme'] = $theme;
-			@setcookie('theme', $theme, time()+60*60*24*30, $config->value('basepath'), $config->value('domain'), 0);
+			$user->saveTheme($theme);
   		}
 	}
 	
