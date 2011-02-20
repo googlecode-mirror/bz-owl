@@ -735,5 +735,7 @@
 				$db->execute($query, $args);
 			}
 		}
+		
+		$tmpl->addMSG($msg);
 	}
 ?>
