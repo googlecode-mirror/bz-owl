@@ -113,10 +113,10 @@
 		{
 			if (!is_array($inputParameters))
 			{
-				$inputParameters = array ($inputParameters);
+				$inputParameters = array($inputParameters);
 			}
-			$result = $query->execute($inputParameters);
 			
+			$result = $query->execute($inputParameters);
 			return $result;
 		}
 		
@@ -151,6 +151,17 @@
 		function errorInfo(PDOStatement $queryResult)
 		{
 			return $queryResult->errorInfo();
+		}
+		
+		function lastInsertId($name=NULL)
+		{
+			if ($name === NULL)
+			{
+				return $this->pdo->lastInsertId();
+			} else
+			{
+				return $this->pdo->lastInsertId($name);
+			}
 		}
 	}
 ?>
