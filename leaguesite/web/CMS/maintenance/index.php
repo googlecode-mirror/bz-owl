@@ -1,17 +1,17 @@
 <?php
-	// set the date and time
-	date_default_timezone_set($site->used_timezone());
-	
-	// find out if maintenance is needed (compare old date in plain text file)
-	$today = date('d.m.Y');
-	$file = (dirname(__FILE__)) . '/maintenance.txt';
-	
 	// siteinfo class used all the time
 	if (!(isset($site)))
 	{
 		require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
 		$site = new siteinfo();
 	}
+	
+	// set the date and time
+	date_default_timezone_set($site->used_timezone());
+	
+	// find out if maintenance is needed (compare old date in plain text file)
+	$today = date('d.m.Y');
+	$file = (dirname(__FILE__)) . '/maintenance.txt';
 	
 	if (!(isset($connection)))
 	{
@@ -72,7 +72,7 @@
 		// first maintenance run in history
 		$query = 'INSERT INTO `misc_data` (`last_maintenance`) VALUES (' . sqlSafeStringQuotes($today) . ')';
 		// execute query
-		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
+		if (!($result = $site->execute_query('misc_data', $query, $connection)))
 		{
 			unlock_tables_maint();
 			$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
