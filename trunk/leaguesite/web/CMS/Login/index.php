@@ -396,11 +396,12 @@
 								
 								// send the welcome message
 								include dirname(dirname(__FILE__)) . '/announcements/sendPrivateMSG.php';
-								sendPrivateMSG(array($author_id), array(), 'Welcome!',
-											  'Welcome and thanks for registering at this website!' . "\n"
-											  . 'In the FAQ you can find the most important informations'
-											  . ' about organising and playing matches.' . "\n\n"
-											  . 'See you on the battlefield.');
+								sendPrivateMSG(array($_SESSION['viewerid']), array(), 0, 'Welcome!'
+											   , date('Y-m-d H:i:s')
+											   , 'Welcome and thanks for registering at this website!' . "\n"
+											   . 'In the FAQ you can find the most important informations'
+											   . ' about organising and playing matches.' . "\n\n"
+											   . 'See you on the battlefield.');
 							} else
 							{
 								$msg .= ('Unfortunately there seems to be a database problem and thus a unique id can not be retrieved for your account. '
@@ -581,7 +582,7 @@
 				$query = ('SELECT `external_playerid` FROM `players` WHERE (`name`=?)'
 						  . ' AND (`external_playerid` <> ?)'
 						  // do not update users with local login
-						  . ' AND (`external_playerid` <> ' . $db->quote('') . ')'
+						  . ' AND (`external_playerid` <> ' . "''" . ')'
 						  // skip updates for banned or disabled accounts (inappropriate callsign for instance)
 						  . ' AND (`status`=? OR `status`=?)');
 				$query = $db->prepare($query);

@@ -29,6 +29,8 @@
 			global $tmpl;
 			global $db;
 			
+			
+			$recipient = intval($recipient);
 			if ($team)
 			{
 				$query = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
@@ -36,6 +38,10 @@
 				$recipientName = $db->fetchAll($query);
 				$db->free($query);
 				
+				if (count($recipientName) < 1)
+				{
+					$recipientName['0']['name'] = 'ERROR: Could not find out team name';
+				}
 				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
 																	   . 'Teams/?profile=' . htmlent($recipient)) . '">'
 								   . $recipientName['0']['name'] . '</a>');
@@ -46,18 +52,14 @@
 				$recipientName = $db->fetchAll($query);
 				$db->free($query);
 				
+				if (count($recipientName) < 1)
+				{
+					$recipientName['0']['name'] = 'ERROR: Could not find out player name';
+				}
 				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
 																	   . 'Players/?profile=' . htmlent($recipient)) . '">'
 								   . $recipientName['0']['name'] . '</a>');
 			}
-			
-			$db->execute($query, $recipient);
-			$recipientName = $db->fetchAll($query);
-			$db->free($query);
-			
-			$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
-																   . 'Players/?profile=' . htmlent($recipient)) . '">'
-							   . $recipientName['0']['name'] . '</a>');
 			
 			$tmpl->parseCurrentBlock();
 		}
@@ -148,7 +150,7 @@
 			
 			if (count($rows) < 1)
 			{
-				$tmpl->done('This message either does not exist or you do not have permission to view the message');
+				$tmpl->done('This message either does not exist or you do not have permission to view the message.');
 			}
 			
 			// create PM view
