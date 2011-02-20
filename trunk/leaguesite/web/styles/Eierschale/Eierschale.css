@@ -1,8 +1,3 @@
-/* @override 
-	http://vps1.moooo.org/ts/styles/Eierschale
-	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Eierschale.css
-*/
-
 body
 {
 	background: #fafafa url(warm-snow.png) repeat scroll;
@@ -222,7 +217,7 @@ div.online_user
 	text-align: center;
 }
 
-div.static_page_box
+div.static_page_box, div.msgViewErrorMsg
 {
 	display: block;
 	padding: 1em;

@@ -249,7 +249,7 @@ div.online_user
 	text-align: center;
 }
 
-div.static_page_box
+div.static_page_box, div.msgViewErrorMsg
 {
 	display: block;
 	padding: 1em;
