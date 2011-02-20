@@ -22,10 +22,6 @@
 <div class="content">
 <!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
 
-<!-- BEGIN MISC --><div class="static_page_box">
-{MSG}
-</div><br /><!-- END MISC -->
-
 <div class="msg_nav">
 <span class="folder_selection">
 <!-- BEGIN INBOX_SELECTED --><a href="./?folder=inbox">inbox!</a> <!-- END INBOX_SELECTED -->
@@ -38,9 +34,9 @@
 <span class="prev_next_msg_buttons">
 <!-- BEGIN PMNAV --><!-- BEGIN PREV_MSG --><a class="button" id="prev_msg" href="./?folder=inbox&amp;view={MSGID}">Previous message</a><!-- END PREV_MSG -->
 <!-- BEGIN NEXT_MSG --><a class="button" id="next_msg" href="./?folder=inbox&amp;view={MSGID}">Next message</a><!-- END NEXT_MSG -->
-</span></div><!-- END PMNAV -->
+</span><!-- END PMNAV -->
 
-
+<!-- BEGIN MISC --><div class="msgViewErrorMsg">{MSG}</div><!-- END MISC -->
 <!-- BEGIN PMVIEW -->
 <div class="msg_area"><div class="msg_view_full">
 	<div class="msg_header_full">

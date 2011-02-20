@@ -153,8 +153,11 @@
 			
 			$this->tpl->setCurrentBlock('MENU');
 			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
-			$this->addMSG('Used menu: ' . dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle()
-						  . '/menu.php' . $this->return_self_closing_tag('br'));
+			if ($config->value('debugSQL'))
+			{
+				$this->addMSG('Used menu: ' . dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle()
+							  . '/menu.php' . $this->return_self_closing_tag('br'));
+			}
 			
 			$menuClass = new menu();
 			$menu = $menuClass->createMenu();

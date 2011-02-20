@@ -111,7 +111,6 @@
 			$rows = $db->fetchAll($query);
 			$db->free($query);
 			
-			
 			// create PM navigation
 			$tmpl->setCurrentBlock('PMNAV');
 			$query = $db->prepare('SELECT `msgid` FROM `messages_users_connection`'
@@ -147,6 +146,10 @@
 //			$tmpl->setCurrentBlock('PMNAV');
 //			$tmpl->parseCurrentBlock();
 			
+			if (count($rows) < 1)
+			{
+				$tmpl->done('This message either does not exist or you do not have permission to view the message');
+			}
 			
 			// create PM view
 			$tmpl->setCurrentBlock('PMVIEW');
