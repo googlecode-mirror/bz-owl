@@ -91,10 +91,10 @@
 				// log the error
 				if ($file !== false)
 				{
-					$this->logError($file, $query . $this->escape(mysql_error()));
+					$this->logError($file, $query . $this->quote(mysql_error()));
 				} else
 				{
-					$this->logError($query . $this->escape(mysql_error()));
+					$this->logError($query . $this->quote(mysql_error()));
 				}
 				
 				if (strlen($errorUserMSG) > 0)

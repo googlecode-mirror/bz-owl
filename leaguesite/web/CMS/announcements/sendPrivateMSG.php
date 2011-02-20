@@ -58,7 +58,7 @@
 			$db->execute($query, array($author_id, htmlent($subject), $timestamp, $message, $from_team, $recipientsSQL));
 			$db->free($query);
 			$rowId = $db->lastInsertId();
-			echo 'rowId: ' . $rowId;
+			
 			// put message in people's inbox
 			if ($ReplyToMSGID > 0)
 			{
