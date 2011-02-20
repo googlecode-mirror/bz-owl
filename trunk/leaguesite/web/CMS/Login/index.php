@@ -215,7 +215,9 @@
 				logoutAndAbort($msg);
 			}
 			
-			$rows_num_accounts = $db->rowCount($query);
+			$rows = $db->fetchAll($query);
+			$db->free($query);
+			$rows_num_accounts = count($rows);
 			$suspended_mode = '';
 			$convert_to_external_login = false;
 			if ($rows_num_accounts > 0)
@@ -224,7 +226,7 @@
 				// e.g. inappropriate username got renamed by admins
 				// and then someone else tries to join using this username, 
 				// causing a reset of the other username to be reset to the inappropriate one
-				while ($row = $db->fetchRow($query))
+				foreach ($rows as $row)
 				{
 					$_SESSION['viewerid'] = (int) $row['id'];
 					$suspended_mode = $row['status'];
@@ -233,7 +235,6 @@
 						$convert_to_external_login = $config->value('convertUsersToExternalLogin');
 					}
 				}
-				$db->free($query);
 			} elseif (isset($_SESSION['external_id']) && $_SESSION['external_id'])
 			{
 				// name is not known, check if id is already in the database
@@ -247,18 +248,16 @@
 					logoutAndAbort($msg);
 				}
 				
-				$rows_num_accounts = $db->rowCount($query);
-				if ($rows_num_accounts > 0)
+				$rows_num_accounts = 0;
+				while ($row = $db->fetchRow($query))
 				{
-					while ($row = $db->fetchRow($query))
-					{
-						$_SESSION['viewerid'] = (int) $row['id'];
-						$suspended_mode = $row['status'];
-						// reset back to default as there is nothing to do in that regard
-						$convert_to_external_login = false;
-					}
-					$db->free($query);
+					$rows_num_accounts += 1;
+					$_SESSION['viewerid'] = (int) $row['id'];
+					$suspended_mode = $row['status'];
+					// reset back to default as there is nothing to do in that regard
+					$convert_to_external_login = false;
 				}
+				$db->free($query);
 			}
 			
 			// check if it is a false positive (no password stored in database)
@@ -274,9 +273,10 @@
 					logoutAndAbort($msg);
 				}
 				
-				$rows_num_accounts = $db->rowCount($query);
+				$rows_num_accounts = 0;
 				while ($row = $db->fetchRow($query))
 				{
+					$rows_num_accounts += 1;
 					if (strcmp(($row['password']), '') === 0)
 					{
 						// yes, it was indeed a false positive
@@ -382,18 +382,6 @@
 								// user inserted without problems
 								$msg .= '<p>You have been added to the list of players at this site. Thanks for visiting our site.</p>';
 								
-								// write welcome mail!
-								
-								// lock messages_storage because of mysql_insert_id() usage
-								$query = 'LOCK TABLES `messages_storage` WRITE';
-								if (!($db->SQL($query)))
-								{
-									// query was bad, error message was already given in $db->SQL(...)
-									$msg .= 'Could not lock the messages_storage table.';
-									logoutAndAbort($msg);
-								}
-								
-								
 								// send the welcome message
 								include dirname(dirname(__FILE__)) . '/announcements/sendPrivateMSG.php';
 								sendPrivateMSG(array($_SESSION['viewerid']), array(), 0, 'Welcome!'
@@ -424,7 +412,7 @@
 					// adding player profile entry
 					$query = $db->prepare('INSERT INTO `players_profile` (`playerid`, `joined`, `location`)'
 										  . ' VALUES (?, ?, ?)');
-					if (!($db->execute($query, array($user_id, date('Y-m-d H:i:s'), 1))))
+					if (!$db->execute($query, array($_SESSION['viewerid'], date('Y-m-d H:i:s'), 1)))
 					{
 						$msg .= ('Unfortunately there seems to be a database problem and thus creating your profile page (id='
 								 . htmlent($user_id)
