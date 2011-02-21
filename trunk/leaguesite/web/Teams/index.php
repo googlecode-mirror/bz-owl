@@ -1707,7 +1707,7 @@
 			echo '		<td>' . htmlentities($row['num_matches_lost']) . '</td>' . "\n";
 			echo '		<td><a href="../Matches/?search_string=';
 			echo $team_name;
-			echo '&search_type=team+name&amp;search_result_amount=200&search=Search">';
+			echo '&amp;search_type=team+name&amp;search_result_amount=200&amp;search=Search">';
 			echo htmlentities($row['num_matches_played']) . '</td>' . "\n";;
 			echo '	</tr>' . "\n";
 			echo '	</table>' . "\n";
@@ -2458,7 +2458,7 @@
 				rankingLogo($team['score']);
 				echo '</td>' . "\n";
 				//echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
-				echo '	<td><a href="' .basepath() . 'Matches/?search_string=' . $team['name'] . '&search_type=team+name&search_result_amount=20&search=Search' . '">' . htmlent($team['num_matches_played']) . '</a></td>' . "\n";
+				echo '	<td><a href="' .basepath() . 'Matches/?search_string=' . $team['name'] . '&amp;search_type=team+name&amp;search_result_amount=20&amp;search=Search' . '">' . htmlent($team['num_matches_played']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['member_count'] . '</td>' . "\n";
 				echo '	<td><a href="'. basepath() . 'Players/?profile=' . $team['leader_playerid'] . '">' . htmlent($team['leader_name']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['activity'] . '</td>' . "\n";

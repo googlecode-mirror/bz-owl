@@ -226,7 +226,7 @@
 			
 			
 			// teams cleanup
-			if ($settings->maintain_teams_not_matching_anymore())
+			if (!$settings->maintain_teams_not_matching_anymore())
 			{
 				// in settings it was specified not to maintain inactive teams
 				echo '<p>Skipped maintaining inactive teams (by config option)!</p>';
