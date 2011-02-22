@@ -655,7 +655,7 @@
 		if ((!(isset($_SESSION['user_in_online_list'])) || !($_SESSION['user_in_online_list'])) &&  ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in'])))
 		{
 			$_SESSION['user_in_online_list'] = true;
-			$curDate = "'" . (date('Y-m-d H:i:s')) . "'";
+			$curDate = (date('Y-m-d H:i:s'));
 			
 			// find out if table exists
 			$query = $db->SQL('SHOW TABLES LIKE ' . "'" . 'online_users' . "'");
