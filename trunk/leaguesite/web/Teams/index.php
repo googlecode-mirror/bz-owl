@@ -1708,7 +1708,7 @@
 			echo '		<td><a href="../Matches/?search_string=';
 			echo $team_name;
 			echo '&amp;search_type=team+name&amp;search_result_amount=200&amp;search=Search">';
-			echo htmlentities($row['num_matches_played']) . '</td>' . "\n";;
+			echo htmlentities($row['num_matches_played']) . '</a></td>' . "\n";;
 			echo '	</tr>' . "\n";
 			echo '	</table>' . "\n";
 			$site->write_self_closing_tag('br');
@@ -1781,7 +1781,6 @@
 
 		while ($row = mysql_fetch_array($result))
 		{
-			echo '</tr>' . "\n\n";
 			echo '<tr class="teams_members_overview">' . "\n";
 			echo '<td>';
 			echo '<a href="../Players?profile=';
@@ -2038,7 +2037,7 @@
 			echo '<p><a class="button" href="./?delete=' . (urlencode($profile)) . '">delete this team</a></p>' . "\n";
 		}
 		
-		$site->dieAndEndPage();
+		$site->dieAndEndPageNoBox();
 	}
 	
 	// someone wants to look at a team profile
@@ -2565,6 +2564,5 @@
 	}
 	?>
 
-</div>
 </body>
 </html>
