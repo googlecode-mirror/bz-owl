@@ -147,9 +147,9 @@
 			global $db;
 			
 			// set the date and time
+			$this->tpl->setCurrentBlock('MAIN');
 			date_default_timezone_set($config->value('timezone'));
 			$this->tpl->setVariable('DATE', date('Y-m-d H:i:s T'));
-			
 			
 			$this->tpl->setCurrentBlock('MENU');
 			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
