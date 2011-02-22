@@ -20,13 +20,16 @@
 	echo '<head>' . "\n";
 	$site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"');
 
-	require_once (dirname(__FILE__) . '/Layout.php');
-	
 	// display favicon, if specified
 	if (!(strcmp($site->favicon_path(), '') === 0))
 	{
 		echo '	';
 		echo $site->write_self_closing_tag('link rel="icon" type="image/png" href="' . $site->favicon_path() . '"');
+	}
+		if (!isset($_GET['theme']))
+	{
+		echo '	';
+		$site->write_self_closing_tag('link href="' . baseaddress() . 'styles/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '.css"' . ' rel="stylesheet" type="text/css"');
 	}
 	
 	echo '	<title>';
@@ -40,7 +43,10 @@
 		echo 'No page title set';
 	}
 	echo '</title>' . "\n";
+	echo '</head>' . "\n";
+	echo '<body>' . "\n";
+	
+	require_once (dirname(__FILE__) . '/Layout.php');
+	
 
 ?>
-</head>
-<body>
