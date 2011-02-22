@@ -32,6 +32,19 @@
 		$site->write_self_closing_tag('link href="' . baseaddress() . 'styles/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '.css"' . ' rel="stylesheet" type="text/css"');
 	}
 	
+	if (isset($display_page_title) && (strcmp($display_page_title, 'Official match servers') === 0))
+	{
+		echo '	';
+		$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players.css" type="text/css"');
+		// perhaps exclude email string, depending on browser
+		$object = new siteinfo();
+		if ($object->mobile_version())
+		{
+			// mobile browser
+			echo '<style type="text/css">*.mehl { display: none; } table.punkte { left: 25em; }</style>';
+		}
+	}
+	
 	echo '	<title>';
 	// display the title specified in $page_title
 	// the latter is defined in the script that includes this file
