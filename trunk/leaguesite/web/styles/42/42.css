@@ -279,7 +279,7 @@ span.prev_next_msg_buttons
 	margin-left: 1em;
 }
 
-a.unread
+a.unread, span.unread_messages
 {
 	/* to be deleted after complete migration to template system*/
 	color: #dd4718;
