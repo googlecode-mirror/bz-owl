@@ -136,7 +136,7 @@ text-align:center;
 width:auto;
 }
 
-a.unread {
+a.unread, span.unread_messages {
 color:#d00;
 font-weight:700;
 }
