@@ -23,20 +23,19 @@
 			return true;
 		}
 		
-		function displayRecipient($recipient, $key, $team=false)
+		function displayRecipient($recipient, $key, array $values)
 		{
 			global $config;
 			global $tmpl;
 			global $db;
 			
-			
+			// $values: array($fromTeam, $queryTeamName, $queryPlayerName, $n)
 			$recipient = intval($recipient);
-			if ($team)
+			if ($values[0])
 			{
-				$query = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
-				$db->execute($query, $recipient);
-				$recipientName = $db->fetchAll($query);
-				$db->free($query);
+				$db->execute($values[1], $recipient);
+				$recipientName = $db->fetchAll($values[1]);
+				$db->free($values[1]);
 				
 				if (count($recipientName) < 1)
 				{
@@ -44,21 +43,22 @@
 				}
 				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
 																	   . 'Teams/?profile=' . htmlent($recipient)) . '">'
-								   . $recipientName['0']['name'] . '</a>');
+								   . $recipientName['0']['name'] . '</a>' . ($values[3] > $key?',':''));
 			} else
 			{
-				$query = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
-				$db->execute($query, $recipient);
-				$recipientName = $db->fetchAll($query);
-				$db->free($query);
+				$db->execute($values[2], $recipient);
+				$recipientName = $db->fetchAll($values[2]);
+				$db->free($values[2]);
 				
 				if (count($recipientName) < 1)
 				{
 					$recipientName['0']['name'] = 'ERROR: Could not find out player name';
 				}
+/* 				echo($key . '<br />'); */
+/* 				echo($values[3] . '<br />'); */
 				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
 																	   . 'Players/?profile=' . htmlent($recipient)) . '">'
-								   . $recipientName['0']['name'] . '</a>');
+								   . $recipientName['0']['name'] . '</a>' . ($values[3] > $key?',':''));
 			}
 			
 			$tmpl->parseCurrentBlock();
@@ -164,8 +164,11 @@
 			$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 			$recipients = explode(' ', $rows[0]['recipients']);
 			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
-			array_walk($recipients, 'self::displayRecipient', $fromTeam);
-			
+			$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
+			$queryPlayerName = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
+			$countRecipients = count($recipients) -1;
+			array_walk($recipients, 'self::displayRecipient'
+					   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
 			
 			// reply buttons
 			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
@@ -256,7 +259,6 @@
 			$db->execute($query, array($config->value('displayedSystemUsername'), $user->getID()));
 			$rows = $db->fetchAll($query);
 			$db->free($query);
-			
 			$n = count($rows);
 			// last row is only a lookup row
 			// to find out whether to display next messages button
@@ -277,6 +279,11 @@
 					$tmpl->setVariable('USER_PROFILE_LINK', ($config->value('baseaddress')
 									  . 'Players/?profile=' . $rows[$i]['author_id']));
 					$tmpl->setVariable('USER_NAME', $rows[$i]['author']);
+					
+					if (strcmp($rows[$i]['msg_status'], 'new') === 0)
+					{
+					$tmpl->setVariable('MSG_UNREAD', 'class="unread" ');
+					}
 					if (strcmp($folder, 'inbox') !== 0)
 					{
 						$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
@@ -294,7 +301,11 @@
 					$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 					$recipients = explode(' ', $rows[$i]['recipients']);
 					$fromTeam = strcmp($rows[$i]['from_team'], '0') !== 0;
-					array_walk($recipients, 'self::displayRecipient', $fromTeam);
+					$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
+					$queryPlayerName = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
+					$countRecipients = count($recipients) -1;
+					array_walk($recipients, 'self::displayRecipient'
+							   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
 					$tmpl->parseCurrentBlock();
 					
 					// back to PMLIST
