@@ -131,7 +131,7 @@ div.static_page_box, div.msgViewErrorMsg
 }
 
 /* private messages */
-span.unread_messages
+a.unread
 {
 	color: #dd4718;
 }

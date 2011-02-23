@@ -97,7 +97,7 @@ div.online_user
 }
 
 /* private messages */
-span.unread_messages
+a.unread
 {
 	color: #dd4718;
 }
