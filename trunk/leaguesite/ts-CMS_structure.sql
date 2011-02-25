@@ -2,9 +2,9 @@
 # Version 2492
 # http://code.google.com/p/sequel-pro
 #
-# Host: localhost (MySQL 5.1.50)
+# Host: localhost (MySQL 5.1.55)
 # Database: testdb
-# Generation Time: 2010-09-27 11:07:23 +0200
+# Generation Time: 2011-02-25 18:47:50 +0100
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -29,6 +29,21 @@ CREATE TABLE `bans` (
   `announcement` text,
   `raw_announcement` text,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table CMS
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `CMS`;
+
+CREATE TABLE `CMS` (
+  `id` int(11) unsigned NOT NULL DEFAULT '0',
+  `requestPath` varchar(1000) NOT NULL DEFAULT '/',
+  `addon` varchar(256) NOT NULL DEFAULT 'static',
+  PRIMARY KEY (`id`),
+  KEY `requestPath` (`requestPath`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
