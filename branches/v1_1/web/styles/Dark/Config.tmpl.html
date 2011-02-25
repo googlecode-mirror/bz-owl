@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+<!-- BEGIN MAIN -->	<link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
+	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
+<title>Config</title>
+</head>
+<body>
+<div class="logo"></div>
+
+<!-- BEGIN MENU -->{MENU_STRUCTURE}<!-- END MENU -->
+
+<div class="userbuttons">
+	<span class="date">{DATE}</span>
+	<span class="Servers">Match servers: <a href="{BASEURL}Servertracker/">{ONLINE_PLAYERS}</a></span>
+	<span class="onlineUsers">Website: <a href="{BASEURL}Online/">{ONLINE_USERS}</a></span>
+	<!-- BEGIN LOGOUT --><span class="logout"><a href="{LOGOUTURL}">Logout</a></span><!-- END LOGOUT -->
+</div>
+
+<div class="content">
+<div class="static_page_box">
+<!-- BEGIN MISC -->{MSG}<!-- END MISC -->
+<p class="first_p">This is the user configuration section.</p>
+<p>Special thanks: Upsetter and zaphod for a lot of input, zaphod for the logos and icons; brad for hosting and svn repository and orbit for the favicon.</p>
+<form enctype="application/x-www-form-urlencoded" method="get" action="{BASEURL}Config/"><!-- END MAIN -->
+<p>Theme:
+	<select name="theme">
+	<!-- BEGIN cell --><option value="{THEME}"{SELECTED}>{THEME}</option>
+	<!-- END cell --></select>
+<input type="submit" value="Submit changes" />
+</p>
+</form>
+
+</div>
+<!-- BEGIN repository --><p>SVN revision: {REPOSITORYVERSION}</p><!-- END repository -->
+</div>
+</body>
+</html>

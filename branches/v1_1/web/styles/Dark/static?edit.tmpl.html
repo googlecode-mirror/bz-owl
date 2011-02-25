@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+	<!-- BEGIN MAIN --><link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
+	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
+<title><!-- BEGIN TITLE_AREA -->Edit {TITLE}<!-- END TITLE_AREA --></title>
+</head>
+<body>
+<div class="logo"></div>
+
+<!-- BEGIN MENU -->{MENU_STRUCTURE}<!-- END MENU -->
+
+<div class="userbuttons">
+	<span class="date">{DATE}</span>
+	<span class="Servers">Match servers: <a href="{BASEURL}Servertracker/">{ONLINE_PLAYERS}</a></span>
+	<span class="onlineUsers">Website: <a href="{BASEURL}Online/">{ONLINE_USERS}</a></span>
+	<!-- BEGIN LOGOUT --><span class="logout"><a href="{LOGOUTURL}">Logout</a></span><!-- END LOGOUT -->
+</div><!-- END MAIN -->
+
+<div class="content">
+
+<div class="static_page_box">
+
+<!-- BEGIN MISC --><div>{MSG}</div><!-- END MISC -->
+<!-- BEGIN KEY --><form action="./?edit" enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8">
+<div><input type="hidden" name="key_name" value="{KEY_NAME}" /></div>
+<div><input type="hidden" name="{KEY_NAME}" value="{KEY_VALUE}" /></div><!-- END KEY -->
+
+<div><!-- BEGIN USER_NOTE -->{EDIT_MODE_NOTE}<!-- END USER_NOTE --></div>
+<div>
+<!-- BEGIN STYLE_BUTTONS -->{BUTTONS_TO_FORMAT}<!-- END STYLE_BUTTONS -->
+</div>
+
+<!-- BEGIN EDIT_AREA --><div><textarea cols="75" rows="20" name="staticContent"><!-- BEGIN USER_ENTERED_CONTENT -->{RAW_CONTENT_HERE}<!-- END USER_ENTERED_CONTENT --></textarea></div><!-- END EDIT_AREA -->
+<!-- BEGIN EDIT_HIDDEN_WHILE_PREVIEW --><div><input type="hidden" name="staticContent" value="{RAW_CONTENT_HERE}" /></div><!-- END EDIT_HIDDEN_WHILE_PREVIEW -->
+<!-- BEGIN PREVIEW_VALUE --><div><input type="hidden" name="confirmationStep" value="{PREVIEW_VALUE_HERE}" /></div><!-- END PREVIEW_VALUE -->
+<p><!-- BEGIN FORM_BUTTON --><input type="submit" name="submit" value="{SUBMIT_BUTTON_TEXT}" /><!-- END FORM_BUTTON -->
+<!-- BEGIN EDIT_AGAIN --><input type="submit" name="editPageAgain" value="{EDIT_AGAIN_BUTTON_TEXT}" /><!-- END EDIT_AGAIN --></p>
+</form>
+</div>
+
+</div>
+</body>
+</html>
