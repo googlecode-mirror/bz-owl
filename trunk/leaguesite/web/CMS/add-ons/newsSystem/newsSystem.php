@@ -1,7 +1,6 @@
 <?php
-	class staticPageEditor
+	class News
 	{
-		
 		function __construct($title, $path)
 		{
 			global $site;
@@ -15,13 +14,13 @@
 			}
 			
 			// FIXME: fallback to default permission name until add-on system is completly implemented
-			$entry_edit_permission = 'allow_edit_static_pages';
+			$entry_edit_permission = 'allow_edit_news';
 			
 			$tmpl->setTitle($title);
 			
 			// find out which template should be used
 			// fallback template is static
-			$templateToUse = 'static';
+			$templateToUse = 'News';
 			
 			// use suggested name in $page_title
 			if (isset($path))
@@ -40,7 +39,7 @@
 								  . str_replace(' ', '%20', htmlspecialchars($user->getStyle())) . '/'
 								  . $templateToUse . '.tmpl.html')))
 				{
-					$templateToUse = 'static';
+					$templateToUse = 'News';
 				}
 			}
 			
@@ -60,7 +59,8 @@
 			} else
 			{
 				$tmpl->setTemplate($templateToUse);
-				$tmpl->addMSG($this->readContent($path, $author, $last_modified, false));
+				$this->readContent($path, $author, $last_modified, false);
+/* 				$tmpl->addMSG($this->readContent($path, $author, $last_modified, false)); */
 			}
 			
 			if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
@@ -317,34 +317,53 @@
 		function readContent($path, &$author, &$last_modified, $raw=false)
 		{
 			global $site;
+			global $tmpl;
 			global $db;
-			global $config;
 			
 			// initialise return variable so any returned value will be always in a defined state
 			$content = '';
+			$offset = 0;
 			if (!$raw)
 			{
 				$content = 'No content available yet.';
+				$query = $db->SQL('SELECT `title`,`timestamp`,`author`,`msg`'
+								  . ' FROM `news` ORDER BY `timestamp` DESC'
+								  . ' LIMIT ' . intval($offset) .', 21');
+			} else
+			{
+				$query = $db->SQL('SELECT `title`,`timestamp`,`author`,`raw_msg`'
+								  . ' FROM `news` ORDER BY `timestamp` DESC'
+								  . ' LIMIT ' . intval($offset) .', 21');
 			}
-			
-			$query = $db->prepare('SELECT * FROM `static_pages` WHERE `page_name`=? LIMIT 1');
-			$result = $db->execute($query, $path);
+			$db->execute($query, $offset);
+			$rows = $db->fetchAll($query);
+			$db->free($query);
 			
 			// process query result array
-			while ($row = $db->fetchRow($query))
+			$n = count($rows);
+			if ($n > 0)
 			{
-				$author = $row['author'];
-				$last_modified = $row['last_modified'];
-				if ($raw && $config->value('bbcodeLibAvailable'))
+				$tmpl->setCurrentBlock('NEWSBOX');
+				
+				for($i = 1; $i < $n; $i++)
 				{
-					$content = $row['raw_content'];
+					$tmpl->setVariable('TITLE', (strcmp($rows[$i]['title'], '') === 0) ? 'News' : $rows[$i]['title']);
+					$tmpl->setVariable('AUTHOR', $rows[$i]['author']);
+					$tmpl->setVariable('TIME', $rows[$i]['timestamp']);
+					
+					$tmpl->setVariable('CONTENT', $rows[$i]['msg']);
+				$author = $rows[$i]['author'];
+				if ($raw)
+				{
+					$content = $rows[$i]['raw_msg'];
 				} else
-				{
-					$content = $row['content'];
+					{
+					$content = $rows[$i]['msg'];
+					}
+					
+					$tmpl->parseCurrentBlock();
 				}
 			}
-			
-			return $content;
 		}
 		
 		function writeContent(&$content, $page_title)
