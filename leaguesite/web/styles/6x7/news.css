@@ -39,6 +39,11 @@ div.articleContent
 	margin-bottom: 1em;
 }
 
+a.button + div.article
+{
+	margin-top: 1em;
+}
+
 div.article + *
 {
 	margin-top: 1.5em;
