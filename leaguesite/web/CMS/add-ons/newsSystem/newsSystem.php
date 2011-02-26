@@ -1,5 +1,5 @@
 <?php
-	class News
+	class newsSystem
 	{
 		function __construct($title, $path)
 		{
