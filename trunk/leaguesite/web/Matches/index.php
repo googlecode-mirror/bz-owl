@@ -436,7 +436,7 @@
 		
 		if ($view_range !== (int) 0)
 		{
-			echo '	<a href="./?i=';
+			echo '	<a class="button" href="./?i=';
 			
 			echo ((int) $view_range)-$num_results;
 			if (isset($_GET['search']))
@@ -461,7 +461,7 @@
 		if ($show_next_matches_button)
 		{
 			
-			echo '	<a href="./?i=';
+			echo '	<a class="button" href="./?i=';
 			
 			echo ((int) $view_range)+$num_results;
 			if (isset($_GET['search']))

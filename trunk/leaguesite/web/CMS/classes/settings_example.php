@@ -33,7 +33,9 @@
 					 'bbcodeClass' => 'wrapper',
 					 'bbcodeSetsLinebreaks' => true,
 					 'bbcodeCommand' => 'Parse',
-					 'timezone' => 'CET',
+					 // specify default themes
+					 'defaultMobileTheme' => 'White',
+					 'defaultTheme' => '6x7',
 					 'test' => true
 					 );
 	}

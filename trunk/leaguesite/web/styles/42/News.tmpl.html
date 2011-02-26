@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+	<!-- BEGIN MAIN --><link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
+	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
+<title>Mail Overview</title>
+</head>
+<body>
+<div class="logo"></div>
+
+<!-- BEGIN MENU -->{MENU_STRUCTURE}<!-- END MENU -->
+
+<div class="userbuttons">
+	<span class="date">{DATE}</span>
+	<span class="Servers">Match servers: <a href="{BASEURL}Servertracker/">{ONLINE_PLAYERS}</a></span>
+	<span class="onlineUsers">Website: <a href="{BASEURL}Online/">{ONLINE_USERS}</a></span>
+	<!-- BEGIN LOGOUT --><span class="logout"><a href="{LOGOUTURL}">Logout</a></span><!-- END LOGOUT -->
+</div><!-- END MAIN -->
+
+<div class="content">
+<!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
+
+<!-- BEGIN NEWSBOX -->
+<div class="article">
+	<div class="articleHeader">{TITLE} by {AUTHOR} at {TIME}</div>
+	<div class="articleContent">{CONTENT}</div>
+</div>
+<!-- END NEWSBOX -->
+<!-- BEGIN MISC --><div class="static_page_box">
+{MSG}
+</div><br />
+<!-- END MISC -->
+
+<!-- BEGIN PM_NAV_BUTTONS --><p>
+<!-- BEGIN PREV_BUTTON -->	<a class="button" href="./?folder={MSG_FOLDER}&amp;i={OFFSET_PREV}">Previous messages</a><!-- END PREV_BUTTON --><!-- BEGIN NEXT_BUTTON -->
+	<a class="button" href="./?folder={MSG_FOLDER}&amp;i={OFFSET_NEXT}">Next messages</a><!-- END NEXT_BUTTON -->
+</p><!-- END PM_NAV_BUTTONS -->
+
+</div>
+</body>
+</html>
