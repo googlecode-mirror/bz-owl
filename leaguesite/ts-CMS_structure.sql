@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.55)
 # Database: testdb
-# Generation Time: 2011-02-25 18:47:50 +0100
+# Generation Time: 2011-02-26 14:06:38 +0100
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -41,6 +41,7 @@ DROP TABLE IF EXISTS `CMS`;
 CREATE TABLE `CMS` (
   `id` int(11) unsigned NOT NULL DEFAULT '0',
   `requestPath` varchar(1000) NOT NULL DEFAULT '/',
+  `title` varchar(256) NOT NULL DEFAULT 'Untitled',
   `addon` varchar(256) NOT NULL DEFAULT 'static',
   PRIMARY KEY (`id`),
   KEY `requestPath` (`requestPath`(255))
