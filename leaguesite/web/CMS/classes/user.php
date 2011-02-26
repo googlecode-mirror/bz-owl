@@ -20,12 +20,14 @@
 		
 		function getStyle()
 		{
+			global $config;
+			
 			if ($this->getMobile())
 			{
-				$default_style = 'White';
+				$default_style = $config->value('defaultMobileTheme');
 			} else
 			{
-				$default_style = '42';
+				$default_style = $config->value('defaultTheme');
 			}
 			
 			$theme = $default_style;

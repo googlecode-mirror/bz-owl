@@ -42,7 +42,7 @@
 				echo($file);
 		if (file_exists($file))
 		{
-		echo('load');
+		echo(' loaded');
 			// init the addon
 			include($file);
 			$addon = new $addon($title, $path);

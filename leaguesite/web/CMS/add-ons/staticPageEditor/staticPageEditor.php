@@ -1,7 +1,6 @@
 <?php
 	class staticPageEditor
 	{
-		
 		function __construct($title, $path)
 		{
 			global $site;
