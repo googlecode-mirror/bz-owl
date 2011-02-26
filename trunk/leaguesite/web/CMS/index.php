@@ -11,44 +11,57 @@
 		return false;
 	}
 	
-	function addonToUse($path)
+	function addonToUse($path, &$title)
 	{
 		global $db;
 		
-		$query = $db->prepare('SELECT `addon` FROM `CMS` WHERE `requestPath`=? LIMIT 1');
-		$db->execute($query, $path)
+		$query = $db->prepare('SELECT `addon`, `title` FROM `CMS` WHERE `requestPath`=? LIMIT 1');
+		$db->execute($query, $path);
 		
-		$addon = $db->fetchRow($query);
+		$row = $db->fetchRow($query);
 		$db->free($query);
 		
-		return $addon;
+		if (count($row) > 0)
+		{
+			$addon = $row['addon'];
+			$title = $row['title'];
+			
+			return $addon;
+		}
+		
+		return false;
 	}
 	
-	function loadAddon($addon)
+	function loadAddon($addon, $title)
 	{
 		global $tmpl;
 		
-		$file = dirname(__FILE) . '/CMS/add-ons/' . $addon;
+		$file = dirname(__FILE__) . '/CMS/add-ons/' . $addon;
 		if (file_exists($file))
 		{
+			// init the addon
 			include($file);
+			$addon = new addon($title);
 		} else
 		{
 			// the path could not be found in database
 			header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-			$tmpl = setTemplate('NoPerm');
+			$tmpl->setTemplate('NoPerm');
 			$tmpl->done('This page does not exist.');
 		}
 	}
 	
-	$path = $_GET['path'];
-	if (!pageAddon($path))
+	// if path specified use it, otherwise default to root
+	$path = (isset($_GET['path']))?$_GET['path']:'/';
+	if (!pageAddonFixed($path))
 	{
 		// init common classes
 		require('site.php');
 		$site = new site();
 		
+		$title = 'Untitled';
+		
 		// load the add-on
-		loadAddon(addonToUse($path));
+		loadAddon(addonToUse($path, $title), $title);
 	}
 ?>
