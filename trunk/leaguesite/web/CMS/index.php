@@ -32,16 +32,20 @@
 		return false;
 	}
 	
-	function loadAddon($addon, $title)
+	function loadAddon($addon, $title, $path)
 	{
+		global $site;
 		global $tmpl;
 		
-		$file = dirname(__FILE__) . '/CMS/add-ons/' . $addon;
+		$file = dirname(__FILE__) . '/add-ons/' . $addon
+				. '/' . $addon . '.php';
+				echo($file);
 		if (file_exists($file))
 		{
+		echo('load');
 			// init the addon
 			include($file);
-			$addon = new addon($title);
+			$addon = new $addon($title, $path);
 		} else
 		{
 			// the path could not be found in database
@@ -62,6 +66,6 @@
 		$title = 'Untitled';
 		
 		// load the add-on
-		loadAddon(addonToUse($path, $title), $title);
+		loadAddon(addonToUse($path, $title), $title, $path);
 	}
 ?>
