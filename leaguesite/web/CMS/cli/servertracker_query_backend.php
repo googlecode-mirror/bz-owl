@@ -124,16 +124,13 @@
 			$data = bzfquery($row['serveraddress']);
 			
 			// build the query with the result
-			if (isset($data['numPlayers']))
-			{
-				$query = ('UPDATE `servertracker` SET'
-						  . ' `cur_players_total`=' . sqlSafeStringQuotes($data['numPlayers'])
-						  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id'])
-						  . ' LIMIT 1');
-				
-				// execute the update query
-				$site->execute_query('servertracker', $query, $connection);
-			}
+			$query = ('UPDATE `servertracker` SET'
+					  . ' `cur_players_total`=' . sqlSafeStringQuotes($data['numPlayers'])
+					  . ' WHERE `id`=' . sqlSafeStringQuotes($row['id'])
+					  . ' LIMIT 1');
+			
+			// execute the update query
+			@$site->execute_query('servertracker', $query, $connection);
 		}
 		mysql_free_result($result);
 		

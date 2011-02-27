@@ -24,6 +24,9 @@
 	require_once (dirname(dirname(__FILE__)) . '/index.inc');
 	
 	
+	// next line also sets $connection = $site->connect_to_db();
+	require (dirname(dirname(__FILE__)) . '/navi.inc');
+	
 	// check if user did login
 	$logged_in = false;
 	if (isset($_SESSION['user_logged_in']))

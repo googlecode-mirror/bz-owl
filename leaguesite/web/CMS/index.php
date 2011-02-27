@@ -1,71 +1,81 @@
 <?php
-	// this file is meant to be moved to web/index.php
-	// once the new content system is working
-	function pageAddonFixed($path)
+	// do not attach SID to URL as this can cause security problems
+	// especially when a user shares an URL that includes a SID
+	// use cookies as workaround
+	ini_set ('session.use_trans_sid', 0);
+	ini_set ('session.name', 'SID');
+	ini_set('session.gc_maxlifetime', '7200');
+	@session_start();
+	
+	require_once 'login_module_list.php';
+	$module = active_login_modules();
+	$output = '';
+	
+	// load description presented to user
+	$page_title = 'ts-CMS';
+	require_once 'index.inc';
+	
+	$auth_performed = false;
+	
+	ob_start();
+
+	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
 	{
-		if (strcmp($path, 'Login/') === 0)
+		// load modules to check input and buffer output
+		// the buffer is neccessary because the modules might need to set cookies for instance
+		if (isset($module['bzbb']) && ($module['bzbb']))
 		{
-			return true;
+			include_once 'bzbb_login/index.php';
 		}
 		
-		return false;
-	}
-	
-	function addonToUse($path, &$title)
-	{
-		global $db;
-		
-		$query = $db->prepare('SELECT `addon`, `title` FROM `CMS` WHERE `requestPath`=? LIMIT 1');
-		$db->execute($query, $path);
-		
-		$row = $db->fetchRow($query);
-		$db->free($query);
-		
-		if (count($row) > 0)
+		if (isset($module['local']) && ($module['local']))
 		{
-			$addon = $row['addon'];
-			$title = $row['title'];
-			
-			return $addon;
+			ob_start();
+			include_once 'local_login/index.php';
 		}
 		
-		return false;
-	}
-	
-	function loadAddon($addon, $title, $path)
-	{
-		global $site;
-		global $tmpl;
-		
-		$file = dirname(__FILE__) . '/add-ons/' . $addon
-				. '/' . $addon . '.php';
-				echo($file);
-		if (file_exists($file))
+		if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 		{
-		echo(' loaded');
-			// init the addon
-			include($file);
-			$addon = new $addon($title, $path);
-		} else
-		{
-			// the path could not be found in database
-			header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-			$tmpl->setTemplate('NoPerm');
-			$tmpl->done('This page does not exist.');
+			$auth_performed = true;
 		}
 	}
 	
-	// if path specified use it, otherwise default to root
-	$path = (isset($_GET['path']))?$_GET['path']:'/';
-	if (!pageAddonFixed($path))
+	if (!$auth_performed && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])
 	{
-		// init common classes
-		require('site.php');
-		$site = new site();
+		require_once '../CMS/navi.inc';
+		echo '<div class="static_page_box">' . "\n";
+		$output_buffer .= ob_get_contents();
+		ob_end_clean();
+		// write output buffer
+		echo $output_buffer;
+		echo '<p class="first_p">Login was already successful.</p>' . "\n";
+		$site->dieAndEndPage();
+	}
+	
+	if (!(isset($_SESSION['user_logged_in'])) || !($_SESSION['user_logged_in']))
+	{
+		// user explicitly does not want an external login and confirmed it already
+		if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']))
+		{
+			if (isset($module['bzbb']) && ($module['bzbb']))
+			{
+				include_once 'bzbb_login/login_text.inc';
+			}
+		}
 		
-		$title = 'Untitled';
+		if (!( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) ))
+		{
+			if (!(isset($_POST['local_login_wanted']) && $_POST['local_login_wanted']) && isset($module['local']) && ($module['local']))
+			{
+				echo '<strong>or</strong>';
+				$site->write_self_closing_tag('br');
+				$site->write_self_closing_tag('br');
+			}
+		}
 		
-		// load the add-on
-		loadAddon(addonToUse($path, $title), $title, $path);
+		if (isset($module['local']) && ($module['local']))
+		{
+			include_once 'local_login/login_text.inc';
+		}
 	}
 ?>

@@ -8,9 +8,40 @@
 	require_once '../CMS/siteinfo.php';
 	$site = new siteinfo();
 	
-	$display_page_title = 'Official match servers';
-	require '../CMS/index.inc';
+	if ($site->use_xtml())
+	{
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' . "\n";
+		echo '     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+	} else
+	{
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"' . "\n";
+		echo '        "http://www.w3.org/TR/html4/strict.dtd">';
+	}
+	echo "\n" . '<html';
+	if ($site->use_xtml())
+	{
+		echo ' xmlns="http://www.w3.org/1999/xhtml"';
+	}
+	echo '>' . "\n";
+	echo '<head>' . "\n";
+	echo '	' . ($site->write_self_closing_tag('meta content="text/html; charset=utf-8" http-equiv="content-type"'));
 	
+	require '../stylesheet.inc';
+	
+	$site->write_self_closing_tag('link rel="stylesheet" media="all" href="players.css" type="text/css"');
+	// perhaps exclude email string, depending on browser
+	$object = new siteinfo();
+	if ($object->mobile_version())
+	{
+		// mobile browser
+		echo '<style type="text/css">*.mehl { display: none; } table.punkte { left: 25em; }</style>';
+	}
+	echo '  <title>Official match servers</title>' . "\n";
+	echo '</head>' . "\n";
+	echo '<body>' . "\n";
+	
+	require '../CMS/navi.inc';
+    
 	echo '<div class="static_page_box">' . "\n";
 	if (!($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker'])))
 	{
@@ -21,7 +52,7 @@
 	
 	require 'list.php';
 	
-	$connection = $site->loudless_pconnect_to_db();
+	$connection = $object->loudless_pconnect_to_db();
 	
 	if (isset($_GET['server']))
 	{

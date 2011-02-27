@@ -8,6 +8,7 @@
 	
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
+	require '../CMS/navi.inc';
 	
 	if (!isset($site))
 	{

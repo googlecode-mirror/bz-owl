@@ -8,6 +8,7 @@
 	
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
+	require realpath('../CMS/navi.inc');
 	
 	function show_overview_and_profile_button()
 	{
@@ -319,7 +320,7 @@
 			$query = 'INSERT INTO `messages_storage` (`author_id`, `subject`, `timestamp`, `message`, `from_team`, `recipients`) VALUES ';
 			$query .= '(' . sqlSafeStringQuotes ('0');
 			$query .= ', ' . sqlSafeStringQuotes(('Invitation to team ' . $team_name)) . ', ' . sqlSafeStringQuotes(date('Y-m-d H:i:s'));
-			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . htmlent_decode($team_name) . '!' . "\n\n" . 
+			$query .= ', ' . sqlSafeStringQuotes(('Congratulations, you were invited by ' . $player_name . ' to the team ' . $team_name . '!' . "\n\n" . 
 			"[URL=\"".basepath()."Teams/?join=$invited_to_team\"]Click here to accept the invitation.[/URL]\n\nYou must leave your current team before accepting an invitation to a new team.\n\nThe invitation will expire in 7 days."));
 			$query .= ', ' . sqlSafeStringQuotes('0') . ', ' . sqlSafeStringQuotes($profile) . ')';
 			if (!($result = @$site->execute_query('messages_storage', $query, $connection)))
@@ -749,7 +750,7 @@
 			}
 			echo '		<div class="user_profile_location_timezone_row"><span class="user_profile_location_timezone_description">timezone: </span> <span class="user_profile_location_timezone">' . htmlent('UTC ' . $time_format) . '</span></div>' . "\n";
 			unset($time_format);
-			require_once dirname(dirname(__FILE__)) . '/CMS/Login/login_module_list.php';
+			require_once dirname(dirname(__FILE__)) . '/CMS/login_module_list.php';
 			$module = active_login_modules();
 			if (isset($module['bzbb']) && ($module['bzbb']) && (!(strcmp($row['external_playerid'], '') === 0)))
 			{

@@ -1,17 +1,17 @@
 <?php
-	// siteinfo class used all the time
-	if (!(isset($site)))
-	{
-		require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
-		$site = new siteinfo();
-	}
-	
 	// set the date and time
 	date_default_timezone_set($site->used_timezone());
 	
 	// find out if maintenance is needed (compare old date in plain text file)
 	$today = date('d.m.Y');
 	$file = (dirname(__FILE__)) . '/maintenance.txt';
+	
+	// siteinfo class used all the time
+	if (!(isset($site)))
+	{
+		require_once ((dirname(dirname(__FILE__)) . '/siteinfo.php'));
+		$site = new siteinfo();
+	}
 	
 	if (!(isset($connection)))
 	{
@@ -72,7 +72,7 @@
 		// first maintenance run in history
 		$query = 'INSERT INTO `misc_data` (`last_maintenance`) VALUES (' . sqlSafeStringQuotes($today) . ')';
 		// execute query
-		if (!($result = $site->execute_query('misc_data', $query, $connection)))
+		if (!($result = @$site->execute_query('teams_overview', $query, $connection)))
 		{
 			unlock_tables_maint();
 			$site->dieAndEndPage('MAINTENANCE ERROR: Can not get last maintenance data from database.');
@@ -96,9 +96,6 @@
 			update_activity($teams);
 		}
 		
-		// force update activity stats
-		update_activity();
-		
 		// nothing else to do
 		// stop silently
 		unlock_tables_maint();
@@ -109,6 +106,7 @@
 	$maint = new maintenance();
 	$maint->do_maintenance($site, $connection);
 	update_activity();
+	
 	
 	function update_activity($teamid=false)
 	{
@@ -226,7 +224,7 @@
 			
 			
 			// teams cleanup
-			if (!$settings->maintain_teams_not_matching_anymore())
+			if ($settings->maintain_teams_not_matching_anymore())
 			{
 				// in settings it was specified not to maintain inactive teams
 				echo '<p>Skipped maintaining inactive teams (by config option)!</p>';
@@ -324,16 +322,16 @@
 				if (!$cur_team_active && $curTeamNew)
 				{
 					// delete (for real) the new team
-					$query = 'DELETE FROM `teams` WHERE `id`=' . "'" . ($curTeam) . "'";
+					$query = 'DELETE FROM `teams` WHERE `id`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams', $query, $connection);
-					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . "'" . ($curTeam) . "'";
+					$query = 'DELETE FROM `teams_overview` WHERE `teamid`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams_overview', $query, $connection);
-					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . "'" . ($curTeam) . "'";
+					$query = 'DELETE FROM `teams_permissions` WHERE `teamid`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams_permissions', $query, $connection);
-					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . "'" . ($curTeam) . "'";
+					$query = 'DELETE FROM `teams_profile` WHERE `teamid`=' . "'" . ($teamid) . "'";
 					// execute query, ignore result
 					@$site->execute_query('teams_profile', $query, $connection);						
 				}

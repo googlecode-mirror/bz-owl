@@ -131,6 +131,7 @@
 		}
 	}
 	
+	require realpath('../CMS/navi.inc');
 	
 	$site = new siteinfo();
 	
@@ -1707,8 +1708,8 @@
 			echo '		<td>' . htmlentities($row['num_matches_lost']) . '</td>' . "\n";
 			echo '		<td><a href="../Matches/?search_string=';
 			echo $team_name;
-			echo '&amp;search_type=team+name&amp;search_result_amount=200&amp;search=Search">';
-			echo htmlentities($row['num_matches_played']) . '</a></td>' . "\n";;
+			echo '&search_type=team+name&amp;search_result_amount=200&search=Search">';
+			echo htmlentities($row['num_matches_played']) . '</td>' . "\n";;
 			echo '	</tr>' . "\n";
 			echo '	</table>' . "\n";
 			$site->write_self_closing_tag('br');
@@ -1781,6 +1782,7 @@
 
 		while ($row = mysql_fetch_array($result))
 		{
+			echo '</tr>' . "\n\n";
 			echo '<tr class="teams_members_overview">' . "\n";
 			echo '<td>';
 			echo '<a href="../Players?profile=';
@@ -2037,7 +2039,7 @@
 			echo '<p><a class="button" href="./?delete=' . (urlencode($profile)) . '">delete this team</a></p>' . "\n";
 		}
 		
-		$site->dieAndEndPageNoBox();
+		$site->dieAndEndPage();
 	}
 	
 	// someone wants to look at a team profile
@@ -2457,7 +2459,7 @@
 				rankingLogo($team['score']);
 				echo '</td>' . "\n";
 				//echo '	<td>' . $team['num_matches_played'] . '</td>' . "\n";
-				echo '	<td><a href="' .basepath() . 'Matches/?search_string=' . $team['name'] . '&amp;search_type=team+name&amp;search_result_amount=20&amp;search=Search' . '">' . htmlent($team['num_matches_played']) . '</a></td>' . "\n";
+				echo '	<td><a href="' .basepath() . 'Matches/?search_string=' . $team['name'] . '&search_type=team+name&search_result_amount=20&search=Search' . '">' . htmlent($team['num_matches_played']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['member_count'] . '</td>' . "\n";
 				echo '	<td><a href="'. basepath() . 'Players/?profile=' . $team['leader_playerid'] . '">' . htmlent($team['leader_name']) . '</a></td>' . "\n";
 				echo '	<td>' . $team['activity'] . '</td>' . "\n";
@@ -2564,5 +2566,6 @@
 	}
 	?>
 
+</div>
 </body>
 </html>

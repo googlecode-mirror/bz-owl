@@ -3,7 +3,7 @@
 	// do not use dots and spaces as these are converted to underscores
 	// this seems to be a legacy of register_globals = on
 	// see also: http://us2.php.net/variables.external
-	$page_title = '/';
+	$page_title = '_/';
 	$display_page_title = 'Home';
 	
 	$randomkey_name = 'randomkey_static_pages_' . $page_title;

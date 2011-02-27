@@ -4,26 +4,12 @@
 	{
 		die('WTF! Tell the hoster to set up a sane environment This message was presented to you by siteinfo configurator.');
 	}
-	function magic_quotes_on()
-	{
-		if (function_exists('get_magic_quotes_gpc') && (get_magic_quotes_gpc() === 1))
-		{
-			return true;
-		}
-		
-		return false;
-	}
+	
 	// we don't want magic quotes, do we?
-	if (magic_quotes_on())
+	if (get_magic_quotes_gpc() === 1)
 	{
 		echo 'PHP magic quotes are supposed to be OFF for this site. Disable them please, they are gone in PHP 6 anyway.';
 		die (' Please also read <a href="http://www.php.net/manual/en/info.configuration.php#ini.magic-quotes-gpc">the manual</a>.');
-	}
-	
-	// find stylesheet even if magic quotes are on.
-	if (magic_quotes_on())
-	{
-		stripslashes($_COOKIE);
 	}
 	
 	function sqlSafeString($param)
@@ -78,7 +64,7 @@
 	{
 		return html_entity_decode($string, ENT_COMPAT, 'UTF-8');
 	}
-	
+		
 	// set up a class for less frequently used functions
 	class siteinfo
 	{
@@ -154,76 +140,42 @@
 			}
 		}
 		
-		function execute_silent_query($table, $query, $connection, $file='', $errorUserMSG='')
+		function execute_silent_query($table, $query, $connection)
 		{
 			$result = mysql_query($query, $connection);
-			
 			if (!$result)
 			{
-				// print out the raw error in debug mode
+				echo('<p>Query is probably not valid SQL. ');
+				echo 'Updating: An error occurred while executing the query (' . htmlent($query) . ') , ';
+				echo htmlentities($table) . ' may be now completly broken.</p>' . "\n";
+				// print out the error in debug mode
 				if ($this->debug_sql())
 				{
-					echo('<p>Query ' . htmlent($query) . ' is probably not valid SQL. ');
-					echo 'Updating: An error occurred while executing the query, ' . htmlentities($table);
-					echo ' may be now completly broken.</p>' . "\n";
 					echo mysql_error();
 				}
-				
-				// log the error
-				$this->log_error_query($file, $query . sqlSafeStringQuotes(mysql_error()));
-				
-				if (strlen($errorUserMSG) > 0)
-				{
-					$site->dieAndEndPage($errorUserMSG);
-				}
-				
-				$this->dieAndEndPage('Error: Could not process query.');
 			}
-		
-		return $result;
+			return $result;
 		}
 		
-		function execute_query($table, $query, $connection = 0, $file='', $errorUserMSG='')
+		function execute_query($table, $query, $connection)
 		{
 			// output the query in debug mode
 			if ($this->debug_sql())
 			{
 				echo '<p class="first_p">executing query: ' . htmlent($query) . '</p>' . "\n";
 			}
-			
-			
-			if ($connection === 0)
-			{
-				// no connection to be used specified, use last one
-				$result = mysql_query($query);
-			} else
-			{
-				// use connection specified
-				$result = mysql_query($query, $connection);
-			}
+			$result = mysql_query($query, $connection);
 			if (!$result)
 			{
-				// print out the raw error in debug mode
 				if ($this->debug_sql())
 				{
 					echo('<p>Query ' . htmlent($query) . ' is probably not valid SQL. ');
 					echo 'Updating: An error occurred while executing the query, ' . htmlentities($table);
 					echo ' may be now completly broken.</p>' . "\n";
+					// print out the raw error in debug mode
 					echo mysql_error();
 				}
-				
-				// log the error
-				$site->log_error_query($file, 'SELECT `id` FROM `players` WHERE `teamid`=' . sqlSafeStringQuotes(intval($teamid)));
-				
-				if (strlen($errorUserMSG) > 0)
-				{
-					$site->dieAndEndPage($errorUserMSG);
-				}
-				
-				$site->dieAndEndPage('Error: Could not process query.');
 			}
-			
-			
 			return $result;
 		}
 		
@@ -249,12 +201,10 @@
 		
 		function set_key($randomkey_name)
 		{
-			// this should be good enough as all we need is something that can not be guessed without many tries
+			// this should be good enough as all we need is something that can not be guessed without much tries
 			return $_SESSION[$randomkey_name] = rand(0, getrandmax());
 		}
 		
-		
-		// outdated function, do not use anymore!
 		function compare_keys($key, $key2 = '')
 		{
 			$used_key2 = $key2;
@@ -274,32 +224,11 @@
 				}
 				
 				return $randomkeysmatch;
-			}
-			
-			return false;
-		}
-		
-		function validateKey($key, $value)
-		{
-			if (isset($_SESSION[$key]))
+			} else
 			{
-				$randomkeysmatch = (strcmp(html_entity_decode(urldecode($_SESSION[$key])), $value) === 0);
-				
-				// invalidate key & value to prevent allowing sending stuff more than once
-				if (!(strcmp($value, '') === 0))
-				{
-					unset ($_SESSION[$key]);
-					unset ($_SESSION[$value]);
-				} else
-				{
-					// never return true on empty key & value combination
-					return false;
-				}
-				
-				return $randomkeysmatch;
+				// variables are not even set, they can't match
+				return false;
 			}
-			
-			return false;
 		}
 		
 		function mobile_version()
@@ -326,13 +255,6 @@
 			return timezone();
 		}
 		
-		function use_xhtml()
-		{
-			// accidental misspelled version implemented before
-			// the function called use_xtml() is deprecated and will be removed in the future
-			return use_xtml();
-		}
-		
 		function use_xtml()
 		{
 			// do we use xtml (->true) or html (->false)
@@ -353,23 +275,16 @@
 		
 		function write_self_closing_tag($tag)
 		{
-			echo $this->return_self_closing_tag($tag);
-		}
-		
-		function return_self_closing_tag($tag)
-		{
-			$result = '<';
-			$result .= $tag;
+			echo '<';
+			echo $tag;
 			// do we use xtml (->true) or html (->false)
 			if ($this->use_xtml())
 			{
-				$result .= ' /';
+				echo ' /';
 			}
-			$result .= '>';
-			$result .= "\n";
-			
-			return $result;
-		}
+			echo '>';
+			echo "\n";
+		}		
 		
 		function base_name()
 		{
@@ -465,11 +380,6 @@
 			}
 		}
 		
-		function log_error_query($file, $error)
-		{
-			$this->log_error('Error: Query failed in ' . $file . ': ' . $error);
-		}
-		
 		function log_error($error='')
 		{
 			if (!(strcmp($error, '') === 0))
@@ -479,118 +389,10 @@
 			}
 		}
 		
-		function getStyle()
-		{
-			global $site;
-			
-			if ($site->mobile_version())
-			{
-				$default_style = 'White';
-			} else
-			{
-				$default_style = '42';
-			}
-			
-			$style = $default_style;
-			foreach ($_COOKIE as $key => $value)
-			{
-				if (strcasecmp($key, 'theme') == 0)
-				{
-					// cookies turned on
-					$style = $value;
-				}
-			}
-			
-			if (isset($_SESSION['theme']))
-			{
-				$style = $_SESSION['theme'];
-			}
-			
-			if (!(file_exists(dirname(dirname(__FILE__)) . '/styles/' . $style . '/' . $style . '.css')))
-			{
-				// stylesheet in question does not exist, go back to default
-				$style = $default_style;
-			}
-			
-			if (strcasecmp($style, '') == 0)
-			{
-				// nothing is set, go back to default
-				$style = $default_style;
-			}
-			
-			return $style;
-		}
 		
 		function favicon_path()
 		{
 			return favicon();
-		}
-		
-		function hasUnreadMail()
-		{
-			global $connection;
-			
-			require_once dirname(__FILE__) . '/permissions.php';
-			
-			$unread_messages = false;
-			
-			// set the date and time
-			date_default_timezone_set($this->used_timezone());
-			
-			// remove expired sessions from the list of online users
-			$query ='SELECT `playerid`, `last_activity` FROM `online_users`';
-			$result = $this->execute_silent_query('online_users', $query, $connection, __FILE__, 'Could not get list of online users from database');
-			
-			if (((int) mysql_num_rows($result)) > 0)
-			{
-				while($row = mysql_fetch_array($result))
-				{
-					$saved_timestamp = $row['last_activity'];
-					$old_timestamp = strtotime($saved_timestamp);
-					$now = (int) strtotime("now");
-					// is entry more than two hours old? (60*60*2)
-					// FIXME: would need to set session expiration date directly inside code
-					// FIXME: and not in the webserver setting
-					if ($now - $old_timestamp > (60*60*2))
-					{
-						$query = 'DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=';
-						$query .= sqlSafeStringQuotes($saved_timestamp);
-						if (!($result_delete = $this->execute_silent_query('online_users', $query, $connection)))
-						{
-							$site->dieAndEndPage('<p>Could delete old online users from database.</p>');
-						}
-					}
-				}
-			}
-			mysql_free_result($result);
-			
-			// update activity data
-			$logged_in = true;
-			if (getUserID() > 0)
-			{
-				// the execution of the query is not that time critical and it happens often -> LOW_PRIORITY
-				$query = 'UPDATE LOW_PRIORITY `online_users` SET `last_activity`=';
-				$query .= sqlSafeStringQuotes(date('Y-m-d H:i:s')) . ' WHERE `playerid`=' . sqlSafeStringQuotes(getUserID());
-				@mysql_select_db($this->db_used_name(), $connection);
-				@mysql_query($query, $connection);
-				
-				// are there unread messages?
-				// are there unread messages?
-				$query = ('SELECT `id` FROM `messages_users_connection` WHERE `msg_status`='
-						  . sqlSafeStringQuotes('new')
-						  . ' AND `playerid`=' . sqlSafeStringQuotes(getUserID())
-						  . ' LIMIT 1');
-				$result = @mysql_query($query, $connection);
-				$rows = (int) @mysql_num_rows($result);
-				if ($rows > 0)
-				{
-					$unread_messages = true;
-				}
-				mysql_free_result($result);
-			}
-			echo 'test';
-
-			return $unread_messages;
 		}
 	}
 	

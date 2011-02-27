@@ -8,6 +8,7 @@
 	
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
+	require ('../CMS/navi.inc');
 	
 	$connection = $site->connect_to_db();
 	$randomkey_name = 'randomkey_matches';
@@ -436,7 +437,7 @@
 		
 		if ($view_range !== (int) 0)
 		{
-			echo '	<a class="button" href="./?i=';
+			echo '	<a href="./?i=';
 			
 			echo ((int) $view_range)-$num_results;
 			if (isset($_GET['search']))
@@ -461,7 +462,7 @@
 		if ($show_next_matches_button)
 		{
 			
-			echo '	<a class="button" href="./?i=';
+			echo '	<a href="./?i=';
 			
 			echo ((int) $view_range)+$num_results;
 			if (isset($_GET['search']))
