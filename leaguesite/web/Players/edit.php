@@ -12,9 +12,10 @@
 		
 		show_overview_and_profile_button();
 		
+		echo '<div class="main-box">' . "\n";
 		if ($profile === 0)
 		{
-			echo '<p>The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
+			echo '<p class="error-msg">The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
 			$site->dieAndEndPage();
 		}
 		
@@ -28,11 +29,11 @@
 		{
 			// get entire suspended status, including maintenance-deleted
 			$query = 'SELECT `status`';
-			if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
-			{
+//			if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
+//			{
 				// the ones who can ban, can also change a user's callsign
 				$query .= ',`name`';
-			}
+//			}
 			$query .= ' FROM `players` WHERE `id`=' . "'" . (urlencode($profile)) ."'";
 			// only information about one player needed
 			$query .= ' LIMIT 1';
@@ -51,7 +52,7 @@
 			
 			if (strcmp($suspended_status, 'deleted') === 0)
 			{
-				echo '<p>You may not edit this user as the user was deleted during maintenance.</p>';
+				echo '<p class="error-msg">You may not edit this user as the user was deleted during maintenance.</p>';
 				$site->dieAndEndPage('');
 			}
 		}		
@@ -74,7 +75,7 @@
 			
 			if (!($randomkeysmatch))
 			{
-				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
+				echo '<p class="error-msg">The key did not match. It looks like you came from somewhere else.</p>';
 				$site->dieAndEndPage('');
 			}
 			
@@ -112,7 +113,7 @@
 						{
 							// callsign change was requested!
 							// player name already used -> do not change to player name to it
-							echo '<p>The player name was not changed because there is already a player with that name in the database.</p>' . "\n";
+							echo '<p class="error-msg">The player name was not changed because there is already a player with that name in the database.</p>' . "\n";
 						}
 						unset($tmp_name_change_requested);
 					} else
@@ -231,13 +232,13 @@
 		}
 		
 		// display editing form
-		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?edit=' . $profile . '">' . "\n";
-		echo '<div><input type="hidden" name="confirmed" value="1"></div>' . "\n";
+		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?edit=' . $profile . '" class="player-form">' . "\n";
+		echo '<input type="hidden" name="confirmed" value="1">' . "\n";
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
-		echo '<div><input type="hidden" name="key_name" value="' . htmlspecialchars($new_randomkey_name) . '"></div>' . "\n";
-		echo '<div><input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
-		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
+		echo '<input type="hidden" name="key_name" value="' . htmlspecialchars($new_randomkey_name) . '">' . "\n";
+		echo '<input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="';
+		echo urlencode(($_SESSION[$new_randomkey_name])) . '">' . "\n";
 		
 		$query = 'SELECT `location`, `UTC`';
 		$query .= ', `raw_user_comment`, `raw_admin_comments`';
@@ -273,10 +274,10 @@
 		// admins may change user names
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
-			echo '<p><label class="player_edit" for="edit_player_name">Change callsign:</label> ';
+			echo '<div class="formrow"><label class="player_edit" for="edit_player_name">Change callsign:</label> ';
 			$site->write_self_closing_tag('input id="edit_player_name" type="text" name="callsign" maxlength="50" size="60" value="'
 										  . htmlent_decode($callsign) . '"');
-			echo '</p>';
+			echo '</div>';
 		}
 		
 		// location
@@ -285,7 +286,7 @@
 		{
 			$site->dieAndEndPage('Could not retrieve list of countries from database.');
 		}
-		echo '<p><label class="player_edit" for="edit_player_location">Change country:</label> ';
+		echo '<div class="formrow"><label class="player_edit" for="edit_player_location">Change country:</label> ';
 		echo '<select id="edit_player_location" name="location">';
 		while ($row = mysql_fetch_array($result))
 		{
@@ -301,10 +302,10 @@
 		}
 		mysql_free_result($result);
 		echo '</select>';
-		echo '</p>' . "\n\n";
+		echo '</div>' . "\n\n";
 		
 		// timezone
-		echo '<p><label class="player_edit" for="edit_player_location">Change timezone:</label> ';
+		echo '<div class="formrow"><label class="player_edit" for="edit_player_location">Change timezone:</label> ';
 		echo '<select id="edit_player_timezone" name="timezone">';
 		for ($i = -12; $i <= 12; $i++)
 		{
@@ -327,15 +328,13 @@
 		}
 		unset($time_format);
 		echo '</select>';
-		echo '</p>' . "\n\n";
+		echo '</div>' . "\n\n";
 		
 		// user comment
 		if ($site->bbcode_lib_available())
 		{
-			echo "\n" . '<div class="player_edit">';
-			echo '<div class="invisi" style="display: inline;">';
-			echo '	<label class="player_edit">bbcode:</label><span>';
-			echo '</div>';
+			echo "\n" . '<div class="formrow">';
+			echo '	<label class="player_edit invisi">bbcode:</label><span>';
 			include dirname(dirname(__FILE__)) . '/CMS/bbcode_buttons.php';
 			$bbcode = new bbcode_buttons();
 			$bbcode->showBBCodeButtons('user_comment');
@@ -344,25 +343,23 @@
 			echo "\n";
 			echo '</div>' . "\n";
 		}
-		echo '<p><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
+		echo '<div class="formrow"><label class="player_edit" for="edit_user_comment">User comment: </label>' . "\n";
 		echo '<span><textarea class="player_edit" id="edit_user_comment" rows="10" cols="50" name="user_comment">';
 		echo $user_comment;
-		echo '</textarea></span></p>';
+		echo '</textarea></span></div>';
 
 		// logo/avatar url
-		echo '<p><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
+		echo '<div class="formrow"><label class="player_edit" for="edit_avatar_url">Avatar URL: </label>';
 		$site->write_self_closing_tag('input id="edit_avatar_url" type="text" name="logo_url" maxlength="200" size="60" value="'.$logo_url.'"');
-		echo '</p>';
+		echo '</div>';
 		
 		// admin comments, these should only be set by an admin
 		if ($allow_add_admin_comments_to_user_profile === true)
 		{
 			if ($site->bbcode_lib_available())
 			{
-				echo "\n" . '<div class="player_edit">';
-				echo '<div class="invisi" style="display: inline;">';
-				echo '	<label class="player_edit">bbcode:</label><span>';
-				echo '</div>';
+				echo "\n" . '<div class="formrow">';
+				echo '	<label class="player_edit invisi">bbcode:</label><span>';
 				// bbcode_buttons.php file already included
 				$bbcode = new bbcode_buttons();
 				$bbcode->showBBCodeButtons('admin_comments');
@@ -371,13 +368,13 @@
 				echo "\n";
 				echo '</div>' . "\n";
 			}
-			echo '<p><label class="player_edit" for="edit_admin_comments">Edit admin comments: </label>';
+			echo '<div class="formrow"><label class="player_edit" for="edit_admin_comments">Edit admin comments: </label>';
 			echo '<span><textarea class="player_edit" id="edit_admin_comments" rows="10" cols="50" name="admin_comments">';
 			echo $admin_comments;
-			echo '</textarea></span></p>' . "\n";
+			echo '</textarea></span></div>' . "\n";
 		}
 		
-		echo '<div><input type="submit" name="edit_user_profile_data" value="Change user profile" id="send"></div>' . "\n";
+		echo '<div><input type="submit" name="edit_user_profile_data" value="Change user profile" id="send" class="button l15"></div>' . "\n";
 		echo '</form>' . "\n";
 		
 		$site->dieAndEndPageNoBox('');

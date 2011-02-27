@@ -153,6 +153,11 @@
 		$query = 'ALTER TABLE `visits` AUTO_INCREMENT = 1';
 		// execute query, ignore result
 		$site->execute_query('visits', $query, $connection);
+		
+		$query = 'ALTER TABLE `seasons` AUTO_INCREMENT = 1';
+		// execute query, ignore result
+		$site->execute_query('seasons', $query, $connection);
+		
 	}
 	
 	// players
@@ -471,7 +476,7 @@
 		$suspended_status = 'active';
 		while ($row = mysql_fetch_array($result))
 		{
-			$query = ('INSERT INTO `matches` (`id`,`playerid`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points`,`team1_new_score`,`team2_new_score`)'
+			$query = ('INSERT INTO `matches` (`id`,`playerid`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points`,`team1_new_score`,`team2_new_score`,`duration`)'
 					  . ' VALUES '
 					  . '(' . sqlSafeStringQuotes($row['id']));
 			if (strcmp($row['idedit'],'') === 0)
@@ -507,7 +512,7 @@
 			$query .= (',' . sqlSafeStringQuotes($row['team1']) . ',' . sqlSafeStringQuotes($row['team2'])
 					   . ',' . sqlSafeStringQuotes($row['score1']) . ',' . sqlSafeStringQuotes($row['score2'])
 					   . ',' . sqlSafeStringQuotes($row['newrankt1']) . ',' . sqlSafeStringQuotes($row['newrankt2'])
-					   . ')');
+					   . ',' . sqlSafeStringQuotes($row['mlength']) . ')');
 			// execute query, ignore result
 			@$site->execute_query('matches', $query, $connection);
 		}
@@ -694,6 +699,168 @@
 		}
 	}
 	
+		// ban entries
+	function import_seasons()
+	{
+		global $site;
+		global $connection;
+		global $deleted_players;
+		global $db_to_be_imported;
+		
+		$site->selectDB($db_to_be_imported, $connection);
+		$query = 'SELECT * FROM `l_season` ORDER BY `startdate`';
+		if (!($result = @$site->execute_query('l_season', $query, $connection)))
+		{
+			$site->selectDB($site->db_used_name(), $connection);
+			$site->dieAndEndPage('');
+		}
+		$site->selectDB($site->db_used_name(), $connection);
+		while ($row = mysql_fetch_array($result))
+		{
+			$query = ('INSERT INTO `seasons` (`startdate`,`enddate`,`points_win`,`points_draw`, `points_lost`, `active`)'
+					  . ' VALUES '
+					  . '(' . sqlSafeStringQuotes($row['startdate'])
+					  . ',' . sqlSafeStringQuotes($row['enddate'])
+					  . ',' . sqlSafeStringQuotes($row['points_win'])
+					  . ',' . sqlSafeStringQuotes($row['points_draw'])
+					  . ',' . sqlSafeStringQuotes($row['points_lost'])
+					  . ',' . sqlSafeStringQuotes($row['active'])
+					  . ')');
+			// execute query, ignore result
+			@$site->execute_query('bans', $query, $connection);
+		}
+		recalculate_all_seasons();
+	}
+	
+	
+	function recalculate_all_seasons() 
+	{
+		global $connection;
+		global $site;
+		
+		//going through seasons
+		$site->selectDB($site->db_used_name(), $connection);
+		$query = 'SELECT * FROM `seasons` ORDER BY `startdate`';
+		if (!($result_seasons = @$site->execute_query('seasons', $query, $connection)))
+		{
+			$site->dieAndEndPage('');
+		}
+		while ($row_seasons = mysql_fetch_array($result_seasons))
+		{
+			$seasonid = $row_seasons['id'];
+			
+			//default values
+			$pointswin = 4; //default values
+			$pointslost = 1;
+			$pointsdraw = 2;
+			
+			//lock_tables();
+			//get all teams which played in that season
+			$query = ('SELECT DISTINCT teams.id, seasons.startdate, seasons.enddate '
+			. ',seasons.points_win, seasons.points_lost, seasons.points_draw FROM teams '
+			. ' LEFT JOIN matches ON ( matches.team1_teamid = teams.id or matches.team2_teamid = teams.id  ) '
+			. ' LEFT JOIN seasons ON ( matches.timestamp between seasons.startdate and seasons.enddate) '
+			. ' WHERE seasons.id = ' . sqlSafeStringQuotes($seasonid));
+			if (!($result = @$site->execute_query('seasons_results', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not recalculate seasons results due to a sql problem!');
+			}
+		
+			//clear old season data
+			$query = ('DELETE FROM `seasons_results` WHERE seasonid =' . sqlSafeStringQuotes($seasonid));
+				if (!($resultdelete = @$site->execute_query('seasons_results', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not recalculate seasons results due to a sql problem!');
+			}
+			//go trough teams:	
+			while ($row = mysql_fetch_array($result))
+			{
+				$teamid = $row['id'];
+				$startdate = $row['startdate'];
+				$enddate = $row['enddate'];
+				$pointswin = $row['points_win'];
+				$pointslost = $row['points_lost'];
+				$pointsdraw = $row['points_draw'];
+				//update teamwins, losts, and draws 
+				$query = ('INSERT INTO  `seasons_results` (seasonid, teamid, wins, losts, draws) '
+				. ' VALUES (' . sqlSafeStringQuotes($seasonid) . ',' . sqlSafeStringQuotes($teamid)
+				. ' , ( ' //wins
+					. ' SELECT COUNT(matches.id) FROM `teams` LEFT JOIN matches '
+					. ' ON (`timestamp` between ' . sqlSafeStringQuotes($startdate) . ' AND ' . sqlSafeStringQuotes($enddate)
+					. ' AND ((team1_teamid = ' . sqlSafeStringQuotes($teamid) . ' AND team1_points > team2_points )'
+					. ' OR ( team2_teamid = ' . sqlSafeStringQuotes($teamid) . ' AND team2_points > team1_points )) )'
+					. ' WHERE `teams`.id = ' . sqlSafeStringQuotes($teamid) 
+				. ' ) , ( ' //losts
+				. ' SELECT COUNT(matches.id) FROM `teams` LEFT JOIN matches'
+					. ' ON (`timestamp` between ' . sqlSafeStringQuotes($startdate) . ' AND ' . sqlSafeStringQuotes($enddate)
+					. ' AND ((team1_teamid = ' . sqlSafeStringQuotes($teamid) . ' AND team1_points < team2_points )'
+					. ' OR ( team2_teamid = ' . sqlSafeStringQuotes($teamid) . ' AND team2_points < team1_points )) )'
+					. ' WHERE `teams`.id = ' . sqlSafeStringQuotes($teamid) 
+				. ' ) , ( ' //draws
+				. ' SELECT COUNT(matches.id) FROM `teams` LEFT JOIN matches '
+					. ' ON (`timestamp` between ' . sqlSafeStringQuotes($startdate) . ' AND ' . sqlSafeStringQuotes($enddate)
+					. ' AND ( ( team1_teamid = ' . sqlSafeStringQuotes($teamid) . ' OR team2_teamid = ' . sqlSafeStringQuotes($teamid) . ' )'
+					. ' AND team2_points = team1_points ) )'
+					. ' WHERE `teams`.id = ' . sqlSafeStringQuotes($teamid) 
+				. ' ) )');
+				
+				if (!($updateresult = $site->execute_query('seasons_results', $query, $connection)))
+				{
+					$site->dieAndEndPage('The seasons results match calulations could not be updated due to a sql problem!');
+				}
+				unset($teamid);
+				unset($startdate);
+				unset($enddate);
+				
+			}
+			
+			mysql_free_result($result);
+			//calculate teampoints
+			
+			$query = ('UPDATE `seasons_results` SET score = wins * ' . $pointswin . ' + losts * ' . $pointslost
+			. ' + draws * ' . $pointsdraw . ', num_matches_played = wins + losts + draws'
+			. ' WHERE seasonid = ' . sqlSafeStringQuotes($seasonid)		
+			);
+				
+			if (!($result = $site->execute_query('seasons_results', $query, $connection)))
+				{
+					$site->dieAndEndPage('The seasons results points could not be updated due to a sql problem!');
+				}
+				
+			unset($pointswin);
+			unset($pointslost);
+			unset($pointsdraw);
+			
+			//getting best 3 teams
+			$query = ('SELECT seasons.id, seasons_results.* FROM `seasons` ' 
+			. ' LEFT JOIN seasons_results ON (seasons_results.seasonid = seasons.id) '
+			. ' WHERE seasons.id = ' . sqlSafeStringQuotes($seasonid)		
+			. ' ORDER BY seasons_results.score DESC, seasons_results.wins DESC, seasons_results.draws DESC LIMIT 0,3');
+			
+			if (!($result = @$site->execute_query('seasons, seasons_results', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not get best teams due to a sql problem!');
+			}
+			//go trough teams:	
+			$place_no=1;
+			while ($row = mysql_fetch_array($result))
+			{		
+				$teamid =  $row['teamid'];
+				$query = ('UPDATE `seasons` SET team_' . $place_no . ' = ' . $teamid 
+				. ' WHERE id = ' . sqlSafeStringQuotes($seasonid));
+					
+				if (!($resultupdate = $site->execute_query('seasons', $query, $connection)))
+					{
+						$site->dieAndEndPage('The seasons best teams could not be updated due to a sql problem!');
+					}
+				$place_no++;
+			}
+		}
+	}
+	
+	
+	
+	
 	
 	// visits log host entry completer
 	function resolve_visits_log_hosts()
@@ -766,6 +933,7 @@
 	import_visits_log();
 	import_news();
 	import_bans();
+	import_seasons();
 	
 	// lookup array no longer needed
 	unset($deleted_players);

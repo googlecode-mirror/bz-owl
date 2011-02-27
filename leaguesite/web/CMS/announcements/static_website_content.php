@@ -15,13 +15,15 @@
 	
 	if (isset($_GET['edit']))
 	{
-		$display_page_title = 'Page content editor: ' . $page_title;
+		$display_page_title = 'Page content editor: ' . $display_page_title;
 	}
 	require_once (dirname(dirname(__FILE__)) . '/index.inc');
 	
 	require (dirname(dirname(__FILE__)) . '/navi.inc');
 	
 	$site = new siteinfo();
+	
+	echo '<h1 class="info">' .  $display_page_title . '</h1>';
 	
 	function errormsg()
 	{
@@ -56,13 +58,12 @@
 		if (isset($_GET['edit']))
 		{
 			// user looks at page in edit mode
-			echo '<a href="./" class="button">overview</a>' ."\n";
+			echo '<div class="simple-paging"><a href="./" class="button">overview</a></div>' ."\n";
 			echo '<div class="static_page_box">' . "\n";
 		} else
 		{
 			// user looks at page in read mode
-			echo '<a href="./?edit" class="button">edit</a>' . "\n";
-			$site->write_self_closing_tag('br');
+			echo '<div class="toolbar"><a href="./?edit" class="button">edit</a></div>' . "\n";
 			echo "\n";
 		}
 	} else
@@ -72,7 +73,7 @@
 		{
 			// user wants to edit the page
 			// show a button to let the user look at the page in read only mode
-			echo '<p><a href="./" class="button">overview</a>' . '</p>' ."\n";
+			echo '<div class="simple-paging"><a href="./" class="button">overview</a>' . '</div>' ."\n";
 			// stop here or the user will be able to edit the content despite he has no permission
 			errormsg();
 			$site->dieAndEndPageNoBox();
@@ -238,8 +239,8 @@
 			echo '</div>' . "\n";
 			
 			echo '<p>';
-			$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
-			$site->write_self_closing_tag('input type="submit" name="edit_page" value="Edit page"');
+			$site->write_self_closing_tag('input type="submit" value="Confirm changes" class="button"');
+			$site->write_self_closing_tag('input type="submit" name="edit_page" value="Edit page" class="button"');
 			echo '</p>' . "\n";
 			
 			$site->dieAndEndPageNoBox();
@@ -278,21 +279,155 @@
 			echo '</div>' . "\n";
 			
 			echo '<p>';
-			$site->write_self_closing_tag('input type="submit" value="Preview"');
+			$site->write_self_closing_tag('input type="submit" value="Preview" class="button"');
 			echo '</p>' . "\n";
 		}
 		echo '</form>' . "\n";
 	} else
 	{
-		echo '<div class="static_page_box">' . "\n";
-		$author = '';
-		$last_modified = '';
+		switch ($cmspage) 
+		{
+			case 'home'  : 
+			{
+				echo '<div class="home-left">'; 
+				if ($logged_in) 
+				{
+					put_shoutbox();
+				}
+				
+				echo '<div class="main-box">' . "\n";
+				$author = '';
+				$last_modified = '';				
+				$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
+				echo $buffer;			
+				echo '</div>';	
+				echo '</div>';
+				include dirname(dirname(dirname(__FILE__))) . '/right_column.php';
+				
+			} break;
+			default: 
+			{
+				echo '<div class="static_page_box">' . "\n";
+				$author = '';
+				$last_modified = '';
+				
+				$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
+				echo $buffer;	
+				echo '</div>';
+
+				
+			}
+		}
 		
-		$buffer = readContent($page_title, $site, $connection, $author, $last_modified);
-		echo $buffer;
+		
 	}
-?>
+	
+function put_shoutbox()
+{
+
+	$token = md5(uniqid(rand(), true));
+	$_SESSION['token'] = $token;
+	
+
+	
+?>	
+
+<script type="text/javascript" src="wtag/js/dom-drag.js"></script>
+<script type="text/javascript" src="wtag/js/scroll.js"></script>
+<script type="text/javascript" src="wtag/js/conf.js"></script>
+<script type="text/javascript" src="wtag/js/ajax.js"></script>
+<script type="text/javascript" src="wtag/js/drop_down.js"></script>
+
+
+<div id="chat" class="main-box home-box">
+
+
+<div id="container">
+<div id='content'>
 </div>
+</div>
+
+<div id='form'>
+<form id="cform" name="cform" action="#" >
+<div id='field_set'>
+<input type='hidden' id='token' name='token' value='<?php echo $token; ?>' />
+<textarea rows='4' cols='10' id='message'  name='message' >message</textarea>
+<div id="chat_menu">
+
+<div id='emo'>
+<ul id="show_sm">
+<li>
+smileys
+<ul id="smiley_box">
+<li>
+<img class='smileys' src='wtag/smileys/smile.gif' width='15' height='15' alt=':)' title=':)' onclick = "tagSmiley(':)');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/sad.gif' width='15' height='15' alt=':(' title=':(' onclick = "tagSmiley(':(');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/wink.gif' width='15' height='15' alt=';)' title=';)' onclick = "tagSmiley(';)');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/tongue.gif' width='15' height='15' alt=':-P' title=':-P' onclick = "tagSmiley(':-P');"/>
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/rolleyes.gif' width='15' height='15' alt='S-)' title='S-)' onclick = "tagSmiley('S-)');"/>
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/angry.gif' width='15' height='15' alt='>(' title='>(' onclick = "tagSmiley('>(');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/embarassed.gif' width='15' height='15' alt=':*)' title=':*)' onclick = "tagSmiley(':*)');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/grin.gif' width='15' height='15' alt=':-D' title=':-D' onclick = "tagSmiley(':-D');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/cry.gif' width='15' height='15' alt='QQ' title='QQ' onclick = "tagSmiley('QQ');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/shocked.gif' width='15' height='15' alt='=O' title='=O' onclick = "tagSmiley('=O');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/undecided.gif' width='15' height='15' alt='=/' title='=/' onclick = "tagSmiley('=/');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/cool.gif' width='15' height='15' alt='8-)' title='8-)' onclick = "tagSmiley('8-)');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/sealedlips.gif' width='15' height='15' alt=':-X' title=':-X' onclick = "tagSmiley(':-X');" />
+</li>
+<li>
+<img class='smileys' src='wtag/smileys/angel.gif' width='15' height='15' alt='O:]' title='O:]' onclick = "tagSmiley('O:]');" />
+</li>
+</ul>
+</li>
+
+</ul>
+</div>
+
+<div id='submit'>
+<p>submit</p>
+</div>
+
+</div>
+</div>
+</form>
+</div> 
+
+
+
+</div>
+
+
+<?php 
+	
+}
+	
+	
+?>
+
 </div>
 </body>
 </html>

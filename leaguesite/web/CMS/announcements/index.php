@@ -11,6 +11,7 @@
 	require_once (dirname(dirname(__FILE__)) . '/siteinfo.php');
 	$site = new siteinfo();
 	
+	
 	if (strcmp($page_title, '') === 0)
 	{
 		echo '<div class="static_page_box">' . "\n";
@@ -43,6 +44,8 @@
 	{
 		$allow_different_timestamp = false;
 	}
+	
+	echo '<h1 class="news">' . $display_page_title . '</h1>';
 	
 	// only logged in users can read messages
 	// usually the permission system should take care of permissions anyway
@@ -188,7 +191,7 @@
 		if ($success)
 		{
 			echo '<p>Updating: The missing table(s) were created successfully!</p>' . "\n";
-			echo '<p><a class="button" href="./">overview</a><p>' . "\n";
+			echo '<p class="simple-paging"><a class="button" href="./">overview</a><p>' . "\n";
 		}
 	}
 	
@@ -225,9 +228,7 @@
 	// user is able to add new entries
 	if ((isset($_SESSION[$entry_add_permission]) && ($_SESSION[$entry_add_permission])) && (!isset($_GET['add'])) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
-		echo '<a class="button" id="new_entry" href="./?add">new entry</a>';
-		$site->write_self_closing_tag('br');
-		$site->write_self_closing_tag('br');
+		echo '<div class="toolbar"><a class="button" id="new_entry" href="./?add">new entry</a></div>';
 		echo "\n";
 	}
 	
@@ -237,10 +238,10 @@
 		if ($message_mode && (!((strcmp($folder, 'inbox') == 0) || (strcmp($folder, '') == 0))))
 		{
 			// back button might lead to the deletion form, show link to last viewed folder
-			echo '<p class="first_p"><a class="button" href="./?folder=' . htmlspecialchars($folder) . '">overview</a><p>';
+			echo '<p class="simple-paging"><a class="button" href="./?folder=' . htmlspecialchars($folder) . '">overview</a><p>';
 		} else
 		{
-			echo '<p class="first_p"><a class="button" href="./">overview</a></p>';
+			echo '<p class="simple-paging"><a class="button" href="./">overview</a></p>';
 		}
 	}
 	
@@ -266,12 +267,11 @@
 	if ((!(isset($_GET['add']))) && (!(isset($_GET['edit']))) && (!(isset($_GET['delete']))))
 	{
 		// show existing entries at the bottom of page
-		
+		echo '<div class="mailbox">' . "\n";
 		// display depends on current mode
 		if ($message_mode)
 		{
 			echo '<div class="msg_nav">' . "\n";
-			echo '<span class="folder_selection">' . "\n";
 			require_once('msgUtils.php');
 			$msgDisplay = new folderDisplay();
 			if ((strcmp($folder, 'inbox') == 0) || (strcmp($folder, '') == 0))
@@ -279,10 +279,10 @@
 				// inbox displayed
 				if (isset($_GET['view']))
 				{
-					echo '<a href="./?folder=inbox">inbox!</a>';
+					echo '<a href="./?folder=inbox" class="active">inbox!</a>';
 				} else
 				{
-					echo 'inbox!';
+					echo '<span>inbox!</span>';
 				}
 				echo ' <a href="./?folder=outbox">outbox</a>';
 			} else
@@ -293,18 +293,21 @@
 					echo '<a href="./?folder=inbox">inbox</a>';
 					if (isset($_GET['view']))
 					{
-						echo ' <a href="./?folder=outbox">outbox!</a>';
+						echo ' <a href="./?folder=outbox" class="active">outbox!</a>';
 					} else
 					{
-						echo ' outbox!';
+						echo ' <span>outbox!</span>';
 					}
 				}
 			}
-			echo '</span>' . "\n";
+			echo '</div>' . "\n";
+			
+			echo '<div class="main-box">' . "\n";
 			
 			if (isset($_GET['view']) && intval($_GET['view']) > 0)
 			{
-				echo '<span class="prev_next_msg_buttons">' . "\n";
+						
+				echo '<p class="simple-paging prev_next_msg_buttons">' . "\n";
 				
 				// previous message button
 				$query = ('SELECT `msgid` FROM `messages_users_connection` WHERE `playerid`=' . sqlSafeStringQuotes(getUserID()) . ' AND `msgid`<'
@@ -316,7 +319,7 @@
 				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				while ($row = mysql_fetch_array($result))
 				{
-					echo ('<a class="button" id="prev_msg" href="./?folder='
+					echo ('<a class="button previous" id="prev_msg" href="./?folder='
 						  . htmlent($folder) . '&amp;view=' . htmlent($row['msgid'])
 						  . '">Previous message</a> ');
 				}
@@ -332,17 +335,19 @@
 				$result = $site->execute_query('messages_users_connection', $query, $connection);
 				while ($row = mysql_fetch_array($result))
 				{
-					echo (' <a class="button" id="next_msg" href="./?folder='
+					echo (' <a class="button next" id="next_msg" href="./?folder='
 						  . htmlent($folder) . '&amp;view=' . htmlent($row['msgid'])
 						  . '">Next message</a>');
 				}
 				mysql_free_result($result);
 				
-				echo "\n" . '</span>';
+				echo "\n" . '</p>';
 			}
 			
-			echo '</div>' . "\n";
+
 			$msgDisplay->displayMessageFolder($folder, $connection, $site, $logged_in);
+	
+			echo '</div>' . "\n";
 		} else
 		{
 			// take care the table(s) do exist and if not create them
@@ -393,6 +398,7 @@
 			}
 			$query .= sqlSafeString($num_results + 1);
 
+			echo '<div class="main-box msg-box">';
 			
 			$result = ($site->execute_query($table_name, $query, $connection));
 			if (!$result)
@@ -404,7 +410,6 @@
 			$show_next_visits_button = false;
 			if ($rows === 0)
 			{
-				echo '<div class="static_page_box">' . "\n";
 				echo '<p class="first_p">No entries made yet.</p>' . "\n";
 				$site->dieAndEndPage();
 			}
@@ -421,7 +426,7 @@
 			{
 				if ($current_row < $num_results)
 				{
-					echo '<span class="edit_and_delete_links">';
+					echo '<p class="edit_and_delete_links">';
 					if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
 					{
 						$currentId = $row["id"];
@@ -432,7 +437,9 @@
 						$currentId = $row["id"];
 						echo '<a class="button" href="./?delete=' . $currentId . '">delete</a>' . "\n";
 					}
-					echo '</span>' . "\n\n";
+					echo '</p>' . "\n\n";
+					
+					
 					
 					echo '<div class="article">' . "\n";
 					echo '<div class="article_header">' . "\n";
@@ -463,7 +470,6 @@
 					echo $row['announcement'];
 					echo '</p>' . "\n";
 					echo "</div>\n\n";
-					$site->write_self_closing_tag('br');
 					$current_row++;
 				}
 			}
@@ -475,7 +481,7 @@
 			if ($show_next_visits_button || ($view_range !== (int) 0))
 			{
 				// browse previous and next entries, if possible
-				echo "\n" . '<p>'  . "\n";
+				echo "\n" . '<p class="simple-paging">'  . "\n";
 				
 				if ($view_range !== (int) 0)
 				{
@@ -499,7 +505,7 @@
 						}
 					}
 					
-					echo '">Previous announcements</a>' . "\n";
+					echo '" class="previous">Previous announcements</a>' . "\n";
 				}
 				if ($show_next_visits_button)
 				{
@@ -524,11 +530,14 @@
 						}
 					}
 					
-					echo '">Next announcements</a>' . "\n";
+					echo '" class="next">Next announcements</a>' . "\n";
 				}
 				echo '</p>' . "\n";
 			}
+			echo '</div>' . "\n";
+			
 		}
+		echo '</div>' . "\n";
 	}
 ?>
 

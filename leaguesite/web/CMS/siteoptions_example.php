@@ -16,7 +16,7 @@
 	}
 	function old_website_name()
 	{
-		return 'gu.bzleague.com';
+		return 'league.bzflag.net';
 	}
 	
 	function convert_users_to_external_login_if_no_external_login_id_set()
@@ -34,7 +34,7 @@
 	{
 		if (strcmp($section, 'bans') === 0)
 		{
-			return 'GU League Council';
+			return 'DucCouncil';
 		} else
 		{
 			return '';

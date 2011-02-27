@@ -1,3 +1,4 @@
+<div id="top">
 <div class="logo"></div>
 
 <ul class="navigation">
@@ -86,21 +87,31 @@
 	
 	define ('BASEPATH', baseaddress());
 	
-	function writeLink($folder, $title, $current=false)
+	function writeLink($folder, $title, $current=false, $classname="")
 	{
-		echo '<li>';
+		echo '<li class="' . $classname . '">';
 		if (!$current)
 		{
 			echo '<a href="' . (BASEPATH . $folder) . '">';
 		} elseif (count($_GET) > 0)
 		{
 			echo '<a class="current_nav_entry" href="' . (BASEPATH . $folder) . '">';
-		}
+		} else echo '<span>'; 
+		
 		echo $title;
 		if (!$current || (count($_GET) > 0))
 		{
 			echo '</a>';
-		}
+		} else echo '</span>'  ;
+		echo '</li>' . "\n";
+	}
+	
+	function writeexternalLink($url, $title, $classname="")
+	{
+		echo '<li class="' . $classname . '">';
+			echo '<a href="' . $url . '">';
+			echo $title;
+			echo '</a>';
 		echo '</li>' . "\n";
 	}
 	
@@ -116,42 +127,31 @@
 	}
 	$topDir = strcmp($name, $topDir) === 0;
 	
-	if (!$logged_in)
-	{
-		writeLink('Login/', 'Login', (strcmp($name, 'Login') == 0));
-	}
+
 	
 	if ($topDir)
 	{
-		echo '<li>Home</li>' . "\n";
+		echo '<li class="home"><span>Home</span></li>' . "\n";
 	} else
 	{
-		echo '<li><a href="' . BASEPATH . '">Home</a></li>' . "\n";
+		echo '<li class="home"><a href="' . BASEPATH . '">Home</a></li>' . "\n";
 	}
 	
-	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
-	{
-		if ($unread_messages)
-		{
-			writeLink('Messages/', '<span class="unread_messages">Mail</span>');
-		} else
-		{
-			writeLink('Messages/', 'Mail', (strcmp($name, 'Messages') == 0));
-		}
-	}
+	writeLink('News/', 'News', (strcmp($name, 'News') == 0), 'news');
 	
-	writeLink('News/', 'News', (strcmp($name, 'News') == 0));
+	writeLink('Players/', 'Players', (strcmp($name, 'Players') == 0), 'players');
 	
-	writeLink('Matches/', 'Matches', (strcmp($name, 'Matches') == 0));
+	writeLink('Teams/', 'Teams', (strcmp($name, 'Teams') == 0), 'teams');
 	
-	writeLink('Teams/', 'Teams', (strcmp($name, 'Teams') == 0));
+	writeLink('Matches/', 'Matches', (strcmp($name, 'Matches') == 0), 'matches');
+		
+	writeLink('Season/', 'Seasons', (strcmp($name, 'Season') == 0), 'seasons');
 	
-	writeLink('Players/', 'Players', (strcmp($name, 'Players') == 0));
-	
-	if ($logged_in && (isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
-	{
-		writeLink('Visits/', 'Visits', (strcmp($name, 'Visits') == 0));
-	}
+?>	
+<li class="info">
+	<span>Info</span>
+	<ul>
+<?php 
 	
 	writeLink('Rules/', 'Rules', (strcmp($name, 'Rules') == 0));
 	
@@ -159,19 +159,83 @@
 	
 	writeLink('Links/', 'Links', (strcmp($name, 'Links') == 0));
 	
+	writeLink('Bans/', 'Bans', (strcmp($name, 'Bans') == 0));
+	
 	writeLink('Contact/', 'Contact', (strcmp($name, 'Contact') == 0));
 	
-	writeLink('Bans/', 'Bans', (strcmp($name, 'Bans') == 0));
-
+?>
+	</ul>
+</li>
+<li class="tools">
+	<span>Tools</span>
+	<ul>
+<?php 
+	
 	if ($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker']))
 	{
 		writeLink('Servertracker/', 'Servers', (strcmp($name, 'Servertracker') == 0));
 	}
 	
+	if ($logged_in && isset($_SESSION['viewerid']))
+	{
+		writeLink('Players/?profile=' . $_SESSION['viewerid'], 'My profile', (strcmp($name, 'My profile') == 0));
+	}
+	
+	if ($logged_in && isset($_SESSION['viewerid']))
+	{
+		writeLink('Spawnlist/', 'Spawnlist', (strcmp($name, 'Spawnlist') == 0));
+	}
+	
 	writeLink('Config/', 'Config', (strcmp($name, 'Config') == 0));
+	
+	if ($logged_in && (isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
+	{
+		writeLink('Visits/', 'Visits', (strcmp($name, 'Visits') == 0));
+	}
+	
+	if ($logged_in && isset($_SESSION['allow_moderate_shoutbox']) && $_SESSION['allow_moderate_shoutbox'])
+	{
+		writeLink('Shoutbox/', 'Shoutbox', (strcmp($name, 'Shoutbox') == 0));
+	}
+	
 ?>
+
+	</ul> 
+</li> 
+
+<?php 
+		writeexternalLink('http://my.bzflag.org/bb/viewforum.php?f=90', 'Forum', 'forum');
+
+
+?>
+
 </ul>
 
+<ul class="small-navigation">
+<?php 
+ 
+	if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
+	{
+		if ($unread_messages)
+		{
+			writeLink('Messages/', 'Mail', false, 'mail unread');
+		} else
+		{
+			writeLink('Messages/', 'Mail', (strcmp($name, 'Messages') == 0), 'mail');
+		}
+	}
+		
+	if (!$logged_in)
+	{
+		writeLink('Login/', 'Login', (strcmp($name, 'Login') == 0));
+	} else 
+	{
+		writeLink('Logout/', 'Logout', (strcmp($name, 'Logout') == 0));		
+	}
+	
+?>
+</ul>
+<div id="infobar">
 <?php
 	$online_users_page_viewed = true;
 	if (!(strcmp($name, 'Online') == 0))
@@ -198,7 +262,7 @@
 			echo '<a href="' . baseaddress() . 'Servertracker/">' . '1 player</a>';
 		} else
 		{
-			echo '<a href="' . baseaddress() . 'Servertracker/">' . strval($row['cur_players_total']) . ' players</a>';
+			echo '<a href="' . baseaddress() . 'Servertracker/">' . (strval($row['cur_players_total'])?strval($row['cur_players_total']):'0') . ' players</a>';
 		}
 	}
 	mysql_free_result($result);
@@ -232,16 +296,12 @@
 		unset($n_users);
 	}
 	
-	if ($logged_in)
-	{
-		echo ' <span class="logout">';
-		echo '<a href="' . baseaddress() . 'Logout/' . '">Logout</a>';
-		echo '</span>' . "\n";
-	}
+	
 	
 	// close userbutton div
 	echo "\n" . '</div>';
 ?>
-
+</div>
+</div>
 
 <div class="content">

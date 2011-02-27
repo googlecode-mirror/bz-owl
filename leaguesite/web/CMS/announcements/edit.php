@@ -38,11 +38,13 @@
 				{
 					$author = $_SESSION['username'];
 				}
-			} else
+			} 
+			/* seems it should left oryginal author there, so I commented it (osta)
+			else
 			{
 				$author = $_SESSION['username'];
 			}
-			
+			*/
 			if (!(isset($author)))
 			{
 				// no anonymous posts and therefore cancel request
@@ -94,7 +96,8 @@
 			if ($previewSeen === 1)
 			{
 				echo "<form action=\x22" . baseaddress() . $name . '/?edit=' . $currentId . "\x22 method=\x22post\x22>\n";
-				echo '<p>Preview:</p>' . "\n";
+				echo '<div class="main-box msg-box">';
+				echo '<h2>Preview:</h2>' . "\n";
 				
 				// We are doing the preview by echoing the info
 				echo '<div class="article">' . "\n";
@@ -110,41 +113,23 @@
 				echo '</div>' . "\n\n";
 				
 				// keep the information in case user confirms by using invisible form items
-				echo '<p>';
-				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
-				echo '</p>' . "\n";
-				
-				echo '<p>';
+				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');		
 				$site->write_self_closing_tag('input type="hidden" name="preview" value="2"');
-				echo '</p>' . "\n";
-				
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"');
-				echo '</p>' . "\n";
-				
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"');
-				echo '</p>' . "\n";
-				
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
-				echo '</p>' . "\n";
 				
 				$new_randomkey_name = $randomkey_name . microtime();
 				$new_randomkey = $site->set_key($new_randomkey_name);
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
-				echo '</p>' . "\n";
-				
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="' . sqlSafeString($randomkey_name) . '" value="'
 											  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
-				echo '</p>' . "\n";
 				
 				echo "\n";
-				echo '<p>';
-				$site->write_self_closing_tag('input type="submit" value="Confirm changes"');
+				echo '<p class="simple-paging">';
+				$site->write_self_closing_tag('input type="submit" value="Confirm changes" class="button"');
 				echo '</p>' . "\n";
+				echo '</div>';
 			} else
 			{
 				// $previewSeen === 0 means we just decided to add something but did not fill it out yet
@@ -189,13 +174,12 @@
 					{
 						echo "\n" . '<div class="msg_edit">';
 						echo '<div class="invisi" style="display: inline;">';
-						echo '	<label class="msg_edit">bbcode:</label><span>';
+						echo '	<label class="msg_edit">bbcode:</label>';
 						echo '</div>';
 						include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
 						$bbcode = new bbcode_buttons();
 						$bbcode->showBBCodeButtons();
 						unset($bbcode);
-						echo '</span>';
 						echo "\n";
 						echo '</div>' . "\n";
 					}
@@ -218,12 +202,13 @@
 													  . ' onblur="if(this.value==' . "'" . "'" . ') this.value=' . "'" . htmlent($author) . "'" . '"');
 						echo "\n" . '</span>' . "\n";
 						echo '</div>' . "\n";
+					} else
+					{
+						$site->write_self_closing_tag('input type="hidden" name="author" value="' . htmlent($author) . '"');						
 					}
-					
-					echo '<div>' . "\n";
+										
 					$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '1' . '"');
-					echo '</div>' . "\n";
-					echo '<div>' . "\n";
+					echo '<div class="msg_buttons">' . "\n";
 					$site->write_self_closing_tag('input type="submit" value="' . 'Preview' . '"');
 					echo '</div>' . "\n";
 				}

@@ -23,6 +23,14 @@
 		}
 	}
 	
+	echo '<h1 class="tools">Visits log</h1>';
+	
+	// need an overview button to enable navigation within the page
+	echo '<div class="simple-paging"><a href="./" class="button">Back to overview</a></div>' . "\n";
+	
+	
+	echo '<div class="main-box">';
+	
 	// in any case you need to be logged in to view the visits log
 	if ($viewerid === 0)
 	{
@@ -38,10 +46,11 @@
 	
 	// form letting search for ip-address, host or name
 	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
-	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar">' . "\n";
+	
+	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class=" simpleform">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline" class="search_bar_text"><label for="visit_search_string">Search for:</label> ' . "\n";
+	echo '<div class="formrow"><label for="visit_search_string">Search for:</label> ' . "\n";
 	echo '<span>';
 	if (isset($_GET['search']))
 	{
@@ -169,7 +178,7 @@
 	echo '</div> ' . "\n";
 	
 	echo '<div style="display:inline">';
-	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send"');
+	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send" class="button"');
 	echo '</div>' . "\n";
 	echo '</form>' . "\n";
 	
@@ -178,8 +187,6 @@
 	// search for either ip-address or host
 	if (isset($_GET['search']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
-		
 		// search for nothing by default
 		$search_expression = '';
 		if (isset($_GET['search_string']))
@@ -213,10 +220,7 @@
 	if (isset($_GET['profile']))
 	{
 		$profile = (int) $_GET['profile'];
-		
-		// need an overview button to enable navigation within the page
-		echo '<a class="button" href="./">overview</a>' . "\n";
-		
+			
 		if ($profile < 0)
 		{
 			echo '<p>You tried to view the visits log of a not existing user!</p>';
@@ -405,7 +409,7 @@
 	if ($show_next_visits_button || ($view_range !== (int) 0))
 	{
 		// browse previous and next entries, if possible
-		echo "\n" . '<p>'  . "\n";
+		echo "\n" . '<p class="simple-paging">'  . "\n";
 		
 		if ($view_range !== (int) 0)
 		{
@@ -432,7 +436,7 @@
 				echo '&amp;profile=' . htmlent($_GET['profile']);
 			}
 			
-			echo '">Previous visits</a>' . "\n";
+			echo '" class="previous">Previous visits</a>' . "\n";
 		}
 		if ($show_next_visits_button)
 		{
@@ -460,11 +464,11 @@
 				echo '&amp;profile=' . htmlent($_GET['profile']);
 			}
 			
-			echo '">Next visits</a>' . "\n";
+			echo '" class="next">Next visits</a>' . "\n";
 		}
 		echo '</p>' . "\n";
 	}
-?>
+?></div>
 </div>
 </body>
 </html>

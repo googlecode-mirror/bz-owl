@@ -10,7 +10,7 @@
 		define("default_stylesheet", 'White');
 	} else
 	{
-		define("default_stylesheet", '42');
+		define("default_stylesheet", 'Ducati');
 	}
 	
 	$stylesheet = default_stylesheet;

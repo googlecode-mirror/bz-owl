@@ -35,18 +35,16 @@
 			generate_confirmation_key();
 		}			
 		
-		echo '<div>';
 		$site->write_self_closing_tag('input type="hidden" name="confirmed" value="1"');
-		echo '</div>' . "\n";
 		
 		
 		// user got sent back because of wrong data in the form for instance
-		if (isset($_POST['team_id1']) && isset($_POST['team_id2']) && isset($_POST['team1_points']) && isset($_POST['team2_points']))
+		if (isset($_POST['team_id1']) && isset($_POST['team_id2']) && isset($_POST['team1_points']) && isset($_POST['team2_points']) && isset($_POST['duration']))
 		{
-			show_form($_POST['team_id1'], $_POST['team_id2'], $_POST['team1_points'], $_POST['team2_points'], $readonly=false);
+			show_form($_POST['team_id1'], $_POST['team_id2'], $_POST['team1_points'], $_POST['team2_points'], $_POST['duration'], $readonly=false);
 		} elseif (isset($_GET['edit']) || isset($_GET['delete']))
 		{
-			$query = ('SELECT `timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points`'
+			$query = ('SELECT `timestamp`, `team1_teamid`, `team2_teamid`, `team1_points`, `team2_points` , `duration`'
 					  . ' FROM `matches` WHERE `id`=' . sqlSafeStringQuotes($match_id)
 					  . ' LIMIT 1');
 			if (!($result = @$site->execute_query('matches', $query, $connection)))
@@ -69,6 +67,8 @@
 				$match_day = substr($timestamp, 0, $offset);
 				$match_time = substr($timestamp, ($offset+1));
 				
+				$duration = $row['duration'];
+				
 				$team_id1 = intval($row['team1_teamid']);
 				$team_id2 = intval($row['team2_teamid']);
 				
@@ -77,25 +77,25 @@
 			}
 			mysql_free_result($result);
 			
-			show_form($team_id1, $team_id2, $team1_caps, $team2_caps, $readonly=isset($_GET['delete']));
+			show_form($team_id1, $team_id2, $team1_caps, $team2_caps, $duration, $readonly=isset($_GET['delete']));
 		} else
 		{
 			// fill unknown values with zeros
 			// team id 0 is reseved and does not exist in db
-			show_form(0, 0, 0, 0, $readonly=false);
+			show_form(0, 0, 0, 0, 15, $readonly=false);
 		}
 		
 		echo '<div>';
 		
 		if (isset($_GET['enter']))
 		{
-			$site->write_self_closing_tag('input type="submit" name="match_enter_unconfirmed" value="Enter the new match" id="send"');
+			$site->write_self_closing_tag('input type="submit" name="match_enter_unconfirmed" value="Enter the new match" id="send" class="button l9"');
 		} elseif (isset($_GET['edit']))
 		{
-			$site->write_self_closing_tag('input type="submit" name="match_edit_confirmed" value="Edit the match" id="send"');
+			$site->write_self_closing_tag('input type="submit" name="match_edit_confirmed" value="Edit the match" id="send" class="button l9"');
 		} else
 		{
-			$site->write_self_closing_tag('input type="submit" name="match_delete_confirmed" value="Delete the match" id="send"');
+			$site->write_self_closing_tag('input type="submit" name="match_delete_confirmed" value="Delete the match" id="send" class="button l9"');
 		}
 		echo '</div>' . "\n";
 		echo '</form>' . "\n";
@@ -124,12 +124,10 @@
 		$site->write_self_closing_tag('input type="hidden" name="team_id2" value="'
 									  . htmlspecialchars($team_id2) . '"');
 		
-		echo '<div>';
 		$site->write_self_closing_tag('input type="hidden" name="confirmed" value="2"');
-		echo '</div>' . "\n";
 		
 		// fill in the data submitted
-		show_form($team_id1, $team_id2, $team1_caps, $team2_caps, $readonly=true);
+		show_form($team_id1, $team_id2, $team1_caps, $team2_caps, $duration, $readonly=true);
 		
 		
 		generate_confirmation_key();
@@ -137,12 +135,12 @@
 		echo '<div>';
 		if (isset($_GET['enter']))
 		{
-			$site->write_self_closing_tag('input type="submit" name="match_enter_confirmed" value="Confirm to enter the new match" id="send"');
+			$site->write_self_closing_tag('input type="submit" name="match_enter_confirmed" value="Confirm to enter the new match" id="send" class="button"');
 		} else
 		{
-			$site->write_self_closing_tag('input type="submit" name="match_edit_confirmed" value="Confirm to edit the match" id="send"');
+			$site->write_self_closing_tag('input type="submit" name="match_edit_confirmed" value="Confirm to edit the match" id="send" class="button"');
 		}
-		$site->write_self_closing_tag('input type="submit" name="match_cancel" value="Cancel and change match data" id="cancel"');
+		$site->write_self_closing_tag('input type="submit" name="match_cancel" value="Cancel and change match data" id="cancel" class="button"');
 		echo '</div>' . "\n";
 		echo '</form>' . "\n";
 		
@@ -155,10 +153,10 @@
 		if (isset($_GET['enter']))
 		{
 			// match entering logic
-			enter_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp);
+			enter_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp, $duration);
 		} elseif (isset($_GET['edit']))
 		{
-			edit_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp, $match_id);
+			edit_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp, $duration, $match_id);
 		} elseif (isset($_GET['delete']))
 		{
 			delete_match($match_id);
@@ -198,15 +196,10 @@
 		// generate hidden confirmation key
 		$new_randomkey_name = $randomkey_name . microtime();
 		$new_randomkey = $site->set_key($new_randomkey_name);
-		echo '<div>';
 		$site->write_self_closing_tag('input type="hidden" name="key_name" value="'
 									  . htmlspecialchars($new_randomkey_name) . '"');
-		echo '</div>' . "\n";
-		
-		echo '<div>';
 		$site->write_self_closing_tag('input type="hidden" name="' . htmlspecialchars($randomkey_name) . '" value="'
 									  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
-		echo '</div>' . "\n";
 	}
 	
 	
@@ -224,7 +217,7 @@
 		
 		// similar match entered already?
 		// strategy: ask for one match before the entered one and one after the one to be entered and do not let the database engine do the comparison
-		$query = 'SELECT `id`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points` FROM `matches`';
+		$query = 'SELECT `id`,`timestamp`,`team1_teamid`,`team2_teamid`,`team1_points`,`team2_points`, `duration` FROM `matches`';
 		$query .= ' WHERE (`timestamp`' . sqlSafeString($comparisonOperator) . sqlSafeStringQuotes($_POST['match_day'] . $_POST['match_time']);
 		// sorting needed
 		$query .= ') ORDER BY `timestamp` DESC';
@@ -241,6 +234,7 @@
 		// casting the values to 0 is important
 		// (a post variable having no value means it has to be set to 0 to successfully compare values here)
 		$timestamp = '';
+		$duration = (int) $_POST['duration'];
 		$team_id1 = (int) $_POST['team_id1'];
 		$team_id2 = (int) $_POST['team_id2'];
 		$team_id1_matches = false;
@@ -255,6 +249,7 @@
 			// we can save comparisons using a helper variable
 			$team_ids_swapped = false;
 			$timestamp = $row['timestamp'];
+			$duration_matches = (intval($row['duration'])) === $duration;
 			$team_id1_matches = (intval($row['team1_teamid']) === $team_id1);
 			if (!$team_id1_matches)
 			{
@@ -280,11 +275,12 @@
 				$team1_points_matches = (intval($row['team1_points']) === $team1_points);
 				$team2_points_matches = (intval($row['team2_points']) === $team2_points);
 			}
+			
 		}
 		mysql_free_result($result);
 		
 		// if similar match was found warn the user
-		if ($team_id1_matches && $team_id2_matches && $team1_points_matches && $team2_points_matches)
+		if ($team_id1_matches && $team_id2_matches && $team1_points_matches && $team2_points_matches && $duration_matches)
 		{
 			echo '<p>The nearest ';
 			if ($newerMatches)
@@ -296,7 +292,7 @@
 			}
 			echo ' match in the database is quite similar:</p>';
 			// use the post data as much as possible instead of looking up the same data in the database
-			echo '<p><strong>' . $timestamp . '</strong> ';
+			echo '<p><strong>' . $timestamp . ' [' . $duration . '] </strong> ';
 			
 			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($team_id1) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
@@ -388,6 +384,7 @@
 		global $team1_caps;
 		global $team2_caps;
 		global $timestamp;
+		global $duration;
 		global $match_id;
 		global $similarMatchFound;
 		
@@ -477,7 +474,7 @@
 			// teams are the same (and chosen by user)
 			if ((($team_id1 > 0) && ($team_id2 > 0)) && ($team_id1 === $team_id2))
 			{
-				echo '<p>In order to be an official match, teams would have to be different!</p>';
+				echo '<p class="error-msg">In order to be an official match, teams would have to be different!</p>';
 				$confirmed = 0;
 			}
 		}
@@ -533,6 +530,16 @@
 		{
 			$match_id = intval($_POST['$match_id']);
 		}
+		
+		
+		if (isset($_POST['duration']))
+		{
+			$duration = intval($_POST['duration']);
+		} else
+		{
+			$duration = 15;
+		}
+		
 		
 		// does the match exit?
 		if (isset($match_id))
@@ -590,7 +597,7 @@
 			$curTime = (int) strtotime('now');
 			if ((((int) $specifiedTime) - $curTime) >= 0)
 			{
-				echo '<p>You tried to enter, edit or delete a match that would have been played in the future.';
+				echo '<p class="error-msg">You tried to enter, edit or delete a match that would have been played in the future.';
 				echo ' Only matches in the past can be entered, edited or deleted.</p>' . "\n";
 				$confirmed = (int) 0;
 			}
@@ -620,10 +627,10 @@
 		if ($rows > 0 && !isset($_GET['edit']) && !isset($_GET['delete']))
 		{
 			// go back to the first step of entering a match
-			echo '<p>There is already a match entered at that exact time.';
+			echo '<p class="error-msg">There is already a match entered at that exact time.';
 			echo ' There can be only one finished at the same time because the scores depend on the order of the played matches.</p>' . "\n";
 			// just warn them and let them enter it all again by hand
-			echo 'Please enter the match with a different time.</p>' . "\n";
+			echo '<p class="error-msg">Please enter the match with a different time.</p>' . "\n";
 			echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?enter">' . "\n";
 			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="confirmed" value="0"');
@@ -631,10 +638,10 @@
 			
 			
 			// pass the match values to the next page so the previously entered data can be set default for the new form
-			show_form($team_id1, $team_id2, $team1_caps, $team2_caps, $readonly=false);
+			show_form($team_id1, $team_id2, $team1_caps, $team2_caps, $duration, $readonly=false);
 			
 			echo '<div>';
-			$site->write_self_closing_tag('input type="submit" name="match_cancel" value="Cancel and change match data" id="send"');
+			$site->write_self_closing_tag('input type="submit" name="match_cancel" value="Cancel and change match data" id="send" class="button l9"');
 			echo '</div>' . "\n";
 			echo '</form>' . "\n";
 			$site->dieAndEndPage();

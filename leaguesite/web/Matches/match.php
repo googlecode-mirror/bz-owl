@@ -4,7 +4,7 @@
 		die('This file is meant to be only included by other files!');
 	}
 	
-	function enter_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp)
+	function enter_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp, $duration)
 	{
 		global $site;
 		global $connection;
@@ -30,12 +30,12 @@
 		
 		// insert new entry
 		$query = ('INSERT INTO `matches` (`playerid`, `timestamp`, `team1_teamid`,'
-				  . ' `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score`)'
+				  . ' `team2_teamid`, `team1_points`, `team2_points`, `team1_new_score`, `team2_new_score` , `duration`)'
 				  . ' VALUES (' . sqlSafeStringQuotes($viewerid) . ', ' . sqlSafeStringQuotes($timestamp)
 				  . ', ' . sqlSafeStringQuotes($team_id1) .', ' . sqlSafeStringQuotes($team_id2)
 				  . ', ' . sqlSafeStringQuotes($team1_caps) . ', ' . sqlSafeStringQuotes($team2_caps)
 				  . ', ' . sqlSafeStringQuotes($team1_score) . ', ' . sqlSafeStringQuotes($team2_score)
-				  . ')');
+				  . ', ' . sqlSafeStringQuotes($duration) . ')');
 		if (!($result = $site->execute_query('matches', $query, $connection)))
 		{
 			unlock_tables();
@@ -62,14 +62,16 @@
 		require_once ('../CMS/maintenance/index.php');
 		update_activity();
 		
+		update_seasons($timestamp);
+		
 		echo '<p>The match was entered successfully.</p>' . "\n";
-		echo '<a class="button" href="./">Enter another match</a>' . "\n";
+		echo '<p class="simple-paging"><a class="button" href="./">Enter another match</a></p>' . "\n";
 		
 		$site->dieAndEndPage();
 	}
 	
 	
-	function edit_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp, $match_id)
+	function edit_match($team_id1, $team_id2, $team1_caps, $team2_caps, $timestamp, $duration, $match_id)
 	{
 		global $site;
 		global $connection;
@@ -186,6 +188,7 @@
 				  . ',`team2_points`=' . sqlSafeStringQuotes($team2_caps)
 				  . ',`team1_new_score`=' . sqlSafeStringQuotes($team1_score)
 				  . ',`team2_new_score`=' . sqlSafeStringQuotes($team2_score)
+				  . ',`duration`=' . sqlSafeStringQuotes($duration)
 				  . ' WHERE `id`=' . sqlSafeStringQuotes($match_id)
 				  . ' LIMIT 1');
 		
@@ -413,7 +416,7 @@
 	}
 	
 	
-	function show_form($team_id1, $team_id2, $team1_points, $team2_points, $readonly)
+	function show_form($team_id1, $team_id2, $team1_points, $team2_points, $duration, $readonly)
 	{
 		global $site;
 		global $connection;
@@ -421,6 +424,7 @@
 		global $match_day;
 		global $match_time;
 		
+		echo '<div class="match-form">' . "\n";
 		// displays match form
 		$query = ('SELECT `teams`.`id`,`teams`.`name` FROM `teams`,`teams_overview`'
 				  . ' WHERE (`teams_overview`.`deleted`<>' . sqlSafeStringQuotes('2') . ')'
@@ -459,8 +463,8 @@
 		$list_team_id_and_name[] = $team_id_list;
 		$list_team_id_and_name[] = $team_name_list;
 		
-		echo '<p><label for="match_team_id1">First team: </label>' . "\n";
-		echo '<span><select id="match_team_id1" name="match_team_id1';
+		echo '<div class="formrow"><label for="match_team_id1">First team: </label>' . "\n";
+		echo '<select id="match_team_id1" name="match_team_id1';
 		if ($readonly)
 		{
 			echo '" disabled="disabled';
@@ -481,7 +485,7 @@
 			echo '</option>' . "\n";
 		}
 		
-		echo '</select></span>' . "\n";
+		echo '</select>' . "\n";
 		echo '<label for="match_points_team1">Points: </label>' . "\n";
 		echo '<span>';
 		if ($readonly)
@@ -494,9 +498,9 @@
 			$site->write_self_closing_tag('input type="text" class="small_input_field" id="match_points_team1"'
 									  . ' name="team1_points" value="' . strval(intval($team1_points)) . '"');
 		}
-		echo '</span></p>' . "\n\n";
+		echo '</span></div>' . "\n\n";
 		
-		echo '<p><label for="match_team_id2">Second team: </label>' . "\n";
+		echo '<div class="formrow"><label for="match_team_id2">Second team: </label>' . "\n";
 		echo '<span><select id="match_team_id2" name="match_team_id2';
 		if ($readonly)
 		{
@@ -532,11 +536,11 @@
 			$site->write_self_closing_tag('input type="text" class="small_input_field" id="match_points_team2"'
 										  . ' name="team2_points" value="' . strval(intval($team2_points)) . '"');
 		}
-		echo '</span></p>' . "\n\n";
+		echo '</span></div>' . "\n\n";
 		
-		echo '<p>Current day and time is: ' . date('Y-m-d H:i:s') . ' ' . date('T') . '</p>' . "\n";
+		echo '<div class="formrow"><label class="long">Current day and time is: </label>' . date('Y-m-d H:i:s') . ' ' . date('T') . '</div>' . "\n";
 		
-		echo '<p><label for="match_day">Day: </label>' . "\n";
+		echo '<div class="formrow"><label for="match_day">Day: </label>' . "\n";
 		echo '<span>';
 		if (!isset($match_day))
 		{
@@ -557,10 +561,10 @@
 			$site->write_self_closing_tag('input type="text" class="small_input_field" id="match_day"'
 										  . ' name="match_day" value="' . htmlent($match_day) . '"');
 		}
-		echo '</span></p>' . "\n\n";
+		echo '</span></div>' . "\n\n";
 		
 		
-		echo '<p><label for="match_time">Time: </label>' . "\n";
+		echo '<div class="formrow"><label for="match_time">Time: </label>' . "\n";
 		echo '<span>';
 		if (!isset($match_time))
 		{
@@ -581,8 +585,38 @@
 			$site->write_self_closing_tag('input type="text" class="small_input_field" id="match_time"'
 										  . ' name="match_time" value="' . htmlent($match_time) . '"');
 		}
-		echo '</span></p>' . "\n\n";
+		echo '</span></div>' . "\n\n";
 		
+		
+		echo '<div class="formrow"><label for="match_time">Length: </label>' . "\n";
+		echo '<span>';		
+		if (!isset($duration))
+		{
+			if (isset($_POST['duration']))
+			{
+				$duration = intval($_POST['duration']);
+			} else
+			{
+				$duration = 15;
+			}
+		}
+		if ($readonly)
+		{
+			$site->write_self_closing_tag('input type="text" class="small_input_field" id="duration"'
+										  . ' name="duration" value="' . htmlent($duration) . '" readonly="readonly"');
+		} else
+		{
+			echo '<select id="duration" name="duration">';
+				echo '<option value="15" ' . (($duration == 15)? 'selected="selected"' : '') . '>15</option>';
+				echo '<option value="20" ' . (($duration == 20)? 'selected="selected"' : '') . '>20</option>';
+				echo '<option value="30" ' . (($duration == 30)? 'selected="selected"' : '') . '>30</option>';
+			echo '</select>';
+			
+			
+		}
+		echo '</span></div>' . "\n\n";
+		echo '</div>';
+		echo '</div>';
 	}
 	
 	

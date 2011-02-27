@@ -3,7 +3,7 @@
 	{
 		function Parse($string)
 		{
-			require_once((dirname(__FILE__)) . '/nbbc-1.4.4/nbbc.php');
+			require_once((dirname(__FILE__)) . '/nbbc-1.4.5/nbbc.php');
 			$setup = new BBCode;
 			$setup->SetSmileyURL(baseaddress() . 'smileys');
 //			$setup->SetEnableSmileys(false);

@@ -4,7 +4,8 @@
 	// this seems to be a legacy of register_globals = on
 	// see also: http://us2.php.net/variables.external
 	$page_title = '_/';
-	$display_page_title = 'Home';
+	$display_page_title = 'Welcome to the <span> Ducati League</span>';
+	$cmspage = 'home';
 	
 	$randomkey_name = 'randomkey_static_pages_' . $page_title;
 	//	$entry_add_permission = 'allow_add_messages';

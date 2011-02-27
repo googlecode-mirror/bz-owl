@@ -10,5 +10,5 @@
 	$url = urlencode(baseaddress() . 'Login/' . '?bzbbauth=%TOKEN%,%USERNAME%');
 	require_once 'index.php';
 	echo '"' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;
-	echo '">my.bzflag.org (BZBB)</a>.</p>' . "\n";
+	echo '" class="button loginbutton">my.bzflag.org (BZBB)</a>.</p>' . "\n";
 ?>

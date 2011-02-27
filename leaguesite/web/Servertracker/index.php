@@ -42,6 +42,8 @@
 	
 	require '../CMS/navi.inc';
     
+	echo '<h1 class="tools">Servers</h1>';
+	
 	echo '<div class="static_page_box">' . "\n";
 	if (!($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker'])))
 	{
@@ -56,51 +58,39 @@
 	
 	if (isset($_GET['server']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<p class="simple-paging"><a class="button previous" href="./">overview</a></p>' . "\n";
 		$server = urldecode($_GET['server']);
 		formatbzfquery_last($server, $connection);
 	} else
 	{
-		formatbzfquery("bzf.guleague.org:5154", $connection);
+		echo '<h2>Match servers</h2>';
 		
-		formatbzfquery("bzf.guleague.org:5155", $connection);
+		formatbzfquery("dub.bzflag.net:59998", $connection);
 		
-		formatbzfquery("bzf.guleague.org:5156", $connection);
+		formatbzfquery("dub.bzflag.net:59999", $connection);
 		
-		formatbzfquery("bzf.guleague.org:5160", $connection);
+		formatbzfquery("quol.bzflag.bz:59998", $connection);
 		
-		formatbzfquery("bzf.guleague.org:5161", $connection);
+		formatbzfquery("studpups.bzflag.net:59998", $connection);
 		
-		formatbzfquery("bzf.guleague.org:5157", $connection);
+		formatbzfquery("brl.arpa.net:59998", $connection);
 		
-		formatbzfquery("bzf.guleague.org:5158", $connection);
+		formatbzfquery("brl.arpa.net:59999", $connection);
+				
+		echo '<h2>Public servers</h2>';
 		
-		formatbzfquery("brad.guleague.org:5158", $connection);
+		formatbzfquery("dub.bzflag.net:5157", $connection);
 		
-//		formatbzfquery("longdon.guleague.org:5158", $connection);
-//      
-		formatbzfquery("destroyer.guleague.org:5157", $connection);
+		formatbzfquery("dub.bzflag.net:5154", $connection);
 		
-        formatbzfquery("destroyer.guleague.org:5158", $connection);
+		formatbzfquery("quol.bzflag.bz:5162", $connection);
 		
-		formatbzfquery("dub.guleague.org:59997", $connection);
+		formatbzfquery("studpups.bzflag.net:5156", $connection);
 		
-		formatbzfquery("trb.guleague.org:5158", $connection);
+		formatbzfquery_last("brl.arpa.net:5157", $connection);
 		
-		formatbzfquery("brl.arpa.net:5158", $connection);
-//		
-//		formatbzfquery("fairserve.bzflag.net:5157", $connection);
-//		
-//		formatbzfquery("fairserve.bzflag.net:5158", $connection);
-//		
-		formatbzfquery("quol.guleague.org:5157", $connection);
-		
-		formatbzfquery("quol.guleague.org:5158", $connection);
-		
-		formatbzfquery_last("bzflag.enuffsaid.co.nz:5158", $connection);
 	}
 ?>
-
 </div>
 </div>
 </body>
@@ -174,7 +164,7 @@
 		$ch = curl_init();
 		
 		// set URL and other appropriate options
-		curl_setopt($ch, CURLOPT_URL, 'http://gu.bzleague.com/rss/export2.php');
+		curl_setopt($ch, CURLOPT_URL, 'http://league.bzflag.net/rss/export2.php');
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		

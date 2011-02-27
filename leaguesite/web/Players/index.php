@@ -10,15 +10,18 @@
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require realpath('../CMS/navi.inc');
 	
+	echo '<h1 class="players">Players</h1>';
+	
 	function show_overview_and_profile_button()
 	{
 		global $profile;
-		
+		echo '<div class="simple-paging">' . "\n";
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		if (!isset($_GET['profile']))
 		{
 			echo '<a class="button" href="./?profile=' . strval($profile) . '">back to user profile</a>' . "\n";
 		}
+		echo '</div>' . "\n";
 	}
 	
 	if (!isset($site))
@@ -53,6 +56,7 @@
 		}
 	}
 	
+	
 	if ((isset($_GET['edit'])) || (isset($_GET['invite'])))
 	{
 		if ($viewerid < 1)
@@ -84,8 +88,8 @@
 		
 		if ($profile === 0)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			echo '<p>The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<p class="main-box">The user id 0 is reserved for not logged in players and thus no user with that id could ever exist.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
@@ -111,8 +115,8 @@
 		if ($rows === 0)
 		{
 			// someone tried to view the profile of a non existing user
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			echo '<p>This user does not exist.</p>';
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<p class="main-box">This user does not exist.</p>';
 			$site->dieAndEndPage('');
 		}
 		unset($rows);
@@ -143,10 +147,12 @@
 		
 		show_overview_and_profile_button();
 		
+		echo '<div class="static_page_box">' . "\n";
+			
+		
 		if (!strcmp($suspended_status, 'active') === 0)
 		{
-			echo '<div class="static_page_box">' . "\n";
-			echo '<p>You may not invite deleted, disabled or banned users</p>' . "\n";
+			echo '<p class="error-msg">You may not invite deleted, disabled or banned users</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
@@ -166,15 +172,13 @@
 			// users are not supposed to invite themselves
 			if ($viewerid === $profile)
 			{
-				echo '<div class="static_page_box">' . "\n";
-				echo '<p>You are not allowed to invite yourself.</p>' . "\n";
+				echo '<p class="error-msg">You are not allowed to invite yourself.</p>' . "\n";
 				$site->dieAndEndPage('');
 			}
 			
 			$query = 'SELECT `id` FROM `teams` WHERE `leader_playerid`=' . sqlSafeStringQuotes($viewerid) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
-				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('A database related problem prevented to find out if the viewer of this site is the leader of a team.');
 			}
 			
@@ -184,7 +188,6 @@
 			if ($rows > (int) 1)
 			{
 				show_overview_and_profile_button();
-				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('There is more than one team with the id ' . sqlSafeString($teamid) . ' in the database! This is a database problem, please report it to admins!');
 			}
 			
@@ -198,7 +201,6 @@
 		// check invite permission
 		if (($profile < 1) || (($leader_of_team_with_id < 1) && !($allow_edit_any_user_profile)))
 		{
-			echo '<div class="static_page_box">' . "\n";
 			$site->dieAndEndPage('You (id='. sqlSafeString($viewerid) . ') are not allowed to invite the user with id ' . sqlSafeString($profile) . '.');
 		}		
 		
@@ -211,10 +213,9 @@
 		if (isset($_POST['confirmed']))
 		{
 			// someone is trying to break the form
-			// TODO: implement preview
+			// TODO: implement preview			
 			if (($confirmed < 1) || ($confirmed > 2))
 			{
-				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('Your (id='. $viewerid. ') attempt to insert wrong data into the form was detected.');
 			}
 						
@@ -227,7 +228,6 @@
 			
 			if (!($randomkeysmatch))
 			{
-				echo '<div class="static_page_box">' . "\n";
 				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
 				$site->dieAndEndPage('');
 			}
@@ -255,15 +255,13 @@
 				
 				if ($rows < 1)
 				{
-					echo '<div class="static_page_box">' . "\n";
-					echo '<p>The specified team does not exist and thus the invitation was cancelled.</p>' . "\n";
+					echo '<p class="error-msg">The specified team does not exist and thus the invitation was cancelled.</p>' . "\n";
 					$site->dieAndEndPage('');
 				}
 			}
 			
 			if ($invited_to_team < 1)
 			{
-				echo '<div class="static_page_box">' . "\n";
 				$site->dieAndEndPage('You do not have permission to invite players to a team!');
 			}
 			
@@ -351,7 +349,6 @@
 				$site->dieAndEndPage('');
 			}
 			
-			echo '<div class="static_page_box">' . "\n";
 			echo '<p>The player was invited successfully.</p>' . "\n";
 			
 			// invitation and notification was sent
@@ -360,11 +357,8 @@
 		
 		if ($allow_invite_in_any_team || ($leader_of_team_with_id > 0))
 		{
-			echo '<div class="static_page_box">' . "\n";
 			echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?invite=' . htmlentities(urlencode($profile)) . '">' . "\n";
-			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="confirmed" value="1"');
-			echo '</div>' . "\n";
 			
 			// display team picker in case the user can invite a player to any team
 			if ($allow_invite_in_any_team)
@@ -397,8 +391,8 @@
 				$list_team_id_and_name[] = $team_name_list;
 				
 				$n = ((int) count($team_id_list)) - 1;
-				
-				echo '<p><label for="invite_to_team">Select the team the player will be invited to: </label>' . "\n";
+				echo '<h3>Invite player to team</h3>';
+				echo '<div class="formrow"><label class="invite" for="invite_to_team">Select the team the player will be invited to: </label>' . "\n";
 				echo '<span><select id="invite_to_team" name="invite_to_team_id';
 				if (isset($_GET['delete']))
 				{
@@ -420,19 +414,14 @@
 					echo '</option>' . "\n";
 				}
 				
-				echo '</select></span></p>' . "\n";			
+				echo '</select></span></div>' . "\n";			
 			}
 			
 			$new_randomkey_name = $randomkey_name . microtime();
 			$new_randomkey = $site->set_key($new_randomkey_name);
-			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
-			echo '</div>' . "\n";
-			echo '<div>';
 			$site->write_self_closing_tag('input type="hidden" name="' . htmlentities($randomkey_name) . '" value="'
 										  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
-			echo '</div>' . "\n";
-			
 			// find out the player's name
 			$query = 'SELECT `name` FROM `players` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 1';
 			if (!($result = @$site->execute_query('players', $query, $connection)))
@@ -448,9 +437,8 @@
 				$player_name = $row['name'];
 			}
 			
-			echo '<p style="display:inline">Do you really want to invite ' . $player_name . '?</p>' . "\n";
-			echo '<div style="display:inline">';
-			$site->write_self_closing_tag('input type="submit" name="invite_player" value="Invite the player" id="send"');
+			echo '<div class="formrow">Do you really want to invite ' . $player_name . '?' . "\n";
+			$site->write_self_closing_tag('input type="submit" name="invite_player" value="Invite the player" id="send" class="button"');
 			echo '</div>' . "\n";
 			echo '</form>' . "\n";
 			$site->dieAndEndPage('');
@@ -594,7 +582,7 @@
 		
 		// send button
 		echo '<div class="edit_user_suspended_status_send">';
-		$site->write_self_closing_tag('input type="submit" name="edit_user_suspended_status" value="Set new user suspended status" id="send"');
+		$site->write_self_closing_tag('input type="submit" name="edit_user_suspended_status" value="Set new user suspended status" id="send" class="button"');
 		echo '</div>' . "\n";
 		
 		// random key fun to prevent automated sending by visiting a page
@@ -620,6 +608,7 @@
 	{
 		show_overview_and_profile_button();
 		
+		echo '<div class="toolbar">' . "\n";
 		if (isset($_SESSION['allow_ban_any_user']) && $_SESSION['allow_ban_any_user'])
 		{
 			// a user should not be able to ban the own account
@@ -641,8 +630,8 @@
 		{
 			echo '<a class="button" href="./?edit=' . (urlencode($profile)) . '">edit</a>' . "\n";
 		}
-		// need an element displayed with display: block before the team area
-		echo '<div class="p"></div>' . "\n";
+		echo '</div>';
+		
 		
 		// the data we want
 		$query = 'SELECT `players`.`external_playerid`, `players`.`name`,`countries`.`name` AS `country_name`,`countries`.`flagfile`, `players_profile`.`UTC`';
@@ -702,115 +691,17 @@
 		}
 		
 		$player_name = '';
+		
+		
 		while($row = mysql_fetch_array($result))
 		{
 			$player_name = $row['name'];
 			
-			echo '<div class="user_areas_container">' . "\n";
-			echo '<div class="user_area">' . "\n";
-			echo '	<div class="user_header">' . "\n";
-			echo '		<div class="user_general_info_header">Player Profile</div>' . "\n";
-			echo '	</div>' . "\n";
-			echo '	<div class="user_description">' . "\n";
-			if (!(strcmp(($row['logo_url']), '') === 0))
-			{
-				// user entered a logo
-				$site->write_self_closing_tag('img class="player_logo" src="'
-											  . htmlentities($row['logo_url'])
-											  . '" style="max-width:200px; max-height:150px" alt="player logo"');
-			}
-			echo '		<span class="user_profile_name">' . $player_name . '</span> ';
-			if (strcmp($suspended_status, 'deleted') === 0)
-			{
-				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";
-			}
-			if ((strcmp($suspended_status, 'login disabled') === 0) || (strcmp($suspended_status, 'banned') === 0))
-			{
-				echo '<span class="user_description_banned">(banned)</span>' . "\n";
-			}
-			if ((int) $row['teamid'] !== 0)
-			{
-				echo '<div class="user_profile_team_name">';
-				echo 'Team: <a href="../Teams?profile=' . $row['teamid'] . '">' . $row['team_name'] . '</a>';
-				echo '</div>' . "\n";
-			}
 			
-			echo '		<div class="user_profile_location_description_row"><span class="user_profile_location_description">location: </span>';
-			if (!(strcmp($row['flagfile'], '') === 0))
-			{
-				$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row['flagfile'] . '"');
-			}
-			echo '<span class="user_profile_location">' . htmlent($row['country_name']) . '</span></div>' . "\n";
-			if (intval($row['UTC']) >= 0)
-			{
-				$time_format = '+' . strval($row['UTC']);
-			} else
-			{
-				$time_format = strval($row['UTC']);
-			}
-			echo '		<div class="user_profile_location_timezone_row"><span class="user_profile_location_timezone_description">timezone: </span> <span class="user_profile_location_timezone">' . htmlent('UTC ' . $time_format) . '</span></div>' . "\n";
-			unset($time_format);
-			require_once dirname(dirname(__FILE__)) . '/CMS/login_module_list.php';
-			$module = active_login_modules();
-			if (isset($module['bzbb']) && ($module['bzbb']) && (!(strcmp($row['external_playerid'], '') === 0)))
-			{
-				echo ('		<div class="user_profile_bzbb_description_row"><span class="user_profile_bzbb_description">BZBB id:</span>'
-					  . ' <span class="user_profile_bzbb">'
-					  . '<a href="http://my.bzflag.org/bb/memberlist.php?mode=viewprofile&amp;u=' . htmlent($row['external_playerid']) . '">'
-					  . htmlent($row['external_playerid'])
-					  . '</a>'
-					  . '</span></div>' . "\n");
-			}
-			echo '		<div class="user_profile_joined_description_row"><span class="user_profile_joined_description">joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
-			echo '		<div class="user_profile_last_login_description_row"><span class="user_profile_last_login_description">last login:</span> <span class="user_profile_last_login">' . htmlent($row['last_login']) . '</span></div>' . "\n";
-			echo '	</div>' . "\n";
-			echo '</div>' . "\n";
-			
-			echo '<div class="user_area">' . "\n";
-			echo '	<div class="user_general_info_header">Profile Text</div>' . "\n";
-			echo '	<span class="user_comment">';
-			
-			if (strcmp ($row['user_comment'], '') === 0)
-			{
-				echo '<span class="no_user_comment">The user has not set up any profile text yet.</span>';
-			} else
-			{
-				echo $row['user_comment'];
-			}
-			echo '</span>' . "\n";
-			echo '</div>' . "\n";
-			
-			// only admins can see their comments, as users may be upset about admin comments on their profile page
-			if ($allow_add_admin_comments_to_user_profile === true)
-			{
-				$admin_comments = $row['admin_comments'];
-				if (strcmp ($admin_comments, '') === 0)
-				{
-					echo '<p>There are no admin comments on this user page.</p>';
-				} else
-				{
-					echo '	<div class="user_admin_comments_area">' . "\n";
-					echo '		<div class="user_admin_comments_header_text">admin comments</div>' . "\n";
-					echo '		<div class="user_admin_comments">' . $admin_comments . '</div>' . "\n";
-					echo '	</div>' . "\n";
-				}
-			}
-		}
-		echo '</div>' . "\n";
-		// query result no longer needed
-		mysql_free_result($result);
-		
-		// user needs to be logged in to see some links
+			// user needs to be logged in to see some links
 		if ($viewerid > 0)
 		{
-			
-			if ($site->use_xtml())
-			{
-				echo '<br />' . "\n";
-			} else
-			{
-				echo '<br>' . "\n";
-			}
+			echo '<div class="toolbar">' . "\n";
 			echo '<a class="button" href="../Messages/?add&amp;playerid=' . htmlspecialchars(urlencode($player_name)) . '">Write bzmail to player</a>' . "\n";
 			
 			$allow_invite_in_any_team = false;
@@ -834,9 +725,9 @@
 				
 				// if the viewer is leader of a team, a value other than 0 will be the result of the query
 				// and that value will be the id of the team the viewer is leader
-				while($row = mysql_fetch_array($result))
+				while($row2 = mysql_fetch_array($result))
 				{
-					$leader_of_team_with_id = $row['id'];
+					$leader_of_team_with_id = $row2['id'];
 				}
 			}
 			
@@ -851,18 +742,114 @@
 			{
 				echo '<a class="button" href="../Visits/?profile=' . htmlspecialchars($profile) . '">View visits log</a>' . "\n";
 			}
+			echo '</div>' . "\n";
 		}
+			
+			echo '<div class="user_areas_container">' . "\n";
+			echo '<div class="user_area main-box">' . "\n";
+			echo '	<div class="user_description">' . "\n";
+			if (!(strcmp(($row['logo_url']), '') === 0))
+			{
+				// user entered a logo
+				$site->write_self_closing_tag('img class="player_logo" src="'
+											  . htmlentities($row['logo_url'])
+											  . '" style="max-width:200px; max-height:150px" alt="player logo"');
+			}
+			echo '		<h2 class="user_profile_name">' . $player_name . '</h2> ';
+			if (strcmp($suspended_status, 'deleted') === 0)
+			{
+				echo '<span class="user_description_deleted">(deleted)</span>' . "\n";
+			}
+			if ((strcmp($suspended_status, 'login disabled') === 0) || (strcmp($suspended_status, 'banned') === 0))
+			{
+				echo '<span class="user_description_banned">(banned)</span>' . "\n";
+			}
+			if ((int) $row['teamid'] !== 0)
+			{
+				echo '<div class="user_profile_team_name">';
+				echo '<span class="label">Team: </span><a href="../Teams?profile=' . $row['teamid'] . '">' . $row['team_name'] . '</a>';
+				echo '</div>' . "\n";
+			}
+			
+			echo '		<div class="user_profile_location_description_row"><span class="label user_profile_location_description">Location: </span>';
+			if (!(strcmp($row['flagfile'], '') === 0))
+			{
+				$site->write_self_closing_tag('img alt="country flag" class="country_flag" src="../Flags/' . $row['flagfile'] . '"');
+			}
+			echo '<span class="user_profile_location">' . htmlent($row['country_name']) . '</span></div>' . "\n";
+			if (intval($row['UTC']) >= 0)
+			{
+				$time_format = '+' . strval($row['UTC']);
+			} else
+			{
+				$time_format = strval($row['UTC']);
+			}
+			echo '		<div class="user_profile_location_timezone_row"><span class="label user_profile_location_timezone_description">Timezone: </span> <span class="user_profile_location_timezone">' . htmlent('UTC ' . $time_format) . '</span></div>' . "\n";
+			unset($time_format);
+			require_once dirname(dirname(__FILE__)) . '/CMS/login_module_list.php';
+			$module = active_login_modules();
+			if (isset($module['bzbb']) && ($module['bzbb']) && (!(strcmp($row['external_playerid'], '') === 0)))
+			{
+				echo ('		<div class="user_profile_bzbb_description_row"><span class="label user_profile_bzbb_description">BZBB id:</span>'
+					  . ' <span class="user_profile_bzbb">'
+					  . '<a href="http://my.bzflag.org/bb/memberlist.php?mode=viewprofile&amp;u=' . htmlent($row['external_playerid']) . '">'
+					  . htmlent($row['external_playerid'])
+					  . '</a>'
+					  . '</span></div>' . "\n");
+			}
+			echo '		<div class="user_profile_joined_description_row"><span class="label user_profile_joined_description">Joined:</span> <span class="user_profile_joined">' . htmlent($row['joined']) . '</span></div>' . "\n";
+			echo '		<div class="user_profile_last_login_description_row"><span class="label user_profile_last_login_description">Last login:</span> <span class="user_profile_last_login">' . htmlent($row['last_login']) . '</span></div>' . "\n";
+			echo '	</div>' . "\n";
+			echo '</div>' . "\n";
+			
+			echo '<div class="user_area main-box">' . "\n";
+			echo '	<div class="box-caption user_general_info_header">Profile Text</div>' . "\n";
+			echo '	<span class="user_comment">';
+			
+			if (strcmp ($row['user_comment'], '') === 0)
+			{
+				echo '<span class="no_user_comment">The user has not set up any profile text yet.</span>';
+			} else
+			{
+				echo $row['user_comment'];
+			}
+			echo '</span>' . "\n";
+			echo '</div>' . "\n";
+			
+			// only admins can see their comments, as users may be upset about admin comments on their profile page
+			if ($allow_add_admin_comments_to_user_profile === true)
+			{
+				$admin_comments = $row['admin_comments'];
+				if (strcmp ($admin_comments, '') === 0)
+				{
+					echo '<p>There are no admin comments on this user page.</p>';
+				} else
+				{
+					echo '	<div class="user_admin_comments_area main-box">' . "\n";
+					echo '		<div class="box-caption user_admin_comments_header_text">Admin comments</div>' . "\n";
+					echo '		<div class="user_admin_comments">' . $admin_comments . '</div>' . "\n";
+					echo '	</div>' . "\n";
+				}
+			}
+		}
+		echo '</div>' . "\n";
+		// query result no longer needed
+		mysql_free_result($result);
+		
+		
 		$site->dieAndEndPageNoBox();
 	}
 	
 	// display overview
 	
+	echo '<div class="main-box">';
+	
 	// form letting search for team name or time
 	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
-	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar">' . "\n";
+	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar simpleform">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline" class="search_bar_text"><label for="player_search_string">Search for:</label> ' . "\n";
+	echo '<div class="formrow"><label for="player_search_string">Search for:</label> ' . "\n";
 	echo '<span>';
 	if (isset($_GET['search']))
 	{
@@ -875,7 +862,7 @@
 	echo '</span></div> ' . "\n";
 	
 	// looking for either team name or time
-	echo '<div style="display:inline"><label for="player_search_type">result type:</label> ' . "\n";
+	echo '<div class="formrow"><label for="player_search_type">result type:</label> ' . "\n";
 	echo '<span><select id="player_search_type" name="search_type">';
 	
 	if (isset($_GET['search']))
@@ -996,7 +983,7 @@
 	echo '</div> ' . "\n";
 	
 	echo '<div style="display:inline">';
-	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send"');
+	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send" class="button"');
 	echo '</div>' . "\n";
 	echo '</form>' . "\n";
 	
@@ -1100,11 +1087,11 @@
 		$teamid = (int) -1;
 		echo '<table id="table_players_overview" class="big">' . "\n";
 		echo '<caption>Active Players</caption>' . "\n";
-		echo '<tr>' . "\n";
+		echo '<thead><tr>' . "\n";
 		echo '	<th>Name</th>' . "\n";
 		echo '	<th>Team</th>' . "\n";
 		echo '	<th>Joined</th>' . "\n";
-		echo '</tr>' . "\n\n";
+		echo '</tr></thead>' . "\n\n";
 		
 		while($row = mysql_fetch_array($result))
 		{
@@ -1135,6 +1122,24 @@
 		echo '</table>' . "\n";
 	}
 ?>
+
+		<script src='/js/jquery-1.4.2.min.js' type='text/javascript'></script>
+		<script type="text/javascript" language="javascript" src="/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+				$('#table_players_overview').dataTable( 
+					{
+						"bPaginate": false,
+						"bLengthChange": false,
+						"bInfo": false,
+						"aoColumns": [{ "sType": "html" }, { "sType": "html" }, null],
+						"aaSorting": [[ 1, "asc" ]],										
+						"bAutoWidth": false					
+					}
+				);
+			} );
+		</script>		
+
 </div>
 </body>
 </html>
