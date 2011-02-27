@@ -12,6 +12,7 @@ Required permissions:
 	PHP's variable register_globals is required to be off.
 	PHP's variable magic_quotes_gpc is required to be off, see also
 		http://www.php.net/manual/en/info.configuration.php#ini.magic-quotes-gpc
+6. 	php-curl library  must be installed. 
 
 Installation steps:
 -------------------
@@ -23,14 +24,16 @@ Installation steps:
 6.	Update configuration files: 
 		/CMS/siteoptions.php
 		/CMS/siteoptions_path.php
-7.	Run webleague-importer.php
-8.	Run bbcode-library-updater.php
+7.	Run webleague-importer.php (it will take abou 1-2 hours)
+8.	Check if site works :)
 9.	Delete webleague-importer.php
-10.	Delete bbcode-library-updater.php 
-11. Check if site works :)
-12. Check if servertracker in background works
+10. Check if servertracker in background works
 	There is a command: exec('php ' . dirname(__FILE__) . '/cli/servertracker_query_backend.php >/dev/null &');
-	It will not work if php alias is not set. 
+	It will not work if php alias is not set.
+11.	If all OK - switch old domain into new site
+12. Turn off old site.
+
+
 	
 	
 Troubleshooting:
@@ -38,3 +41,12 @@ Troubleshooting:
 
 Hard to predict what will fail, so also hard to predict what to do :) 
 But be sure error logs are set and accessible. 
+If there will be any problems with database import, probably webleague-importer must be launched again but without some importers (those which works fine).
+
+
+Possible problems:
+1. Site maintenance will not launch (could be done by editing match)
+2. Seasons will not updates (could be recalculated manually)
+3. there will be an error while login: Call to undefined function curl_init() 
+That should be turned on in php.ini: extension=php_curl.dll
+4. Visitslog (getting hosts) will take very long. Probably we should put it in separate script.
