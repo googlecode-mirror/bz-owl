@@ -517,7 +517,10 @@
 			} elseif ($suspended_status === 2)
 			{
 				$suspended_status = 'login disabled';
-			} else
+			} elseif ($suspended_status === 666)
+			{
+				$suspended_status = 'deleted';
+			}else
 			{
 				$suspended_status = 'banned';
 			}
@@ -546,6 +549,25 @@
 			echo htmlent($suspended_status);			
 			echo '.</p>';
 			
+			if ($suspended_status === 'deleted')
+			{
+				$query = 'UPDATE `players` SET `teamid`=0';
+				$query .= ' WHERE `id`=' . sqlSafeStringQuotes($profile);
+				if (!($result = @$site->execute_query('players', $query, $connection)))
+				{
+					$site->dieAndEndPage('');
+				}		
+				
+				
+				require_once ('../CMS/maintenance/index.php');
+				$maint = new maintenance();
+				$maint->do_maintenance($site, $connection);
+				// date of 2 months in past will help during maintenance
+				$two_months_in_past = strtotime('-3 months');
+				$two_months_in_past = strftime('%Y-%m-%d %H:%M:%S', $two_months_in_past);
+				$maint->deleteAccount($profile, $two_months_in_past);
+				
+			}
 			// done with setting account status
 			$site->dieAndEndPage('');
 		}
@@ -588,6 +610,13 @@
 			echo '" selected="selected';
 		}
 		echo '">banned';
+		echo '</option>' . "\n";
+		echo '<option value="666';
+		if (strcmp($suspended_status, 'deleted') === 666)
+		{
+			echo '" selected="selected';
+		}
+		echo '">deleted';
 		echo '</option>' . "\n";
 		
 		echo '</select></span></p>' . "\n";			
