@@ -8,14 +8,7 @@
 		</div>
 	</div>
 	
-	<!-- 
-	<h2>Shout box</h2>	
-	<div class="main-box">
-	
-	</div>
-	 -->
-	
-	
+
 	<div class="tabs">	
 		<ul class="tabNavigation">
 			<li><a href="#last-matches" class="matches">Last matches</a></li>
@@ -65,16 +58,32 @@
         });
 
                 
-        </script>
+      if(jQuery('#article_body').height()>195){
+		jQuery('#article_body').wrap('<div id="article"/>');
+		jQuery('#moreD').show().toggle(function(){
+			jQuery(this).text('show less ^');
+			jQuery('#article').animate({
+				'height':jQuery('#article_body').height()
+			},100);
+		},function(){
+			jQuery('#article').animate({
+				'height':195
+			},100);
+			jQuery(this).text('show more v');
+		});
+	}
+
+	  
+	  </script>
 	
 	
 	
 		 
 </div>
-<div class="footer">Ducati layout by osta; tank drawing by <a href="http://www.newgrounds.com/art/view/underarock/08-tank">UnderARock</a>
-<p>
+<div class="footer">Ducati layout by <a href="/Players/?search_string=osta&search_type=player&search_result_included=all&search=Search">osta</a>; 
+tank drawing by <a href="http://www.newgrounds.com/art/view/underarock/08-tank">UnderARock</a>; 
 Shoutbox script - <a href="http://spacegirlpippa.co.uk" title="A free mini chat (shoutbox) script"> wTag </a>
-</p></div>
+</div>
 
 <?php 
 
@@ -129,10 +138,10 @@ function display_last_news($limit)
 		}
 		echo '</div>' . "\n";
 		echo '</div>' . "\n";
-		echo '<p>';
+		echo '<div id="article_body">';
 		echo $row['announcement'];
-		echo '</p>' . "\n";
-		
+		echo '</div>' . "\n";
+		echo '<a href="javascript:void(0);" id="moreD" style="display: inline;">show more v</a>';
 		echo '<p class="simple-paging p0"><a href="/News/" class="button next">More news</a></p>';
 	}
 }
@@ -143,7 +152,8 @@ function display_top_teams($limit)
 	global $connection;
 	
 		$table_name = 'teams_overview';	
-	$query = 'SELECT * FROM `teams` t LEFT JOIN teams_overview tov ON tov.teamid = t.id ORDER BY tov.score DESC LIMIT 0,' . $limit;
+	$query = 'SELECT * FROM `teams` t LEFT JOIN teams_overview tov ON tov.teamid = t.id ' 
+	. ' WHERE deleted = 1 AND SUBSTRING(activity, 1, 4) != \'0.00\' ORDER BY tov.score DESC LIMIT 0,' . $limit;
 			
 	$result = ($site->execute_query($table_name, $query, $connection));
 	if (!$result)
