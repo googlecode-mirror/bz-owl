@@ -1,0 +1,564 @@
+@import url("Dark_misc/rankings.css");
+
+
+body {
+background-color:#000;
+background-image:url(../styles/background_tile.png);
+color:#fff;
+font-family:verdana;
+}
+
+p.first_p {
+margin-top:0;
+position:relative;
+}
+
+table caption {
+background:rgba(210,211,235,0.54);
+background-image:url(../styles/background_tile_stripe.png);
+border:1px solid #777;
+margin-bottom:5px;
+font-weight:700;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+padding:5px;
+}
+
+table.big td {
+padding:4px;
+}
+
+table.big th {
+text-align:center;
+padding:5px;
+}
+
+table.big {
+font-size:11pt;
+width:100%;
+border:1px solid #777;
+background-color:#444;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+margin-top:10px;
+text-align:left;
+}
+
+tr:nth-child(even) {
+background-color:#333;
+}
+
+tr:nth-child(odd) {
+background-color:#444;
+}
+
+ul.navigation {
+font-family:sans-serif;
+text-align:center;
+background:#333;
+padding:5px;
+position:fixed;
+top:-16px;
+left:0;
+right:0;
+height:18px;
+border:1px solid #777;
+border-width:0 0 1px 0;
+z-index:1000;
+}
+
+ul.navigation li {
+list-style:none;
+display:inline;
+white-space:nowrap;
+/*background:#333;*/
+padding:5px 10px 5px 10px;
+}
+
+/*ul.navigation li:hover {
+background:#222;
+}*/
+
+a, a:active, a:visited {
+text-decoration: none;
+color: orange;
+}
+a:hover, a:focus {
+text-decoration: none;
+color: yellow;
+}
+
+input[type=text],input[type=password] {
+height:17px;
+line-height:17px;
+background-color:#222;
+color:#eee;
+padding:1px;
+margin-bottom:10px;
+margin-top:10px;
+}
+
+input[type="submit"], input[type="reset"], input[type="button"] {
+background-color:#333;
+color:#fff;
+margin:2px;
+padding:2px 5px 2px 5px;
+}
+input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
+background-color:#222;
+color:#eee;
+}
+
+textarea {
+background-color:#222;
+color:#eee;
+width:500px;
+height:150px;
+padding:1px;
+margin-bottom:10px;
+margin-top:10px;
+}
+
+select {
+background-color:#222;
+color:#eee;
+padding:1px;
+margin-bottom:10px;
+margin-top:10px;
+}
+
+div.content {
+clear:both;
+min-height:200px;
+text-align:center;
+width:auto;
+}
+
+span.unread_messages {
+color:#d00;
+font-weight:700;
+}
+
+label.msg_send {
+float:left;
+text-align:right;
+width:180px;
+padding:5px;
+white-space:nowrap;
+}
+
+label.msg_ann {
+float:left;
+text-align:right;
+width:3.5em;
+padding:1mm 2mm 0 0;
+}
+
+label.msg_edit {
+float:left;
+text-align:right;
+width:4.4em;
+padding:1mm 2mm 0 0;
+}
+
+div.invisi {
+visibility:hidden;
+}
+
+div.add {
+margin-bottom:1em;
+margin-left:10em;
+margin-top:2mm;
+}
+
+div.static_page_box {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+background-color:#444;
+border:1px solid #777;
+margin-top:20px;
+text-align:left;
+padding:10px;
+min-height:200px;
+}
+
+div.article {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+background-color:#444;
+border:1px solid #777;
+text-align:left;
+padding:5px;
+margin-top:20px;
+}
+
+div.article_header {
+background:rgba(210,211,235,0.54) -3px;
+background-image:url(../styles/background_tile_stripe.png);
+overflow:auto;
+padding-bottom:5px;
+padding-right:1em;
+padding-top:5px;
+font-weight:700;
+border:1px solid #777;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+}
+
+div.timestamp {
+float:left;
+margin-left:1em;
+text-align:left;
+}
+
+div.article p {
+margin-left:1em;
+}
+
+div.folder_selection {
+margin-bottom:2em;
+}
+
+span.msg_author {
+font-weight:400;
+}
+
+span.msg_timestamp {
+font-style:italic;
+font-weight:400;
+}
+
+span.msg_recipient_seperator {
+color:#4169E1;
+}
+
+div.msg_contents {
+margin-top:.2em;
+text-align:left;
+}
+
+img.team_logo {
+margin-bottom:1em;
+margin-top:1em;
+}
+
+table#table_team_members {
+visibility:visible;
+}
+
+table#table_team_members caption {
+text-align:center;
+visibility:visible;
+}
+
+div.user_areas_container {
+display:inline-block;
+overflow:auto;
+}
+
+div.user_area {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+background-color:#444;
+border:1px solid #777;
+display:block;
+min-width:800px;
+margin:10px;
+padding:10px;
+}
+
+div.user_general_info_header {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+background:rgba(210,211,235,0.54) -3px;
+background-image:url(../styles/background_tile_stripe.png);
+overflow:auto;
+font-weight:700;
+text-align:center;
+padding:5px;
+}
+
+span.user_profile_name {
+display:block;
+font-weight:700;
+margin-bottom:1em;
+}
+
+span.user_description_banned {
+color:red;
+display:block;
+margin-bottom:1em;
+margin-top:-2em;
+text-align:right;
+}
+
+span.user_profile_name + div.user_profile_team_name {
+margin-bottom:1em;
+margin-top:-1em;
+}
+
+img.country_flag {
+margin-bottom:-2px;
+}
+
+div.user_description {
+margin-bottom:.2em;
+margin-top:.5em;
+text-align:left;
+}
+
+img.player_logo {
+float:right;
+}
+
+span.user_description_deleted {
+color:#dd4718;
+display:block;
+margin-bottom:1em;
+margin-top:-2em;
+text-align:right;
+}
+
+span.user_comment {
+display:block;
+margin-top:.5em;
+}
+
+span.no_user_comment {
+color:#fff;
+text-align:center;
+display:block;
+}
+
+div.user_admin_comments_header_text {
+-moz-border-radius:1em 1em 0 0;
+-webkit-border-bottom-left-radius:0;
+-webkit-border-bottom-right-radius:0;
+-webkit-border-top-left-radius:1em;
+-webkit-border-top-right-radius:1em;
+background:rgba(210,211,235,0.54) -3px;
+border-radius:1em 1em 0 0;
+font-weight:700;
+text-align:center;
+margin:-1em -1em .2em;
+padding:.5em 1em .2em;
+}
+
+label.player_edit {
+float:left;
+text-align:right;
+width:7em;
+padding:1mm 2mm 0 0;
+}
+
+input[type=text].logo_url {
+max-width:100%;
+}
+
+div.p,label {
+margin-top:1em;
+font-size:10pt;
+font-weight:700;
+}
+
+div.msg_view_button_list {
+opacity:1px;
+position:relative;
+text-align:center;
+}
+
+form.msg_buttons {
+display:inline-block;
+margin-top:1em;
+padding-right:.25em;
+text-align:center;
+}
+
+/*a.button:before {
+content:"[";
+}
+
+a.button:after {
+content:"]";
+}*/
+
+a.button, a.button:active, a.button:visited, a.button:focus {
+font-weight:700;
+background-color:#333;
+padding:3px;
+border:2px solid #999;
+-webkit-border-radius:5px;
+-moz-border-radius:5px;
+border-radius:5px;
+font-size:10pt;
+white-space: nowrap;
+display: inline-block;
+}
+a.button:hover {
+background-color:#444;
+}
+
+div.userbuttons {
+text-align: right;
+font-size: 10pt;
+overflow: hidden;
+float:right;
+margin-bottom:10px;
+background:#333;
+padding:5px;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+border:1px solid #777;
+}
+
+div.author {
+text-align:right;
+}
+
+.msg_overview_unread:before {
+content:"* ";
+}
+
+div.logo {
+background:url("GUlogoQUER.png") no-repeat scroll center center transparent;
+height:121px;
+margin-bottom:1px;
+margin-top:30px;
+}
+
+div.msg_send > input[type=button],div.msg_ann > input[type=button],div.msg_edit > input[type=button] {
+margin-bottom:1mm;
+}
+
+div.msg_area,div.team_area {
+display:inline-block;
+margin-bottom:1em;
+min-width:25em;
+overflow:visible;
+}
+
+div.team_area:last-of-type {
+display: block;
+}
+
+div.msg_view_full {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+background-color:#444;
+border:1px solid #777;
+padding:5px;
+margin-top: 15px;
+}
+
+div.user_admin_comments_area {
+-moz-border-radius:1em;
+-webkit-border-radius:1em;
+border:.2em dashed silver;
+border-radius:1em;
+margin-bottom:1em;
+padding:1em;
+}
+
+div.team_header {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+background-color:#444;
+border:1px solid #777;
+padding:10px;
+}
+
+div.team_profile_box {
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+background-color:#444;
+border:1px solid #777;
+border-radius:5px;
+padding:10px;
+}
+
+div.msg_header_full {
+background:rgba(210,211,235,0.54) -3px;
+background-image:url(../styles/background_tile_stripe.png);
+overflow:auto;
+font-weight:700;
+border:1px solid #777;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+padding:5px;
+}
+
+span.team_score,span.team_member_count {
+display:block;
+}
+
+div.team_created,div.user_profile_location_timezone_row,form {
+margin-bottom:1em;
+}
+
+div.team_description,div.user_admin_comments {
+margin-top:.2em;
+overflow:auto;
+text-align:left;
+}
+
+form p#edit_user_suspended_status_description,div.edit_user_suspended_status_send {
+display:inline;
+}
+
+span.onlineUsers:before,span.logout:before,span.Servers:before {
+margin-right:5px;
+content:"-";
+}
+
+div.online_user,table.nested_table {
+text-align:center;
+}
+
+table.online_user {
+margin:auto;
+}
+
+table.online_user td {
+padding:5px;
+}
+
+span.msg_subject,a.msg_overview_unread:link,a.msg_overview_unread:visited {
+font-weight:700;
+}
+
+div.team_profile_header_text,div.team_name {
+background:rgba(210,211,235,0.54) -3px;
+background-image:url(../styles/background_tile_stripe.png);
+border:1px solid #777;
+overflow:auto;
+text-align:center;
+font-weight:700;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+padding:5px;
+}
+label.team_change {
+width: 9em; text-align: right; float: left; padding: 1mm 2mm 0 0;
+}
+ * + div.team_change {
+margin-top: 0.2em; margin-left: -8em;
+}
+
+span.edit_and_delete_links {
+text-align:left;
+font-size:10pt;
+display:block;
+margin-bottom:-10px;
+}

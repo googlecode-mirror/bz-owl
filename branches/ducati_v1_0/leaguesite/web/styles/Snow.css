@@ -1,0 +1,744 @@
+/* @override
+	http://vps1.moooo.org/ts/styles/Snow.css
+	http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Snow.css
+*/
+
+body
+{
+	background: #fafafa url(snow.png) repeat scroll;
+	color: black;
+}
+
+p.first_p
+{
+	position: relative;
+	margin-top: 0;
+}
+
+/* I want fancy tables */
+table caption
+{
+	background: rgba(210,211,235,0.54);
+	margin-bottom: 0.5em;
+}
+
+table.big td
+{
+	min-width: 12em;
+}
+
+/* even table rows */
+tr:nth-child(even)
+{
+	background: rgba(210,211,235,0.54);
+}
+
+/* uneven (odd) table rows */
+tr:nth-child(odd)
+{
+	/*no special styling in THIS theme */
+	/* background: #fafafa */
+}
+
+/* navigation */
+ul.navigation
+{
+	text-align: left;
+	list-style: none;
+	font-size: 1.5em;
+	float: left;
+	background: rgba(210,211,235,0.54);
+	padding-top: 0.1em;
+	padding-bottom: 0.3em;
+	padding-left: 1.4em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	margin-top: 0.7em;
+}
+
+ul.navigation li
+{
+	margin-left: -0.8em;
+	padding-right: 0.4em;
+}
+
+ul.navigation a
+{
+	color : #1f1f1f;
+	text-decoration : none;
+	font-weight: bold;
+	font-variant: normal;
+}
+
+ul.navigation a.current_nav_entry
+{
+	color: #000088;
+}
+
+ul.navigation a:active
+{
+	color : #000088;
+	text-decoration : underline;
+}
+
+div.content
+{
+	color: black;
+	text-align: left;
+	margin-left: 9em;
+	width: auto;
+	min-height: 25em;
+	clear: none;
+}
+
+
+div.userbuttons
+{
+	text-align: right;
+}
+
+span.date
+{
+	float: left;
+	margin-left: 3em;
+}
+
+span.Servers + span.onlineUsers:before
+{
+	content: " - ";
+}
+
+div.online_user
+{
+	text-align: center;
+}
+
+form.search_bar
+{
+	display: block;
+	background: rgba(210,211,235,0.54);
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	padding: 1em 1em 0.75em;
+	text-align: center;
+}
+
+div.static_page_box
+{
+	display: block;
+	padding: 1em;
+	background: rgba(210,211,235,0.54);
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+/* private messages */
+span.unread_messages
+{
+	color: #dd4718;
+}
+
+a.msg_overview_unread:link
+{
+	color: #dd4718;
+	font-weight: bold;
+}
+
+label.msg_send
+{
+	width: 10em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+label.msg_ann
+{
+	width: 3.5em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+label.msg_edit
+{
+	width: 4.4em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+label.team_change
+{
+	width: 9em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+* + div.team_change
+{
+	margin-top: 0.2em;
+	margin-left: -9.3em;
+}
+
+input[type=text]
+{
+	width: 10cm;
+	margin-bottom: 2mm;
+}
+
+input[type=text]#msg_send_subject
+{
+	max-width: 100%;
+}
+
+input[type=text][readonly]
+{
+	width: 9.24cm;
+	max-width: 80%;
+	background-color: #f4f4f4;
+	margin-right: 1mm;
+}
+
+input[type=text]#msg_send_toN
+{
+	width: 9.24cm;
+	max-width: 80%;
+	margin-bottom: 2mm;
+	margin-right: 1mm;
+}
+
+input[type=submit]#msg_send_add_recipient
+{
+	width: 0.7cm;
+	text-align: center;
+}
+
+input[type=submit].msg_send_remove_recipient
+{
+	width: 0.7cm;
+	text-align: center;
+}
+
+div.invisi
+{
+	visibility: hidden;
+}
+
+div.add
+{
+	margin-bottom: 1em;
+	margin-left: 10em;
+	margin-top: 2mm;
+}
+
+div.msg_send > input[type=button]
+{
+	margin-bottom: 1mm;
+}
+div.msg_ann > input[type=button]
+{
+	margin-bottom: 1mm;
+}
+div.msg_edit > input[type=button]
+{
+	margin-bottom: 1mm;
+}
+
+textarea#msg_send_announcement
+{
+	width: 10.1cm;
+	max-width: 100%;
+	font-size: 1em;
+	height: 10em;
+	max-height: 90%;
+}
+
+/* news announcements */
+div.article
+{
+	border: 0.2em dashed silver;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.article_header
+{
+	background: rgba(210,211,235,0.54) -3px;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding-top: 0.5em;
+	padding-bottom: 0.2em;
+	padding-right: 1em;
+	margin-bottom: -0.5em;
+}
+
+div.timestamp
+{
+	text-align: left;
+	float: left;
+	margin-left: 1em;
+}
+
+
+div.author
+{
+	text-align: right;
+}
+
+div.article p
+{
+	margin-left: 1em;
+}
+
+/* this  is only a theoretical case but handle it because a new message
+ might get an id previously used by a deleted message */
+a.msg_overview_unread:visited
+{
+	color: #dd4718;
+	font-weight: bold;
+}
+
+div.folder_selection
+{
+	margin-bottom: 2em;
+}
+
+div.msg_area
+{
+	display: inline-block;
+	overflow: visible;
+	min-width: 25em;
+	margin-bottom: 1em;
+}
+
+div.msg_view_full
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.msg_header_full
+{
+	text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+}
+
+span.msg_subject
+{
+	font-weight: bold;
+	color: black;
+}
+
+span.msg_author
+{
+	font-style: normal;
+	padding-left: 1em;
+	font-weight: normal;
+	color: black;
+}
+
+span.msg_timestamp
+{
+	font-style: italic;
+	color: black;
+	padding-left: 1em;
+}
+
+span.msg_recipient_seperator
+{
+    color: #4169E1;
+}
+
+div.msg_contents
+{
+	margin-top: 0.2em;
+}
+
+/*team profile*/
+div.team_area
+{
+	display: inline-block;
+	overflow: visible;
+	min-width: 25em;
+	margin-bottom: 1em;
+}
+
+div.team_header
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.team_name
+{
+    text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+}
+
+img.team_logo
+{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+span.team_score
+{
+    display:block;
+}
+
+span.team_member_count
+{
+    display:block;
+}
+
+div.team_created
+{
+	margin-bottom: 1em;
+}
+
+div.team_profile_box
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.team_profile_header_text
+{
+	content: "ewwewewe";
+	text-align: left;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+
+}
+
+div.team_description
+{
+	margin-top: 0.2em;
+	overflow: auto;
+	text-align: left;
+}
+
+table#table_team_members
+{
+	visibility: visible;
+}
+
+table#table_team_members caption
+{
+	visibility: visible;
+	text-align: center;
+}
+
+/* user profile */
+div.user_areas_container
+{
+	display: inline-block;
+	overflow: auto;
+}
+
+div.user_area
+{
+	overflow: visible;
+	min-width: 25em;
+	border: 0.2em dashed silver;
+	margin-bottom: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	display: block;
+	padding: 1em 1em 2.5em;
+}
+
+div.user_general_info_header
+{
+	text-align: center;
+	background: rgba(210,211,235,0.54) -3px;
+	margin-left: -1em;
+	margin-top: -1em;
+	margin-right: -1em;
+	overflow: auto;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	font-weight: bold;
+}
+
+span.user_profile_name
+{
+	margin-bottom: 1em;
+	font-weight: bold;
+	display: block;
+}
+span.user_description_banned
+{
+	color: red;
+	display: block;
+	text-align: right;
+	margin-top: -2em;
+	margin-bottom: 1em;
+}
+span.user_profile_name + div.user_profile_team_name
+{
+	margin-top: -1em;
+	margin-bottom: 1em;
+}
+
+div.user_profile_location_timezone_row
+{
+	margin-bottom: 1em;
+}
+img.country_flag
+{
+	margin-bottom: -2px;
+}
+
+div.user_description
+{
+    text-align: left;
+	margin-top: 0.5em;
+	margin-bottom: 0.2em;
+}
+
+img.player_logo
+{
+	float: right;
+}
+
+span.user_description_deleted
+{
+	color: #dd4718;
+	display: block;
+	text-align: right;
+	margin-top: -2em;
+	margin-bottom: 1em;
+}
+
+
+span.user_comment
+{
+	display:block;
+	margin-top: 0.5em;
+}
+
+span.no_user_comment
+{
+	color: #4f4f4f;
+	display: block;
+}
+
+div.user_admin_comments_area
+{
+	border: 0.2em dashed silver;
+	padding: 1em;
+	margin-bottom: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+div.user_admin_comments_header_text
+{
+	background: rgba(210,211,235,0.54) -3px;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 0em;
+	-webkit-border-bottom-left-radius: 0em;
+	-moz-border-radius: 1em 1em 0em 0em;
+	/* Don't know what the final CSS 3 spec will be */
+	border-radius: 1em 1em 0em 0em;
+	padding: 0.5em 1em 0.2em;
+	margin: -1em -1em 0.2em;
+	text-align: center;
+	font-weight: bold;
+}
+
+div.user_admin_comments
+{
+	overflow: auto;
+	text-align: left;
+	margin-top: 0.2em;
+}
+
+/* edit section */
+label.player_edit
+{
+	width: 7.5em;
+	text-align: right;
+	float: left;
+	padding: 1mm 2mm 0 0;
+}
+
+input[type=text].logo_url
+{
+	max-width: 100%;
+}
+
+* + div.player_edit
+{
+	margin-bottom: -0.8em;
+}
+
+textarea.player_edit
+{
+	width: 10.1cm;
+	max-width: 100%;
+	font-size: 1em;
+	height: 10em;
+	max-height: 90%;
+}
+
+/* ban section */
+form p#edit_user_suspended_status_description
+{
+	display: inline;
+}
+
+div.edit_user_suspended_status_send
+{
+	display: inline;
+}
+
+div.edit_user_suspended_status_send
+{
+	display: inline;
+}
+
+/* hack because it's not possible to say to display something blocking using :before */
+div.p
+{
+	margin-top: 1em;
+}
+
+/* common links */
+
+span.onlineUsers
+{
+	color: #240500;
+	text-shadow: silver 1px 1px 2px;
+}
+
+span.Servers + span.logout:before
+{
+	content: " - ";
+}
+
+span.onlineUsers + span.logout:before
+{
+	content: " - ";
+}
+
+span.logout
+{
+	color: #240500;
+	text-shadow: silver 1px 1px 2px;
+}
+
+div.msg_view_button_list
+{
+	position: relative;
+	opacity: 1;
+	text-align: center;
+}
+
+form.msg_buttons
+{
+	margin-top: 1em;
+	text-align: center;
+	display: inline-block;
+	padding-right: 0.25em;
+}
+
+/* no need for a br tag after the form*/
+form
+{
+	margin-bottom: 1em;
+}
+
+/* some links should be displayed as butttons */
+a.button:before
+{
+    content: "[";
+}
+
+a.button:after
+{
+    content: "]";
+}
+
+a:visited
+{
+	color : #004080;
+	text-decoration : underline;
+}
+
+a:active
+{
+	color : #000088;
+	text-decoration : underline;
+}
