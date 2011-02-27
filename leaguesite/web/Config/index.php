@@ -32,6 +32,7 @@
 		} else
 		{
 			ini_set ('session.use_trans_sid', 0);
+			$_SESSION['stylesheet'] = $stylesheet;
 			@setcookie('stylesheet', $stylesheet, time()+60*60*24*30, basepath(), domain(), 0);
 		}
 	}
