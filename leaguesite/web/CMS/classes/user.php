@@ -71,6 +71,18 @@
 			return $theme;
 		}
 		
+		
+		function hasPermission($permission)
+		{
+			if (isset($_SESSION[$permission]))
+			{
+				return $_SESSION[$permission];
+			}
+			
+			return false;
+		}
+		
+		
 		function saveTheme($theme)
 		{
 			global $config;

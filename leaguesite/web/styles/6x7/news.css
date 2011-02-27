@@ -48,3 +48,10 @@ div.article + *
 {
 	margin-top: 1.5em;
 }
+
+*.newsButtonsGroup
+{
+	text-align: right;
+	padding-bottom: 0.5em;
+	margin-top: -1.32em;
+}

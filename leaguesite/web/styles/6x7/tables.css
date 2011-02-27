@@ -1,0 +1,83 @@
+/* @override http://192.168.1.10/~spiele/bz-owl/trunk/leaguesite/web/styles/6x7/tables.css */
+
+table.big
+{
+	width: 100%;
+	text-align: center;
+	font-size: 0.9em;
+	background-color: #292929;
+	border: 1px solid #ff5b60;
+	border-radius: 0.42em;
+	border-spacing: 0px;
+	box-shadow: 0px 2px 16px #e75d62;
+	-moz-box-shadow: 0px 2px 16px #e75d62;
+	-webkit-box-shadow: 0px 2px 16px #e75d62;
+	padding: 2em 0.5em 0.5em;
+}
+
+table.big caption
+{
+	text-align: left;
+	font-weight: bold;
+	font-size: 1em;
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+	border-bottom-style: solid;
+	border-width: 1px;
+	margin-right: 0.5em;
+	margin-left: 0.5em;
+	margin-bottom: -2em;
+}
+
+td
+{
+	border-bottom-width: 23px;
+	border-style: none;
+	border-width: 0;
+}
+
+tr:nth-child(odd)
+{
+	background-color: #3d3046;
+/*
+	box-shadow: 0.5em 0px 0px #3d3046,
+				-0.5em 0px 0px #3d3046;
+*/
+}
+
+tr:nth-child(even)
+{
+	background-color: #442b2c;
+/*
+	box-shadow: 0.5em 0px 0px #442b2c,
+				-0.5em 0px 0px #442b2c;
+*/
+}
+
+/*
+tr:nth-child(even) + tr:last-child
+{
+	background-color: #3d3046;
+	box-shadow: 0px 0.5em 10px #3d3046,
+				0.5em 0px 10px #3d3046,
+				-0.5em 0px 10px #3d3046;
+}
+
+tr:nth-child(odd) + tr:last-child
+{
+	background-color: #442b2c;
+	box-shadow: 0px 0.5em 10px #442b2c,
+				0.5em 0px 10px #442b2c,
+				-0.5em 0px 10px #442b2c;
+}
+*/
+
+tr:nth-child(1)
+{
+	background-color: #292929;
+/*
+	box-shadow: 0.5em 0px 0px #292929,
+				-0.5em 0px 0px #292929;
+*/
+}
+

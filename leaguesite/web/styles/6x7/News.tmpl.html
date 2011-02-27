@@ -5,7 +5,7 @@
 <meta content="text/html; charset=utf-8" http-equiv="content-type" />
 	<!-- BEGIN MAIN --><link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
 	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
-<title>Mail Overview</title>
+<title><!-- BEGIN TITLE_AREA -->{TITLE}<!-- END TITLE_AREA --></title>
 </head>
 <body>
 <div class="logo"></div>
@@ -20,9 +20,10 @@
 </div><!-- END MAIN -->
 
 <div class="content">
-<!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
+<!-- BEGIN USERADDBUTTON -->{PERMISSION_BASED_ADD_BUTTON}<!-- END USERADDBUTTON -->
 
 <!-- BEGIN NEWSBOX -->
+<!-- BEGIN USERBUTTONS --><div class="newsButtonsGroup">{PERMISSION_BASED_BUTTONS}</div><!-- END USERBUTTONS -->
 <div class="article">
 	<div class="articleHeader">{TITLE} by {AUTHOR} at {TIME}</div>
 	<div class="articleContent">{CONTENT}</div>

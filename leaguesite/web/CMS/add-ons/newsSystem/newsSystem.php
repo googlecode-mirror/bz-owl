@@ -3,6 +3,8 @@
 	{
 		function __construct($title, $path)
 		{
+			global $entry_edit_permission;
+			global $entry_delete_permission;
 			global $site;
 			global $tmpl;
 			global $user;
@@ -14,7 +16,10 @@
 			}
 			
 			// FIXME: fallback to default permission name until add-on system is completly implemented
+			$entry_add_permission = 'allow_add_news';
 			$entry_edit_permission = 'allow_edit_news';
+			$entry_delete_permission = 'allow_delete_news';
+			
 			
 			$tmpl->setTitle($title);
 			
@@ -56,24 +61,38 @@
 					stripslashes($_POST);
 				}
 				$tmpl->setTemplate($templateToUse . '?edit');
-			} else
-			{
-				$tmpl->setTemplate($templateToUse);
-				$this->readContent($path, $author, $last_modified, false);
-/* 				$tmpl->addMSG($this->readContent($path, $author, $last_modified, false)); */
+				edit();
 			}
 			
-			if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
+			$tmpl->setTemplate($templateToUse);
+			$this->readContent($path, $author, $last_modified, false);
+			
+			if ($user->hasPermission($entry_add_permission))
 			{
 				// user has permission to edit the page
-				if (!isset($_GET['edit']))
+				if (!isset($_GET['add']))
 				{
 					// user looks at page in read mode
-					$tmpl->setCurrentBlock('USERBUTTONS');
-					$tmpl->setVariable('PERMISSION_BASED_BUTTONS', '<a href="./?edit" class="button">edit</a>');
-					$tmpl->parseCurrentBlock();
+					$tmpl->setCurrentBlock('USERADDBUTTON');
+					$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
+									   '<a href="./?add" class="button">Add message</a>');
+					$tmpl->parseCurrentBlock();			
+				} else
+				{
+					add();
 				}
-				
+			}
+			
+			
+			// done, render page
+			$tmpl->render();
+		}
+		
+		
+		function edit()
+		{
+			if ($user->hasPermission($entry_edit_permission))
+			{
 				if (isset($_GET['edit']))
 				{
 					// initialise variables
@@ -316,8 +335,10 @@
 		
 		function readContent($path, &$author, &$last_modified, $raw=false)
 		{
-			global $site;
+			global $entry_edit_permission;
+			global $entry_delete_permission;
 			global $tmpl;
+			global $user;
 			global $db;
 			
 			// initialise return variable so any returned value will be always in a defined state
@@ -343,11 +364,37 @@
 			$n = count($rows);
 			if ($n > 0)
 			{
-				$tmpl->setCurrentBlock('NEWSBOX');
+				$showButtons = false;
+				if (!$raw
+					&& $user->hasPermission($entry_edit_permission)
+					|| $user->hasPermission($entry_delete_permission))
+				{
+					$buttons = ($user->hasPermission($entry_edit_permission))?
+								'<a class="button" href="./?edit">edit</a>' : '';
+					$buttons .= ($user->hasPermission($entry_edit_permission)
+								 && $user->hasPermission($entry_delete_permission))?
+								' ' : '';
+					$buttons .= ($user->hasPermission($entry_delete_permission))?
+								'<a class="button" href="./?delete">delete</a>' : '';
+				}
+				if (strlen($buttons) > 0)
+				{
+					$showButtons = true;
+				}
 				
+				$tmpl->setCurrentBlock('NEWSBOX');
 				for($i = 1; $i < $n; $i++)
 				{
-					$tmpl->setVariable('TITLE', (strcmp($rows[$i]['title'], '') === 0) ? 'News' : $rows[$i]['title']);
+					if ($showButtons)
+					{
+						$tmpl->setCurrentBlock('USERBUTTONS');
+						$tmpl->setVariable('PERMISSION_BASED_BUTTONS', $buttons);
+						$tmpl->parseCurrentBlock();
+						$tmpl->setCurrentBlock('NEWSBOX');
+					}
+					
+					$tmpl->setVariable('TITLE', (strcmp($rows[$i]['title'], '') === 0)?
+									   'News' : $rows[$i]['title']);
 					$tmpl->setVariable('AUTHOR', $rows[$i]['author']);
 					$tmpl->setVariable('TIME', $rows[$i]['timestamp']);
 					
