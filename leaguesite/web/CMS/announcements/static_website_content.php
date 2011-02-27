@@ -289,6 +289,7 @@
 		{
 			case 'home'  : 
 			{
+				echo '<div class="homepage">';
 				echo '<div class="home-left">'; 
 				if ($logged_in) 
 				{
@@ -303,6 +304,7 @@
 				echo '</div>';	
 				echo '</div>';
 				include dirname(dirname(dirname(__FILE__))) . '/right_column.php';
+				echo '</div>';
 				
 			} break;
 			default: 
@@ -351,7 +353,7 @@ function put_shoutbox()
 <form id="cform" name="cform" action="#" >
 <div id='field_set'>
 <input type='hidden' id='token' name='token' value='<?php echo $token; ?>' />
-<textarea rows='4' cols='10' id='message'  name='message' >message</textarea>
+<textarea rows='1' id='message'  name='message' >message</textarea>
 <div id="chat_menu">
 
 <div id='emo'>
