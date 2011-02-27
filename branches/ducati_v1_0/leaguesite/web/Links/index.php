@@ -2,6 +2,7 @@
 	// the current page to be edited
 	$page_title = 'Links/';
 	$display_page_title = 'Links';
+	$cmspage = 'links';
 	
 	$randomkey_name = ('randomkey_static_pages_' . $page_title);
 	

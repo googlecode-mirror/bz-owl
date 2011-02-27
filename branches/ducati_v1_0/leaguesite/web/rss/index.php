@@ -31,9 +31,9 @@ if (mysql_num_rows($res) >= 1) {
   xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
   xmlns:bzl="'.baseaddress().'">
   <channel>
-  <title>GU League - Last 5 Match Results</title>
+  <title>Ducati League - Last 5 Match Results</title>
     <link>'.baseaddress().'Matches/</link>
-      <description>Herein lies the last 5 match results entered on the BZFlag GU League site.</description>
+      <description>Herein lies the last 5 match results entered on the BZFlag Ducati League site.</description>
       <language>en</language>
       <copyright>GPL</copyright>
       <lastBuildDate>'.$pubDate.'</lastBuildDate>

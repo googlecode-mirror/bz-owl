@@ -2,6 +2,7 @@
 	// the current page to be edited
 	$page_title = 'TODO/';
 	$display_page_title = 'TODO';
+	$cmspage = 'TODO';
 	
 	$randomkey_name = ('randomkey_static_pages_' . $page_title);
 	

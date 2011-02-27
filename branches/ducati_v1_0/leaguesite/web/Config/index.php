@@ -90,6 +90,8 @@
 <?php
 	require realpath('../CMS/navi.inc');
 ?>
+<h1 class="tools">Config</h1>
+
 <div class="static_page_box">
 <p class="first_p">This is the user configuration section.</p>
 <?php
@@ -143,7 +145,6 @@
 		}
 	}
 ?>
-<p>Special thanks: Upsetter and zaphod for a lot of input, zaphod for the logos and icons; brad for hosting and svn repository and orbit for the favicon.</p>
 <form enctype="application/x-www-form-urlencoded" method="get" action="<?php
 	
 	// the address depends on where the file resides
@@ -153,14 +154,14 @@
 <p>Theme:
 	<select name="stylesheet">
 <?php
-	$styles = array('White', 'Snow', 'Eierschale', 'Dark', '42');
+	$styles = array('Ducati');
 	
 	foreach ($styles AS $s) {
 		echo '<option value="'.$s.'"'.($stylesheet==$s?' selected="selected"':'').'>'.urldecode($s)."</option>\n";
 	}
 	echo "</select>\n";
 	
-	$site->write_self_closing_tag('input type="submit" value="Submit changes"');
+	$site->write_self_closing_tag('input type="submit" value="Submit changes" class="button"');
 ?>
 </p>
 </form>

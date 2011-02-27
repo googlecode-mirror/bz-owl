@@ -2,6 +2,7 @@
 	// the current page to be edited
 	$page_title = 'Rules/';
 	$display_page_title = 'Rules';
+	$cmspage = 'rules';
 	
 	$randomkey_name = ('randomkey_static_pages_' . $page_title);
 	

@@ -9,7 +9,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	
 	// groups used for permissions
 	// each group can use the fine grained permission system
-	$groups = Array ('VERIFIED','GU-LEAGUE.REFEREES','GU-LEAGUE.ADMINS');
+	$groups = Array ('VERIFIED','DUCATI.REFEREE','DUCATI.COUNCIL');
 	$args = explode (',', urldecode($_GET['bzbbauth']));
 	// $args[0] is token, $args[1] is callsign
 	if (!$info = validate_token ($args[0], $args[1], $groups, false))
@@ -45,12 +45,15 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	allow_add_messages();
 	allow_delete_messages();
 	
+	// permissions for spawnlist page
+	allow_add_spawnlist();
+		
 	// server tracker permissions
 	allow_watch_servertracker();
 	
 	
 	
-	// test only for GU-LEAGUE.ADMINS group
+	// test only for DUCATI.ADMINS group
 	$group_test = array_slice($groups, 1, 1);
 	$in_group = false;
 	foreach ($info['groups'] as $one_group)
@@ -68,16 +71,17 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		if ($site->debug_sql())
 		{
-			echo '<p>gu league referee detected</p>';
+			echo '<p>DUC league referee detected</p>';
 		}
-		// GU-LEAGUE.REFEREES group
+		// DUCATI.ADMIN group
 		
 		// match permissions
 		allow_add_match();
 		allow_edit_match();
+		
 	}
 	
-	// test only for GU-LEAGUE.ADMINS group
+	// test only for DUCATI.ADMINS group
 	$in_group = false;
 	$group_test = array_slice($groups, -1, 1);
 	foreach ($info['groups'] as $one_group)
@@ -93,9 +97,9 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		if ($site->debug_sql())
 		{
-			echo '<p>gu league admin detected</p>';
+			echo '<p>DUC league council detected</p>';
 		}
-		// GU-LEAGUE.ADMINS group
+		// DUCATI.COUNCIL group
 		
 		// can change debug sql setting
 		allow_change_debug_sql();
@@ -104,6 +108,12 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_add_news();
 		allow_edit_news();
 		allow_delete_news();
+		
+		
+		// permissions for spawnlist page
+		allow_add_spawnlist();
+		allow_edit_spawnlist();
+		allow_delete_spawnlist();
 		
 		// permissions for all static pages
 		allow_edit_static_pages();
@@ -133,6 +143,11 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		allow_edit_match();
 		allow_delete_match();
 		
+		//seasons permissions
+		allow_add_season();
+		allow_edit_season();
+		allow_delete_season();
+		
 		// server tracker permissions
 		allow_watch_servertracker();
 		
@@ -142,6 +157,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		
 		// aux permissions
 		is_admin();
+		allow_moderate_shoutbox();
 	}
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])

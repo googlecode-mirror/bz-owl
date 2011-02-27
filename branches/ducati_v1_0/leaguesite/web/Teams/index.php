@@ -64,63 +64,67 @@
 	
 	function rankingLogo($score)
 	{
-		echo $score;
+		
 		switch ($score)
 		{
 			case ($score >1900):
-				echo '<span class="score1900"></span>';
+				echo '<span class="score s1900">';
 				break;
 			
 			case ($score >1800):
-				echo '<span class="score1800"></span>';
+				echo '<span class="score s1800">';
 				break;
 			
 			case ($score >1700):
-				echo '<span class="score1700"></span>';
+				echo '<span class="score s1700">';
 				break;
 			
 			case ($score >1600):
-				echo '<span class="score1600"></span>';
+				echo '<span class="score s1600">';
 				break;
 			
 			case ($score >1500):
-				echo '<span class="score1500"></span>';
+				echo '<span class="score s1500">';
 				break;
 			
 			case ($score >1400):
-				echo '<span class="score1400"></span>';
+				echo '<span class="score s1400">';
 				break;
 			
 			case ($score >1300):
-				echo '<span class="score1300"></span>';
+				echo '<span class="score s1300">';
 				break;
 			
 			case ($score >1200):
-				echo '<span class="score1200"></span>';
+				echo '<span class="score s1200">';
 				break;
 			
 			case ($score >1100):
-				echo '<span class="score1100"></span>';
+				echo '<span class="score s1100">';
 				break;
 			
 			case ($score >1000):
-				echo '<span class="score1000"></span>';
+				echo '<span class="score s1000">';
 				break;
 			
 			case ($score >900):
-				echo '<span class="score900"></span>';
+				echo '<span class="score s900">';
 				break;
 			
 			case ($score >800):
 				
-				echo '<span class="score800"></span>';
+				echo '<span class="score s800">';
 				break;
 			
 			case ($score >700):
-				echo '<span class="score700"></span>';
+				echo '<span class="score s700">';
 				break;
+			
+			default: echo '<span class="score">';
 		}
-	}
+		echo $score;
+		echo '</span>';
+	}	
 	
 	
 	function checkNumberRows($result, $site)
@@ -217,6 +221,8 @@
 		}
 	}
 	
+	echo '<h1 class="teams">Teams</h1>';
+	
 	// sanity check to find out if a team does exist
 	if (isset($_GET['profile']) || isset($_GET['edit']))
 	{
@@ -231,15 +237,15 @@
 		
 		if ($profile < 0)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			echo '<p>This team does not exist!</p>';
+			echo '<div class="simple-paging"><a class="previous" href="./">overview</a></div>' . "\n";
+			echo '<p class="message">This team does not exist!</p>';
 			$site->dieAndEndPage('');
 		}		
 		
 		if ($profile === 0)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			echo '<p>The team id 0 is reserved for teamless players and thus no team with that id could ever exist.</p>' . "\n";
+			echo '<div class="simple-paging"><a class="previous" href="./">overview</a></div>' . "\n";
+			echo '<p class="message">The team id 0 is reserved for teamless players and thus no team with that id could ever exist.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
 		
@@ -248,8 +254,8 @@
 		$query = 'SELECT `id` FROM `teams` WHERE `id`=' . "'" . sqlSafeString($profile) . "'" . ' LIMIT 1';
 		if (!($result = @$site->execute_query('teams', $query, $connection)))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			$site->dieAndEndPage('<p>It seems like the list of known teams can not be accessed for an unknown reason.</p>');
+			echo '<div class="simple-paging"><a class="previous" href="./">overview</a></div>' . "\n";
+			$site->dieAndEndPage('<p class="message">It seems like the list of known teams can not be accessed for an unknown reason.</p>');
 		}
 		
 		$rows = (int) mysql_num_rows($result);
@@ -257,8 +263,8 @@
 		if ($rows ===0)
 		{
 			// someone tried to view the profile of a non existing user
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			echo '<p>You tried to view or edit a non existing team!</p>';
+			echo '<div class="simple-paging"><a class="previous" href="./">overview</a></div>' . "\n";
+			echo '<p class="message">You tried to view or edit a non existing team!</p>';
 			$site->dieAndEndPage('');
 		}
 	}
@@ -268,7 +274,7 @@
 	{
 		if (isset($_POST['confirmed']) && (isset($_POST['edit_team_name']) || isset($_POST['team_description'])))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="previous" href="./">overview</a></div>' . "\n";
 			
 			// someone is trying to break the form
 			// TODO: implement preview
@@ -285,7 +291,7 @@
 			$randomkeysmatch = $site->compare_keys($randomkey_name, $new_randomkey_name);						
 			if (!($randomkeysmatch))
 			{
-				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
+				echo '<p class="message">The key did not match. It looks like you came from somewhere else.</p>';
 				$site->dieAndEndPage('');
 			}
 			
@@ -348,7 +354,7 @@
 			{
 				mysql_free_result($result);
 				// team name already used -> do not create team with that name
-				echo '<p>The team was not created because there is already a team with that name in the database.</p>' . "\n";
+				echo '<p class="message">The team was not created because there is already a team with that name in the database.</p>' . "\n";
 				$site->dieAndEndPage('');
 			}
 			mysql_free_result($result);
@@ -372,7 +378,7 @@
 				{
 					mysql_free_result($result);
 					// the supposed leader is already in a team -> do not create team with him as leader
-					echo '<p>The team was not created because the team leader already belongs to a team.</p>' . "\n";
+					echo '<p class="message">The team was not created because the team leader already belongs to a team.</p>' . "\n";
 					$site->dieAndEndPage('');
 				}
 				unset($tmp_team_id);
@@ -454,10 +460,13 @@
 			// write logo
 			writeLogo();
 			
-			echo '<p>Your new team was created successfully.</p>';
+			echo '<p class="message">Your new team was created successfully.</p>';
 			$site->dieAndEndPage('');
 		}
+		echo '<div class="simple-paging">';
 		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
+		echo '</div>';
+		
 		echo '<div class="static_page_box">' . "\n";
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?create">' . "\n";
 		echo '<div>';
@@ -527,7 +536,7 @@
 		echo '</p>';
 		
 		echo '<div>';
-		$site->write_self_closing_tag('input type="submit" name="edit_team_data" value="Submit new team creation" id="send"');
+		$site->write_self_closing_tag('input type="submit" name="edit_team_data" value="Submit new team creation" id="send" class="button"');
 		echo '</div>' . "\n";
 		echo '</form>' . "\n";
 		$site->dieAndEndPage('');
@@ -535,7 +544,7 @@
 	
 	if (isset($_GET['reactivate']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="simple-paging"><a class="button previous" href="./">overview</a></div>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		// no anon team deletion
@@ -609,7 +618,6 @@
 			$randomkeysmatch = $site->compare_keys($randomkey_name, $new_randomkey_name);			
 			if (!($randomkeysmatch))
 			{
-				echo '<a class="button" href="./">overview</a>' . "\n";
 				echo '<p>The key did not match. It looks like you came from somewhere else.</p>';
 				$site->dieAndEndPage('');
 			}
@@ -760,7 +768,7 @@
 		echo '</div>' . "\n";
 		
 		echo '<div style="display:inline">';
-		$site->write_self_closing_tag('input type="submit" name="reactivate_team" value="Reactivate the team" id="send"');
+		$site->write_self_closing_tag('input type="submit" name="reactivate_team" value="Reactivate the team" id="send" class="button"');
 		echo '</div>' . "\n";
 		echo '</form>' . "\n";		
 		
@@ -906,7 +914,7 @@
 		}
 		
 		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
-		echo '<div class="static_page_box">' . "\n";
+		echo '<div class="static_page_box main-box">' . "\n";
 		
 		$query = 'SELECT `name` FROM `teams`';
 		$query .= ' WHERE `id`=' . sqlSafeStringQuotes($join_team_id);
@@ -1017,7 +1025,7 @@
 		// no anon team deletion
 		if ($viewerid < 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
 			echo '<p>You must login to delete the team.</p>' . "\n";
 			$site->dieAndEndPage('');
 		}
@@ -1033,7 +1041,8 @@
 		
 		if (isset($_POST['confirmed']))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
 			if (($_POST['confirmed'] < 1) || ($_POST['confirmed'] > 2))
 			{
 				$site->dieAndEndPage('Your (id='. sqlSafeString($viewerid) . ') attempt to delete a team by manipulating the form was detected.');
@@ -1109,10 +1118,12 @@
 			}
 			
 			// always remember who deleted what
+			
 			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') successfully deleted the team (id=' . sqlSafeString($teamid) . ').');
+			echo '</div>';
 		}
 		// display a form, asking for confirmation of team deletion
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?delete=' . urlencode($teamid) . '">' . "\n";
@@ -1123,8 +1134,8 @@
 		echo '<div><input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"></div>' . "\n";
 		echo '<div><input type="hidden" name="' . htmlentities($randomkey_name) . '" value="';
 		echo urlencode(($_SESSION[$new_randomkey_name])) . '"></div>' . "\n";
-		echo '<p style="display:inline">Do you really want to delete the team?</p>' . "\n";
-		echo '<div style="display:inline"><input type="submit" name="delete_team" value="Delete the team" id="send"></div>' . "\n";
+		echo 'Do you really want to delete the team?' . "\n";
+		echo '<input type="submit" name="delete_team" value="Delete the team" id="send" class="button">' . "\n";
 		echo '</form>' . "\n";
 		$site->dieAndEndPage('');
 	}
@@ -1134,7 +1145,7 @@
 	{
 		if ($viewerid < 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
 			echo '<div class="static_page_box">' . "\n";
 			
 			echo '<p>You must login to edit the team page.</p>' . "\n";
@@ -1144,13 +1155,15 @@
 		$teamid = (int) $_GET['edit'];
 		if ($teamid < 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
 			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') did not specify a team to edit.');
 		}
 		
 		if (!(($viewerid === $team_leader_id) || $allow_edit_any_team_profile))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
 			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') have no permissions to edit the team profile (id=' . sqlSafeString($teamid) . ').');
 		}		
 		
@@ -1166,7 +1179,8 @@
 		$rows = (int) mysql_num_rows($result);
 		if ($rows < (int) 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
 			$site->dieAndEndPage('You (id=' . sqlSafeString($viewerid) . ') tried to edit a nonexisting team (id=' . sqlSafeString($teamid) . ').');
 		}
 		
@@ -1174,7 +1188,8 @@
 		// if more than one team exists for a given id then it is no user error but a database problem
 		if ($rows > (int) 1)
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
+			echo '<div class="static_page_box">' . "\n";
 			$site->dieAndEndPage('There is more than one team with the id '
 								 . sqlSafeString($teamid)
 								 . ' in the database! This is a database problem, please report it to admins!');
@@ -1188,8 +1203,7 @@
 		
 		if (isset($_POST['confirmed']) && (isset($_POST['edit_team_name']) || isset($_POST['team_description'])))
 		{
-			echo '<a class="button" href="./">overview</a>' . "\n";
-			
+			echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
 			echo '<div class="static_page_box">' . "\n";
 			
 			// someone is trying to break the form
@@ -1363,8 +1377,8 @@
 			// we're done editing
 			$site->dieAndEndPage('');
 		}
-		
-		echo '<a class="button" href="./">Cancel &amp; back to overview</a>' . "\n";
+				
+		echo '<div class="simple-paging"><a class="button" href="./">Cancel &amp; back to overview</a></div>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		echo '<form enctype="application/x-www-form-urlencoded" method="post" action="?edit=' . urlencode($teamid) . '">' . "\n";
@@ -1460,14 +1474,14 @@
 		// close static box
 		echo '</div>';
 		
-		echo '<p><input type="submit" name="edit_team_data" value="Submit new team data" id="send"></p>' . "\n";
+		echo '<p><input type="submit" name="edit_team_data" value="Submit new team data" id="send" class="button"></p>' . "\n";
 		echo '</form>' . "\n";
 		$site->dieAndEndPageNoBox();
 	}
 	
 	if (isset($_GET['remove']))
 	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="simple-paging"><a class="button" href="./">overview</a></div>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
 		
 		$playerid_to_remove = (int) $_GET['remove'];
@@ -1624,8 +1638,9 @@
 				
 		// clean variable
 		$profile = (int) $_GET['profile'];
-		echo '<a class="button" href="./">overview</a>' . "\n";
+		echo '<div class="simple-paging"><a class="button previous" href="./">overview</a></div>' . "\n";
 		
+		echo '<div class="toolbar">';
 		// message to team
 		if (($team_leader_id > 0) && ($viewerid > 0))
 		{
@@ -1641,8 +1656,7 @@
 		// opponent stats
 		echo '<a class="button" href="./?opponent_stats=' . urlencode($profile) . '">opponent stats</a>' . "\n";
 		
-		// need an element displayed with display: block before the team area
-		echo '<div class="p"></div>' . "\n";
+		echo '</div>';
 		
 		// join the tables `teams`, `teams_overview` and `teams_profile` using the team's id
 		$query = 'SELECT `name`, `score`, `activity`, `member_count`, `num_matches_played`, `num_matches_won`, `num_matches_draw`, `num_matches_lost`, `teams_profile`.`logo_url`, `created`';
@@ -1667,7 +1681,7 @@
 		
 		while ($row = mysql_fetch_array($result))
 		{
-			echo '<div class="team_area">' . "\n";
+			echo '<div class="team_area main-box">' . "\n";
 			echo '	<div class="team_header">' . "\n";
 			$team_name = $row['name'];
 			// team name empty?
@@ -1675,21 +1689,21 @@
 			{
 				$team_name = '(unnamed team)';
 			}
-			echo '		<div class="team_name">' . $team_name . '</div>' . "\n";
+			echo '		<h2>' . $team_name . '</h2>' . "\n";
 			if (!(strcmp(($row['logo_url']), '') === 0))
 			{
 				// user entered a logo
 				$site->write_self_closing_tag('img class="team_logo" src="' . htmlent($row['logo_url']) . '" style="max-width:300px; max-height:200px" alt="team logo"');
 			}
-			echo '		<span class="team_score">Rating: ';
+			echo '		<span class="team_score"><span class="label">Rating: </span>';
 			rankingLogo($row['score']);
 			echo '</span>' . "\n";
-			echo '		<div class="team_activity"><span class="team_activity_announcement">Activity: </span><span class="team_activity">'
+			echo '		<div class="team_activity"><span class="team_activity_announcement label">Activity: </span><span class="team_activity">'
 				 . strval($row['activity']) . '</span></div>' . "\n";
 			$number_team_members = (int) $row['member_count'];
-			echo '		<div class="team_member_count"><span class="team_member_count_announcement">Members: </span><span class="team_member_count">'
+			echo '		<div class="team_member_count"><span class="team_member_count_announcement label">Members: </span><span class="team_member_count">'
 				 . strval($number_team_members) . '</span></div>' . "\n";
-			echo '		<div class="team_created"><span class="team_created_announcement">Created: </span><span class="team_created">'
+			echo '		<div class="team_created"><span class="team_created_announcement label">Created: </span><span class="team_created">'
 				 . strval($row['created']) . '</span></div>' . "\n";
 			
 			// matches statistics: won, draw, lost and total
@@ -1709,20 +1723,90 @@
 			echo '		<td><a href="../Matches/?search_string=';
 			echo $team_name;
 			echo '&search_type=team+name&amp;search_result_amount=200&search=Search">';
-			echo htmlentities($row['num_matches_played']) . '</td>' . "\n";;
+			echo htmlentities($row['num_matches_played']) . '</a></td>' . "\n";;
 			echo '	</tr>' . "\n";
 			echo '	</table>' . "\n";
-			$site->write_self_closing_tag('br');
 			
+			
+			
+			if ($row['num_matches_played'] > 0) {
+				
+				$won_ratio = number_format(($row['num_matches_won'] / $row['num_matches_played']) * 100,1);
+				$tie_ratio = number_format(($row['num_matches_lost'] / $row['num_matches_played']) * 100,1);
+				$loss_ratio = number_format(($row['num_matches_draw'] / $row['num_matches_played']) * 100,1);
+			
+					?>
+		<div id="chart-summary"></div>
+		<script src="/js/highcharts.js" type="text/javascript"></script>
+		<script type="text/javascript" src="/js/themes/gray.js"></script>
+		<script type="text/javascript">
+		var chart1; // globally available
+		$(document).ready(function() {
+			chart = new Highcharts.Chart({
+				chart: {
+					renderTo: 'chart-summary'
+				},
+				title: {
+					text: ''
+				},
+				plotArea: {
+					shadow: null,
+					borderWidth: null,
+					backgroundColor: null
+				},
+				tooltip: {
+					formatter: function() {
+						return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+					}
+				},
+				legend: {
+					align: 'left',
+					x: 10,
+					verticalAlign: 'middle',
+					y: 5,
+					floating: false,
+					backgroundColor: '#121212',
+					borderColor: '#CCC',
+					borderWidth: 1,
+					width: 80,
+					shadow: false
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: true,
+						cursor: 'pointer',
+						dataLabels: {
+							enabled: false
+						},
+						showInLegend: true
+					}
+				},
+
+			    series: [{
+					type: 'pie',
+					name: 'Results ratio',
+					data: [
+						['Wins',   <?php echo  $won_ratio; ?>],
+						['Losses',  <?php echo  $loss_ratio;?>],
+						['Draws',    <?php echo  $tie_ratio;?>]
+					]
+				}]
+			});
+		});
+		</script>
+		<?php 
+			
+			}
 			echo'	</div>' . "\n";
 			echo '</div>' . "\n";
 			
-			echo '<div class="team_area">' . "\n";
+			echo '<div class="team_area main-box">' . "\n";
 			echo '	<div class="team_profile_box">' . "\n";
-			echo '		<div class="team_profile_header_text">Team description</div>' . "\n";
+			echo '		<div class="box-caption team_profile_header_text">Team description</div>' . "\n";
 			echo '		<div class="team_description">' . $team_description . '</div>' . "\n";
 			echo '	</div>' . "\n";
 			echo '</div>' . "\n";
+		
 		}
 		// query result no longer needed
 		mysql_free_result($result);
@@ -1767,6 +1851,7 @@
 			// query was bad, error message was already given in $site->execute_query(...)
 			$site->dieAndEndPage('');
 		}
+		echo '<div class="main-box">';
 		echo "\n" . '<table id="table_team_members" class="big">' . "\n";
 		echo '<caption>Members of team ' . $team_name . '</caption>' . "\n";
 		echo '<tr>' . "\n";
@@ -1782,7 +1867,6 @@
 
 		while ($row = mysql_fetch_array($result))
 		{
-			echo '</tr>' . "\n\n";
 			echo '<tr class="teams_members_overview">' . "\n";
 			echo '<td>';
 			echo '<a href="../Players?profile=';
@@ -1876,8 +1960,9 @@
 		mysql_free_result($result);
 		
 		echo '</table>' . "\n";
-		$site->write_self_closing_tag('br');
+		echo '</div>';
 		
+		echo '<div class="main-box">';
 		
 		// show last entered matches		
 		// get match data
@@ -1990,11 +2075,13 @@
 			mysql_free_result($result);
 			// no more matches to display
 			echo '</table>' . "\n";
+			echo '</div>';
 		}
 		
 		// show pending invitations
 		if (($team_leader_id > 0) && $viewerid === $team_leader_id || $allow_invite_in_any_team)
 		{
+			echo '<div class="main-box">';
 			$query = 'SELECT `invited_playerid`, `expiration` FROM `invitations` WHERE `teamid`=' . sqlSafeStringQuotes($teamid);
 			$query .= ' ORDER BY `expiration`';
 			if (!($result = @$site->execute_query('invitations', $query, $connection)))
@@ -2006,7 +2093,7 @@
 			$rows = (int) mysql_num_rows($result);
 			if ($rows > 0)
 			{
-				echo "\n" . '<p>Pending invitations:</p>' . "\n";
+				echo "\n" . '<h3>Pending invitations:</h3>' . "\n";
 				echo '<ul>' . "\n";
 				
 				while($row = mysql_fetch_array($result))
@@ -2031,12 +2118,13 @@
 				}
 				echo '</ul>' . "\n";
 			}
+			echo '</div>';
 		}
 		
 		// team leader can delete the team
 		if ($can_delete_any_team || (($team_leader_id > 0) && ($viewerid === $team_leader_id)))
 		{
-			echo '<p><a class="button" href="./?delete=' . (urlencode($profile)) . '">delete this team</a></p>' . "\n";
+			echo '<p class="toolbar"><a class="button" href="./?delete=' . (urlencode($profile)) . '">delete this team</a></p>' . "\n";
 		}
 		
 		$site->dieAndEndPage();
@@ -2046,308 +2134,395 @@
 	if (isset($_GET['opponent_stats']))
 	{
 		$profile = intval($_GET['opponent_stats']);
+		echo '<div class="simple-paging">';
 		echo '<a class="button" href="./">overview</a>' . "\n";
 		echo '<a class="button" href="./?profile=' . strval($profile) . '">back to team profile</a>' . "\n";
+		echo '</div>';
 		
-		$team_name = '(no name)';
-		$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 0,1';
-		if (!($result = @$site->execute_query('teams', $query, $connection)))
-		{
-			echo '<div class="static_page_box">' . "\n";
-			$site->dieAndEndPage('Could not find out name for team with id ' . sqlSafeString($profile));
-		}
-		while($row = mysql_fetch_array($result))
-		{
-			$team_name = $row['name'];
-		}
-		mysql_free_result($result);
+		echo '<div class="static_page_box">' . "\n";
 		
-		$query = 'SELECT * FROM `matches` WHERE `team1_teamid`=' . sqlSafeStringQuotes($profile) . '  OR `team2_teamid`=' . sqlSafeStringQuotes($profile);
-		if (!($result = @$site->execute_query('teams', $query, $connection)))
-		{
-			echo '<div class="static_page_box">' . "\n";
-			$site->dieAndEndPage('Could not get team stats for team with id ' . sqlSafeString($profile));
-		}
-		
-		$rows = (int) mysql_num_rows($result);
-		if ($rows < (int) 1)
-		{
+			$team_name = '(no name)';
+			$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($profile) . ' LIMIT 0,1';
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
+			{
+				$site->dieAndEndPage('Could not find out name for team with id ' . sqlSafeString($profile));
+			}
+			while($row = mysql_fetch_array($result))
+			{
+				$team_name = $row['name'];
+			}
 			mysql_free_result($result);
-			echo '<div class="static_page_box">' . "\n";
-			echo '<p class="first_p">This team has not played a match yet.</p>';
-			$site->dieAndEndPage();
-		}
-		
-		$match_stats = array();
-		
-		while ($row = mysql_fetch_array($result))
-		{
-			if (intval($row['team1_teamid']) === $profile)
+			
+			$query = 'SELECT * FROM `matches` WHERE `team1_teamid`=' . sqlSafeStringQuotes($profile) . '  OR `team2_teamid`=' . sqlSafeStringQuotes($profile);
+			if (!($result = @$site->execute_query('teams', $query, $connection)))
 			{
-				// look up name if needed
-				if (!(isset($match_stats[$row['team2_teamid']]['name'])))
+				$site->dieAndEndPage('Could not get team stats for team with id ' . sqlSafeString($profile));
+			}
+			
+			$rows = (int) mysql_num_rows($result);
+			if ($rows < (int) 1)
+			{
+				mysql_free_result($result);
+				echo '<p class="first_p">This team has not played a match yet.</p>';
+				$site->dieAndEndPage();
+			}
+			
+			$match_stats = array();
+			
+			while ($row = mysql_fetch_array($result))
+			{
+				if (intval($row['team1_teamid']) === $profile)
 				{
-					$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($row['team2_teamid']) .' LIMIT 1';
-					if (!($result_foreign_team = @$site->execute_query('teams', $query, $connection)))
+					// look up name if needed
+					if (!(isset($match_stats[$row['team2_teamid']]['name'])))
 					{
-						echo '<div class="static_page_box">' . "\n";
-						$site->dieAndEndPage('Could not get name for foreign team with id ' . sqlSafeString($profile));
+						$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($row['team2_teamid']) .' LIMIT 1';
+						if (!($result_foreign_team = @$site->execute_query('teams', $query, $connection)))
+						{
+							echo '<div class="static_page_box">' . "\n";
+							$site->dieAndEndPage('Could not get name for foreign team with id ' . sqlSafeString($profile));
+						}
+						while ($row_foreign_team = mysql_fetch_array($result_foreign_team))
+						{
+							$match_stats[$row['team2_teamid']]['name'] = $row_foreign_team['name'];
+						}
+						mysql_free_result($result_foreign_team);
 					}
-					while ($row_foreign_team = mysql_fetch_array($result_foreign_team))
+					
+					if (intval($row['team1_points']) > intval($row['team2_points']))
 					{
-						$match_stats[$row['team2_teamid']]['name'] = $row_foreign_team['name'];
+						// team 1 won
+						if (isset($match_stats[$row['team2_teamid']]['won']))
+						{
+							$match_stats[$row['team2_teamid']]['won'] += 1;
+						} else
+						{
+							$match_stats[$row['team2_teamid']]['won'] = 1;
+						}
+					} elseif (intval($row['team1_points']) < intval($row['team2_points']))
+					{
+						// team 1 lost
+						if (isset($match_stats[$row['team2_teamid']]['lost']))
+						{
+							$match_stats[$row['team2_teamid']]['lost'] += 1;
+						} else
+						{
+							$match_stats[$row['team2_teamid']]['lost'] = 1;
+						}
+					} else
+					{
+						// team 1 tied
+						if (isset($match_stats[$row['team2_teamid']]['tied']))
+						{
+							$match_stats[$row['team2_teamid']]['tied'] += 1;
+						} else
+						{
+							$match_stats[$row['team2_teamid']]['tied'] = 1;
+						}
 					}
-					mysql_free_result($result_foreign_team);
+				} else
+				{
+					// look up name if needed
+					if (!(isset($match_stats[$row['team1_teamid']]['name'])))
+					{
+						$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($row['team1_teamid']) .' LIMIT 1';
+						if (!($result_foreign_team = @$site->execute_query('teams', $query, $connection)))
+						{
+							echo '<div class="static_page_box">' . "\n";
+							$site->dieAndEndPage('Could not get name for foreign team with id ' . sqlSafeString($profile));
+						}
+						while ($row_foreign_team = mysql_fetch_array($result_foreign_team))
+						{
+							$match_stats[$row['team1_teamid']]['name'] = $row_foreign_team['name'];
+						}
+						mysql_free_result($result_foreign_team);
+					}
+					
+					if (intval($row['team1_points']) > intval($row['team2_points']))
+					{
+						// team 2 won
+						if (isset($match_stats[$row['team1_teamid']]['lost']))
+						{
+							$match_stats[$row['team1_teamid']]['lost'] += 1;
+						} else
+						{
+							$match_stats[$row['team1_teamid']]['lost'] = 1;
+						}
+					} elseif (intval($row['team1_points']) < intval($row['team2_points']))
+					{
+						// team 2 lost
+						if (isset($match_stats[$row['team1_teamid']]['won']))
+						{
+							$match_stats[$row['team1_teamid']]['won'] += 1;
+						} else
+						{
+							$match_stats[$row['team1_teamid']]['won'] = 1;
+						}
+					} else
+					{
+						// team 2 tied
+						if (isset($match_stats[$row['team1_teamid']]['tied']))
+						{
+							$match_stats[$row['team1_teamid']]['tied'] += 1;
+						} else
+						{
+							$match_stats[$row['team1_teamid']]['tied'] = 1;
+						}
+					}
+				}
+			}
+			mysql_free_result($result);
+			
+			echo '<div id="chart-container-1"></div>' . "\n";
+			
+			echo '<table class="big" id="opponent_stats">' . "\n";
+			echo '<caption>Opponent statistics for team ' . $team_name . '</caption>' . "\n";
+			echo '<tr>' . "\n";
+			
+			// find out of table is to be sorted
+			$sortBy = '';
+			if (isset($_GET['sort']))
+			{
+				// allowed sorting columns
+				$sort_colums = array('Name', 'Total', 'Total', 'Won', 'Tied', 'Lost', 'Won Ratio');
+				
+				$n_columns = count($sort_colums) -1;
+				for ($i = 0; $i <= $n_columns; $i++)
+				{
+					if (strcmp($_GET['sort'], $sort_colums[$i]) === 0)
+					{
+						$sortBy = $_GET['sort'];
+					}
+				}
+			}
+			
+			$order = 'asc';
+			$orderAsc = true;
+			$orderLink = 'desc';
+			
+			if (isset($_GET['order']) && strcmp($_GET['order'], 'desc') === 0)
+			{
+				$order = 'desc';
+				$orderAsc = false;
+				$orderLink = 'asc';
+			}
+			
+			// write one specified table header
+			function writeNavi($item)
+			{
+				global $profile;
+				global $sortBy;
+				global $order;
+				global $orderLink;
+				
+				$itemLink = str_replace(' ', '%20', $item);
+				echo ('	<th><a href="./?opponent_stats=' . $profile
+					  . '&amp;sort=' . $itemLink . '&amp;order=');
+				if (strcmp($sortBy, $item) === 0)
+				{
+					echo $orderLink . '">' . $item;
+				} else
+				{
+					echo $order . '">' . $item;
 				}
 				
-				if (intval($row['team1_points']) > intval($row['team2_points']))
+				if (strcmp($sortBy, $item) === 0)
 				{
-					// team 1 won
-					if (isset($match_stats[$row['team2_teamid']]['won']))
-					{
-						$match_stats[$row['team2_teamid']]['won'] += 1;
-					} else
-					{
-						$match_stats[$row['team2_teamid']]['won'] = 1;
-					}
-				} elseif (intval($row['team1_points']) < intval($row['team2_points']))
-				{
-					// team 1 lost
-					if (isset($match_stats[$row['team2_teamid']]['lost']))
-					{
-						$match_stats[$row['team2_teamid']]['lost'] += 1;
-					} else
-					{
-						$match_stats[$row['team2_teamid']]['lost'] = 1;
-					}
-				} else
-				{
-					// team 1 tied
-					if (isset($match_stats[$row['team2_teamid']]['tied']))
-					{
-						$match_stats[$row['team2_teamid']]['tied'] += 1;
-					} else
-					{
-						$match_stats[$row['team2_teamid']]['tied'] = 1;
-					}
+					echo ' <span class="opponent_stats_order_' . $order . '">(' . $order . ')</span>';
 				}
-			} else
-			{
-				// look up name if needed
-				if (!(isset($match_stats[$row['team1_teamid']]['name'])))
-				{
-					$query = 'SELECT `name` FROM `teams` WHERE `id`=' . sqlSafeStringQuotes($row['team1_teamid']) .' LIMIT 1';
-					if (!($result_foreign_team = @$site->execute_query('teams', $query, $connection)))
-					{
-						echo '<div class="static_page_box">' . "\n";
-						$site->dieAndEndPage('Could not get name for foreign team with id ' . sqlSafeString($profile));
-					}
-					while ($row_foreign_team = mysql_fetch_array($result_foreign_team))
-					{
-						$match_stats[$row['team1_teamid']]['name'] = $row_foreign_team['name'];
-					}
-					mysql_free_result($result_foreign_team);
-				}
-				
-				if (intval($row['team1_points']) > intval($row['team2_points']))
-				{
-					// team 2 won
-					if (isset($match_stats[$row['team1_teamid']]['lost']))
-					{
-						$match_stats[$row['team1_teamid']]['lost'] += 1;
-					} else
-					{
-						$match_stats[$row['team1_teamid']]['lost'] = 1;
-					}
-				} elseif (intval($row['team1_points']) < intval($row['team2_points']))
-				{
-					// team 2 lost
-					if (isset($match_stats[$row['team1_teamid']]['won']))
-					{
-						$match_stats[$row['team1_teamid']]['won'] += 1;
-					} else
-					{
-						$match_stats[$row['team1_teamid']]['won'] = 1;
-					}
-				} else
-				{
-					// team 2 tied
-					if (isset($match_stats[$row['team1_teamid']]['tied']))
-					{
-						$match_stats[$row['team1_teamid']]['tied'] += 1;
-					} else
-					{
-						$match_stats[$row['team1_teamid']]['tied'] = 1;
-					}
-				}
-			}
-		}
-		mysql_free_result($result);
-		
-		echo '<table class="big" id="opponent_stats">' . "\n";
-		echo '<caption>Opponent statistics for team ' . $team_name . '</caption>' . "\n";
-		echo '<tr>' . "\n";
-		
-		// find out of table is to be sorted
-		$sortBy = '';
-		if (isset($_GET['sort']))
-		{
-			// allowed sorting columns
-			$sort_colums = array('Name', 'Total', 'Total', 'Won', 'Tied', 'Lost', 'Won Ratio');
-			
-			$n_columns = count($sort_colums) -1;
-			for ($i = 0; $i <= $n_columns; $i++)
-			{
-				if (strcmp($_GET['sort'], $sort_colums[$i]) === 0)
-				{
-					$sortBy = $_GET['sort'];
-				}
-			}
-		}
-		
-		$order = 'asc';
-		$orderAsc = true;
-		$orderLink = 'desc';
-		
-		if (isset($_GET['order']) && strcmp($_GET['order'], 'desc') === 0)
-		{
-			$order = 'desc';
-			$orderAsc = false;
-			$orderLink = 'asc';
-		}
-		
-		// write one specified table header
-		function writeNavi($item)
-		{
-			global $profile;
-			global $sortBy;
-			global $order;
-			global $orderLink;
-			
-			$itemLink = str_replace(' ', '%20', $item);
-			echo ('	<th><a href="./?opponent_stats=' . $profile
-				  . '&amp;sort=' . $itemLink . '&amp;order=');
-			if (strcmp($sortBy, $item) === 0)
-			{
-				echo $orderLink . '">' . $item;
-			} else
-			{
-				echo $order . '">' . $item;
+				echo '</a></th>' . "\n";
 			}
 			
-			if (strcmp($sortBy, $item) === 0)
-			{
-				echo ' <span class="opponent_stats_order_' . $order . '">(' . $order . ')</span>';
-			}
-			echo '</a></th>' . "\n";
-		}
-		
-		// write the navigation elements
-		writeNavi('Name');
-		writeNavi('Total');
-		writeNavi('Won');
-		writeNavi('Tied');
-		writeNavi('Lost');
-		writeNavi('Won Ratio');
-		
-		echo '</tr>' . "\n";
-		
-		// sorting callback function
-		function cmp($a, $b)
-		{
-			global $orderAsc;
-			global $sortBy;
-			global $sortByName;
-			
-			$sortBy = strtolower($sortBy);
-			if (!($sortByName))
-			{
-				if ($orderAsc)
-				{
-					return (intval($a[$sortBy]) >= intval($b[$sortBy]));
-				} else
-				{
-					return (intval($a[$sortBy]) < intval($b[$sortBy]));					
-				}
-			}
-
-			if ($orderAsc)
-			{
-				return strcmp($a[$sortBy], $b[$sortBy]);
-			} else
-			{
-				return !(strcmp($a[$sortBy], $b[$sortBy]));
-			}
-		}
-		
-		// fill empty entries with 0 and compute won ratio
-		$match_stats_keys = array_keys($match_stats);
-		$n_teams = ((int) count($match_stats_keys)) - 1;
-		for ($i = 0; $i <= $n_teams; $i++)
-		{
-			if (!isset($match_stats[$match_stats_keys[$i]]['won']))
-			{
-				$match_stats[$match_stats_keys[$i]]['won'] = 0;
-			}
-			if (!isset($match_stats[$match_stats_keys[$i]]['tied']))
-			{
-				$match_stats[$match_stats_keys[$i]]['tied'] = 0;
-			}
-			if (!isset($match_stats[$match_stats_keys[$i]]['lost']))
-			{
-				$match_stats[$match_stats_keys[$i]]['lost'] = 0;
-			}
-			
-			$total = ($match_stats[$match_stats_keys[$i]]['won']
-					  + $match_stats[$match_stats_keys[$i]]['tied']
-					  + $match_stats[$match_stats_keys[$i]]['lost']);
-			$match_stats[$match_stats_keys[$i]]['total'] = $total;
-			$ratio = $match_stats[$match_stats_keys[$i]]['won'] / $total;
-			$match_stats[$match_stats_keys[$i]]['won ratio'] = round($ratio*100, 2);
-		}
-		
-		// sort the array
-		if (!(strcmp($sortBy, '') === 0))
-		{
-			// mark whether to sort by name for callback
-			$sortByName = (strcmp($sortBy, 'Name') === 0);
-			uasort($match_stats, 'cmp');
-			unset($sortByName);
-			
-			// re-index the key lookup table
-			// NOTE: would also be necessary if uasort would be used to sort the array 
-			$match_stats_keys = array_keys($match_stats);
-		}
-		
-		for ($i = 0; $i <= $n_teams; $i++)
-		{
-			echo '<tr>';
-			
-			echo '<td>';
-			if (isset($match_stats[$match_stats_keys[$i]]['name']))
-			{
-				echo '<a href=".?profile=' . htmlent($match_stats_keys[$i]) . '">' . $match_stats[$match_stats_keys[$i]]['name'] . '</a>';
-			}
-			echo '</td>';
-			
-			echo '<td>' . $match_stats[$match_stats_keys[$i]]['total'] . '</td>';
-			
-			echo '<td>' . $match_stats[$match_stats_keys[$i]]['won'] . '</td>';
-			
-			echo '<td>' . $match_stats[$match_stats_keys[$i]]['tied'] . '</td>';
-			
-			echo '<td>' . $match_stats[$match_stats_keys[$i]]['lost'] . '</td>';
-			
-			echo '<td>' . number_format($match_stats[$match_stats_keys[$i]]['won ratio'], 2) . ' %</td>';
+			// write the navigation elements
+			writeNavi('Name');
+			writeNavi('Total');
+			writeNavi('Won');
+			writeNavi('Tied');
+			writeNavi('Lost');
+			writeNavi('Won Ratio');
 			
 			echo '</tr>' . "\n";
-		}
-		echo '</table>' . "\n";
+			
+			// sorting callback function
+			function cmp($a, $b)
+			{
+				global $orderAsc;
+				global $sortBy;
+				global $sortByName;
+				
+				$sortBy = strtolower($sortBy);
+				if (!($sortByName))
+				{
+					if ($orderAsc)
+					{
+						return (intval($a[$sortBy]) >= intval($b[$sortBy]));
+					} else
+					{
+						return (intval($a[$sortBy]) < intval($b[$sortBy]));					
+					}
+				}
+	
+				if ($orderAsc)
+				{
+					return strcmp($a[$sortBy], $b[$sortBy]);
+				} else
+				{
+					return !(strcmp($a[$sortBy], $b[$sortBy]));
+				}
+			}
+			
+			// fill empty entries with 0 and compute won ratio
+			$match_stats_keys = array_keys($match_stats);
+			$n_teams = ((int) count($match_stats_keys)) - 1;
+			for ($i = 0; $i <= $n_teams; $i++)
+			{
+				if (!isset($match_stats[$match_stats_keys[$i]]['won']))
+				{
+					$match_stats[$match_stats_keys[$i]]['won'] = 0;
+				}
+				if (!isset($match_stats[$match_stats_keys[$i]]['tied']))
+				{
+					$match_stats[$match_stats_keys[$i]]['tied'] = 0;
+				}
+				if (!isset($match_stats[$match_stats_keys[$i]]['lost']))
+				{
+					$match_stats[$match_stats_keys[$i]]['lost'] = 0;
+				}
+				
+				$total = ($match_stats[$match_stats_keys[$i]]['won']
+						  + $match_stats[$match_stats_keys[$i]]['tied']
+						  + $match_stats[$match_stats_keys[$i]]['lost']);
+				$match_stats[$match_stats_keys[$i]]['total'] = $total;
+				$ratio = $match_stats[$match_stats_keys[$i]]['won'] / $total;
+				$match_stats[$match_stats_keys[$i]]['won ratio'] = round($ratio*100, 2);
+			}
+			
+			// sort the array
+			if (!(strcmp($sortBy, '') === 0))
+			{
+				// mark whether to sort by name for callback
+				$sortByName = (strcmp($sortBy, 'Name') === 0);
+				uasort($match_stats, 'cmp');
+				unset($sortByName);
+				
+				// re-index the key lookup table
+				// NOTE: would also be necessary if uasort would be used to sort the array 
+				$match_stats_keys = array_keys($match_stats);
+			}
+			
+			$chart_teams="";
+			$chart_wins="";
+			$chart_losses="";
+			$chart_ties="";
+			
+			for ($i = 0; $i <= $n_teams; $i++)
+			{
+				echo '<tr>';
+				
+				echo '<td>';
+				if (isset($match_stats[$match_stats_keys[$i]]['name']))
+				{
+					echo '<a href=".?profile=' . htmlent($match_stats_keys[$i]) . '">' . $match_stats[$match_stats_keys[$i]]['name'] . '</a>';
+				}
+				echo '</td>';
+				
+				echo '<td>' . $match_stats[$match_stats_keys[$i]]['total'] . '</td>';
+				
+				echo '<td>' . $match_stats[$match_stats_keys[$i]]['won'] . '</td>';
+				
+				echo '<td>' . $match_stats[$match_stats_keys[$i]]['tied'] . '</td>';
+				
+				echo '<td>' . $match_stats[$match_stats_keys[$i]]['lost'] . '</td>';
+				
+				echo '<td>' . number_format($match_stats[$match_stats_keys[$i]]['won ratio'], 2) . ' %</td>';
+				
+				echo '</tr>' . "\n";
+			
+				//counting for charts
+				if ($i > 0) 
+				{
+					$chart_teams .= ','; 
+					$chart_wins .= ',';
+					$chart_losses .= ',';
+					$chart_ties .= ','; 
+				}
+				$chart_teams .= '\'' . $match_stats[$match_stats_keys[$i]]['name'] . '\'';
+				$chart_wins .= $match_stats[$match_stats_keys[$i]]['won'];
+				$chart_losses .= $match_stats[$match_stats_keys[$i]]['lost'];
+				$chart_ties .= $match_stats[$match_stats_keys[$i]]['tied'];
+				
+			}
+			
+			echo '</table>' . "\n";
+		echo '</div>';
+		
+		?>
+		<script src="/js/highcharts.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../js/themes/gray.js"></script>
+		<script type="text/javascript">
+		var chart1; // globally available
+		$(document).ready(function() {
+		      chart1 = new Highcharts.Chart({
+		         chart: {
+		            renderTo: 'chart-container-1',
+		            defaultSeriesType: 'bar'
+		         },
+		         title: {
+		            text: 'Opponents summary for <?php echo $team_name; ?>'
+		         },
+		         xAxis: {
+						categories: [<?php echo $chart_teams; ?>]
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: 'Amount of matches'
+					}
+				},
+				legend: {
+					align: 'right',
+					x: -100,
+					verticalAlign: 'top',
+					y: 20,
+					floating: true,
+					backgroundColor: '#121212',
+					borderColor: '#CCC',
+					borderWidth: 1,
+					shadow: false
+				},
+				tooltip: {
+					formatter: function() {
+						return '<b>' + '<?php echo $team_name; ?>' + ' vs ' + this.x +'</b><br/>'+
+							 this.series.name +': '+ this.y +'<br/>'+
+							 'Total: '+ this.point.stackTotal;
+					}
+				},
+				plotOptions: {
+					series: {
+						stacking: 'normal'
+					}
+				},
+			    series: [{
+					name: 'Wins',
+					data: [<?php echo $chart_wins; ?>]
+				}, {
+					name: 'Losses',
+					data: [<?php echo $chart_losses; ?>]
+				}, {
+					name: 'Ties',
+					data: [<?php echo $chart_ties; ?>]
+				}]
+		      });
+		   });	
+		</script>
+		<?php 
+		
+		
 		$site->dieAndEndPageNoBox();
 	}
 	
 	// nothing else wanted -> display overview
-	
+	echo '<div class="toolbar">';
 	// reactivate button
 	if ($allow_reactivate_teams)
 	{
@@ -2383,7 +2558,9 @@
 			echo '<a class="button" href="./?create">Create a new team</a>' . "\n";
 		}
 	}
+	echo '</div>';
 	
+	echo '<div class="main-box">';
 	// list the non deleted teams
 	// example query: SELECT `teamid`,`name`, `score`, `member_count`,`activity`,`any_teamless_player_can_join` FROM `teams`, `teams_overview`
 	// WHERE `teams`.`id` = `teams_overview`.`teamid` AND (`teams_overview`.`deleted`='0' OR `teams_overview`.`deleted`='1') ORDER BY `score`		
@@ -2563,6 +2740,8 @@
 		$site->write_self_closing_tag('br');
 		display_teams('Inactive teams',$inactive_teams, $invited_to_teams);
 		unset($inactive_teams);
+		
+		echo '</div>';
 	}
 	?>
 

@@ -3,7 +3,7 @@ require_once 'siteinfo.php';
 
 define ('MYPAGE', baseaddress() . 'CMS/');
 define ('AUTH_LINK', "http://my.bzflag.org/weblogin.php?action=weblogin&url=". MYPAGE ."?bzbbauth=%25TOKEN%25,%25USERNAME%25");
-$ALLOWED_GROUPS =  array ('gu.admins', 'gu.league');
+$ALLOWED_GROUPS =  array ('ducati.admins', 'duc.league');
 
 
 if ($_GET['bzbbauth'] )
@@ -24,7 +24,7 @@ function authCheck ($groups) {
 
 
 // returns TRUE if user is a member of ANY of the specified groups
-// sample reply ... MSG: checktoken callsign=menotume, ip=, token=1279306227  group=gu.league TOKGOOD: menotume:gu.league BZID: 262
+// sample reply ... MSG: checktoken callsign=menotume, ip=, token=1279306227  group=duc.league TOKGOOD: menotume:duc.league BZID: 262
 function validate_token ($token, $callsign, $groups=array()){
   $list_server='http://my.bzflag.org/db/';
 

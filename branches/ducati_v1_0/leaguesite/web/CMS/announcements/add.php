@@ -351,7 +351,7 @@
 			
 			if (!$randomkeysmatch && $previewSeen > 1)
 			{
-				echo '<p>The magic key does not match, it looks like you came from somewhere else or your session expired.';
+				echo '<p class="error-msg">The magic key does not match, it looks like you came from somewhere else or your session expired.';
 				echo ' Going back to compositing mode.</p>' . "\n";
 				$previewSeen = 0;
 			}
@@ -372,7 +372,7 @@
 				$known_recipients = array_unique($known_recipients);
 				if (!($dup_check === (count($known_recipients))))
 				{
-					echo '<p>Some double entries were removed. Please check your recipients.<p>' . "\n";
+					echo '<p class="error-msg">Some double entries were removed. Please check your recipients.<p>' . "\n";
 					// back to overview to let them check
 					$previewSeen = 0;
 				}
@@ -382,7 +382,7 @@
 				// use the result
 				if (!($utils->getAllUsersExist()))
 				{
-					echo '<p class="first_p">Not all of the specified recipients did exist. Please check your recipient list.<p>' . "\n";
+					echo '<p class="error-msg">Not all of the specified recipients did exist. Please check your recipient list.<p>' . "\n";
 					// overwrite some values in order to go back to compose mode
 					$previewSeen = 0;
 					$known_recipients = $utils->getRecipients();
@@ -390,7 +390,7 @@
 					{
 						if ($site->debug_sql())
 						{
-							echo '<p>No recipients in list at all!</p>';
+							echo '<p class="error-msg">No recipients in list at all!</p>';
 						}
 						$recipients = false;
 					}
@@ -403,9 +403,7 @@
 			// FIXME: move to a line between valid form start and end place
 			if ($previewSeen > 0)
 			{
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlentities(($timestamp))) . '"');
-				echo '</p>' . "\n";
 			}
 						
 			// $previewSeen === 2 means we're about to insert the data
@@ -589,7 +587,8 @@
 			
 			if ($previewSeen === 1)
 			{
-				echo '<p>Preview:</p>' . "\n";
+				echo '<div class="main-box msg-box">';
+				echo '<h2>Preview:</h2>' . "\n";
 				
 				// We are doing the preview by echoing the info
 				if ($message_mode)
@@ -605,6 +604,7 @@
 					// appending to string with . broken here, need to use seperate echo lines
 					echo '	<div class="msg_contents">';
 					echo $site->bbcode($announcement);
+					echo '   </div>' . "\n";
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
 				} else
@@ -614,7 +614,7 @@
 					echo '<div class="timestamp">';
 					echo $timestamp;
 					echo '</div>' . "\n";
-					echo '<div class="author"> By: ';
+					echo '<div class="author"> by ';
 					echo htmlent($author);
 					echo '</div>' . "\n";
 					echo '</div>' . "\n";
@@ -646,9 +646,7 @@
 					}
 					echo '">' . "\n";
 					
-					echo '<p>';
 					$site->write_self_closing_tag('input type="hidden" name="subject" value="' . (htmlent($subject)) . '"');
-					echo '</p>' ."\n";
 				} else
 				{
 					echo '<form action="' . baseaddress() . $name . '/?add' . '" method="post">' . "\n";
@@ -664,65 +662,51 @@
 					array_walk($known_recipients, 'write_hidden_input_element', $utils);
 					if (!($utils->getAllUsersExist()))
 					{
-						echo '<p>Not all of the specified users did exist. Please check your recipients.<p>' . "\n";
+						echo '<p class="error-msg">Not all of the specified users did exist. Please check your recipients.<p>' . "\n";
 						// overwrite some values in order to go back to compose mode
 						$previewSeen = 0;
 						$known_recipients = $utils->getRecipients();
 					}
 				} else
 				{
-					echo '<p>' . "\n";
 					$site->write_self_closing_tag('input type="hidden" name="timestamp" value="' . urlencode(htmlent($timestamp)) . '"');
-					echo '</p>' . "\n";
 				}
 				
 				// keep the information in case user confirms by using invisible form items
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
-				echo '</p>' ."\n";
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '2' . '"');
-				echo '</p>' ."\n";
 								
 				if ((isset($_SESSION[$author_change_allowed])) && ($_SESSION[$author_change_allowed]))
 				{
-					echo '<p>';
 					$site->write_self_closing_tag('input type="hidden" name="author" value="' . urlencode(htmlent($author)) . '"');
-					echo '</p>' . "\n";
 				}
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="announcement" value="' . urlencode(htmlent($announcement)) . '"');
-				echo '</p>' . "\n";
-				
 				
 				$new_randomkey_name = $randomkey_name . microtime();
 				$new_randomkey = $site->set_key($new_randomkey_name);
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="key_name" value="' . htmlentities($new_randomkey_name) . '"');
-				echo '</p>' . "\n";
-				echo '<p>';
 				$site->write_self_closing_tag('input type="hidden" name="' . sqlSafeString($randomkey_name) . '" value="'
 											  . urlencode(($_SESSION[$new_randomkey_name])) . '"');
-				echo '</p>' . "\n";
+
+				
+				echo '<p class="simple-paging">' . "\n";
 				if ($message_mode)
 				{
 					if (isset($_POST['teamid']))
 					{
-						echo '<p>';
 						$site->write_self_closing_tag('input type="hidden" name="teamid" value="' . htmlentities(urldecode(htmlspecialchars_decode($_POST['teamid']))) . '"');
-						echo '</p>' . "\n";
 					}
-					echo '<p>' . "\n" . '	';
-					$site->write_self_closing_tag('input type="submit" value="' . 'Send the private message' . '"');
+					$site->write_self_closing_tag('input type="submit" value="' . 'Send the private message' . '" class="button"');
 					echo "\n" . '	';
-					$site->write_self_closing_tag('input type="submit" name="edit_message" value="Edit message"');
-					echo "\n" . '</p>' . "\n";
+					$site->write_self_closing_tag('input type="submit" name="edit_message" value="Edit message" class="button"');
 				} else
 				{
-					echo '<p>';
-					$site->write_self_closing_tag('input type="submit" value="' . 'Confirm changes' . '"');
-					echo '</p>' . "\n";
+					
+					$site->write_self_closing_tag('input type="submit" value="' . 'Confirm changes' . '" class="button"');
+					
 				}
+				echo '</p>' . "\n";
+				
 			} else
 			{
 				// $previewSeen === 0 means we just decided to add something but did not fill it out yet
@@ -1050,10 +1034,8 @@
 						echo "\n" . '</div>' . "\n";
 					}
 					
-					echo '<div>';
 					$site->write_self_closing_tag('input type="hidden" name="preview" value="' . '1' . '"');
-					echo '</div>' . "\n";
-					echo '<div>';
+					echo '<div class="msg_buttons' . (($message_mode)?' l15':'') . '">';
 					$site->write_self_closing_tag('input type="submit" value="Preview"');
 					echo '</div>' . "\n";
 				}

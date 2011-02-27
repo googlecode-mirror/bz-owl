@@ -4,6 +4,7 @@
 	
 	// find out if maintenance is needed (compare old date in plain text file)
 	$today = date('d.m.Y');
+
 	$file = (dirname(__FILE__)) . '/maintenance.txt';
 	
 	// siteinfo class used all the time
@@ -376,6 +377,9 @@
 		{
 			global $settings;
 			global $today;
+			
+			if (!isset($today) ) $today = date('d.m.Y');
+			
 			echo '<p>Performing maintenance...</p>';
 			
 			$settings = new maintenance_settings();
@@ -626,7 +630,7 @@
 			}
 			
 			echo '<p>Maintenance performed successfully.</p>';
-			
+				
 			// update maintenance date
 			$query = 'UPDATE `misc_data` SET `last_maintenance`=' . sqlSafeStringQuotes($today);
 			// execute query

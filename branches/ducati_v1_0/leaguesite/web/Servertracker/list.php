@@ -184,41 +184,6 @@ function formatbzfquery_last($server, $connection)
 		$teamColour = array(0=>"yellow", 1=>"red", 2=>"green", 3=>"blue", 4=>"purple", 5=>"gray", 6=>"orange");
 		
 		usort ($data['player'], "cmp");
-		
-//		echo 'count punkte:!' . print_r($data['player']['0']['team']);
-		if (isset($data['player']['0']['team']) && !(strcmp($data['player']['0']['team'], '5') === 0))
-		{
-			echo '<table class="punkte">' . "\n";
-			echo '  <tbody>' . "\n";
-			
-			while (list($key, $val) = each($data['team']))
-			{
-				if ($data['team'][$key]['size'] > 0)
-				{
-					echo '    ';
-					// Mannschaftsfarbe
-					marke('tr',$teamName[$key]);
-					// Punktzahl
-					echo '<td>';
-					echo ($data['team'][$key]['won'] - $data['team'][$key]['lost']);
-					echo '</td>';
-					// Gewonnen
-					echo '<td>';
-					echo '(' . $data['team'][$key]['won'] . ' - ';
-					// Verloren
-					echo $data['team'][$key]['lost'] . ')';
-					echo '</td>';
-					// #Spieler
-					echo '<td>';
-					echo $data['team'][$key]['size'];
-					echo '</td>';
-					// Ende Mannschaftsfarbe
-					echo '</tr>' . "\n";
-				}
-			}
-			echo '  </tbody>' . "\n" .'</table>' . "\n";
-		}
-		reset($data);
 
         
         echo "\n\n" . '<table class="spieler" border="0">' . "\n";
@@ -317,6 +282,45 @@ function formatbzfquery_last($server, $connection)
             echo '</tr>' . "\n";
         }
         echo '  </tbody>' . "\n" . '</table>' . "\n";
+        
+        
+        		
+//		echo 'count punkte:!' . print_r($data['player']['0']['team']);
+		if (isset($data['player']['0']['team']) && !(strcmp($data['player']['0']['team'], '5') === 0))
+		{
+			echo '<table class="punkte">' . "\n";
+			echo '  <tbody>' . "\n";
+			
+			while (list($key, $val) = each($data['team']))
+			{
+				if ($data['team'][$key]['size'] > 0)
+				{
+					echo '    ';
+					// Mannschaftsfarbe
+					marke('tr',$teamName[$key]);
+					// Punktzahl
+					echo '<td>';
+					echo ($data['team'][$key]['won'] - $data['team'][$key]['lost']);
+					echo '</td>';
+					// Gewonnen
+					echo '<td>';
+					echo '(' . $data['team'][$key]['won'] . ' - ';
+					// Verloren
+					echo $data['team'][$key]['lost'] . ')';
+					echo '</td>';
+					// #Spieler
+					echo '<td>';
+					echo $data['team'][$key]['size'];
+					echo '</td>';
+					// Ende Mannschaftsfarbe
+					echo '</tr>' . "\n";
+				}
+			}
+			echo '  </tbody>' . "\n" .'</table>' . "\n";
+		}
+		reset($data);
+        
+        
     }
 }
 	

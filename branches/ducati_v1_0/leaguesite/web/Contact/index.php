@@ -2,6 +2,7 @@
 	// the current page to be edited
 	$page_title = 'Contact/';
 	$display_page_title = 'Contact';
+	$cmspage = 'contact';
 	
 	$randomkey_name = ('randomkey_static_pages_' . $page_title);
 	

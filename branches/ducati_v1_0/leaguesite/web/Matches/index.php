@@ -9,6 +9,9 @@
 	$display_page_title = $name;
 	require_once (dirname(dirname(__FILE__)) . '/CMS/index.inc');
 	require ('../CMS/navi.inc');
+	require_once (dirname(dirname(__FILE__)) . '/Seasons/seasons.inc');
+	
+	echo '<h1 class="matches">Matches</h1>';
 	
 	$connection = $site->connect_to_db();
 	$randomkey_name = 'randomkey_matches';
@@ -76,10 +79,14 @@
 		echo '<a href="../Players/?profile=' . ((int) $id) . '">' . $name . '</a>';
 	}
 	
+	
 	if (isset($_GET['enter']) || isset($_GET['edit']) || isset($_GET['delete']))
 	{
+		echo '<div class="simple-paging">';
 		echo '<a class="button" href="./">overview</a>' . "\n";
+			echo '</div>' . "\n";
 		echo '<div class="static_page_box">' . "\n";
+	
 		
 		require('match_form.php');
 		$site->dieAndEndPage();
@@ -89,13 +96,28 @@
 	}
 	
 	
+	echo '<div class="simple-paging">';
+	if (isset($_GET['search']))
+	{
+		echo '<a class="button" href="./">overview</a>' . "\n";
+	}
+	if ($allow_add_match)
+	{
+		if (isset($_GET['search']))
+		{
+		}
+		echo '<a class="button" href="./?enter">Enter a new match</a>' . "\n";
+	}
+	
+	echo '</div>';
+	echo '<div class="main-box">' . "\n";
 	
 	// form letting search for team name or time
 	// this form is considered not to be dangerous, thus no key checking at all and also using the get method
-	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar">' . "\n";
+	echo "\n" . '<form enctype="application/x-www-form-urlencoded" method="get" action="./" class="search_bar simpleform">' . "\n";
 	
 	// input string
-	echo '<div style="display:inline" class="search_bar_text"><label for="match_search_string">Search for:</label> ' . "\n";
+	echo '<div class="formrow"><label for="match_search_string">Search for:</label> ' . "\n";
 	echo '<span>';
 	if (isset($_GET['search']))
 	{
@@ -108,7 +130,7 @@
 	echo '</span></div> ' . "\n";
 	
 	// looking for either team name or time
-	echo '<div style="display:inline"><label for="match_search_type">result type:</label> ' . "\n";
+	echo '<div class="formrow"><label for="match_search_type">result type:</label> ' . "\n";
 	echo '<span><select id="match_search_type" name="search_type">';
 	
 	// avoid to let the user enter a custom table column at all costs
@@ -202,26 +224,11 @@
 	echo '</div> ' . "\n";
 	
 	echo '<div style="display:inline">';
-	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send"');
+	$site->write_self_closing_tag('input type="submit" name="search" value="Search" id="send" class="button"');
 	echo '</div>' . "\n";
 	echo '</form>' . "\n";
 	
 	// end search toolbar
-	
-	
-	if (isset($_GET['search']))
-	{
-		echo '<a class="button" href="./">overview</a>' . "\n";
-	}
-	if ($allow_add_match)
-	{
-		if (isset($_GET['search']))
-		{
-			$site->write_self_closing_tag('br');
-			$site->write_self_closing_tag('br');
-		}
-		echo '<a class="button" href="./?enter">Enter a new match</a>' . "\n";
-	}
 	
 	if (isset($_GET['search']))
 	{
@@ -257,7 +264,7 @@
 	$query .= ',`matches`.`team1_teamid`,`matches`.`team2_teamid`';
 	// the rest of the needed data
 	$query .= ',`matches`.`team1_points`,`matches`.`team2_points`,`matches`.`playerid`';
-	$query .= ',`players`.`name` AS `playername`,`matches`.`id`';
+	$query .= ',`players`.`name` AS `playername`,`matches`.`id`, `matches`.`duration`';
 	// the tables in question
 	$query .= ' FROM `matches`,`players` WHERE `players`.`id`=`matches`.`playerid`';
 	if (isset($_GET['search']))
@@ -347,6 +354,7 @@
 	{
 		$id = (int) $row['id'];
 		$matchid_list[$id]['timestamp'] = $row['timestamp'];
+		$matchid_list[$id]['duration'] = $row['duration'];
 		$matchid_list[$id]['team1_name'] = $row['team1_name'];
 		$matchid_list[$id]['team2_name'] = $row['team2_name'];
 		$matchid_list[$id]['team1_teamid'] = $row['team1_teamid'];
@@ -375,7 +383,7 @@
 	{
 		echo '<tr class="matches_overview">' . "\n";
 		echo '<td>';
-		echo $match_entry['timestamp'];
+		echo $match_entry['timestamp'] . ' [' . $match_entry['duration'] . ']';
 		echo '</td>' . "\n" . '<td>';
 		
 		// get name of first team

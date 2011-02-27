@@ -1,7 +1,8 @@
 <?php
 	require_once 'siteinfo.php';
 	$site = new siteinfo();
-
+	
+	
 	if ($site->use_xtml())
 	{
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' . "\n";
@@ -34,7 +35,7 @@
 	// the latter is defined in the script that includes this file
 	if (isset($display_page_title) && (!(strcmp($display_page_title, '') === 0)))
 	{
-		echo $display_page_title;
+		echo strip_tags($display_page_title);
 	} else
 	{
 		echo 'No page title set';
@@ -42,5 +43,7 @@
 	echo '</title>' . "\n";
 
 ?>
+
+<script src='/js/jquery-1.4.2.min.js' type='text/javascript'></script>
 </head>
 <body>

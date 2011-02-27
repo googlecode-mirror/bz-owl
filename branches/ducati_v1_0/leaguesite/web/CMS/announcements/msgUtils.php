@@ -75,6 +75,7 @@
 				$team_message_from_team_id = intval($row['recipients']);
 			}
 				
+			echo '<div class="msg_area">' . "\n";
 			echo '<div class="msg_view_full">' . "\n";
 			
 			echo '	<div class="msg_header_full">' . "\n";
@@ -95,6 +96,7 @@
 			// adding to string using . will put the message first, then the div tag..which is wrong
 			echo '	<div class="msg_contents">';
 			echo $site->bbcode($row['message']);
+			echo '</div>' . "\n";
 			echo '</div>' . "\n";
 			echo '</div>' . "\n\n";
 			
@@ -245,11 +247,12 @@
 				$rows = (int) mysql_num_rows($result);
 				if ($rows === 1)
 				{
-					echo '<div class="msg_area">';
+					
 					// message came from a team?
 					$team_message_from_team_id = false;
 					// display the message chosen by user
 					displayMessage($result, $can_reply, $team_message_from_team_id, $id);
+					
 					echo '<div class="msg_view_button_list">' . "\n";
 					// if the message is in inbox the user might want to reply to the message
 					if (strcmp($folder, 'inbox') === 0)
@@ -285,7 +288,7 @@
 					echo '</p>' . "\n";
 					echo '</form>' . "\n";
 					
-					echo '</div>' . "\n";
+				
 					
 					echo '</div>' . "\n";
 				} else

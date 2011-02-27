@@ -20,6 +20,15 @@
 		$_SESSION['allow_edit_news'] = false;
 		$_SESSION['allow_delete_news'] = false;
 		
+		
+		// set all permission to false by default
+		// permissions for spawnlist page
+		$_SESSION['allow_set_different_spawnlist_author'] = false;
+		$_SESSION['allow_add_spawnlist'] = false;
+		$_SESSION['allow_edit_spawnlist'] = false;
+		$_SESSION['allow_delete_spawnlist'] = false;
+		
+		
 		// permissions for all static pages
 		$_SESSION['allow_edit_static_pages'] = false;
 		
@@ -56,6 +65,11 @@
 		$_SESSION['allow_edit_match'] = false;
 		$_SESSION['allow_delete_match'] = false;
 		
+		// seasons permissions
+		$_SESSION['allow_add_season'] = false;
+		$_SESSION['allow_edit_season'] = false;
+		$_SESSION['allow_delete_season'] = false;
+		
 		// server tracker permissions
 		$_SESSION['allow_watch_servertracker'] = false;
 		
@@ -65,6 +79,10 @@
 		
 		// aux permissions
 		$_SESSION['IsAdmin'] = false;
+		
+		// shoutbox permissions
+		$_SESSION['allow_moderate_shoutbox'] = false;
+		
 	}
 	
 	function allow_change_debug_sql()
@@ -106,6 +124,40 @@
 			$_SESSION['allow_delete_news'] = true;
 		}
 	}
+	
+	function allow_set_different_spawnlist_author()
+	{
+		if (!($_SESSION['allow_set_different_spawnlist_author']))
+		{
+			$_SESSION['allow_set_different_spawnlist_author'] = true;
+		}
+	}
+	
+	function allow_add_spawnlist()
+	{
+		if (!($_SESSION['allow_add_spawnlist']))
+		{
+			$_SESSION['allow_add_spawnlist'] = true;
+		}
+	}
+	
+	function allow_edit_spawnlist()
+	{
+		if (!($_SESSION['allow_edit_spawnlist']))
+		{
+			$_SESSION['allow_edit_spawnlist'] = true;
+		}
+	}
+	
+	function allow_delete_spawnlist()
+	{
+		if (!($_SESSION['allow_delete_spawnlist']))
+		{
+			$_SESSION['allow_delete_spawnlist'] = true;
+		}
+	}
+	
+	
 	
 	function allow_edit_static_pages()
 	{
@@ -273,6 +325,30 @@
 		}
 	}
 	
+	function allow_add_season()
+	{
+		if (!($_SESSION['allow_add_season']))
+		{
+			$_SESSION['allow_add_season'] = true;
+		}
+	}
+	
+	function allow_edit_season()
+	{
+		if (!($_SESSION['allow_edit_season']))
+		{
+			$_SESSION['allow_edit_season'] = true;
+		}
+	}
+	
+	function allow_delete_season()
+	{
+		if (!($_SESSION['allow_delete_season']))
+		{
+			$_SESSION['allow_delete_season'] = true;
+		}
+	}
+	
 	function allow_watch_servertracker()
 	{
 		if (!($_SESSION['allow_watch_servertracker']))
@@ -296,6 +372,15 @@
 			$_SESSION['allow_edit_todo'] = true;
 		}
 	}
+	
+	function allow_moderate_shoutbox()
+	{
+		if (!($_SESSION['allow_moderate_shoutbox']))
+		{
+			$_SESSION['allow_moderate_shoutbox'] = true;
+		}
+	}
+
 	
 	function is_admin()
 	{
