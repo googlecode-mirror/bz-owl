@@ -77,6 +77,7 @@
 		
 		// server tracker permissions
 		$_SESSION['allow_watch_servertracker'] = false;
+		$_SESSION['allow_manage_servers'] = false;
 		
 		// TODO permissions
 		$_SESSION['allow_view_todo'] = false;
@@ -86,7 +87,13 @@
 		$_SESSION['IsAdmin'] = false;
 		
 		// shoutbox permissions
+		$_SESSION['allow_use_shoutbox'] = false;
 		$_SESSION['allow_moderate_shoutbox'] = false;
+		
+		// shoutbox permissions
+		$_SESSION['allow_vote_polls'] = false;
+		$_SESSION['allow_manage_polls'] = false;
+		
 		
 	}
 	
@@ -379,6 +386,14 @@
 		}
 	}
 	
+	function allow_manage_servers()
+	{
+		if (!($_SESSION['allow_manage_servers']))
+		{
+			$_SESSION['allow_manage_servers'] = true;
+		}
+	}
+	
 	function allow_view_todo()
 	{
 		if (!($_SESSION['allow_view_todo']))
@@ -395,11 +410,38 @@
 		}
 	}
 	
+	function allow_use_shoutbox()
+	{
+		if (!($_SESSION['allow_use_shoutbox']))
+		{
+			$_SESSION['allow_use_shoutbox'] = true;
+		}
+	}
+	
 	function allow_moderate_shoutbox()
 	{
 		if (!($_SESSION['allow_moderate_shoutbox']))
 		{
 			$_SESSION['allow_moderate_shoutbox'] = true;
+		}
+	}
+	
+	
+	function allow_vote_polls()
+	{
+		if (!($_SESSION['allow_vote_polls']))
+		{
+			$_SESSION['allow_vote_polls'] = true;
+		}
+	}
+
+	
+	
+	function allow_manage_polls()
+	{
+		if (!($_SESSION['allow_manage_polls']))
+		{
+			$_SESSION['allow_manage_polls'] = true;
 		}
 	}
 
