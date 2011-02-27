@@ -27,6 +27,9 @@
 	
 	$connection = $site->connect_to_db();
 	
+	
+	
+	
 	// remove expired sessions from the list of online users
 	$query ='SELECT `playerid`, `last_activity` FROM `online_users`';
 	if (!($result = @$site->execute_silent_query('online_users', $query, $connection)))
@@ -197,6 +200,12 @@
 	{
 		writeLink('Shoutbox/', 'Shoutbox', (strcmp($name, 'Shoutbox') == 0));
 	}
+	
+	if ($logged_in && isset($_SESSION['allow_manage_sitebans']) && $_SESSION['allow_manage_sitebans'])
+	{
+		writeLink('Bans/sitebans.php', 'Sitebans', (strcmp($name, 'Sitebans') == 0));
+	}
+	
 	
 ?>
 
