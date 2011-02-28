@@ -377,7 +377,7 @@
 					$buttons .= ($user->hasPermission($entry_delete_permission))?
 								'<a class="button" href="./?delete">delete</a>' : '';
 				}
-				if (strlen($buttons) > 0)
+				if (isset($buttons))
 				{
 					$showButtons = true;
 				}
@@ -413,7 +413,7 @@
 			}
 		}
 		
-		function writeContent(&$content, $page_title)
+		function writeContent(&$content, $page_title, $table)
 		{
 			global $site;
 			global $config;
@@ -439,39 +439,43 @@
 			{
 				// no entry in table regarding current page
 				// thus insert new data
-				$query = ('INSERT INTO `static_pages` (`author`, `page_name`, `raw_content`, `content`, `last_modified`) VALUES ('
-						  . $db->quote($user->getID())
-						  . ', ' . $db->quote($page_title)
-						  . ', ' . $db->quote($content));
+				$query = $db->prepare('INSERT INTO `?`'
+									  . ' (`author`, `page_name`, `raw_content`, `content`, `last_modified`)'
+									  . ' VALUES (?, ?, ?, ?, ?)');
+				$args = array($table, $user->getID(), $page_title, $content);
 				if ($config->value('bbcodeLibAvailable'))
 				{
-					$query .= ', ' . $db->quote($tmpl->encodeBBCode($content));
+					$args[] = $tmpl->encodeBBCode($content);
 				} else
 				{
-					$query .= ', ' . $db->quote($content);
+					$args[] .= $db->quote($content);
 				}
-				$query .= ', ' . $db->quote($date_format) . ')';
+				$args[] = $date_format;
 				
 				//			$db->prepare($query);
 				//			$db->execute();
 			} else
 			{
 				// either 1 or more entries found, just assume there is only one
-				$query = ('UPDATE `static_pages` SET `author`=' . $db->quote($user->getID())
-						  . ', `raw_content`=' . $db->quote($content));
+				$query = $db->prepare('UPDATE `?` SET `author`?=' . $db->quote($user->getID())
+									  . ', `raw_content`=?' . $db->quote($content)
+									  . ', `content`=?'
+									  . ', `last_modified`=?'
+									  . ' WHERE `page_name`=?'
+									  . ' LIMIT 1');
+				$args = array($table, $user->getID(), $content);
 				if ($config->value('bbcodeLibAvailable'))
 				{
-					$query .= ', `content`=' . $db->quote($tmpl->encodeBBCode($content));
+					$args[] = $tmpl->encodeBBCode($content);
 				} else
 				{
-					$query .= ', `content`=' . $db->quote($content);
-				}			
-				$query .= ', `last_modified`=' . $db->quote($date_format);
-				$query .= ' WHERE `page_name`=' . $db->quote($page_title);
-				$query .= ' LIMIT 1';
+					$args[] = $db->quote($content);
+				}
+				$ags[] = $date_format;
+				$args[] = $page_title;
 			}
 			
-			$result = $db->SQL($query);
+			$result = $db->execute($query, $args);
 		}
 	}
 ?>

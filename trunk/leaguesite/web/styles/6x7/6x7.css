@@ -2,6 +2,8 @@
 @import url("links.css");
 @import url("tables.css");
 @import url("news.css");
+@import url("menu.css");
+
 
 body
 {
@@ -34,103 +36,10 @@ p.first_p
 }
 
 
-/* navigation */
-ul.navigation
-{
-	text-align: center;
-	list-style: none;
-	background-color: #ddd;
-	display: block;
-	word-spacing: 0.3em;
-	letter-spacing: -0.06em;
-	overflow: auto;
-	margin-right: 0.2em;
-	margin-bottom: 0.5em;
-	font: bold 1.2em Verdana, "Lucida Grande", Lucida, sans-serif;
-	margin-top: 0;
-	padding: 0.2em 0.5em;
-	-webkit-border-top-left-radius: 1em;
-	-webkit-border-top-right-radius: 1em;
-	-webkit-border-bottom-right-radius: 0em;
-	-webkit-border-bottom-left-radius: 0em;
-	-moz-border-radius: 1em 1em 0em 0em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 1em 1em 0em 0em;
-	border-bottom: 0.26em solid #c84015;
-}
-
-ul.navigation li
-{
-	list-style: none;
-	display: inline;
-	white-space: nowrap;
-	color: black;
-}
-
-ul.navigation a
-{
-	color: #838499;
-	text-decoration : none;
-	font-weight: bold;
-	font-variant: normal;
-}
-
-ul.navigation a.unread
-{
-	color: #dd4718;
-}
-
-
-ul.navigation a.current_nav_entry
-{
-	color: #4e405a;
-}
-
-
-ul.navigation a:active
-{
-	color : #000088;
-	text-decoration : underline;
-}
-
-ul.navigation a:hover
-{
-		color: #005981;
-}
-
 div.content
 {
 	color: white;
 	text-align: left;
-}
-
-
-div.userbuttons
-{
-	text-align: right;
-	color: black;
-	margin-bottom: 1em;
-	font-size: 0.9em;
-	overflow: hidden;
-	background-color: #dedede;
-	margin-top: -0.7em;
-	margin-right: 0.25em;
-	padding: 0.2em 0.5em;
-}
-
-div.userbuttons span.date
-{
-	float: left;
-}
-
-span.Servers + span.onlineUsers:before
-{
-	content: " - ";
-}
-
-div.online_user
-{
-	text-align: center;
 }
 
 div.static_page_box, div.msgViewErrorMsg
@@ -730,28 +639,6 @@ table#table_matches_played tr td:nth-child(3)
 div.p
 {
 	margin-top: 1em;
-}
-
-/* common links */
-
-span.onlineUsers
-{
-	color: #240500;
-}
-
-span.Servers + span.logout:before
-{
-	content: " - ";
-}
-
-span.onlineUsers + span.logout:before
-{
-	content: " - ";
-}
-
-span.logout
-{
-	color: #240500;
 }
 
 div.msg_view_button_list
