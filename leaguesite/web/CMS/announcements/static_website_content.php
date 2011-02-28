@@ -140,7 +140,7 @@
 	// use suggested name in $page_title
 	if (isset($page_title))
 	{
-		if (strcmp($page_title, '_/') === 0)
+		if (strcmp($page_title, '/') === 0)
 		{
 			// force call this template home
 			$templateToUse = 'Home';

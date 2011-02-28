@@ -1,0 +1,114 @@
+/* @override http://192.168.1.10/~spiele/bz-owl/trunk/leaguesite/web/styles/6x7/menu.css */
+
+div.logo
+{
+	display: none;
+}
+
+/* navigation */
+ul.navigation
+{
+	text-align: center;
+	list-style: none;
+	display: block;
+	word-spacing: 0.3em;
+	letter-spacing: -0.06em;
+	overflow: auto;
+	margin-right: 0.2em;
+	margin-bottom: 0.5em;
+	font: bold 1.2em Verdana, "Lucida Grande", Lucida, sans-serif;
+	margin-top: 0;
+	padding: 0.2em 0.5em;
+	border: 1px solid #ff5b60;
+	border-radius: 0.42em;
+	-webkit-box-shadow:inset 0px 2px 16px #e75d62;
+	background-color: #240b0b;
+}
+
+ul.navigation li
+{
+	list-style: none;
+	display: inline;
+	white-space: nowrap;
+	color: #fff;
+}
+
+ul.navigation a
+{
+	/*color: #838499;*/
+	color: transparent;
+	text-decoration : none;
+	font-weight: bold;
+	font-variant: normal;
+}
+
+ul.navigation img
+{
+	height: 3em;
+	padding-right: 0.5em;
+	margin-top: 1.5em;
+}
+
+ul.navigation a.unread
+{
+	color: #dd4718;
+}
+
+
+ul.navigation a.current_nav_entry
+{
+	color: #4e405a;
+}
+
+
+ul.navigation a:active
+{
+	color : #000088;
+	text-decoration : underline;
+}
+
+ul.navigation a:hover
+{
+		color: #005981;
+}
+
+div.userbuttons
+{
+	text-align: right;
+	margin-bottom: 1em;
+	font-size: 0.9em;
+	overflow: hidden;
+	margin-top: -2em;
+	margin-right: 0.25em;
+	padding: 0.2em 0.5em;
+}
+
+div.userbuttons span.date
+{
+	float: left;
+}
+
+span.Servers + span.onlineUsers:before
+{
+	content: " - ";
+}
+
+div.online_user
+{
+	text-align: center;
+}
+
+span.Servers + span.logout:before
+{
+	content: " - ";
+}
+
+span.onlineUsers + span.logout:before
+{
+	content: " - ";
+}
+
+span.logout
+{
+	color: #240500;
+}

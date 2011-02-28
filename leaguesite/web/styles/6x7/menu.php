@@ -1,9 +1,11 @@
 <?php
 	class menu
 	{
-		function writeLink($folder, $title, $current=false, $unread=false)
+		function writeLink($folder, $title, $current=false, $unread=false, $img='')
 		{
 			global $config;
+			global $tmpl;
+			global $user;
 			
 			$link = '<li>';
 			if (!$current)
@@ -18,7 +20,16 @@
 			{
 				$link .= '<a class="current_nav_entry" href="' . ($config->value('baseaddress') . $folder) . '">';
 			}
-			$link .= $title;
+			if (strlen($img) > 0)
+			{
+				$link .= $tmpl->return_self_closing_tag('img src="'
+														. $config->value('baseaddress') . 'styles/'
+														. $user->getStyle() . '/img/'
+														. $img . '" alt="' . $title . '"');
+			} else
+			{
+				$link .= $title;
+			}
 			if (!$current || (count($_GET) > 0))
 			{
 				$link .= '</a>';
@@ -100,6 +111,20 @@
 			{
 				$menu[] = '<li><a href="' . $config->value('baseaddress') . '">Home</a></li>' . "\n";
 			}
+			
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea_3D.png');
+/*
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idea.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idee_pfui.png');
+			$menu[] = $this->writeLink('News/', 'News', (strcmp($name, 'News') == 0), false, 'button_idee_rund.png');
+*/
 			
 			if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
 			{

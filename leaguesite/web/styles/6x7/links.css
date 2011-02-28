@@ -1,3 +1,5 @@
+/* @override http://192.168.1.10/~spiele/bz-owl/trunk/leaguesite/web/styles/6x7/links.css */
+
 /* remove underline from links */
 a
 {
@@ -25,24 +27,29 @@ a:active
 	color : #005981;
 }
 
+test
+{
+	background-color: #6e4e4e;
+}
 
 /* some links should be displayed as butttons */
 a.button
 {
+	padding-bottom: 0.25em;
+	padding-top: 0.25em;
+	border-width: 2px;
+	border-style: solid;
+	font-size: 0.9em;
 	color: white !important;
-	-webkit-border-radius: 1em;
-	-moz-border-radius: 1em;
-	border-radius: 1em;
+	-webkit-border-radius: 0.42em;
+	-moz-border-radius: 0.42em;
+	border-radius: 0.42em;
 	padding-right: 0.5em;
 	padding-left: 0.5em;
 	display: inline-block;
-	border-top: 2px solid #c84015;
-	border-right: 2px solid #74250c;
-	border-bottom: 2px solid #74250c;
-	border-left: 2px solid #c84015;
-	box-shadow:inset -10px -10px 1em #641b05;
-	-moz-box-shadow:inset -10px -10px 1em #641b05;
-	-webkit-box-shadow:inset 10px 10px 1em 15px #641b05;
+	background-color: #000;
+	background: -moz-linear-gradient(transparent, #6e4e4e 50%, transparent);
+/*background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000));*/
 }
 
 a.button:hover
@@ -51,25 +58,4 @@ a.button:hover
 	border-right: 2px solid #c84015;
 	border-top: 2px solid #74250c;
 	border-left: 2px solid #74250c;
-}
-
-td > a.button, td > a.button:hover
-{
-	color: #ff5b60 !important;
-	border-style: none;
-	border-color: none;
-	background-color: transparent;
-	box-shadow:inset 10px 10px 1em 15px transparent;
-	-moz-box-shadow:inset 10px 10px 1em 15px transparent;
-	-webkit-box-shadow:inset 10px 10px 1em 15px transparent;
-}
-
-table a.button:before
-{
-	content: "[";
-}
-
-table a.button:after
-{
-	content: "]";
 }
