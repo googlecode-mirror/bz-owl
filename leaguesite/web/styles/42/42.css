@@ -1,4 +1,5 @@
 @import url("42_misc/rankings.css");
+@import url("news.css");
 
 body
 {
@@ -434,65 +435,6 @@ span.edit_and_delete_links
 	display: block;
 	text-align: right;
 	margin-bottom: 0.1em;
-}
-
-div.article
-{
-	background-color: #323333;
-	-webkit-border-radius: 1em;
-	-moz-border-radius: 1em;
-	border-radius: 1em;
-	border-color: #dd070b;
-	border-width: 0.2em;
-}
-
-div.article_header
-{
-	overflow: auto;
-	background: #8a8a8a;
-	color: #382e41;
-	border-bottom: 0.15em solid #dd4718;
-	padding-top: 0.5em;
-	padding-bottom: 0.2em;
-	padding-right: 1em;
-	margin-bottom: -0.5em;
-	-webkit-border-top-left-radius: 1em;
-	-webkit-border-top-right-radius: 1em;
-	-webkit-border-bottom-right-radius: 0em;
-	-webkit-border-bottom-left-radius: 0em;
-	-moz-border-radius: 1em 1em 0em 0em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 1em 1em 0em 0em;
-}
-
-
-div.timestamp
-{
-	text-align: left;
-	float: left;
-	margin-left: 1em;
-}
-
-
-div.author
-{
-	text-align: right;
-}
-
-div.article p
-{
-	margin-bottom: 0;
-	margin-top: 0.5em;
-	color: black;
-	background-color: #dedede;
-	padding: 1em;
-	-webkit-border-top-left-radius: 0em;
-	-webkit-border-top-right-radius: 0em;
-	-webkit-border-bottom-right-radius: 1em;
-	-webkit-border-bottom-left-radius: 1em;
-	-moz-border-radius: 0em 0em 1em 1em;
-	/* Don't know what the final CSS 3 spec will be */
-	border-radius: 0em 0em 1em 1em;
 }
 
 /* this  is only a theoretical case but handle it because a new message
