@@ -1,9 +1,0 @@
-Options +FollowSymlinks
-
-RewriteEngine On
-
-RewriteCond %{SCRIPT_FILENAME} !-f
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteCond %{SCRIPT_FILENAME} !^styles/.*$
-RewriteRule ^(.*/) /~spiele/bz-owl/trunk/leaguesite/web/index.php?path=$1 [QSA,L]
-
