@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.55)
 # Database: testdb
-# Generation Time: 2011-02-26 14:17:30 +0100
+# Generation Time: 2011-02-26 18:54:03 +0100
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -192,8 +192,8 @@ CREATE TABLE `news` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `author` varchar(255) DEFAULT NULL,
-  `announcement` text,
-  `raw_announcement` text,
+  `msg` text,
+  `raw_msg` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
