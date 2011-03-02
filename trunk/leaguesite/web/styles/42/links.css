@@ -1,7 +1,7 @@
 /* remove underline from links */
 a
 {
-	color: #ff5b60;
+	color: #005981;
 	text-decoration: none;
 }
 
@@ -28,25 +28,30 @@ a:active
 /* some links should be displayed as butttons */
 a.button
 {
-	padding-bottom: 0.25em;
-	padding-top: 0.25em;
-	border-width: 2px;
-	border-style: solid;
-	font-size: 0.9em;
-	color: white !important;
-	-webkit-border-radius: 0.42em;
-	-moz-border-radius: 0.42em;
-	border-radius: 0.42em;
+	white-space: nowrap;
+	display: inline-block;
+	margin-bottom: 1px;
+}
+
+a.button
+{
+	color: #ddd;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
 	padding-right: 0.5em;
 	padding-left: 0.5em;
+	background-attachment: scroll;
 	display: inline-block;
-	background-color: #000;
-	background: -moz-linear-gradient(transparent, #6e4e4e 50%, transparent);
-/*background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000));*/
+	border-top: 2px solid #c84015;
+	border-right: 2px solid #74250c;
+	border-bottom: 2px solid #74250c;
+	border-left: 2px solid #c84015;
 }
 
 a.button:hover
 {
+	color: #ddd;
 	border-bottom: 2px solid #c84015;
 	border-right: 2px solid #c84015;
 	border-top: 2px solid #74250c;

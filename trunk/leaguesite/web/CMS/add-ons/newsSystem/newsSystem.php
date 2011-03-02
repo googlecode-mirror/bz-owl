@@ -61,36 +61,45 @@
 					stripslashes($_POST);
 				}
 				$tmpl->setTemplate($templateToUse . '?edit');
-				edit();
+				$this->edit();
+				$tmpl->render();
+				die();
 			}
 			
-			$tmpl->setTemplate($templateToUse);
-			$this->readContent($path, $author, $last_modified, false);
 			
-			if ($user->hasPermission($entry_add_permission))
+			if ($user->hasPermission($entry_add_permission) && isset($_GET['add']))
 			{
-				// user has permission to edit the page
-				if (!isset($_GET['add']))
-				{
-					// user looks at page in read mode
-					$tmpl->setCurrentBlock('USERADDBUTTON');
-					$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
-									   '<a href="./?add" class="button">Add message</a>');
-					$tmpl->parseCurrentBlock();			
-				} else
-				{
-					add();
-				}
+				// user has permission to add news to the page and requests it
+				$tmpl->setTemplate($templateToUse . '?edit');
+				$this->add();
+				$tmpl->render();
+				die();
 			}
 			
+			// user looks at page in read mode
+			$tmpl->setTemplate($templateToUse);
+			
+			$tmpl->setCurrentBlock('USERADDBUTTON');
+			$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
+							   '<a href="./?add" class="button">Add message</a>');
+			$tmpl->parseCurrentBlock();
+			$this->readContent($path, $author, $last_modified, false);
 			
 			// done, render page
 			$tmpl->render();
 		}
 		
 		
+		function add()
+		{
+			echo('blub');
+		}
+		
+		
 		function edit()
 		{
+			global $tmpl;
+		
 			if ($user->hasPermission($entry_edit_permission))
 			{
 				if (isset($_GET['edit']))
