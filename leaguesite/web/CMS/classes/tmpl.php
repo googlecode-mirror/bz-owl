@@ -6,6 +6,22 @@
 		private $title = '';
 		private $msg = array();
 		
+		function __construct($template='', $customTheme='')
+		{
+			global $db;
+			global $config;
+			global $connection;
+			
+			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
+			
+			$connection = $db->createConnection();
+			
+			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
+			{
+				$this->setTemplate($template, $customTheme);
+			}
+		}
+		
 		function addMSG($messageToAdd)
 		{
 			$this->msg[] = $messageToAdd;
@@ -69,19 +85,19 @@
 			
 			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
 			
-			// debug output used template
-			if ($db->getDebugSQL())
+			if (!file_exists($themeFolder . $template . '.tmpl.html'))
 			{
-				if (file_exists($themeFolder . $template . '.tmpl.html'))
+				if ($config->value('debugSQL'))
 				{
-					$this->addMSG('Used template: ' . $themeFolder
-								  . $template . '.tmpl.html' . $this->return_self_closing_tag('br'));
-				} else
-				{
-					echo 'Used template: ' . $themeFolder . $template . '.tmpl.html';
+					echo 'Tried to use template: ' . $themeFolder . $template . '.tmpl.html but failed: file does not exist.';
 				}
+				return false;
+			} elseif ($config->value('debugSQL'))
+			{
+				// debug output used template
+				$this->addMSG('Used template: ' . $themeFolder
+							  . $template . '.tmpl.html' . $this->return_self_closing_tag('br'));
 			}
-			
 			
 			// use favicon, if available
 			if (!(strcmp($config->value('favicon'), '') === 0))
@@ -106,22 +122,8 @@
 			{
 				$this->tpl->setVariable('CUR_THEME', $customTheme);
 			}
-		}
-		
-		function __construct($template='', $customTheme='')
-		{
-			global $db;
-			global $config;
-			global $connection;
 			
-			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
-			
-			$connection = $db->createConnection();
-			
-			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
-			{
-				$this->setTemplate($template, $customTheme);
-			}
+			return true;
 		}
 		
 		function setCurrentBlock($block)

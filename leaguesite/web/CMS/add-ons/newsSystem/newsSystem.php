@@ -60,7 +60,7 @@
 				{
 					stripslashes($_POST);
 				}
-				$tmpl->setTemplate($templateToUse . '?edit');
+				$tmpl->setTemplate($templateToUse . '?edit') || $tmpl->setTemplate('static?edit');
 				$this->edit();
 				$tmpl->render();
 				die();
@@ -98,8 +98,13 @@
 		
 		function edit()
 		{
+			global $entry_edit_permission;
+			global $randomKeyName;
+			global $site;
 			global $tmpl;
-		
+			global $user;
+			
+			
 			if ($user->hasPermission($entry_edit_permission))
 			{
 				if (isset($_GET['edit']))
@@ -196,7 +201,7 @@
 					}
 					
 					
-					$randomKeyName = $randomkey_name . microtime();
+					$randomKeyName = $randomKeyName . microtime();
 					// convert some special chars to underscores
 					$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
 					$randomkeyValue = $site->setKey($randomKeyName);
@@ -281,7 +286,7 @@
 				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
 				$tmpl->parseCurrentBlock();
 				
-				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
+				include(dirname(dirname(dirname(__FILE__))) . '/bbcode_buttons.php');
 				$bbcode = new bbcode_buttons();
 				
 				$buttons = $bbcode->showBBCodeButtons('staticContent');
@@ -407,14 +412,15 @@
 					$tmpl->setVariable('AUTHOR', $rows[$i]['author']);
 					$tmpl->setVariable('TIME', $rows[$i]['timestamp']);
 					
-					$tmpl->setVariable('CONTENT', $rows[$i]['msg']);
-				$author = $rows[$i]['author'];
-				if ($raw)
-				{
-					$content = $rows[$i]['raw_msg'];
-				} else
+					$raw ? $tmpl->setVariable('CONTENT', $rows[$i]['raw_msg'])
+						 : $tmpl->setVariable('CONTENT', $rows[$i]['msg']);
+					$author = $rows[$i]['author'];
+					if ($raw)
 					{
-					$content = $rows[$i]['msg'];
+						$content = $rows[$i]['raw_msg'];
+					} else
+					{
+						$content = $rows[$i]['msg'];
 					}
 					
 					$tmpl->parseCurrentBlock();

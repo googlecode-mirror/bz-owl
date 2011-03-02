@@ -27,6 +27,8 @@
 			// TODO: implement it
 		}
 		
+		// deprecated function
+		// use config->value('debugSQL') instead
 		function getDebugSQL()
 		{
 			global $config;
