@@ -50,6 +50,16 @@
 			}
 		}
 		
+		function noTemplateFound()
+		{
+			global $db;
+			
+			$db->logError('FATAL ERROR: Template not found, request URI: ' . $_SERVER['REQUEST_URI']);
+			$this->setTemplate('NoPerm');
+			$this->done('Template file not found. This is an installation problem.');
+			die();
+		}
+		
 		function setTitle($title)
 		{
 			// set the title of the page
