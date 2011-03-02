@@ -33,7 +33,11 @@
 <!-- BEGIN STYLE_BUTTONS -->{BUTTONS_TO_FORMAT}<!-- END STYLE_BUTTONS -->
 </div>
 
-<!-- BEGIN EDIT_AREA --><div><textarea cols="75" rows="20" name="staticContent"><!-- BEGIN USER_ENTERED_CONTENT -->{RAW_CONTENT_HERE}<!-- END USER_ENTERED_CONTENT --></textarea></div><!-- END EDIT_AREA -->
+<!-- BEGIN EDIT_AREA --><div>
+<input type="text" name="title" value="{TITLE}" />
+<textarea cols="75" rows="20" name="staticContent"><!-- BEGIN USER_ENTERED_CONTENT -->{RAW_CONTENT_HERE}<!-- END USER_ENTERED_CONTENT --></textarea>
+<input type="text" name="time" value="{TIMESTAMP}" />
+</div><!-- END EDIT_AREA -->
 <!-- BEGIN EDIT_HIDDEN_WHILE_PREVIEW --><div><input type="hidden" name="staticContent" value="{RAW_CONTENT_HERE}" /></div><!-- END EDIT_HIDDEN_WHILE_PREVIEW -->
 <!-- BEGIN PREVIEW_VALUE --><div><input type="hidden" name="confirmationStep" value="{PREVIEW_VALUE_HERE}" /></div><!-- END PREVIEW_VALUE -->
 <p><!-- BEGIN FORM_BUTTON --><input type="submit" name="submit" value="{SUBMIT_BUTTON_TEXT}" /><!-- END FORM_BUTTON -->
