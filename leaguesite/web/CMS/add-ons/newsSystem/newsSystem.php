@@ -53,7 +53,7 @@
 			// otherwise we'd need a custom name per setup
 			// as top level dir could be named different
 			
-			if (isset($_GET['edit']))
+			if ($user->hasPermission($entry_edit_permission) && isset($_GET['edit']))
 			{
 				// remove the slashes if magic quotes are sadly on
 				if ($site->magic_quotes_on())
@@ -141,8 +141,6 @@
 			
 			print_r($content);
 			
-			$rawMSG = $content['raw_msg'];
-			
 			switch($readonly)
 			{
 				case true:
@@ -153,10 +151,14 @@
 					break;
 				
 				default:
-					$tmpl->touchBlock('EDIT_AREA');
 					$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
 					$tmpl->setVariable('RAW_CONTENT_HERE', htmlspecialchars($content['raw_msg']
 																			, ENT_COMPAT, 'UTF-8'));
+					$tmpl->setCurrentBlock('EDIT_AREA');
+					$tmpl->setVariable('TIMESTAMP', htmlspecialchars($content['timestamp']
+																	, ENT_COMPAT, 'UTF-8'));
+					$tmpl->setVariable('TITLE', htmlspecialchars($content['title']
+																 , ENT_COMPAT, 'UTF-8'));
 					$tmpl->parseCurrentBlock();
 					break;
 			}
