@@ -3,7 +3,7 @@
 	class editor
 	{
 		var $caller;
-		var $buttons=false;
+		private $elementButtonRequested=array();
 		
 		function __construct($caller)
 		{
@@ -12,28 +12,15 @@
 			global $config;
 			global $tmpl;
 			
-			$tmpl->setCurrentBlock('USER_NOTE');
-			
-			if ($config->value('bbcodeLibAvailable'))
-			{
-				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
-				$tmpl->parseCurrentBlock();
-			} else
-			{
-				if ($config->value('useXhtml'))
-				{
-					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
-				} else
-				{
-					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
-				}
-				$tmpl->parseCurrentBlock();
-			}
 			return;
 		}
 		
+		function addFormatButtons($element)
+		{
+			$this->elementButtonRequested[] = $element;
+		}
 		
-		function showFormatButtons($element)
+		function showFormatButtons()
 		{
 			global $tmpl;
 			global $config;
@@ -44,21 +31,27 @@
 				return;
 			}
 			
+			if (count($this->elementButtonRequested) < 0)
+			{
+				// no buttons added -> nothing to show
+				return;
+			}
+			
+			print_r($this->elementButtonRequested);
+			
 			include(dirname(dirname(__FILE__)) . '/bbcode_buttons.php');
 			$bbcode = new bbcode_buttons();
 			
-			$buttons = $bbcode->showBBCodeButtons('$element');
-			$tmpl->setCurrentBlock('STYLE_BUTTONS_' . $element);
-			foreach ($buttons as $button)
+			foreach ($this->elementButtonRequested as $element)
 			{
-				$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
-				$tmpl->parseCurrentBlock();
+				$buttons = $bbcode->showBBCodeButtons($element);
+				$tmpl->setCurrentBlock('STYLE_BUTTONS_' . $element);
+				foreach ($buttons as $button)
+				{
+					$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
+					$tmpl->parseCurrentBlock();
+				}
 			}
-			
-			// forget no longer needed variables
-			unset($button);
-			unset($buttons);
-			unset($bbcode);
 		}
 		
 		
@@ -100,13 +93,13 @@
 						// use bbcode if available
 					case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
 						$this->caller->insertEditText(true);
-						$tmpl->addMSG($tmpl->encodeBBCode($content));
+/* 						$tmpl->addMSG($tmpl->encodeBBCode($content)); */
 						break;
 						
 						// else raw output
 					case (true && $confirmed === 1 && !$config->value('bbcodeLibAvailable')):
 						$this->caller->insertEditText(true);
-						$tmpl->addMSG($content);
+/* 						$tmpl->addMSG($content); */
 						break;
 						
 						// use this as guard to prevent selection of noperm or nokeymatch cases
@@ -156,10 +149,27 @@
 						break;
 						
 					case 2:
-						$this->writeContent($content, $page_title);
+						$this->caller->writeContent($content, $page_title);
 						$tmpl->addMSG('Changes written successfully.' . $tmpl->linebreaks("\n\n"));
 						
 					default:
+						$tmpl->setCurrentBlock('USER_NOTE');
+						
+						if ($config->value('bbcodeLibAvailable'))
+						{
+							$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
+							$tmpl->parseCurrentBlock();
+						} else
+						{
+							if ($config->value('useXhtml'))
+							{
+								$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
+							} else
+							{
+								$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
+							}
+							$tmpl->parseCurrentBlock();
+						}
 						$tmpl->setCurrentBlock('FORM_BUTTON');
 						$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Preview');
 						$tmpl->parseCurrentBlock();

@@ -23,8 +23,8 @@
 
 <!-- BEGIN PREVIEW -->
 <div class="article">
-	<div class="articleHeader">{TITLE} by {AUTHOR} at {TIMESTAMP}</div>
-	<div class="articleContent">{CONTENT}</div>
+	<div class="articleHeader">{TITLE_PREVIEW} by {AUTHOR_PREVIEW} at {TIMESTAMP_PREVIEW}</div>
+	<div class="articleContent">{CONTENT_PREVIEW}</div>
 </div>
 <!-- END PREVIEW -->
 
@@ -37,13 +37,15 @@
 <div><!-- BEGIN USER_NOTE -->{EDIT_MODE_NOTE}<!-- END USER_NOTE --></div>
 
 <!-- BEGIN EDIT_AREA --><div>
-<input type="text" name="title" value="{TITLE}" />
+<input type="text" name="title" value="{MSG_TITLE}" />
 <div>
 <!-- BEGIN STYLE_BUTTONS_staticContent -->{BUTTONS_TO_FORMAT}<!-- END STYLE_BUTTONS_staticContent -->
 </div>
-<textarea cols="75" rows="20" name="staticContent"><!-- BEGIN USER_ENTERED_CONTENT -->{RAW_CONTENT_HERE}<!-- END USER_ENTERED_CONTENT --></textarea>
+<!-- BEGIN USER_ENTERED_CONTENT --><textarea cols="75" rows="20" name="staticContent">{RAW_CONTENT_HERE}</textarea><!-- END USER_ENTERED_CONTENT -->
 <input type="text" name="time" value="{TIMESTAMP}" />
 </div><!-- END EDIT_AREA -->
+
+
 <!-- BEGIN EDIT_HIDDEN_WHILE_PREVIEW -->
 <div><input type="hidden" name="staticContent" value="{RAW_CONTENT_HERE}" /></div><!-- END EDIT_HIDDEN_WHILE_PREVIEW -->
 <!-- BEGIN PREVIEW_VALUE --><div><input type="hidden" name="confirmationStep" value="{PREVIEW_VALUE_HERE}" /></div><!-- END PREVIEW_VALUE -->
