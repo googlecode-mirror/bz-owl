@@ -1,6 +1,8 @@
 <?php
 	class newsSystem
 	{
+		private $editor;
+		
 		function __construct($title, $path)
 		{
 			global $entry_edit_permission;
@@ -65,9 +67,9 @@
 					$tmpl->noTemplateFound();
 				}
 				include(dirname(dirname(dirname(__FILE__))) . '/classes/editor.php');
-				$editor = new editor($this);
-				$editor->showFormatButtons('staticContent');
-				$editor->edit();
+				$this->editor = new editor($this);
+				$this->editor->addFormatButtons('staticContent');
+				$this->editor->edit();
 				$tmpl->render();
 				die();
 			}
@@ -135,7 +137,7 @@
 			global $page_title;
 			global $author;
 			global $last_modified;
-			global $editor;
+			global $config;
 			global $user;
 			global $db;
 			
@@ -157,20 +159,20 @@
 				$content = $this->readContent($page_title, $author, $last_modified, true);
 			}
 			
-			print_r($content);
-			
 			switch($readonly)
 			{
 				case true:
 					$tmpl->setCurrentBlock('PREVIEW');
-					$tmpl->setVariable('TITLE',  htmlspecialchars($content['title']
-																	, ENT_COMPAT, 'UTF-8'));
-					$tmpl->setVariable('AUTHOR',  htmlspecialchars($content['author'][0]
-																	, ENT_COMPAT, 'UTF-8'));
-					$tmpl->setVariable('TIMESTAMP',  htmlspecialchars($content['timestamp']
-																	, ENT_COMPAT, 'UTF-8'));
-					$tmpl->setVariable('CONTENT',  htmlspecialchars($content['raw_msg']
-																	, ENT_COMPAT, 'UTF-8'));
+					$tmpl->setVariable('TITLE_PREVIEW',  htmlent($content['title']));
+					$tmpl->setVariable('AUTHOR_PREVIEW',  htmlent($content['author']['name']));
+					$tmpl->setVariable('TIMESTAMP_PREVIEW',  htmlent($content['timestamp']));
+					if ($config->value('bbcodeLibAvailable'))
+					{
+						$tmpl->setVariable('CONTENT_PREVIEW',  $tmpl->encodeBBCode($content['raw_msg']));
+					} else
+					{
+						$tmpl->setVariable('CONTENT_PREVIEW',  htmlent($content['raw_msg']));
+					}
 					$tmpl->parseCurrentBlock();
 					break;
 				
@@ -181,8 +183,10 @@
 					$tmpl->setCurrentBlock('EDIT_AREA');
 					$tmpl->setVariable('TIMESTAMP', htmlspecialchars($content['timestamp']
 																	, ENT_COMPAT, 'UTF-8'));
-					$tmpl->setVariable('TITLE', htmlspecialchars($content['title']
+					$tmpl->setVariable('MSG_TITLE', htmlspecialchars($content['title']
 																 , ENT_COMPAT, 'UTF-8'));
+					// display the formatting buttons addded by addFormatButtons
+					$this->editor->showFormatButtons();
 					$tmpl->parseCurrentBlock();
 					break;
 			}
