@@ -3,12 +3,13 @@
 	class editor
 	{
 		var $caller;
+		var $buttons=false;
 		
 		function __construct($caller)
 		{
 			$this->caller = $caller;
 			
-						global $config;
+			global $config;
 			global $tmpl;
 			
 			$tmpl->setCurrentBlock('USER_NOTE');
@@ -17,22 +18,6 @@
 			{
 				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
 				$tmpl->parseCurrentBlock();
-				
-				include(dirname(dirname(__FILE__)) . '/bbcode_buttons.php');
-				$bbcode = new bbcode_buttons();
-				
-				$buttons = $bbcode->showBBCodeButtons('staticContent');
-				$tmpl->setCurrentBlock('STYLE_BUTTONS');
-				foreach ($buttons as $button)
-				{
-					$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
-					$tmpl->parseCurrentBlock();
-				}
-				
-				// forget no longer needed variables
-				unset($button);
-				unset($buttons);
-				unset($bbcode);
 			} else
 			{
 				if ($config->value('useXhtml'))
@@ -48,10 +33,40 @@
 		}
 		
 		
+		function showFormatButtons($element)
+		{
+			global $tmpl;
+			global $config;
+			
+			if (!$config->value('bbcodeLibAvailable'))
+			{
+				// no bbcode -> no buttons
+				return;
+			}
+			
+			include(dirname(dirname(__FILE__)) . '/bbcode_buttons.php');
+			$bbcode = new bbcode_buttons();
+			
+			$buttons = $bbcode->showBBCodeButtons('$element');
+			$tmpl->setCurrentBlock('STYLE_BUTTONS_' . $element);
+			foreach ($buttons as $button)
+			{
+				$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
+				$tmpl->parseCurrentBlock();
+			}
+			
+			// forget no longer needed variables
+			unset($button);
+			unset($buttons);
+			unset($bbcode);
+		}
+		
+		
 		function edit()
 		{
 			global $entry_edit_permission;
 			global $randomKeyName;
+			global $config;
 			global $site;
 			global $tmpl;
 			global $user;
@@ -160,7 +175,7 @@
 				$tmpl->setVariable('KEY_VALUE', urlencode($_SESSION[$randomKeyName]));
 				$tmpl->parseCurrentBlock();
 			}
-		}	
+		}
 	}
 	
 ?>

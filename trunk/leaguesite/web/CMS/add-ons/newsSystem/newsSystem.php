@@ -66,6 +66,7 @@
 				}
 				include(dirname(dirname(dirname(__FILE__))) . '/classes/editor.php');
 				$editor = new editor($this);
+				$editor->showFormatButtons('staticContent');
 				$editor->edit();
 				$tmpl->render();
 				die();
@@ -84,10 +85,13 @@
 			// user looks at page in read mode
 			$tmpl->setTemplate($templateToUse);
 			
-			$tmpl->setCurrentBlock('USERADDBUTTON');
-			$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
-							   '<a href="./?add" class="button">Add message</a>');
-			$tmpl->parseCurrentBlock();
+			if ($user->hasPermission($entry_add_permission))
+			{
+				$tmpl->setCurrentBlock('USERADDBUTTON');
+				$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
+								   '<a href="./?add" class="button">Add message</a>');
+				$tmpl->parseCurrentBlock();
+			}
 			$this->readContent($path, $author, $last_modified, false);
 			
 			// done, render page
@@ -97,6 +101,8 @@
 		
 		function add()
 		{
+			global $tmpl;
+			
 			echo('blub');
 		}
 		
@@ -130,10 +136,22 @@
 			global $author;
 			global $last_modified;
 			global $editor;
+			global $user;
+			global $db;
 			
-			if (isset($_POST['staticContent']))
+			
+			if ($readonly)
 			{
-				$content = $_POST['staticContent'];
+				$content = array();
+				$content['raw_msg'] = $_POST['staticContent'];
+				
+				$query = $db->prepare('SELECT `name` FROM `players` WHERE `id`=? LIMIT 1');
+				$db->execute($query, $user->getID());
+				$content['author'] = $db->fetchRow($query);
+				$db->free($query);
+				
+				$content['title'] = $_POST['title'];
+				$content['timestamp'] = $_POST['time'];
 			} else
 			{
 				$content = $this->readContent($page_title, $author, $last_modified, true);
@@ -144,9 +162,15 @@
 			switch($readonly)
 			{
 				case true:
-					$tmpl->setCurrentBlock('EDIT_HIDDEN_WHILE_PREVIEW');
-					$tmpl->setVariable('RAW_CONTENT_HERE',  htmlspecialchars($content['raw_msg']
-																			 , ENT_COMPAT, 'UTF-8'));
+					$tmpl->setCurrentBlock('PREVIEW');
+					$tmpl->setVariable('TITLE',  htmlspecialchars($content['title']
+																	, ENT_COMPAT, 'UTF-8'));
+					$tmpl->setVariable('AUTHOR',  htmlspecialchars($content['author'][0]
+																	, ENT_COMPAT, 'UTF-8'));
+					$tmpl->setVariable('TIMESTAMP',  htmlspecialchars($content['timestamp']
+																	, ENT_COMPAT, 'UTF-8'));
+					$tmpl->setVariable('CONTENT',  htmlspecialchars($content['raw_msg']
+																	, ENT_COMPAT, 'UTF-8'));
 					$tmpl->parseCurrentBlock();
 					break;
 				

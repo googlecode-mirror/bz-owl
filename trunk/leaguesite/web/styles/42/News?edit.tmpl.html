@@ -21,24 +21,31 @@
 
 <div class="content">
 
-<div class="static_page_box">
+<!-- BEGIN PREVIEW -->
+<div class="article">
+	<div class="articleHeader">{TITLE} by {AUTHOR} at {TIMESTAMP}</div>
+	<div class="articleContent">{CONTENT}</div>
+</div>
+<!-- END PREVIEW -->
 
+<div class="static_page_box">
 <!-- BEGIN MISC --><div>{MSG}</div><!-- END MISC -->
 <!-- BEGIN KEY --><form action="./?edit" enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8">
 <div><input type="hidden" name="key_name" value="{KEY_NAME}" /></div>
 <div><input type="hidden" name="{KEY_NAME}" value="{KEY_VALUE}" /></div><!-- END KEY -->
 
 <div><!-- BEGIN USER_NOTE -->{EDIT_MODE_NOTE}<!-- END USER_NOTE --></div>
-<div>
-<!-- BEGIN STYLE_BUTTONS -->{BUTTONS_TO_FORMAT}<!-- END STYLE_BUTTONS -->
-</div>
 
 <!-- BEGIN EDIT_AREA --><div>
 <input type="text" name="title" value="{TITLE}" />
+<div>
+<!-- BEGIN STYLE_BUTTONS_staticContent -->{BUTTONS_TO_FORMAT}<!-- END STYLE_BUTTONS_staticContent -->
+</div>
 <textarea cols="75" rows="20" name="staticContent"><!-- BEGIN USER_ENTERED_CONTENT -->{RAW_CONTENT_HERE}<!-- END USER_ENTERED_CONTENT --></textarea>
 <input type="text" name="time" value="{TIMESTAMP}" />
 </div><!-- END EDIT_AREA -->
-<!-- BEGIN EDIT_HIDDEN_WHILE_PREVIEW --><div><input type="hidden" name="staticContent" value="{RAW_CONTENT_HERE}" /></div><!-- END EDIT_HIDDEN_WHILE_PREVIEW -->
+<!-- BEGIN EDIT_HIDDEN_WHILE_PREVIEW -->
+<div><input type="hidden" name="staticContent" value="{RAW_CONTENT_HERE}" /></div><!-- END EDIT_HIDDEN_WHILE_PREVIEW -->
 <!-- BEGIN PREVIEW_VALUE --><div><input type="hidden" name="confirmationStep" value="{PREVIEW_VALUE_HERE}" /></div><!-- END PREVIEW_VALUE -->
 <p><!-- BEGIN FORM_BUTTON --><input type="submit" name="submit" value="{SUBMIT_BUTTON_TEXT}" /><!-- END FORM_BUTTON -->
 <!-- BEGIN EDIT_AGAIN --><input type="submit" name="editPageAgain" value="{EDIT_AGAIN_BUTTON_TEXT}" /><!-- END EDIT_AGAIN --></p>
