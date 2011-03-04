@@ -10,11 +10,8 @@
 		{
 			global $db;
 			global $config;
-			global $connection;
 			
 			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
-			
-			$connection = $db->createConnection();
 			
 			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
 			{
