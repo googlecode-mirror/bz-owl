@@ -5,6 +5,11 @@
 		private $connection;
 		private $pdo;
 		
+		function __construct()
+		{
+			$this->createConnection();
+		}
+		
 		function getConnection()
 		{
 			return $this->connection;
@@ -56,17 +61,7 @@
 		
 		function selectDB($db, $connection=false)
 		{
-			if (isset($this->pdo))
-			{
-				$this->SQL('USE `' . $db . '`');
-			} else
-			{
-				// choose database
-				if (!(mysql_select_db($db, $this->connection)))
-				{
-					die('<p>Could not select database!<p>');
-				}
-			}
+			$this->SQL('USE `' . $db . '`');
 			return true;
 		}
 		
