@@ -2,7 +2,7 @@
 	// this file is supposed to load and init all common classes
 	class site
 	{
-		function __construct()
+		function __construct($smarty=true)
 		{
 			global $config;
 			global $db;
@@ -30,8 +30,20 @@
 			// template builder
 			// do not init it, as db information is needed
 			// to find out what template should be used
-			require dirname(__FILE__) . '/classes/tmpl.php';
-			$tmpl = new template();
+			if ($smarty)
+			{
+				include('classes/smarty/Smarty.class.php');
+				$tmpl = new Smarty();
+				// include wrapper script that sets up the smarty thing 
+				include('classes/tmpl_wrapper.php');
+				$tmpl->debugging = true;
+				$tmpl->caching = true;
+				$tmpl->cache_lifetime = 120;
+			} else
+			{
+				require dirname(__FILE__) . '/classes/tmpl.php';
+				$tmpl = new template();
+			}	
 		}
 		
 		function magic_quotes_on()

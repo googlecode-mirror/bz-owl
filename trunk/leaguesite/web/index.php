@@ -13,6 +13,7 @@
 	{
 		global $db;
 		
+		
 		$query = $db->prepare('SELECT `addon`, `title` FROM `CMS` WHERE `requestPath`=? LIMIT 1');
 		$db->execute($query, $path);
 		
