@@ -1,9 +1,12 @@
 <?php
+	include('classes/smarty/Smarty.class.php');
+	
 	// this file is supposed to load and init all common classes
 	class site
 	{
-		function __construct($smarty=true)
+		function __construct()
 		{
+			global $tmplHelper;
 			global $config;
 			global $db;
 			global $user;
@@ -30,20 +33,16 @@
 			// template builder
 			// do not init it, as db information is needed
 			// to find out what template should be used
-			if ($smarty)
-			{
-				include('classes/smarty/Smarty.class.php');
-				$tmpl = new Smarty();
-				// include wrapper script that sets up the smarty thing 
-				include('classes/tmpl_wrapper.php');
-				$tmpl->debugging = true;
-				$tmpl->caching = true;
-				$tmpl->cache_lifetime = 120;
+/* 				include('classes/smarty/Smarty.class.php'); */
+			$smarty = new Smarty();
+			$tmpl = new tmpl($smarty);
+/*
 			} else
 			{
 				require dirname(__FILE__) . '/classes/tmpl.php';
 				$tmpl = new template();
 			}	
+*/
 		}
 		
 		function magic_quotes_on()
@@ -90,6 +89,114 @@
 			}
 			
 			return false;
+		}
+	}
+	
+	class tmpl extends Smarty
+	{
+		private $templateFile;
+		private $engine;
+		
+		function __construct($engine)
+		{
+			$this->engine = ($engine);
+			$this->debugging = false;
+			$engine->caching = true;
+			$engine->cache_lifetime = 120;
+		}
+		
+		function getEngine()
+		{
+			return $this->engine;
+		}
+		
+		function existsTemplate($theme, $template)
+		{
+			return file_exists(dirname(dirname(dirname(__FILE__))) . '/themes/'
+							   . $theme . '/templates/' . $template . '.tmpl.html');
+		}
+		
+		
+		function findTemplate(&$template, &$path)
+		{
+			// split the path in $template into an array
+			// overwrite $template with the last part of the array
+			// forget the last part of the array
+			// append the pieces of the array to $path
+			$pathinfo = explode('/', $template);
+			
+			if (count($pathinfo) > 0)
+			{
+				$template = $pathinfo[count($pathinfo) -1];
+				unset($pathinfo[count($pathinfo) -1]);
+				
+				$path .= '/' . htmlspecialchars(implode('/', $pathinfo));
+			}
+		}
+		
+		function noTemplateFound()
+		{
+			global $db;
+			
+			$db->logError('FATAL ERROR: Template not found, request URI: ' . $_SERVER['REQUEST_URI']);
+			parent::setTemplate('NoPerm');
+/* 			$this->done('Template file not found. This is an installation problem.'); */
+			die();
+		}
+		
+		public function display()
+		{
+			parent::display($this->templateFile . '.html.tmpl');
+		}
+		
+		function setTemplate($template, $customTheme='')
+		{
+			global $config;
+			global $user;
+			global $tmpl;
+			global $db;
+			
+			if (strcmp($customTheme, '') === 0)
+			{
+				$customTheme = $user->getStyle();
+			}
+			
+			// extract possible file paths out of $template and append it to $themeFolder
+			$themeFolder = dirname(dirname(__FILE__)) .'/themes/' . htmlspecialchars($customTheme);
+			$this->findTemplate($template, $themeFolder);
+			
+			// init template system
+			parent::setTemplateDir($themeFolder . 'templates');
+			parent::setCompileDir($themeFolder . 'templates_c');
+			parent::setCacheDir($themeFolder . 'cache');
+			parent::setConfigDir($themeFolder . 'config');
+			
+//			$this->tpl = new HTML_Template_IT($themeFolder);
+			
+			// fallback if template specified is empty
+			if (strcmp($template, '') === 0)
+			{
+				$template = 'NoPerm';
+			}
+			
+//			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
+			
+			if (!file_exists($themeFolder . 'templates/' . $template . '.html.tmpl'))
+			{
+				if ($config->value('debugSQL'))
+				{
+					echo 'Tried to use template: ' . $themeFolder . 'templates/' . $template . '.html.tmpl but failed: file does not exist.';
+				}
+				return false;
+			} elseif ($config->value('debugSQL'))
+			{
+				// debug output used template
+//				$this->addMSG('Used template: ' . $themeFolder
+//							  . $template . '.tmpl.html' . $this->return_self_closing_tag('br'));
+			}
+			
+			$this->templateFile = $template;
+			return true;
 		}
 	}
 	

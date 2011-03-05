@@ -26,7 +26,7 @@
 		
 		function existsTemplate($theme, $template)
 		{
-			return file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
+			return file_exists(dirname(dirname(dirname(__FILE__))) . '/themes/'
 							   . $theme . '/' . $template . '.tmpl.html');
 		}
 		
@@ -78,7 +78,7 @@
 			}
 			
 			// extract possible file paths out of $template and append it to $themeFolder
-			$themeFolder = dirname(dirname(dirname(__FILE__))) .'/styles/' . htmlspecialchars($customTheme);
+			$themeFolder = dirname(dirname(dirname(__FILE__))) .'/themes/' . htmlspecialchars($customTheme);
 			$this->findTemplate($template, $themeFolder);
 			
 			// init template system
@@ -161,10 +161,10 @@
 			$this->tpl->setVariable('DATE', date('Y-m-d H:i:s T'));
 			
 			$this->tpl->setCurrentBlock('MENU');
-			include dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle() . '/menu.php';
+			include dirname(dirname(dirname(__FILE__))) .'/themes/' . $user->getStyle() . '/menu.php';
 			if ($config->value('debugSQL'))
 			{
-				$this->addMSG('Used menu: ' . dirname(dirname(dirname(__FILE__))) .'/styles/' . $user->getStyle()
+				$this->addMSG('Used menu: ' . dirname(dirname(dirname(__FILE__))) .'/themes/' . $user->getStyle()
 							  . '/menu.php' . $this->return_self_closing_tag('br'));
 			}
 			
