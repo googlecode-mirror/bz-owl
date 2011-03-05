@@ -11,16 +11,19 @@
 			global $tmpl;
 			global $user;
 			
-			$tmpl->assign('title', 'test');
 			if (!isset($site))
 			{
 				require_once (dirname(dirname(dirname(__FILE__))) . '/site.php');
 				$site = new site();
 			}
 			
-			tmpl_wrapper::setTemplate('News');
+			$tmpl->setTemplate('News');
+			$smarty = $tmpl->getEngine();
 			$tmpl->testInstall();
-//			tmpl_wrapper::display('News');
+			
+			$tmpl->assign('name', 'Ned');
+			$tmpl->assign('title', $title);
+			$tmpl->display('News.html.tmpl');
 			die();
 			
 			// FIXME: fallback to default permission name until add-on system is completly implemented
