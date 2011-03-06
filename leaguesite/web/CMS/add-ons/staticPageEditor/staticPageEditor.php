@@ -36,7 +36,7 @@
 				
 				// revert back to default if file does not exist
 				if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
-								  . str_replace(' ', '%20', htmlspecialchars($user->getStyle())) . '/'
+								  . str_replace(' ', '%20', htmlspecialchars($user->getTheme())) . '/'
 								  . $templateToUse . '.tmpl.html')))
 				{
 					$templateToUse = 'static';

@@ -282,7 +282,7 @@
 			
 			if (strcmp($customTheme, '') === 0)
 			{
-				$customTheme = $user->getStyle();
+				$customTheme = $user->getTheme();
 			}
 			
 			// extract possible file paths out of $template and append it to $themeFolder
