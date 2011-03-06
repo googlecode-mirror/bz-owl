@@ -96,14 +96,134 @@
 	{
 		private $templateFile;
 		private $engine;
+		private $theme;
 		
 		function __construct($engine)
 		{
+			global $config;
+			
+			
 			$this->engine = ($engine);
 			$this->debugging = false;
 			$engine->caching = true;
 			$engine->cache_lifetime = 120;
+			
+			parent::assign('faviconURL', $config->value('favicon'));
+			parent::assign('baseURL', $config->value('baseaddress'));
+			parent::assign('logoutURL', ($config->value('baseaddress') . 'Logout/'));
 		}
+		
+		
+		private function buildMenu()
+		{
+			global $config;
+			global $user;
+			global $db;
+			
+			
+			$menuFile = $this->theme . 'templates/menu.php';
+			
+			if (!file_exists($menuFile))
+			{
+				parent::assign('menu', 'No menu file found.');
+				return;
+			}
+			
+			// set the date and time
+			date_default_timezone_set($config->value('timezone'));
+			include($menuFile);
+			$menu = new menu();
+			parent::assign('menu', $menu->createMenu());
+			unset($menu);
+			
+			parent::assign('date', date('Y-m-d H:i:s T'));
+/*
+			if ($config->value('debugSQL'))
+			{
+				$this->addMSG('Used menu: ' . $menuFile);
+			}
+*/
+			
+/*
+			$menuClass = new menu();
+			$menu = $menuClass->createMenu();
+			
+			foreach ($menu as $oneMenuEntry)
+			{
+				$this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
+				$this->parseCurrentBlock();
+			}
+			unset($oneMenuEntry);
+*/
+			
+			// count online players on match servers
+			
+			// run the update script:
+			// >/dev/null pipes output to nowhere
+			// & lets the script run in the background
+			exec('php ' . dirname(dirname(__FILE__)) . '/cli/servertracker_query_backend.php >/dev/null &');
+			
+			// build sum from list of servers
+			$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
+					  . ' FROM `servertracker`'
+					  . ' ORDER BY `id`');
+			$result = $db->SQL($query, __FILE__);
+			
+			while ($row = $db->fetchRow($result))
+			{
+				if (intval($row['cur_players_total']) === 1)
+				{
+					parent::assign('onlinePlayers', '1 player');
+				} else
+				{
+					parent::assign('onlinePlayers', (strval($row['cur_players_total']) . ' players'));
+				}
+			}
+			
+			// remove expired sessions from the list of online users
+			$query = 'SELECT `playerid`, `last_activity` FROM `online_users`';
+			$query = $db->SQL($query);
+			$rows = $db->fetchAll($query);
+			$n = count($rows);
+			if ($n > 0)
+			{
+				for ($i = 0; $i < $n; $i++)
+				{
+					$saved_timestamp = $rows[$i]['last_activity'];
+					$old_timestamp = strtotime($saved_timestamp);
+					$now = (int) strtotime("now");
+					// is entry more than two hours old? (60*60*2)
+					// FIXME: would need to set session expiration date directly inside code
+					// FIXME: and not in the webserver setting
+					if ($now - $old_timestamp > (60*60*2))
+					{
+						$query = $db->prepare('DELETE LOW_PRIORITY FROM `online_users` WHERE `last_activity`=?');
+						$db->execute($query, $saved_timestamp);
+					}
+				}
+			}
+			
+			// count active sessions
+			$query = 'SELECT count(`playerid`) AS `num_players` FROM `online_users`';
+			$result = $db->SQL($query, __FILE__);
+			
+			$n_users = ($db->fetchRow($result));
+			if (intval($n_users['num_players']) === 1)
+			{
+				parent::assign('onlineUsers', '1 user');
+			} else
+			{
+				parent::assign('onlineUsers', ($n_users['num_players'] . ' users'));
+			}
+			
+			// user is logged in -> show logout option
+			if ($user->loggedIn())
+			{
+				parent::assign('LOGOUT');
+				parent::assign('LOGOUTURL', ($config->value('baseaddress') . 'Logout/'));
+			}
+		}
+		
 		
 		function getEngine()
 		{
@@ -146,6 +266,9 @@
 		
 		public function display()
 		{
+			// build menu
+			$this->buildMenu();
+			
 			parent::display($this->templateFile . '.html.tmpl');
 		}
 		
@@ -170,6 +293,8 @@
 			parent::setCompileDir($themeFolder . 'templates_c');
 			parent::setCacheDir($themeFolder . 'cache');
 			parent::setConfigDir($themeFolder . 'config');
+			
+			$this->theme = $themeFolder;
 			
 //			$this->tpl = new HTML_Template_IT($themeFolder);
 			
@@ -196,6 +321,15 @@
 			}
 			
 			$this->templateFile = $template;
+			
+			// point to currently used theme
+			if (strcmp($customTheme, '') === 0)
+			{
+				parent::assign('curTheme', str_replace(' ', '%20', htmlspecialchars($user->getStyle())));
+			} else
+			{
+				parent::assign('curTheme', $customTheme);
+			}
 			return true;
 		}
 	}

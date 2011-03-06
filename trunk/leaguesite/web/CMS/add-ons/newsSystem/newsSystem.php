@@ -18,8 +18,8 @@
 			}
 			
 			$tmpl->setTemplate('News');
-			$smarty = $tmpl->getEngine();
-			$tmpl->testInstall();
+/* 			$smarty = $tmpl->getEngine(); */
+/* 			$tmpl->testInstall(); */
 			
 			$tmpl->assign('name', 'Ned');
 			$tmpl->assign('title', $title);
