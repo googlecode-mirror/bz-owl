@@ -29,7 +29,7 @@
 		if (!isset($_GET['theme']))
 	{
 		echo '	';
-		$site->write_self_closing_tag('link href="' . baseaddress() . 'styles/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '.css"' . ' rel="stylesheet" type="text/css"');
+		$site->write_self_closing_tag('link href="' . baseaddress() . 'themes/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '/' . str_replace(' ', '%20', htmlspecialchars($site->getStyle())) . '.css"' . ' rel="stylesheet" type="text/css"');
 	}
 	
 	if (isset($display_page_title) && (strcmp($display_page_title, 'Official match servers') === 0))
