@@ -69,10 +69,12 @@
 		{
 			global $tmpl;
 			
+/*
 			if ($this->getDebugSQL() && isset($tmpl))
 			{
 				$tmpl->addMSG('executing query: '. $query . $tmpl->return_self_closing_tag('br'));
 			}
+*/
 			
 			$result = $this->pdo->query($query);
 			
