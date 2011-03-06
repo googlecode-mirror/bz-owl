@@ -23,8 +23,7 @@
 			
 			$tmpl->assign('name', 'Ned');
 			$tmpl->assign('title', $title);
-			$tmpl->display('News.html.tmpl');
-			die();
+/* 			die(); */
 			
 			// FIXME: fallback to default permission name until add-on system is completly implemented
 			$entry_add_permission = 'allow_add_news';
@@ -32,7 +31,7 @@
 			$entry_delete_permission = 'allow_delete_news';
 			
 			
-			$tmpl->setTitle($title);
+/* 			$tmpl->setTitle($title); */
 			
 			// find out which template should be used
 			// fallback template is static
@@ -52,7 +51,7 @@
 				
 				// revert back to default if file does not exist
 				if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
-								  . str_replace(' ', '%20', htmlspecialchars($user->getStyle())) . '/'
+								  . str_replace(' ', '%20', htmlspecialchars($user->getTheme())) . '/'
 								  . $templateToUse . '.tmpl.html')))
 				{
 					$templateToUse = 'News';
@@ -98,15 +97,17 @@
 			
 			if ($user->hasPermission($entry_add_permission))
 			{
+/*
 				$tmpl->setCurrentBlock('USERADDBUTTON');
 				$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
 								   '<a href="./?add" class="button">Add message</a>');
 				$tmpl->parseCurrentBlock();
+*/
 			}
 			$this->readContent($path, $author, $last_modified, false);
 			
 			// done, render page
-			$tmpl->render();
+			$tmpl->display('News.html.tmpl');
 		}
 		
 		
@@ -140,6 +141,7 @@
 			return true;
 		}
 		
+/*
 		function insertEditText($readonly=false)
 		{
 			global $tmpl;
@@ -200,6 +202,7 @@
 					break;
 			}
 		}
+*/
 		
 		
 		function hasEditPermission()
@@ -248,8 +251,9 @@
 			$offset = 0;
 			if (!$edit)
 			{
-				$content = 'No content available yet.';
-				$query = $db->SQL('SELECT `title`,`timestamp`,`author`,`msg`'
+				// TODO: id only needed if user can edit or delete
+				// TODO: meaning room for optimisation
+				$query = $db->SQL('SELECT `id`,`title`,`timestamp`,`author`,`msg`'
 								  . ' FROM `news` ORDER BY `timestamp` DESC'
 								  . ' LIMIT ' . intval($offset) .', 21');
 			} else
@@ -277,22 +281,25 @@
 					&& $user->hasPermission($entry_edit_permission)
 					|| $user->hasPermission($entry_delete_permission))
 				{
-					$buttons = ($user->hasPermission($entry_edit_permission))?
-								'<a class="button" href="./?edit">edit</a>' : '';
+					$tmpl->assign('showEditButton', $user->hasPermission($entry_edit_permission));
+					$tmpl->assign('showEditButton', $user->hasPermission($entry_delete_permission));
+/*
 					$buttons .= ($user->hasPermission($entry_edit_permission)
 								 && $user->hasPermission($entry_delete_permission))?
 								' ' : '';
 					$buttons .= ($user->hasPermission($entry_delete_permission))?
 								'<a class="button" href="./?delete">delete</a>' : '';
+*/
 				}
 				if (isset($buttons))
 				{
 					$showButtons = true;
 				}
 				
-				$tmpl->setCurrentBlock('NEWSBOX');
+				// article box
 				for($i = 1; $i < $n; $i++)
 				{
+/*
 					if ($showButtons)
 					{
 						$tmpl->setCurrentBlock('USERBUTTONS');
@@ -300,26 +307,33 @@
 						$tmpl->parseCurrentBlock();
 						$tmpl->setCurrentBlock('NEWSBOX');
 					}
+*/
+					$content[$i]['id'] = $rows[$i]['id'];
+					$content[$i]['title'] = (strcmp($rows[$i]['title'], '') === 0)?
+									   'News' : $rows[$i]['title'];
+
+					$content[$i]['author'] = $rows[$i]['author'];
+					$content[$i]['time'] = $rows[$i]['timestamp'];
 					
-					$tmpl->setVariable('TITLE', (strcmp($rows[$i]['title'], '') === 0)?
-									   'News' : $rows[$i]['title']);
-					$tmpl->setVariable('AUTHOR', $rows[$i]['author']);
-					$tmpl->setVariable('TIME', $rows[$i]['timestamp']);
-					
-					$edit ? $tmpl->setVariable('CONTENT', $rows[$i]['raw_msg'])
-						 : $tmpl->setVariable('CONTENT', $rows[$i]['msg']);
+					$edit ? $content[$i]['content'] = $rows[$i]['raw_msg']
+						 : $content[$i]['content'] = $rows[$i]['msg'];
 					$author = $rows[$i]['author'];
+
+/*
 					if ($edit)
 					{
 						$content = $rows[$i]['raw_msg'];
 					} else
 					{
-						$content = $rows[$i]['msg'];
+						$content[$i]['content'] = $rows[$i]['msg'];
 					}
+*/
 					
-					$tmpl->parseCurrentBlock();
+/* 					$tmpl->parseCurrentBlock(); */
 				}
 			}
+			
+			$tmpl->assign('entries', $content);
 		}
 		
 		function writeContent(&$content, $page_title, $table)

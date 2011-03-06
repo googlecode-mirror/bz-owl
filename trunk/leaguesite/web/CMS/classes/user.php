@@ -18,7 +18,7 @@
 		}
 		
 		
-		function getStyle()
+		function getTheme()
 		{
 			global $config;
 			
@@ -38,13 +38,10 @@
 			} else
 			{
 				// otherwise use cookie
-				foreach ($_COOKIE as $key => $value)
+				if (isset($_COOKIE['theme']))
 				{
-					if (strcasecmp($key, 'theme') == 0)
-					{
-						// cookies turned on
-						$theme = $value;
-					}
+					// cookies turned on
+					$theme = $_COOKIE['theme'];
 				}
 			}
 			

@@ -21,17 +21,33 @@ No menu found.
 	<span class="onlineUsers">Website: <a href="{$baseURL}Online/">{$onlineUsers}</a></span>
 	<span class="logout"><a href="{$logoutURL}">Logout</a></span>
 </div>
-{literal}
-<div class="content">
-<!-- BEGIN USERADDBUTTON -->{PERMISSION_BASED_ADD_BUTTON}<!-- END USERADDBUTTON -->
 
-<!-- BEGIN NEWSBOX -->
-<!-- BEGIN USERBUTTONS --><div class="newsButtonsGroup">{PERMISSION_BASED_BUTTONS}</div><!-- END USERBUTTONS -->
+<div class="content">
+{if isset($showAddButton) && $showAddButton}
+<a class="button" href="?add">Add news</a>
+{/if}
+
+{foreach key=id item=value from=$entries}
+	{if (isset($showEditButton) && $showEditButton) || (isset($showDeleteButton) && $showDeleteButton)}
+		<div class="newsButtonsGroup">
+			{if isset($showEditButton) && $showEditButton}
+				<a class="button" href="?edit={$value.id}">edit</a>
+			{/if}
+			{if isset($showDeleteButton) && $showDeleteButton}
+				<a class="button" href="?delete={$value.id}">delete</a>
+			{/if}
+
+		</div>
+	{/if}
 <div class="article">
-	<div class="articleHeader">{TITLE} by {AUTHOR} at {TIME}</div>
-	<div class="articleContent">{CONTENT}</div>
+	<div class="articleHeader">{$value.title} by {$value.author} at {$value.time}</div>
+	<div class="articleContent">{$value.content}</div>
 </div>
-<!-- END NEWSBOX -->
+{foreachelse}
+<div class="static_page_box">No {$title} posted yet.</div>
+{/foreach}
+
+{literal}
 <!-- BEGIN MISC --><div class="static_page_box">
 {MSG}
 </div><br />
