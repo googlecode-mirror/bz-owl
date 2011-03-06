@@ -34,7 +34,7 @@
 	
 	// use the template
 	// we're done if a template is used
-	$stylePath = dirname(dirname(__FILE__)) .'/styles/' . $site->getStyle();
+	$stylePath = dirname(dirname(__FILE__)) .'/themes/' . $site->getStyle();
 	
 	if (file_exists($stylePath . $site->base_name()))
 	{
