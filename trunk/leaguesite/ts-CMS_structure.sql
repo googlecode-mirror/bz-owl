@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.55)
 # Database: testdb
-# Generation Time: 2011-02-26 18:54:03 +0100
+# Generation Time: 2011-03-06 15:20:48 +0100
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -47,6 +47,15 @@ CREATE TABLE `CMS` (
   KEY `requestPath` (`requestPath`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `CMS` WRITE;
+/*!40000 ALTER TABLE `CMS` DISABLE KEYS */;
+INSERT INTO `CMS` (`id`,`requestPath`,`title`,`addon`)
+VALUES
+	(0,'/','Home','staticPageEditor'),
+	(1,'News/','News','newsSystem');
+
+/*!40000 ALTER TABLE `CMS` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table countries
