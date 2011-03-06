@@ -38,7 +38,7 @@
 		
 		$file = dirname(__FILE__) . '/CMS/add-ons/' . $addon
 				. '/' . $addon . '.php';
-				echo($file);
+		echo($file);
 		if (file_exists($file))
 		{
 		echo(' loaded with path ' . $path);
