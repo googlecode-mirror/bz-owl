@@ -108,6 +108,7 @@
 			$engine->caching = true;
 			$engine->cache_lifetime = 120;
 			
+			parent::__construct();
 			parent::assign('faviconURL', $config->value('favicon'));
 			parent::assign('baseURL', $config->value('baseaddress'));
 			parent::assign('logoutURL', ($config->value('baseaddress') . 'Logout/'));
