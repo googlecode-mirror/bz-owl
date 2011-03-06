@@ -62,7 +62,6 @@
 			
 			// otherwise we'd need a custom name per setup
 			// as top level dir could be named different
-			
 			if ($user->hasPermission($entry_edit_permission) && isset($_GET['edit']))
 			{
 				// remove the slashes if magic quotes are sadly on
@@ -97,12 +96,7 @@
 			
 			if ($user->hasPermission($entry_add_permission))
 			{
-/*
-				$tmpl->setCurrentBlock('USERADDBUTTON');
-				$tmpl->setVariable('PERMISSION_BASED_ADD_BUTTON',
-								   '<a href="./?add" class="button">Add message</a>');
-				$tmpl->parseCurrentBlock();
-*/
+				$tmpl->assign('showAddButton', true);
 			}
 			$this->readContent($path, $author, $last_modified, false);
 			
@@ -282,7 +276,7 @@
 					|| $user->hasPermission($entry_delete_permission))
 				{
 					$tmpl->assign('showEditButton', $user->hasPermission($entry_edit_permission));
-					$tmpl->assign('showEditButton', $user->hasPermission($entry_delete_permission));
+					$tmpl->assign('showDeleteButton', $user->hasPermission($entry_delete_permission));
 /*
 					$buttons .= ($user->hasPermission($entry_edit_permission)
 								 && $user->hasPermission($entry_delete_permission))?
