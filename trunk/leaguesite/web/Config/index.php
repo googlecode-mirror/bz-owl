@@ -12,7 +12,7 @@
 		$theme=$_GET['theme'];
 		
 		// check if theme stylesheet file does exist
-		if (!file_exists(dirname(dirname(__FILE__)) .'/styles/'
+		if (!file_exists(dirname(dirname(__FILE__)) .'/themes/'
 						 . str_replace(' ', '%20', htmlspecialchars($theme) . '/')
 						 . str_replace(' ', '%20', htmlspecialchars($theme) . '.css')))
 		{
@@ -38,11 +38,11 @@
 	// read out installed themes instead of defining a fixed list in source code
 	
 	// first scan the files in the styles directory
-	$themes = scandir(dirname(dirname(__FILE__)) . '/styles/');
+	$themes = scandir(dirname(dirname(__FILE__)) . '/themes/');
 	foreach ($themes as $i => $curFile)
 	{
 		// remove entry from array if it's no folder
-		if (!is_dir(dirname(dirname(__FILE__)) . '/styles/' . $curFile))
+		if (!is_dir(dirname(dirname(__FILE__)) . '/themes/' . $curFile))
 		{
 			unset($themes[$i]);
 			continue;
@@ -65,7 +65,7 @@
 		}
 		
 		// filter themes with no stylesheet
-		if (isset($themes[$i]) && !file_exists(dirname(dirname(__FILE__)) . '/styles/' . $curFile . '/' . $curFile . '.css'))
+		if (isset($themes[$i]) && !file_exists(dirname(dirname(__FILE__)) . '/themes/' . $curFile . '/' . $curFile . '.css'))
 		{
 			unset($themes[$i]);
 		}
@@ -82,25 +82,20 @@
 	}
 	
 	
-	$tmpl->setCurrentBlock('cell');
-	
 	if (strlen($theme) > 0)
 	{
-		$s = $theme;
+		$tmpl->assign('curTheme', $theme);
 	} else
 	{
-		$s = $user->getStyle();
+		$tmpl->assign('curTheme', $user->getTheme());
 	}
-	foreach ($themes as $theme)
-	{
-		$tmpl->setVariable('THEME', $theme);
-		$tmpl->setVariable('SELECTED', 	($theme==$s?' selected="selected"':''));
-		$tmpl->parseCurrentBlock();
-	}
-	unset($s);
+	
+	// presentation logic in template
+	// so just pass the result from business logic
+	$tmpl->assign('themes', $themes);
 	
 	
-	function RepositoryVersion()
+	function repositoryVersion()
 	{
 		if (file_exists('../.svn/entries'))
 		{
@@ -124,8 +119,7 @@
 		return $svn_rev;
 	}
 	
-	$tmpl->setCurrentBlock('repository');
-	$tmpl->setVariable('REPOSITORYVERSION', RepositoryVersion());
+	$tmpl->assign('repositoryVersion', repositoryVersion());
 	
-	$tmpl->render();
+	$tmpl->display();
 ?>
