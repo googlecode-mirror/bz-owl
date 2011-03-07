@@ -111,7 +111,6 @@
 			parent::__construct();
 			parent::assign('faviconURL', $config->value('favicon'));
 			parent::assign('baseURL', $config->value('baseaddress'));
-			parent::assign('logoutURL', ($config->value('baseaddress') . 'Logout/'));
 		}
 		
 		
@@ -220,8 +219,8 @@
 			// user is logged in -> show logout option
 			if ($user->loggedIn())
 			{
-				parent::assign('LOGOUT');
-				parent::assign('LOGOUTURL', ($config->value('baseaddress') . 'Logout/'));
+/* 				parent::assign('LOGOUT'); */
+				parent::assign('logoutURL', ($config->value('baseaddress') . 'Logout/'));
 			}
 		}
 		
@@ -231,10 +230,20 @@
 			return $this->engine;
 		}
 		
-		function existsTemplate($theme, $template)
+		function existsTemplate($template, $theme='')
 		{
-			return file_exists(dirname(dirname(dirname(__FILE__))) . '/themes/'
-							   . $theme . '/templates/' . $template . '.tmpl.html');
+			global $config;
+			global $user;
+			
+			
+			if (strlen($theme) === 0)
+			{
+				$theme = $user->getTheme();
+			}
+			
+			return file_exists(dirname(dirname(__FILE__)) . '/themes/'
+							   . $theme . '/templates/' . $template
+							   . ($config->value('useXhtml') ? '.xhtml.tmpl' : '.html.tmpl'));
 		}
 		
 		
@@ -270,7 +279,7 @@
 			// build menu
 			$this->buildMenu();
 			
-			parent::display($this->templateFile . '.html.tmpl');
+			parent::display($this->templateFile);
 		}
 		
 		function setTemplate($template, $customTheme='')
@@ -307,11 +316,14 @@
 			
 //			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
 			
-			if (!file_exists($themeFolder . 'templates/' . $template . '.html.tmpl'))
+			$template .= (($config->value('useXhtml')) ? '.xhtml' : '.html') . '.tmpl';
+			
+			if (!file_exists($themeFolder . 'templates/' . $template))
 			{
 				if ($config->value('debugSQL'))
 				{
-					echo 'Tried to use template: ' . $themeFolder . 'templates/' . $template . '.html.tmpl but failed: file does not exist.';
+					echo 'Tried to use template: ' . $themeFolder . 'templates/' . $template
+						 . ' but failed: file does not exist.';
 				}
 				return false;
 			} elseif ($config->value('debugSQL'))
