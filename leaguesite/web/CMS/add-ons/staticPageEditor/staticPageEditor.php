@@ -34,11 +34,9 @@
 				{
 					$templateToUse = $title;
 				}
-				echo($templateToUse);
 				// revert back to default if file does not exist
 				if (!$tmpl->existsTemplate($templateToUse))
 				{
-					echo('fallback');
 					$templateToUse = 'static';
 				}
 			}
