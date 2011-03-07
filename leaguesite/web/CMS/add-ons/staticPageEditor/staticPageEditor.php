@@ -4,6 +4,7 @@
 		function __construct($title, $path)
 		{
 			global $site;
+			global $config;
 			global $tmpl;
 			global $user;
 			
@@ -16,7 +17,7 @@
 			// FIXME: fallback to default permission name until add-on system is completly implemented
 			$entry_edit_permission = 'allow_edit_static_pages';
 			
-			$tmpl->setTitle($title);
+			$tmpl->assign('title', $title);
 			
 			// find out which template should be used
 			// fallback template is static
@@ -33,12 +34,11 @@
 				{
 					$templateToUse = $title;
 				}
-				
+				echo($templateToUse);
 				// revert back to default if file does not exist
-				if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/'
-								  . str_replace(' ', '%20', htmlspecialchars($user->getTheme())) . '/'
-								  . $templateToUse . '.tmpl.html')))
+				if (!$tmpl->existsTemplate($templateToUse))
 				{
+					echo('fallback');
 					$templateToUse = 'static';
 				}
 			}
@@ -59,7 +59,7 @@
 			} else
 			{
 				$tmpl->setTemplate($templateToUse);
-				$tmpl->addMSG($this->readContent($path, $author, $last_modified, false));
+				$tmpl->assign('content' , $this->readContent($path, $author, $last_modified, false));
 			}
 			
 			if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
@@ -68,9 +68,7 @@
 				if (!isset($_GET['edit']))
 				{
 					// user looks at page in read mode
-					$tmpl->setCurrentBlock('USERBUTTONS');
-					$tmpl->setVariable('PERMISSION_BASED_BUTTONS', '<a href="./?edit" class="button">edit</a>');
-					$tmpl->parseCurrentBlock();
+					$tmpl->assign('showEditButton', true);
 				}
 				
 				if (isset($_GET['edit']))
@@ -180,7 +178,7 @@
 			
 			
 			// done, render page
-			$tmpl->render();
+			$tmpl->display();
 		}
 		
 		
