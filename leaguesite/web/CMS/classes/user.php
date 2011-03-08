@@ -69,7 +69,7 @@
 		}
 		
 		
-		function hasPermission($permission)
+		function getPermission($permission)
 		{
 			if (isset($_SESSION[$permission]))
 			{
@@ -79,6 +79,10 @@
 			return false;
 		}
 		
+		function setPermission($permission)
+		{
+			$_SESSION[$permission] = $permission;
+		}
 		
 		function saveTheme($theme)
 		{
