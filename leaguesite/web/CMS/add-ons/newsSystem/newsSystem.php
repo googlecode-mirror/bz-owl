@@ -133,7 +133,7 @@
 			return true;
 		}
 		
-/*
+		
 		function insertEditText($readonly=false)
 		{
 			global $tmpl;
@@ -157,7 +157,7 @@
 				
 				$content['title'] = $_POST['title'];
 				$content['timestamp'] = $_POST['time'];
-			} else
+			 } else
 			{
 				$content = $this->readContent($page_title, $author, $last_modified, true);
 			}
@@ -165,36 +165,30 @@
 			switch($readonly)
 			{
 				case true:
-					$tmpl->setCurrentBlock('PREVIEW');
-					$tmpl->setVariable('TITLE_PREVIEW',  htmlent($content['title']));
-					$tmpl->setVariable('AUTHOR_PREVIEW',  htmlent($content['author']['name']));
-					$tmpl->setVariable('TIMESTAMP_PREVIEW',  htmlent($content['timestamp']));
+					$tmpl->assign('TITLE_PREVIEW',  htmlent($content['title']));
+					$tmpl->assign('AUTHOR_PREVIEW',  htmlent($content['author']['name']));
+					$tmpl->assign('TIMESTAMP_PREVIEW',  htmlent($content['timestamp']));
 					if ($config->value('bbcodeLibAvailable'))
 					{
-						$tmpl->setVariable('CONTENT_PREVIEW',  $tmpl->encodeBBCode($content['raw_msg']));
+						$tmpl->assign('CONTENT_PREVIEW',  $tmpl->encodeBBCode($content['raw_msg']));
 					} else
 					{
-						$tmpl->setVariable('CONTENT_PREVIEW',  htmlent($content['raw_msg']));
+						$tmpl->assign('CONTENT_PREVIEW',  htmlent($content['raw_msg']));
 					}
-					$tmpl->parseCurrentBlock();
 					break;
 				
 				default:
-					$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
-					$tmpl->setVariable('RAW_CONTENT_HERE', htmlspecialchars($content['raw_msg']
-																			, ENT_COMPAT, 'UTF-8'));
-					$tmpl->setCurrentBlock('EDIT_AREA');
-					$tmpl->setVariable('TIMESTAMP', htmlspecialchars($content['timestamp']
-																	, ENT_COMPAT, 'UTF-8'));
-					$tmpl->setVariable('MSG_TITLE', htmlspecialchars($content['title']
-																 , ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('RAW_CONTENT_HERE', htmlspecialchars($content['raw_msg']
+																	   , ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('TIMESTAMP', htmlspecialchars($content['timestamp']
+																, ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('MSG_TITLE', htmlspecialchars($content['title']
+															 , ENT_COMPAT, 'UTF-8'));
 					// display the formatting buttons addded by addFormatButtons
 					$this->editor->showFormatButtons();
-					$tmpl->parseCurrentBlock();
 					break;
 			}
 		}
-*/
 		
 		
 		function hasEditPermission()

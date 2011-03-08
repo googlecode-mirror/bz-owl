@@ -20,16 +20,60 @@
 			global $site;
 			global $config;
 			
-			return $this->pdo = new PDO(
-								  'mysql:host='. $config->value('dbHost') . ';dbname=' . $config->value('dbName'),
-								  $config->value('dbUser'),
-								  $config->value('dbPw'),
-								  array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+			try
+			{
+				$this->pdo = new PDO(
+									 'mysql:host='. strval($config->value('dbHost'))
+									 . ';dbname=' . strval($config->value('dbName')),
+									 strval($config->value('dbUser')),
+									 strval($config->value('dbPw')),
+									 array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+			}
+			catch (PDOException $e)
+			{
+				if ($config->value('debugSQL'))
+				{
+					echo 'Connection failed: ' . $e->getMessage();
+				} else
+				{
+					echo 'DB connection failure, see log.';
+				}
+				
+				$this->logError($e->getMessage());
+				
+			    die();
+			}
+			
+			return $this->pdo;
 		}
 		
 		function logError($error)
 		{
-			// TODO: implement it
+			global $config;
+			
+			
+			if (isset($this->pdo))
+			{
+				// database connection available
+				$query = $this->prepare('INSERT INTO `ERROR_LOG` (`msg`) VALUES (?)');
+				$this->execute($query, $error);
+				
+				return;
+			}
+			
+			
+			$logfile = strval($config->value('errorLogFile'));
+			if (strlen($logfile) > 0 && file_exists($logfile) && is_writable($logfile))
+			{
+				$handle = fopen($logfile, 'a');
+				if (!fwrite($handle, $error))
+				{
+					die('ERROR: Writing into log failed');
+				}
+			} else
+			{
+				die('ERROR: DB connection not available and problem with logfile encountered.');
+			}
 		}
 		
 		// deprecated function

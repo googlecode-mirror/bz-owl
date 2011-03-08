@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+	<link href="{$baseURL}themes/{$curTheme}/{$curTheme}.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="image/png" href="{$faviconURL}" />
+<title>{$title}</title>
+</head>
+<body>
+<div class="logo"></div>
+
+{foreach $menu as $menuItem}{$menuItem}{foreachelse}
+No menu found.
+{/foreach}
+
+
+<div class="userbuttons">
+	<span class="date">{$date}</span>
+	<span class="Servers">Match servers: <a href="{$baseURL}Servertracker/">{$onlinePlayers}</a></span>
+	<span class="onlineUsers">Website: <a href="{$baseURL}Online/">{$onlineUsers}</a></span>
+	{if isset($logoutURL)}<span class="logout"><a href="{$logoutURL}">Logout</a></span>{/if}
+</div>
+
+<div class="content">
+
+<!-- BEGIN PREVIEW -->
+<div class="article">
+	<div class="articleHeader">{TITLE_PREVIEW} by {AUTHOR_PREVIEW} at {TIMESTAMP_PREVIEW}</div>
+	<div class="articleContent">{CONTENT_PREVIEW}</div>
+</div>
+<!-- END PREVIEW -->
+
+<div class="static_page_box">
+<!-- BEGIN MISC --><div>{MSG}</div><!-- END MISC -->
+<!-- BEGIN KEY --><form action="./?edit" enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8">
+<div><input type="hidden" name="key_name" value="{KEY_NAME}" /></div>
+<div><input type="hidden" name="{KEY_NAME}" value="{KEY_VALUE}" /></div><!-- END KEY -->
+
+<div><!-- BEGIN USER_NOTE -->{EDIT_MODE_NOTE}<!-- END USER_NOTE --></div>
+
+<!-- BEGIN EDIT_AREA --><div>
+<input type="text" name="title" value="{MSG_TITLE}" />
+<div>
+<!-- BEGIN STYLE_BUTTONS_staticContent -->{BUTTONS_TO_FORMAT}<!-- END STYLE_BUTTONS_staticContent -->
+</div>
+<!-- BEGIN USER_ENTERED_CONTENT --><textarea cols="75" rows="20" name="staticContent">{RAW_CONTENT_HERE}</textarea><!-- END USER_ENTERED_CONTENT -->
+<input type="text" name="time" value="{TIMESTAMP}" />
+</div><!-- END EDIT_AREA -->
+
+
+<!-- BEGIN EDIT_HIDDEN_WHILE_PREVIEW -->
+<div><input type="hidden" name="staticContent" value="{RAW_CONTENT_HERE}" /></div><!-- END EDIT_HIDDEN_WHILE_PREVIEW -->
+<!-- BEGIN PREVIEW_VALUE --><div><input type="hidden" name="confirmationStep" value="{PREVIEW_VALUE_HERE}" /></div><!-- END PREVIEW_VALUE -->
+<p><!-- BEGIN FORM_BUTTON --><input type="submit" name="submit" value="{SUBMIT_BUTTON_TEXT}" /><!-- END FORM_BUTTON -->
+<!-- BEGIN EDIT_AGAIN --><input type="submit" name="editPageAgain" value="{EDIT_AGAIN_BUTTON_TEXT}" /><!-- END EDIT_AGAIN --></p>
+</form>
+</div>
+
+</div>
+</body>
+</html>
