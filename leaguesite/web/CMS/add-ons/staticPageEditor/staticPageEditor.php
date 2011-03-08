@@ -133,10 +133,10 @@
 					$tmpl->setCurrentBlock('PREVIEW_VALUE');
 					if ($confirmed > 1)
 					{
-						$tmpl->setVariable('PREVIEW_VALUE_HERE', 1);
+						$tmpl->assign('PREVIEW_VALUE_HERE', 1);
 					} else
 					{
-						$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
+						$tmpl->assign('PREVIEW_VALUE_HERE', $confirmed+1);
 					}
 					$tmpl->parseCurrentBlock();
 					
@@ -144,11 +144,11 @@
 					{
 						case 1:
 							$tmpl->setCurrentBlock('FORM_BUTTON');
-							$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Write changes');
+							$tmpl->assign('SUBMIT_BUTTON_TEXT', 'Write changes');
 							$tmpl->parseCurrentBlock();
 							// user may decide not to submit after seeing preview
 							$tmpl->setCurrentBlock('EDIT_AGAIN');
-							$tmpl->setVariable('EDIT_AGAIN_BUTTON_TEXT', 'Edit again');
+							$tmpl->assign('EDIT_AGAIN_BUTTON_TEXT', 'Edit again');
 							$tmpl->parseCurrentBlock();
 							break;
 							
@@ -158,7 +158,7 @@
 							
 						default:
 							$tmpl->setCurrentBlock('FORM_BUTTON');
-							$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Preview');
+							$tmpl->assign('SUBMIT_BUTTON_TEXT', 'Preview');
 							$tmpl->parseCurrentBlock();
 					}
 					
@@ -168,8 +168,8 @@
 					$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
 					$randomkeyValue = $site->setKey($randomKeyName);
 					$tmpl->setCurrentBlock('KEY');
-					$tmpl->setVariable('KEY_NAME', $randomKeyName);
-					$tmpl->setVariable('KEY_VALUE', urlencode($_SESSION[$randomKeyName]));
+					$tmpl->assign('keyName', $randomKeyName);
+					$tmpl->assign('keyValue', urlencode($_SESSION[$randomKeyName]));
 					$tmpl->parseCurrentBlock();
 				}
 			}
@@ -222,14 +222,14 @@
 			{
 				case true:
 					$tmpl->setCurrentBlock('EDIT_HIDDEN_WHILE_PREVIEW');
-					$tmpl->setVariable('RAW_CONTENT_HERE',  htmlspecialchars($content, ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('rawContent',  htmlspecialchars($content, ENT_COMPAT, 'UTF-8'));
 					$tmpl->parseCurrentBlock();
 					break;
 					
 				default:
 					$tmpl->touchBlock('EDIT_AREA');
 					$tmpl->setCurrentBlock('USER_ENTERED_CONTENT');
-					$tmpl->setVariable('RAW_CONTENT_HERE', htmlspecialchars($content, ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('rawContent', htmlspecialchars($content, ENT_COMPAT, 'UTF-8'));
 					$tmpl->parseCurrentBlock();
 					$this->editor();
 					break;
@@ -245,8 +245,7 @@
 			
 			if ($config->value('bbcodeLibAvailable'))
 			{
-				$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
-				$tmpl->parseCurrentBlock();
+				$tmpl->assign('notes', 'Keep in mind to use BBCode instead of HTML or XHTML.');
 				
 				include dirname(dirname(__FILE__)) . '/bbcode_buttons.php';
 				$bbcode = new bbcode_buttons();
@@ -255,7 +254,7 @@
 				$tmpl->setCurrentBlock('STYLE_BUTTONS');
 				foreach ($buttons as $button)
 				{
-					$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
+					$tmpl->assign('BUTTONS_TO_FORMAT', $button);
 					$tmpl->parseCurrentBlock();
 				}
 				
@@ -267,13 +266,12 @@
 			{
 				if ($config->value('useXhtml'))
 				{
-					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
+					$tmpl->assign('notes', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
 				} else
 				{
-					$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
+					$tmpl->assign('notes', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
 				}
-				$tmpl->parseCurrentBlock();
-			}	
+			}
 		}
 		
 		function hasEditPermission()

@@ -75,7 +75,7 @@
 				$this->editor = new editor($this);
 				$this->editor->addFormatButtons('staticContent');
 				$this->editor->edit();
-				$tmpl->render();
+				$tmpl->display();
 				die();
 			}
 			
@@ -145,7 +145,7 @@
 			global $db;
 			
 			
-			if ($readonly)
+			if ($readonly || isset($_POST['confirmationStep']))
 			{
 				$content = array();
 				$content['raw_msg'] = $_POST['staticContent'];
@@ -157,33 +157,35 @@
 				
 				$content['title'] = $_POST['title'];
 				$content['timestamp'] = $_POST['time'];
-			 } else
+			} else
 			{
 				$content = $this->readContent($page_title, $author, $last_modified, true);
 			}
 			
+			
 			switch($readonly)
 			{
 				case true:
-					$tmpl->assign('TITLE_PREVIEW',  htmlent($content['title']));
-					$tmpl->assign('AUTHOR_PREVIEW',  htmlent($content['author']['name']));
-					$tmpl->assign('TIMESTAMP_PREVIEW',  htmlent($content['timestamp']));
+					$tmpl->assign('titlePreview',  htmlent($content['title']));
+					$tmpl->assign('authorPreview',  htmlent($content['author']['name']));
+					$tmpl->assign('timestampPreview',  htmlent($content['timestamp']));
+					$tmpl->assign('rawContent', htmlent($content['raw_msg']));
 					if ($config->value('bbcodeLibAvailable'))
 					{
-						$tmpl->assign('CONTENT_PREVIEW',  $tmpl->encodeBBCode($content['raw_msg']));
+						$tmpl->assign('contentPreview',  $tmpl->encodeBBCode($content['raw_msg']));
 					} else
 					{
-						$tmpl->assign('CONTENT_PREVIEW',  htmlent($content['raw_msg']));
+						$tmpl->assign('contentPreview',  htmlent($content['raw_msg']));
 					}
 					break;
 				
 				default:
-					$tmpl->assign('RAW_CONTENT_HERE', htmlspecialchars($content['raw_msg']
-																	   , ENT_COMPAT, 'UTF-8'));
-					$tmpl->assign('TIMESTAMP', htmlspecialchars($content['timestamp']
+					$tmpl->assign('rawContent', htmlspecialchars($content['raw_msg']
+																 , ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('timestamp', htmlspecialchars($content['timestamp']
 																, ENT_COMPAT, 'UTF-8'));
-					$tmpl->assign('MSG_TITLE', htmlspecialchars($content['title']
-															 , ENT_COMPAT, 'UTF-8'));
+					$tmpl->assign('msgTitle', htmlspecialchars($content['title']
+															   , ENT_COMPAT, 'UTF-8'));
 					// display the formatting buttons addded by addFormatButtons
 					$this->editor->showFormatButtons();
 					break;
@@ -232,6 +234,7 @@
 			global $user;
 			global $db;
 			
+			
 			// initialise return variable so any returned value will be always in a defined state
 			$content = '';
 			$offset = 0;
@@ -269,14 +272,8 @@
 				{
 					$tmpl->assign('showEditButton', $user->hasPermission($entry_edit_permission));
 					$tmpl->assign('showDeleteButton', $user->hasPermission($entry_delete_permission));
-/*
-					$buttons .= ($user->hasPermission($entry_edit_permission)
-								 && $user->hasPermission($entry_delete_permission))?
-								' ' : '';
-					$buttons .= ($user->hasPermission($entry_delete_permission))?
-								'<a class="button" href="./?delete">delete</a>' : '';
-*/
 				}
+				
 				if (isset($buttons))
 				{
 					$showButtons = true;
@@ -285,15 +282,6 @@
 				// article box
 				for($i = 1; $i < $n; $i++)
 				{
-/*
-					if ($showButtons)
-					{
-						$tmpl->setCurrentBlock('USERBUTTONS');
-						$tmpl->setVariable('PERMISSION_BASED_BUTTONS', $buttons);
-						$tmpl->parseCurrentBlock();
-						$tmpl->setCurrentBlock('NEWSBOX');
-					}
-*/
 					$content[$i]['id'] = $rows[$i]['id'];
 					$content[$i]['title'] = (strcmp($rows[$i]['title'], '') === 0)?
 									   'News' : $rows[$i]['title'];
@@ -314,8 +302,6 @@
 						$content[$i]['content'] = $rows[$i]['msg'];
 					}
 */
-					
-/* 					$tmpl->parseCurrentBlock(); */
 				}
 			}
 			
