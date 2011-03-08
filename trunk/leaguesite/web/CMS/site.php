@@ -247,6 +247,73 @@
 		}
 		
 		
+		// process bbcode
+		function encodeBBCode($bbcode)
+		{
+			global $config;
+			
+			if (strcmp($config->value('bbcodeLibPath'), '') === 0)
+			{
+				// no bbcode library specified
+				return $this->linebreaks(htmlent($bbcode));
+			}
+			// load the library
+			require_once ($config->value('bbcodeLibPath'));
+			
+			if (strcmp($config->value('bbcodeCommand'), '') === 0)
+			{
+				// no command that starts the parser
+				return $this->linebreaks(htmlent($bbcode));
+			} else
+			{
+				$parse_command = $config->value('bbcodeCommand');
+			}
+			
+			if (!(strcmp($config->value('bbcodeClass'), '') === 0))
+			{
+				// no class specified
+				// this is no error, it only means the library stuff isn't started by a command in a class
+				$bbcode_class = $config->value('bbcodeClass');
+				$bbcode_instance = new $bbcode_class;
+			}
+			
+			// execute the bbcode algorithm
+			if (isset($bbcode_class))
+			{
+				if ($config->value('bbcodeSetsLinebreaks'))
+				{
+					return $bbcode_instance->$parse_command($bbcode);
+				} else
+				{
+					return $this->linebreaks($bbcode_instance->$parse_command($bbcode));
+				}
+			} else
+			{
+				if ($config->value('bbcodeSetsLinebreaks'))
+				{
+					return $parse_command($bbcode);
+				} else
+				{
+					return $this->linebreaks($parse_command($bbcode));
+				}
+			}
+		}
+		
+		// add linebreaks to input, thus enable usage of multiple lines
+		function linebreaks($text)
+		{
+			global $config;
+			
+			if (phpversion() >= ('5.3'))
+			{
+				return nl2br($text, ($config->value('useXhtml')));
+			} else
+			{
+				return nl2br($text);
+			}
+		}
+		
+		
 		function findTemplate(&$template, &$path)
 		{
 			// split the path in $template into an array

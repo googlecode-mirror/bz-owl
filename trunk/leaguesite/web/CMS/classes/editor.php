@@ -37,20 +37,15 @@
 				return;
 			}
 			
-			print_r($this->elementButtonRequested);
-			
+			// TODO: does also link to included javascript each time called
+			// TODO: Make it do this only once
 			include(dirname(dirname(__FILE__)) . '/bbcode_buttons.php');
 			$bbcode = new bbcode_buttons();
 			
 			foreach ($this->elementButtonRequested as $element)
 			{
 				$buttons = $bbcode->showBBCodeButtons($element);
-				$tmpl->setCurrentBlock('STYLE_BUTTONS_' . $element);
-				foreach ($buttons as $button)
-				{
-					$tmpl->setVariable('BUTTONS_TO_FORMAT', $button);
-					$tmpl->parseCurrentBlock();
-				}
+				$tmpl->assign('buttonsToFormat', $buttons);
 			}
 		}
 		
@@ -108,12 +103,12 @@
 						break;
 						
 					case 'noperm':
-						$tmpl->addMSG('You need write permission to edit the content.');
+						$tmpl->assign('MSG', 'You need write permission to edit the content.');
 						break;
 						
 					case 'nokeymatch':
 						$this->caller->insertEditText(false);
-						$tmpl->addMSG('The magic key does not match, it looks like you came from somewhere else or your session expired.');
+						$tmpl->assign('MSG', 'The magic key does not match, it looks like you came from somewhere else or your session expired.');
 						break;			
 				}
 				unset($test);
@@ -126,26 +121,22 @@
 				}
 				
 				// increase confirmation step by one so we get to the next level
-				$tmpl->setCurrentBlock('PREVIEW_VALUE');
+/* 				$tmpl->setCurrentBlock('PREVIEW_VALUE'); */
 				if ($confirmed > 1)
 				{
-					$tmpl->setVariable('PREVIEW_VALUE_HERE', 1);
+					$tmpl->assign('confirmationStep', 1);
 				} else
 				{
-					$tmpl->setVariable('PREVIEW_VALUE_HERE', $confirmed+1);
+					$tmpl->assign('confirmationStep', $confirmed+1);
 				}
-				$tmpl->parseCurrentBlock();
+/* 				$tmpl->parseCurrentBlock(); */
 				
 				switch ($confirmed)
 				{
 					case 1:
-						$tmpl->setCurrentBlock('FORM_BUTTON');
-						$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Write changes');
-						$tmpl->parseCurrentBlock();
+						$tmpl->assign('submitText', 'Write changes');
 						// user may decide not to submit after seeing preview
-						$tmpl->setCurrentBlock('EDIT_AGAIN');
-						$tmpl->setVariable('EDIT_AGAIN_BUTTON_TEXT', 'Edit again');
-						$tmpl->parseCurrentBlock();
+						$tmpl->assign('editAgainText', 'Edit again');
 						break;
 						
 					case 2:
@@ -153,26 +144,23 @@
 						$tmpl->addMSG('Changes written successfully.' . $tmpl->linebreaks("\n\n"));
 						
 					default:
-						$tmpl->setCurrentBlock('USER_NOTE');
+						$tmpl->assign('USER_NOTE');
 						
 						if ($config->value('bbcodeLibAvailable'))
 						{
-							$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind to use BBCode instead of HTML or XHTML.');
-							$tmpl->parseCurrentBlock();
+							$tmpl->assign('notes', 'Keep in mind to use BBCode instead of HTML or XHTML.');
+/* 							$tmpl->parseCurrentBlock(); */
 						} else
 						{
 							if ($config->value('useXhtml'))
 							{
-								$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
+								$tmpl->assign('notes', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
 							} else
 							{
-								$tmpl->setVariable('EDIT_MODE_NOTE', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
+								$tmpl->assign('notes', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
 							}
-							$tmpl->parseCurrentBlock();
 						}
-						$tmpl->setCurrentBlock('FORM_BUTTON');
-						$tmpl->setVariable('SUBMIT_BUTTON_TEXT', 'Preview');
-						$tmpl->parseCurrentBlock();
+						$tmpl->assign('submitText', 'Preview');
 				}
 				
 				
@@ -180,10 +168,10 @@
 				// convert some special chars to underscores
 				$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
 				$randomkeyValue = $site->setKey($randomKeyName);
-				$tmpl->setCurrentBlock('KEY');
-				$tmpl->setVariable('KEY_NAME', $randomKeyName);
-				$tmpl->setVariable('KEY_VALUE', urlencode($_SESSION[$randomKeyName]));
-				$tmpl->parseCurrentBlock();
+/* 				$tmpl->setCurrentBlock('KEY'); */
+				$tmpl->assign('keyName', $randomKeyName);
+				$tmpl->assign('keyValue', urlencode($_SESSION[$randomKeyName]));
+/* 				$tmpl->parseCurrentBlock(); */
 			}
 		}
 	}
