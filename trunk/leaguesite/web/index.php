@@ -1,13 +1,4 @@
 <?php
-	function pageAddonFixed($path)
-	{
-		if (strcmp($path, 'Login/') === 0)
-		{
-			return true;
-		}
-		
-		return false;
-	}
 	
 	function addonToUse($path, &$title)
 	{
@@ -20,6 +11,12 @@
 		$row = $db->fetchRow($query);
 		$db->free($query);
 		
+		$addon = '';
+		if (getFixedPageAddon($path, $title, $addon))
+		{
+			return $addon;
+		}
+		
 		if (count($row) > 0)
 		{
 			$addon = $row['addon'];
@@ -30,6 +27,21 @@
 		
 		return false;
 	}
+	
+	
+	function getFixedPageAddon($path, &$title, &$addon)
+	{
+		if (strcmp($path, 'Login/') === 0)
+		{
+			$title = 'Login';
+			$addon = 'login';
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
 	
 	function loadAddon($addon, $title, $path)
 	{
@@ -55,17 +67,14 @@
 	}
 	
 	// if path specified use it, otherwise default to root
-	$path = (isset($_GET['path']))?$_GET['path']:'/';
+	$path = (isset($_GET['path'])) ? $_GET['path'] : '/';
 	
-	if (!pageAddonFixed($path))
-	{
-		// init common classes
-		require('CMS/site.php');
-		$site = new site();
-		
-		$title = 'Untitled';
-		
-		// load the add-on
-		loadAddon(addonToUse($path, $title), $title, $path);
-	}
+	// init common classes
+	require('CMS/site.php');
+	$site = new site();
+	
+	$title = 'Untitled';
+	
+	// load the add-on
+	loadAddon(addonToUse($path, $title), $title, $path);
 ?>
