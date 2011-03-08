@@ -60,7 +60,7 @@
 			global $user;
 			
 			
-			if ($user->hasPermission($entry_edit_permission))
+			if ($user->getPermission($entry_edit_permission))
 			{
 				// initialise variables
 				$confirmed = 0;

@@ -60,7 +60,7 @@
 			
 			// otherwise we'd need a custom name per setup
 			// as top level dir could be named different
-			if ($user->hasPermission($entry_edit_permission) && isset($_GET['edit']))
+			if ($user->getPermission($entry_edit_permission) && isset($_GET['edit']))
 			{
 				// remove the slashes if magic quotes are sadly on
 				if ($site->magic_quotes_on())
@@ -80,7 +80,7 @@
 			}
 			
 			
-			if ($user->hasPermission($entry_add_permission) && isset($_GET['add']))
+			if ($user->getPermission($entry_add_permission) && isset($_GET['add']))
 			{
 				// user has permission to add news to the page and requests it
 				$tmpl->setTemplate($templateToUse . '?edit');
@@ -92,7 +92,7 @@
 			// user looks at page in read mode
 			$tmpl->setTemplate($templateToUse);
 			
-			if ($user->hasPermission($entry_add_permission))
+			if ($user->getPermission($entry_add_permission))
 			{
 				$tmpl->assign('showAddButton', true);
 			}
@@ -267,11 +267,11 @@
 			{
 				$showButtons = false;
 				if (!$edit
-					&& $user->hasPermission($entry_edit_permission)
-					|| $user->hasPermission($entry_delete_permission))
+					&& $user->getPermission($entry_edit_permission)
+					|| $user->getPermission($entry_delete_permission))
 				{
-					$tmpl->assign('showEditButton', $user->hasPermission($entry_edit_permission));
-					$tmpl->assign('showDeleteButton', $user->hasPermission($entry_delete_permission));
+					$tmpl->assign('showEditButton', $user->getPermission($entry_edit_permission));
+					$tmpl->assign('showDeleteButton', $user->getPermission($entry_delete_permission));
 				}
 				
 				if (isset($buttons))

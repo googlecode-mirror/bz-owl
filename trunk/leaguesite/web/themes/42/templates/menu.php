@@ -39,7 +39,6 @@
 			// each entry in the array will be a new line
 			$menu = array();
 			$menu[] = '<ul class="navigation">' . "\n";
-			require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/CMS/Login/permissions.php';
 			
 			$unread_messages = false;
 			
@@ -101,7 +100,7 @@
 				$menu[] = '<li><a href="' . $config->value('baseaddress') . '">Home</a></li>' . "\n";
 			}
 			
-			if ((isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in']))
+			if ($user->getPermission('user_logged_in'))
 			{
 				if ($unread_messages)
 				{
@@ -120,7 +119,7 @@
 			
 			$menu[] = $this->writeLink('Players/', 'Players', (strcmp($name, 'Players') == 0));
 			
-			if ($logged_in && (isset($_SESSION['allow_view_user_visits'])) && ($_SESSION['allow_view_user_visits']))
+			if ($logged_in && ($user->getPermission('allow_view_user_visits')))
 			{
 				$menu[] = $this->writeLink('Visits/', 'Visits', (strcmp($name, 'Visits') == 0));
 			}
@@ -135,7 +134,7 @@
 			
 			$menu[] = $this->writeLink('Bans/', 'Bans', (strcmp($name, 'Bans') == 0));
 			
-			if ($logged_in && (isset($_SESSION['allow_watch_servertracker'])) && ($_SESSION['allow_watch_servertracker']))
+			if ($logged_in && ($user->getPermission('allow_watch_servertracker')))
 			{
 				$menu[] = $this->writeLink('Servertracker/', 'Servers', (strcmp($name, 'Servertracker') == 0));
 			}
