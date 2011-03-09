@@ -2,10 +2,9 @@
 if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 {
 	require 'checkToken.php';
-	require_once dirname(dirname(__FILE__)) . '/permissions.php';
 	
 	// initialise permissions
-	no_permissions();
+	$user->removeAllPermissions();
 	
 	// groups used for permissions
 	// each group can use the fine grained permission system
@@ -17,7 +16,7 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 		// login did not work, removing permissions not necessary as additional permissions where never granted
 		// after permissions were removed at the beginning of the file
 		
-		$tmpl->done('<p class="first_p">Login failed: The returned values could not be validated! You may check your username and password.</p>' . "\n"
+		$helper->done('<p class="first_p">Login failed: The returned values could not be validated! You may check your username and password.</p>' . "\n"
 					. '<p>Please <a href="./">try again</a>.</p>' . "\n");
 	}
 	
@@ -34,11 +33,11 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	$_SESSION['user_logged_in'] = true;
 	
 	// permissions for private messages
-	allow_add_messages();
-	allow_delete_messages();
+	$user->setPermission('allow_add_messages');
+	$user->setPermission('allow_delete_messages');
 	
 	// server tracker permissions
-	allow_watch_servertracker();
+	$user->setPermission('allow_watch_servertracker');
 	
 	
 	
@@ -60,13 +59,13 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		if ($db->getDebugSQL())
 		{
-			$tmpl->addMSG('<p>gu league referee detected</p>');
+			$helper->addMSG('<p>gu league referee detected</p>');
 		}
 		// GU-LEAGUE.REFEREES group
 		
 		// match permissions
-		allow_add_match();
-		allow_edit_match();
+		$user->setPermission('allow_add_match');
+		$user->setPermission('allow_edit_match');
 	}
 	
 	// test only for GU-LEAGUE.ADMINS group
@@ -85,55 +84,55 @@ if ( (isset($_GET['bzbbauth'])) && ($_GET['bzbbauth']) )
 	{
 		if ($db->getDebugSQL())
 		{
-			$tmpl->addMSG('<p>gu league admin detected</p>');
+			$helper->addMSG('<p>gu league admin detected</p>');
 		}
 		// GU-LEAGUE.ADMINS group
 		
 		// can change debug sql setting
-		allow_change_debug_sql();
+		$user->setPermission('allow_change_debug_sql');
 		
 		// permissions for news page
-		allow_add_news();
-		allow_edit_news();
-		allow_delete_news();
+		$user->setPermission('allow_add_news');
+		$user->setPermission('allow_edit_news');
+		$user->setPermission('allow_delete_news');
 		
 		// permissions for all static pages
-		allow_edit_static_pages();
+		$user->setPermission('allow_edit_static_pages');
 		
 		// permissions for bans page
-		allow_add_bans();
-		allow_edit_bans();
-		allow_delete_bans();
+		$user->setPermission('allow_add_bans');
+		$user->setPermission('allow_edit_bans');;
+		$user->setPermission('allow_delete_bans');
 		
 		// permissions for team page
-		allow_kick_any_team_members();
-		allow_edit_any_team_profile();
-		allow_invite_in_any_team();
-		allow_delete_any_team();
-		allow_reactivate_teams();
+		$user->setPermission('allow_kick_any_team_members');
+		$user->setPermission('allow_edit_any_team_profile');
+		$user->setPermission('allow_invite_in_any_team');
+		$user->setPermission('allow_delete_any_team');
+		$user->setPermission('allow_reactivate_teams');
 		
 		// user permissions
-		allow_edit_any_user_profile();
-		allow_add_admin_comments_to_user_profile();
-		allow_ban_any_user();
+		$user->setPermission('allow_edit_any_user_profile');
+		$user->setPermission('allow_add_admin_comments_to_user_profile');
+		$user->setPermission('allow_ban_any_user');
 		
 		// visits log permissions
-		allow_view_user_visits();
+		$user->setPermission('allow_view_user_visits');
 		
 		// match permissions
-		allow_add_match();
-		allow_edit_match();
-		allow_delete_match();
+		$user->setPermission('allow_add_match');
+		$user->setPermission('allow_edit_match');
+		$user->setPermission('allow_delete_match');
 		
 		// server tracker permissions
-		allow_watch_servertracker();
+		$user->setPermission('allow_watch_servertracker');
 		
 		// TODO permissions
-		allow_view_todo();
-		allow_edit_todo();
+		$user->setPermission('allow_view_todo');
+		$user->setPermission('allow_edit_todo');
 		
 		// aux permissions
-		is_admin();
+		$user->setPermission('is_admin');
 	}
 	
 	if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'])

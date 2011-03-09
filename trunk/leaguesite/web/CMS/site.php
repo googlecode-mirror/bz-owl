@@ -341,12 +341,19 @@
 			die();
 		}
 		
-		public function display()
+		public function display($file='')
 		{
 			// build menu
 			$this->buildMenu();
 			
-			parent::display($this->templateFile);
+			$template = (strlen($file) > 0) ? $file : $this->templateFile;
+			// certain templates need special headers
+			switch ($template)
+			{
+				case '404': header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found"); break;			
+			}
+			
+			parent::display($template);
 		}
 		
 		function setTemplate($template, $customTheme='')

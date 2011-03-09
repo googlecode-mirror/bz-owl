@@ -99,7 +99,7 @@
 			$this->readContent($path, $author, $last_modified, false);
 			
 			// done, render page
-			$tmpl->display('News.html.tmpl');
+			$tmpl->display();
 		}
 		
 		
