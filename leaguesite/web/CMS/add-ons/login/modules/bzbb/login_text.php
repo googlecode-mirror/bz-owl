@@ -8,6 +8,6 @@
 	$msg .= '"' . htmlspecialchars('http://my.bzflag.org/weblogin.php?action=weblogin&url=') . $url;
 	$msg .= '">my.bzflag.org (BZBB)</a>.</p>' . "\n";
 	
-	$tmpl->addMSG($msg);
+	$this->helper->addMsg($msg);
 	$msg = '';
 ?>

@@ -79,9 +79,9 @@
 			return false;
 		}
 		
-		function setPermission($permission)
+		function setPermission($permission, $value=true)
 		{
-			$_SESSION[$permission] = $permission;
+			$_SESSION[$permission] = $value;
 		}
 		
 		function saveTheme($theme)
@@ -131,6 +131,74 @@
 		{
 			$_SESSION['user_logged_in'] = false;
 			$_SESSION['viewerid'] = -1;
+		}
+		
+		function removeAllPermissions()
+		{
+			// delete bzid
+			unset($_SESSION['bzid']);
+			
+			// no external id by default
+			$_SESSION['external_id'] = 0;
+			
+			// assume local login by default
+			$this->setPermission('external_login', false);
+			
+			// can change debug sql setting
+			$this->setPermission('allow_change_debug_sql', false);
+			
+			// set all permission to false by default
+			// permissions for news page
+			$this->setPermission('allow_set_different_news_author', false);
+			$this->setPermission('allow_add_news', false);
+			$this->setPermission('allow_edit_news', false);
+			$this->setPermission('allow_delete_news', false);
+			
+			// permissions for all static pages
+			$this->setPermission('allow_edit_static_pages', false);
+			
+			// permissions for bans page
+			$this->setPermission('allow_set_different_bans_author', false);
+			$this->setPermission('allow_add_bans', false);
+			$this->setPermission('allow_edit_bans', false);
+			$this->setPermission('allow_delete_bans', false);
+			
+			// permissions for private messages
+			$this->setPermission('allow_add_messages', false);
+			// private messages are never supposed to be edited at all by a 3rd person
+			$this->setPermission('allow_edit_messages', false);
+			$this->setPermission('allow_delete_messages', false);
+			
+			// team permissions
+			$this->setPermission('allow_kick_any_team_members', false);
+			$this->setPermission('allow_edit_any_team_profile', false);
+			$this->setPermission('allow_delete_any_team', false);
+			$this->setPermission('allow_invite_in_any_team', false);
+			$this->setPermission('allow_reactivate_teams', false);
+			
+			
+			// user permissions
+			$this->setPermission('allow_edit_any_user_profile', false);
+			$this->setPermission('allow_add_admin_comments_to_user_profile', false);
+			$this->setPermission('allow_ban_any_user', false);
+			
+			// visits log permissions
+			$this->setPermission('allow_view_user_visits', false);
+			
+			// match permissions
+			$this->setPermission('allow_add_match', false);
+			$this->setPermission('allow_edit_match', false);
+			$this->setPermission('allow_delete_match', false);
+			
+			// server tracker permissions
+			$this->setPermission('allow_watch_servertracker', false);
+			
+			// TODO permissions
+			$this->setPermission('allow_view_todo', false);
+			$this->setPermission('allow_edit_todo', false);
+			
+			// aux permissions
+			$this->setPermission('IsAdmin', false);
 		}
 	}
 ?>

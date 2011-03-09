@@ -3,7 +3,7 @@
 	{
 		if ((isset($_SESSION['user_logged_in'])) &&	($_SESSION['user_logged_in']))
 		{
-			$tmpl->done('already logged in');
+			$this->helper->done('already logged in');
 		}
 	}
 	
@@ -20,10 +20,10 @@
 		$msg .= '<p class="first_p">' . "\n";
 		if ($config->value('forceExternalLoginOnly'))
 		{
-			$msg .= $tmpl->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Update old account from ' . $account_old_website . '"');
+			$msg .= $this->helper->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Update old account from ' . $account_old_website . '"');
 		} else
 		{
-			$msg .= $tmpl->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Local login"');
+			$msg .= $this->helper->return_self_closing_tag('input type="submit" name="local_login_wanted" value="Local login"');
 		}
 		$msg .= '</p>' . "\n";
 		$msg .= '</form>' . "\n";
@@ -47,10 +47,10 @@
 		
 		// load form
 		require_once 'form.php';
-		$msg .= writeForm();
+		$msg .= writeForm($this->helper);
 		
 		$msg .= '<p>Note: Only global login has the ability to allow more than standard permissions at the moment.</p>' . "\n";
 	}
 	
-	$tmpl->addMSG($msg);
+	$this->helper->addMsg($msg);
 ?>

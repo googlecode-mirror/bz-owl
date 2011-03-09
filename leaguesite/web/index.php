@@ -60,9 +60,8 @@
 		} else
 		{
 			// the path could not be found in database
-			header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-			$tmpl->setTemplate('NoPerm');
-			$tmpl->done('This page does not exist.');
+			$tmpl->setTemplate('404');
+			$tmpl->display();
 		}
 	}
 	

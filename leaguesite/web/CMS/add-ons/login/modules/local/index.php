@@ -1,6 +1,4 @@
 <?php
-	require_once dirname(dirname(__FILE__)) . '/permissions.php';
-			
 	$pw = '';
 	if (isset($_POST['pw']))
 	{
@@ -16,7 +14,7 @@
 	if (isset($_POST['pw']) && isset($_POST['loginname']))
 	{
 		// initialise permissions
-		no_permissions();
+		$user->removeAllPermissions();
 		
 		$correctUser = false;
 		$correctPw = false;
@@ -25,7 +23,7 @@
 		$lenLogin = strlen($loginname);
 		if (($lenLogin > 50) || ($lenLogin < 1))
 		{
-			$tmpl->done('User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.' . "\n");
+			$helper->done('User names must be using less than 50 but more than 0 <abbr title="characters">chars</abbr>.' . "\n");
 		}
 		
 		// get player id
@@ -69,7 +67,7 @@
 			}
 			$msg .= ' for this account.</span>' . "\n";
 			
-			$tmpl->done($msg);
+			$helper->done($msg);
 		}
 		
 		
@@ -77,7 +75,7 @@
 		{
 			$user->logout();
 			
-			$tmpl->done('The specified user is not registered. You may want to <a href="./">try logging in again</a>.');
+			$helper->done('The specified user is not registered. You may want to <a href="./">try logging in again</a>.');
 		}
 		
 		// get password from database in order to compare it with the user entered password
@@ -90,7 +88,7 @@
 		if (!$db->execute($query, $playerid))
 		{
 			// query failed
-			$tmpl->done('Could not retrieve password for you in database.');
+			$helper->done('Could not retrieve password for you in database.');
 		}
 		
 		// initialise without md5 (hash functions could cause collisions despite passwords will not match)
@@ -113,7 +111,7 @@
 		{
 			if (($lenPw < 10) || ($lenPw > 32))
 			{
-				$tmpl->done('<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.'
+				$helper->done('<p class="first_p">Passwords must be using less than 32 but more than 9 <abbr title="characters">chars</abbr>.'
 					  . ' You may want to <a href="./">try logging in again</a>.</p>' . "\n");
 			}
 		} else
@@ -125,7 +123,7 @@
 		if (!(strcmp($password_database, $pw) === 0))
 		{
 			// TODO: automatically log these cases and lock account for some hours after several unsuccessful tries
-			$tmpl->done('Your password does not match the stored password.'
+			$helper->done('Your password does not match the stored password.'
 						. ' You may want to <a href="./">try logging in again</a>.' . "\n");
 		}
 		
