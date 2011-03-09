@@ -30,7 +30,7 @@
 	}
 	if (isset($_POST['local_login_wanted']) && $_POST['local_login_wanted'])
 	{
-		$msg .= '<div class="static_page_box">' . "\n";
+/* 		$msg .= '<div class="static_page_box">' . "\n"; */
 		
 		$msg .= '<p class="first_p">';
 		if ($config->value('ConvertUsersToExternalLogin'))
@@ -42,7 +42,8 @@
 			}
 		}
 		
-		$msg .= '<p>Enter login data from <strong>' . $account_old_website . '</strong> here!</p>';
+/* 		$msg .= '<p>'; */
+		$msg .= 'Enter login data from <strong>' . $account_old_website . '</strong> here!</p>';
 		$msg .= "\n";
 		
 		// load form
