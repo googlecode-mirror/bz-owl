@@ -94,7 +94,6 @@
 			global $tmpl;
 			global $db;
 			
-			
 			// FIXME: quick hack to allow access to helper in login module scripts
 			$helper = $this->helper;
 			
@@ -797,6 +796,7 @@
 			
 			$this->addMsg($msg);
 			$tmpl->assign('msg', $this->buildMsg());
+			$tmpl->display();
 			die();
 		}
 		
