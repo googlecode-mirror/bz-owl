@@ -104,10 +104,10 @@
 			{
 				if ($unread_messages)
 				{
-					$menu[] = $this->writeLink('Messages/', 'Mail', (strcmp($name, 'Messages') == 0), true);
+					$menu[] = $this->writeLink('PM/', 'Mail', (strcmp($name, 'PM') == 0), true);
 				} else
 				{
-					$menu[] = $this->writeLink('Messages/', 'Mail', (strcmp($name, 'Messages') == 0));
+					$menu[] = $this->writeLink('PM/', 'Mail', (strcmp($name, 'PM') == 0));
 				}
 			}
 			
