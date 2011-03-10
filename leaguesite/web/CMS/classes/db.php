@@ -134,10 +134,10 @@
 				// log the error
 				if ($file !== false)
 				{
-					$this->logError($file, $query . $this->quote(mysql_error()));
+					$this->logError($file, $query);
 				} else
 				{
-					$this->logError($query . $this->quote(mysql_error()));
+					$this->logError($query);
 				}
 				
 				if (strlen($errorUserMSG) > 0)
