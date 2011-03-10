@@ -142,10 +142,12 @@
 				
 				if (strlen($errorUserMSG) > 0)
 				{
-					$tmpl->done($errorUserMSG);
+					$tmpl->assign('errorMsg', $errorUserMSG);
+					$tmpl->display('NoPerm');
 				}
 				
-				$tmpl->done('Error: Could not process query.');
+				$tmpl->assign('errorMsg', 'Error: Could not process query.');
+				$tmpl->display('NoPerm');
 			}
 			
 			return $result;
