@@ -2,9 +2,9 @@
 # Version 2492
 # http://code.google.com/p/sequel-pro
 #
-# Host: localhost (MySQL 5.1.55)
+# Host: localhost (MySQL 5.1.56)
 # Database: testdb
-# Generation Time: 2011-03-06 15:20:48 +0100
+# Generation Time: 2011-03-10 17:27:23 +0100
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -52,7 +52,9 @@ LOCK TABLES `CMS` WRITE;
 INSERT INTO `CMS` (`id`,`requestPath`,`title`,`addon`)
 VALUES
 	(0,'/','Home','staticPageEditor'),
-	(1,'News/','News','newsSystem');
+	(1,'Login/','Untitled','login'),
+	(2,'News/','News','newsSystem'),
+	(3,'PM/','Mail overview','pmSystem');
 
 /*!40000 ALTER TABLE `CMS` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -70,6 +72,19 @@ CREATE TABLE `countries` (
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table ERROR_LOG
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ERROR_LOG`;
+
+CREATE TABLE `ERROR_LOG` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `msg` varchar(2000) DEFAULT 'Something went wrong. You should see an actual error message instead.',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
