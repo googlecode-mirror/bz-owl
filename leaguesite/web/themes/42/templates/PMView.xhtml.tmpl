@@ -44,7 +44,7 @@ No menu found.
 <div class="msg_area"><div class="msg_view_full">
 	<div class="msg_header_full">
 		<span class="msg_subject">{$subject}</span>
-		<span class="msg_author"> by <a href="{$authorLink}">{$authorName}</a></span>
+		<span class="msg_author"> by {if isset($authorLink)}<a href="{$authorLink}">{$authorName}</a>{else}{$authorName}{/if}</span>
 		<span class="msg_overview_recipients">to 
 		{foreach item="curRecipients" from=$recipients}
 			<a href="{$curRecipients.link}">{$curRecipients.name}</a>{if $curRecipients.seperator},{/if}
@@ -59,28 +59,26 @@ No menu found.
 
 <div class="msg_view_button_list">
 
-{literal}
-<!-- BEGIN REPLY_TEAM -->
-<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=team&amp;id={$msgID}&amp;teamid={$teamID}" method="post">
+{if isset($teamID)}
+<form class="msg_buttons" action="?add&amp;reply=team&amp;id={$msgID}&amp;teamid={$teamID}" method="post">
 <p><input type="submit" value="Reply to team" />
 </p>
 </form>
-<!-- END REPLY_TEAM -->
+{/if}
 
-<!-- BEGIN REPLY_PLAYERS -->
-<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=players&amp;id={$msgID}" method="post">
-<p><input type="submit" value="Reply to {REPLY_PLAYER_OR_PLAYERS}" />
+{if isset($authorLink)}
+<form class="msg_buttons" action="?add&amp;reply=players&amp;id={$msgID}" method="post">
+<p><input type="submit" value="Reply to player{if count($recipients) > 1}s{/if}" />
 </p>
 </form>
-<!-- END REPLY_PLAYERS -->
+{/if}
 
-<form class="msg_buttons" action="{BASEADDRESS}Messages/?delete={MSGID}&amp;folder={$msgID}" method="post">
+<form class="msg_buttons" action="?delete={$msgID}&amp;folder={$curFolder}" method="post">
 <p><input type="submit" value="Delete this message" />
 </p>
 </form>
 </div>
-<!-- END PMVIEW -->
-{/literal}
+
 </div>
 </body>
 </html>

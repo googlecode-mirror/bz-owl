@@ -112,7 +112,7 @@
 								  . ' AND `messages_users_connection`.`playerid`=?'
 								  . ' AND `messages_users_connection`.`in_' . $folder . '`=' . "'1'"
 								  . ' AND `messages_storage`.`id`=? LIMIT 1');
-			$db->execute($query, array($config->value('displaySystemUsername'), $user->getID(), $id));
+			$db->execute($query, array($config->value('displayedSystemUsername'), $user->getID(), $id));
 			
 			$rows = $db->fetchAll($query);
 			$db->free($query);
@@ -154,19 +154,27 @@
 			
 			// create PM view
 			$tmpl->assign('subject', $rows[0]['subject']);
-			$authorLink = ($rows[0]['from_team']) ?
-						   '../Teams/?profile=' . intval($rows[0]['author_id'])
-						   :
-						   '../Players/?profile=' . intval($rows[0]['author_id']);
-						   
-			$tmpl->assign('authorLink', $authorLink);
+			if (intval($rows[0]['author_id']) > 0)
+			{
+				$authorLink = ($rows[0]['from_team']) ?
+							   '../Teams/?profile=' . intval($rows[0]['author_id'])
+							   :
+							   '../Players/?profile=' . intval($rows[0]['author_id']);
+				$tmpl->assign('authorLink', $authorLink);
+			}
 			$tmpl->assign('authorName', $rows[0]['author']);
 			$tmpl->assign('time', $rows[0]['timestamp']);
 			$tmpl->assign('content', $tmpl->encodeBBCode($rows[0]['message']));
 			
 			// collect recipient list
 			$recipients = explode(' ', $rows[0]['recipients']);
+			
 			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
+			if ($fromTeam)
+			{
+				$tmpl->assign('teamID', intval($recipients[0]));
+			}
+			
 			$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
 			$queryPlayerName = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
 			$countRecipients = count($recipients) -1;
@@ -174,42 +182,7 @@
 					   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
 			$tmpl->assign('recipients', $recipients);
 			
-			// reply buttons
-			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
-			if ($fromTeam)
-			{
-				$tmpl->assign('teamID', intval($recipients[0]));
-/*
-				$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
-				$tmpl->setVariable('MSGID', intval($_GET['view']));
-				$tmpl->setVariable('TEAMID', intval($recipients[0]));
-				$tmpl->parseCurrentBlock();
-*/
-			}
-			
-			
 			$tmpl->assign('msgID', intval($_GET['view']));
-/*
-			if (count($recipients) > 1)
-			{
-				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'players');
-			} else
-			{
-				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'player');
-			}
-			$tmpl->parseCurrentBlock();
-*/
-			
-			
-/*
-			$tmpl->setCurrentBlock('PMVIEW');
-			$tmpl->setVariable('PM_TIME', $rows[0]['timestamp']);
-			$tmpl->setVariable('PM_CONTENT', $tmpl->encodeBBCode($rows[0]['message']));
-			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
-			$tmpl->setVariable('MSGID', $id);
-			$tmpl->setVariable('MSG_FOLDER', $folder);
-			$tmpl->parseCurrentBlock();
-*/
 			
 			// mark the message as read for the current user
 			$query = $db->prepare('UPDATE LOW_PRIORITY `messages_users_connection`'

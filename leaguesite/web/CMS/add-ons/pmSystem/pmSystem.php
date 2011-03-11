@@ -4,6 +4,7 @@
 		function __construct($title)
 		{
 			global $site;
+			global $config;
 			global $user;
 			global $tmpl;
 			
