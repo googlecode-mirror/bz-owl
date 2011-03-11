@@ -55,7 +55,7 @@ No menu found.
 	{foreach item="curRecipients" from=$message.recipients}
 		<a href="{$curRecipients.link}">{$curRecipients.name}</a>{if $curRecipients.seperator},{/if}
 	{/foreach}
-</td>
+	</td>
 </tr>
 {/foreach}
 </table>
@@ -66,7 +66,7 @@ No menu found.
 
 <p>
 {if isset($offsetPrev)}<a class="button" href="./?folder={$curFolder}&amp;i={$offsetPrev}">Previous messages</a>{/if}
-{if isset($offsetPrev) && isset($offsetNext)}{/if}
+{if isset($offsetPrev) && isset($offsetNext)} {/if}
 {if isset($offsetNext)}<a class="button" href="./?folder={$curFolder}&amp;i={$offsetNext}">Next messages</a>{/if}
 </p>
 
