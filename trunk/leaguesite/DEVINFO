@@ -89,8 +89,8 @@ source code serves for examples of the following rules.
       patches with "// Added by foo on xx" comments.  This is what
       version control software is for.
 
- 10)  Do not code very long lines.  Try to stay within 130 columns if
-      possible, but don't go over 155 if you should raise that limit
+ 10)  Do not code very long lines.  Try to stay within 90 columns if
+      possible, but don't go over 130 if you should raise that limit
       for some reason.
 
 Violations of these rules in the existing code are not excuses to
