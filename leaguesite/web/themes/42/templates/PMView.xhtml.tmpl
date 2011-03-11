@@ -3,21 +3,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-	<!-- BEGIN MAIN --><link href="{BASEURL}styles/{CUR_THEME}/{CUR_THEME}.css" rel="stylesheet" type="text/css" />
-	<!-- BEGIN FAVICON --><link rel="icon" type="image/png" href="{FAVICONURL}" /><!-- END FAVICON -->
-<title><!-- BEGIN TITLE_AREA -->{TITLE}<!-- END TITLE_AREA --></title>
+	<link href="{$baseURL}themes/{$curTheme}/{$curTheme}.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="image/png" href="{$faviconURL}" />
+<title>{$title}</title>
 </head>
 <body>
 <div class="logo"></div>
 
-<!-- BEGIN MENU -->{MENU_STRUCTURE}<!-- END MENU -->
+{foreach $menu as $menuItem}{$menuItem}{foreachelse}
+No menu found.
+{/foreach}
+
 
 <div class="userbuttons">
-	<span class="date">{DATE}</span>
-	<span class="Servers">Match servers: <a href="{BASEURL}Servertracker/">{ONLINE_PLAYERS}</a></span>
-	<span class="onlineUsers">Website: <a href="{BASEURL}Online/">{ONLINE_USERS}</a></span>
-	<!-- BEGIN LOGOUT --><span class="logout"><a href="{LOGOUTURL}">Logout</a></span><!-- END LOGOUT -->
-</div><!-- END MAIN -->
+	<span class="date">{$date}</span>
+	<span class="Servers">Match servers: <a href="{$baseURL}Servertracker/">{$onlinePlayers}</a></span>
+	<span class="onlineUsers">Website: <a href="{$baseURL}Online/">{$onlineUsers}</a></span>
+	{if isset($logoutURL)}<span class="logout"><a href="{$logoutURL}">Logout</a></span>{/if}
+</div>
 
 <div class="content">
 <!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
