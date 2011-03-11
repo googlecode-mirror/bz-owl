@@ -52,16 +52,13 @@
 				require_once dirname(__FILE__) . '/pmDelete.php';
 			} else
 			{
-				// assign title given by loader
-				$tmpl->assign('title', $title);
-				
 				require_once dirname(__FILE__) . '/List.php';
 				$display = new pmDisplay();
 				
 				switch(isset($_GET['view']))
 				{
 					case true: $display->showMail($folder, intval($_GET['view'])); break;
-					default: $display->showMails($folder); break;
+					default: $tmpl->assign('title', $title); $display->showMails($folder); break;
 				}
 			}
 			

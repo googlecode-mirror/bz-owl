@@ -23,61 +23,64 @@ No menu found.
 </div>
 
 <div class="content">
-<!-- BEGIN USERBUTTONS -->{PERMISSION_BASED_BUTTONS}<!-- END USERBUTTONS -->
+{if isset($showNewButton)}<a class="button" href="?add">New PM</a>{/if}
 
 <div class="msg_nav">
 <span class="folder_selection">
-<!-- BEGIN INBOX_SELECTED --><a href="./?folder=inbox">inbox!</a> <!-- END INBOX_SELECTED -->
-<!-- BEGIN INBOX_NOT_SELECTED --><a href="./?folder=inbox">inbox</a> <!-- END INBOX_NOT_SELECTED -->
-<!-- BEGIN OUTBOX_SELECTED --><a href="./?folder=outbox">outbox!</a> <!-- END OUTBOX_SELECTED -->
-<!-- BEGIN OUTBOX_NOT_SELECTED --><a href="./?folder=outbox">outbox</a> <!-- END OUTBOX_NOT_SELECTED -->
+{if $curFolder === 'inbox'}
+<a href="./?folder=inbox">inbox!</a> <a href="./?folder=outbox">outbox</a>
+{else}
+<a href="./?folder=inbox">inbox</a> <a href="./?folder=outbox">outbox!</a>
+{/if}
 </span>
 </div>
 
 <span class="prev_next_msg_buttons">
-<!-- BEGIN PMNAV --><!-- BEGIN PREV_MSG --><a class="button" id="prev_msg" href="./?folder=inbox&amp;view={MSGID}">Previous message</a><!-- END PREV_MSG -->
-<!-- BEGIN NEXT_MSG --><a class="button" id="next_msg" href="./?folder=inbox&amp;view={MSGID}">Next message</a><!-- END NEXT_MSG -->
-</span><!-- END PMNAV -->
+{if isset($prevMsg)}<a class="button" id="prev_msg" href="./?folder=inbox&amp;view={$prevMsg}">Previous message</a>{/if}
+{if isset($prevMsg) && isset($nextMsg)} {/if}
+{if isset($nextMsg)}<a class="button" id="next_msg" href="./?folder=inbox&amp;view={$nextMsg}">Next message</a>{/if}
+</span>
 
-<!-- BEGIN MISC --><div class="msgViewErrorMsg">{MSG}</div><!-- END MISC -->
-<!-- BEGIN PMVIEW -->
 <div class="msg_area"><div class="msg_view_full">
 	<div class="msg_header_full">
-		<span class="msg_subject">{PM_SUBJECT}</span>
-		<span class="msg_author"> by {PM_AUTHOR}</span>
-		<span class="msg_author"> to <!-- BEGIN MSG_RECIPIENTS -->
-			{MSG_ONE_RECIPIENT}<!-- END MSG_RECIPIENTS -->
+		<span class="msg_subject">{$subject}</span>
+		<span class="msg_author"> by <a href="{$authorLink}">{$authorName}</a></span>
+		<span class="msg_overview_recipients">to 
+		{foreach item="curRecipients" from=$recipients}
+			<a href="{$curRecipients.link}">{$curRecipients.name}</a>{if $curRecipients.seperator},{/if}
+		{/foreach}
 		</span>
-		<span class="msg_timestamp"> at {PM_TIME}</span>
+		<span class="msg_timestamp"> at {$time}</span>
 	</div>
 	<div class="msg_contents">
-		{PM_CONTENT}
+		{$content}
 	</div>
 </div>
 
 <div class="msg_view_button_list">
 
+{literal}
 <!-- BEGIN REPLY_TEAM -->
-<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=team&amp;id={MSGID}&amp;teamid={TEAMID}" method="post">
+<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=team&amp;id={$msgID}&amp;teamid={$teamID}" method="post">
 <p><input type="submit" value="Reply to team" />
 </p>
 </form>
 <!-- END REPLY_TEAM -->
 
 <!-- BEGIN REPLY_PLAYERS -->
-<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=players&amp;id={MSGID}" method="post">
+<form class="msg_buttons" action="{BASEADDRESS}Messages/?add&amp;reply=players&amp;id={$msgID}" method="post">
 <p><input type="submit" value="Reply to {REPLY_PLAYER_OR_PLAYERS}" />
 </p>
 </form>
 <!-- END REPLY_PLAYERS -->
 
-<form class="msg_buttons" action="{BASEADDRESS}Messages/?delete={MSGID}&amp;folder={MSG_FOLDER}" method="post">
+<form class="msg_buttons" action="{BASEADDRESS}Messages/?delete={MSGID}&amp;folder={$msgID}" method="post">
 <p><input type="submit" value="Delete this message" />
 </p>
 </form>
 </div>
 <!-- END PMVIEW -->
-
+{/literal}
 </div>
 </body>
 </html>

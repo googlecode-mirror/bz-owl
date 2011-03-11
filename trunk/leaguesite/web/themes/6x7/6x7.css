@@ -42,7 +42,7 @@ div.content
 	text-align: left;
 }
 
-div.static_page_box, div.msgViewErrorMsg
+div.static_page_box
 {
 	border-radius: 0.42em;
 	font-size: 0.82em;

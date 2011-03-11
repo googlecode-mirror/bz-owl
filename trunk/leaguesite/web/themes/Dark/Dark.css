@@ -173,7 +173,7 @@ margin-left:10em;
 margin-top:2mm;
 }
 
-div.static_page_box,div.msgViewErrorMsg{
+div.static_page_box{
 -moz-border-radius:5px;
 -webkit-border-radius:5px;
 border-radius:5px;

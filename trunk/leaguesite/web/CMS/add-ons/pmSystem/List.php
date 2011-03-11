@@ -93,7 +93,7 @@
 			
 			// set the template
 			$tmpl->setTemplate('PMView');
-			$tmpl->setTitle('Mail #' . $id);
+			$tmpl->assign('title', 'Mail #' . $id);
 			
 			// show currently selected mail folder
 			$this->folderNav($folder);			
@@ -118,7 +118,6 @@
 			$db->free($query);
 			
 			// create PM navigation
-			$tmpl->setCurrentBlock('PMNAV');
 			$query = $db->prepare('SELECT `msgid` FROM `messages_users_connection`'
 								  . ' WHERE `playerid`=? AND `msgid`<?'
 								  . ' AND `in_' . $folder . '`=' . "'1'"
@@ -129,9 +128,7 @@
 			
 			if (count($prevMSG) > 0)
 			{
-				$tmpl->setCurrentBlock('PREV_MSG');
-				$tmpl->setVariable('MSGID', $prevMSG[0]['msgid']);
-				$tmpl->parseCurrentBlock();
+				$tmpl->assign('prevMsg', $prevMSG[0]['msgid']);
 			}
 			unset($prevMSG);
 			
@@ -144,28 +141,30 @@
 			$db->free($query);
 			if (count($nextMSG) > 0)
 			{
-				$tmpl->setCurrentBlock('NEXT_MSG');
-				$tmpl->setVariable('MSGID', $nextMSG[0]['msgid']);
-				$tmpl->parseCurrentBlock();
+				$tmpl->assign('nextMsg', $nextMSG[0]['msgid']);
 			}
 			unset($nextMSG);
-//			$tmpl->setCurrentBlock('PMNAV');
-//			$tmpl->parseCurrentBlock();
 			
 			if (count($rows) < 1)
 			{
-				$tmpl->done('This message either does not exist or you do not have permission to view the message.');
+				// keep the error message generic to avoid
+				$tmpl->assign('errorMsg', 'This message either does not exist or you do not have permission to view the message.');
+				$tmpl->display('NoPerm');
 			}
 			
 			// create PM view
-			$tmpl->setCurrentBlock('PMVIEW');
-			$tmpl->setVariable('PM_SUBJECT', $rows[0]['subject']);
-			
-			$tmpl->setVariable('PM_SUBJECT', $rows[0]['subject']);
-			$tmpl->setVariable('PM_AUTHOR', $rows[0]['author']);
+			$tmpl->assign('subject', $rows[0]['subject']);
+			$authorLink = ($rows[0]['from_team']) ?
+						   '../Teams/?profile=' . intval($rows[0]['author_id'])
+						   :
+						   '../Players/?profile=' . intval($rows[0]['author_id']);
+						   
+			$tmpl->assign('authorLink', $authorLink);
+			$tmpl->assign('authorName', $rows[0]['author']);
+			$tmpl->assign('time', $rows[0]['timestamp']);
+			$tmpl->assign('content', $tmpl->encodeBBCode($rows[0]['message']));
 			
 			// collect recipient list
-			$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 			$recipients = explode(' ', $rows[0]['recipients']);
 			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
 			$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
@@ -173,21 +172,24 @@
 			$countRecipients = count($recipients) -1;
 			array_walk($recipients, 'self::displayRecipient'
 					   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
+			$tmpl->assign('recipients', $recipients);
 			
 			// reply buttons
 			$fromTeam = strcmp($rows[0]['from_team'], '0') !== 0;
 			if ($fromTeam)
 			{
-				$tmpl->setCurrentBlock('REPLY_TEAM');
+				$tmpl->assign('teamID', intval($recipients[0]));
+/*
 				$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
 				$tmpl->setVariable('MSGID', intval($_GET['view']));
 				$tmpl->setVariable('TEAMID', intval($recipients[0]));
 				$tmpl->parseCurrentBlock();
+*/
 			}
 			
-			$tmpl->setCurrentBlock('REPLY_PLAYERS');
-			$tmpl->setVariable('BASEADDRESS', $config->value('baseaddress'));
-			$tmpl->setVariable('MSGID', intval($_GET['view']));
+			
+			$tmpl->assign('msgID', intval($_GET['view']));
+/*
 			if (count($recipients) > 1)
 			{
 				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'players');
@@ -196,9 +198,10 @@
 				$tmpl->setVariable('REPLY_PLAYER_OR_PLAYERS', 'player');
 			}
 			$tmpl->parseCurrentBlock();
+*/
 			
 			
-			// back to PMVIEW
+/*
 			$tmpl->setCurrentBlock('PMVIEW');
 			$tmpl->setVariable('PM_TIME', $rows[0]['timestamp']);
 			$tmpl->setVariable('PM_CONTENT', $tmpl->encodeBBCode($rows[0]['message']));
@@ -206,6 +209,7 @@
 			$tmpl->setVariable('MSGID', $id);
 			$tmpl->setVariable('MSG_FOLDER', $folder);
 			$tmpl->parseCurrentBlock();
+*/
 			
 			// mark the message as read for the current user
 			$query = $db->prepare('UPDATE LOW_PRIORITY `messages_users_connection`'
