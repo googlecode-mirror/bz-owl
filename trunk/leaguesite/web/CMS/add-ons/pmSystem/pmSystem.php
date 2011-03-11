@@ -1,10 +1,11 @@
 <?php
 	class pmSystem
 	{
-		function __construct()
+		function __construct($title)
 		{
 			global $site;
 			global $user;
+			global $tmpl;
 			
 			// FIXME: FALLBACK FOR NOW
 			if (isset($_GET['add']) || isset($_GET['edit']) || isset($_GET['delete']))
@@ -27,7 +28,9 @@
 			if ($user->getID() < 1)
 			{
 				$tmpl->setTemplate('NoPerm');
-				$tmpl->done('You have insufficient permissions for this action.');
+				$tmpl->assign('errorMsg', 'You need to login to access this content.');
+				$tmpl->display();
+				die();
 			}
 			
 			// show messages in current mail folder
@@ -49,6 +52,9 @@
 				require_once dirname(__FILE__) . '/pmDelete.php';
 			} else
 			{
+				// assign title given by loader
+				$tmpl->assign('title', $title);
+				
 				require_once dirname(__FILE__) . '/List.php';
 				$display = new pmDisplay();
 				
@@ -59,7 +65,7 @@
 				}
 			}
 			
-			$tmpl->render();
+			$tmpl->display();
 		}
 	}
 ?>

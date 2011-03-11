@@ -23,17 +23,19 @@
 			return true;
 		}
 		
-		function displayRecipient($recipient, $key, array $values)
+		function displayRecipient(&$recipient, $key, array &$values)
 		{
 			global $config;
 			global $tmpl;
 			global $db;
 			
+			
 			// $values: array($fromTeam, $queryTeamName, $queryPlayerName, $n)
-			$recipient = intval($recipient);
+			$recipientID = intval($recipient);
+			$recipient = array();
 			if ($values[0])
 			{
-				$db->execute($values[1], $recipient);
+				$db->execute($values[1], $recipientID);
 				$recipientName = $db->fetchAll($values[1]);
 				$db->free($values[1]);
 				
@@ -41,12 +43,11 @@
 				{
 					$recipientName['0']['name'] = 'ERROR: Could not find out team name';
 				}
-				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
-																	   . 'Teams/?profile=' . htmlent($recipient)) . '">'
-								   . $recipientName['0']['name'] . '</a>' . ($values[3] > $key?',':''));
+				$recipient['link'] = ($config->value('baseaddress') . 'Teams/?profile='
+									  . htmlent($recipientID));
 			} else
 			{
-				$db->execute($values[2], $recipient);
+				$db->execute($values[2], $recipientID);
 				$recipientName = $db->fetchAll($values[2]);
 				$db->free($values[2]);
 				
@@ -54,14 +55,13 @@
 				{
 					$recipientName['0']['name'] = 'ERROR: Could not find out player name';
 				}
-/* 				echo($key . '<br />'); */
-/* 				echo($values[3] . '<br />'); */
-				$tmpl->setVariable('MSG_ONE_RECIPIENT', '<a href="' . ($config->value('baseaddress')
-																	   . 'Players/?profile=' . htmlent($recipient)) . '">'
-								   . $recipientName['0']['name'] . '</a>' . ($values[3] > $key?',':''));
+				
+				$recipient['link'] = ($config->value('baseaddress') . 'Players/?profile='
+									  . htmlent($recipientID));
 			}
 			
-			$tmpl->parseCurrentBlock();
+			$recipient['name'] = $recipientName['0']['name'];
+			$recipient['seperator'] = $values[3] > $key ? true : false;
 		}
 		
 		function folderNav($folder)
@@ -69,6 +69,9 @@
 			global $tmpl;
 			
 			// show currently selected mail folder
+			$tmpl->assign('curFolder', $folder);
+/*
+			
 			if (strcmp($folder, 'inbox') === 0)
 			{
 				$tmpl->touchBlock('INBOX_SELECTED');
@@ -78,6 +81,7 @@
 				$tmpl->touchBlock('INBOX_NOT_SELECTED');
 				$tmpl->touchBlock('OUTBOX_SELECTED');
 			}
+*/
 		}
 		
 		function showMail($folder, $id)
@@ -225,9 +229,7 @@
 			
 			if ($_SESSION['allow_add_messages'])
 			{
-				$tmpl->setCurrentBlock('USERBUTTONS');
-				$tmpl->setVariable('PERMISSION_BASED_BUTTONS', '<a class="button" href="./?add">New Mail</a>');
-				$tmpl->parseCurrentBlock();
+				$tmpl->assign('showNewButton', true);
 			}
 			
 			// show currently selected mail folder
@@ -271,34 +273,28 @@
 			
 			if ($n > 0)
 			{
-				$tmpl->setCurrentBlock('PMTABLE');
-				$tmpl->setVariable('MSG_FOLDER', $folder);
-				$tmpl->setCurrentBlock('PMLIST');
+				$messages = array();
 				for ($i = 0; $i < $n; $i++)
 				{
-					$tmpl->setVariable('USER_PROFILE_LINK', ($config->value('baseaddress')
-									  . 'Players/?profile=' . $rows[$i]['author_id']));
-					$tmpl->setVariable('USER_NAME', $rows[$i]['author']);
+					$messages[$i]['userProfile'] = ($config->value('baseaddress')
+													. 'Players/?profile=' . $rows[$i]['author_id']);
+					$messages[$i]['userName'] = $rows[$i]['author'];
 					
 					if (strcmp($rows[$i]['msg_status'], 'new') === 0)
 					{
-					$tmpl->setVariable('MSG_UNREAD', 'class="unread" ');
+						$messages[$i]['unread'] = true;
 					}
 					if (strcmp($folder, 'inbox') !== 0)
 					{
-						$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
-														. 'Messages/?view=' . $rows[$i]['id']
-														. '&amp;folder=' . $folder));
+						$messages[$i]['link'] = '?view=' . $rows[$i]['id'] . '&amp;folder=' . $folder;
 					} else
 					{
-						$tmpl->setVariable('MSG_LINK', ($config->value('baseaddress')
-														. 'Messages/?view=' . $rows[$i]['id']));
+						$messages[$i]['link'] = '?view=' . $rows[$i]['id'];
 					}
-					$tmpl->setVariable('MSG_SUBJECT', $rows[$i]['subject']);
-					$tmpl->setVariable('MSG_TIME', $rows[$i]['timestamp']);
+					$messages[$i]['subject'] = $rows[$i]['subject'];
+					$messages[$i]['time'] = $rows[$i]['timestamp'];
 					
 					// collect recipient list
-					$tmpl->setCurrentBlock('MSG_RECIPIENTS');
 					$recipients = explode(' ', $rows[$i]['recipients']);
 					$fromTeam = strcmp($rows[$i]['from_team'], '0') !== 0;
 					$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
@@ -306,41 +302,30 @@
 					$countRecipients = count($recipients) -1;
 					array_walk($recipients, 'self::displayRecipient'
 							   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
-					$tmpl->parseCurrentBlock();
-					
-					// back to PMLIST
-					$tmpl->setCurrentBlock('PMLIST');
-					$tmpl->parseCurrentBlock();
+					$messages[$i]['recipients'] = $recipients;
+
 				}
+				$tmpl->assign('messages', $messages);
 								
 				if ($offset > 0 || $showNextMSGButton)
 				{
-					$tmpl->setCurrentBlock('PM_NAV_BUTTONS');
 					if ($offset > 0)
 					{
 						// show previous messages
-						$tmpl->setCurrentBlock('PREV_BUTTON');
-						$tmpl->setVariable('MSG_FOLDER', $folder);
-						$tmpl->setVariable('OFFSET_PREV', intval($offset-200));
-						$tmpl->parseCurrentBlock();
+						$tmpl->assign('offsetPrev', intval($offset-200));
 					}
 					if ($showNextMSGButton)
 					{
 						// show next messages
-						$tmpl->setCurrentBlock('NEXT_BUTTON');
-						$tmpl->setVariable('MSG_FOLDER', $folder);
-						$tmpl->setVariable('OFFSET_NEXT', strval($offset+200));
-						$tmpl->parseCurrentBlock();
+						$tmpl->assign('offsetNext', strval($offset+200));
 					}
-					$tmpl->setCurrentBlock('PM_NAV_BUTTONS');
-					$tmpl->parseCurrentBlock();
 				}
 			} elseif ($offset > 0)
 			{
-				$tmpl->addMSG('No additional messages in ' . htmlent($folder) . 'found.');
+/* 				$tmpl->addMSG('No additional messages in ' . htmlent($folder) . 'found.'); */
 			} else
 			{
-				$tmpl->addMSG('No messages in ' . htmlent($folder) . '.');
+/* 				$tmpl->addMSG('No messages in ' . htmlent($folder) . '.'); */
 			}
 		}
 		
