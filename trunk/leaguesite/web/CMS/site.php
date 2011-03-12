@@ -94,7 +94,7 @@
 	
 	class tmpl extends Smarty
 	{
-		private $templateFile;
+		private $templateFile='';
 		private $engine;
 		private $theme;
 		
@@ -343,17 +343,21 @@
 		
 		public function display($file='')
 		{
+			if (strlen($file) > 0)
+			{
+				$this->setTemplate($file);
+			}
+			
 			// build menu
 			$this->buildMenu();
 			
-			$template = (strlen($file) > 0) ? $file : $this->templateFile;
 			// certain templates need special headers
-			switch ($template)
+			switch ($file)
 			{
-				case '404': header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found"); break;			
+				case '404': header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found"); break;
 			}
 			
-			parent::display($template);
+			parent::display($this->templateFile);
 		}
 		
 		function setTemplate($template, $customTheme='')

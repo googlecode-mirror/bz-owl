@@ -9,7 +9,7 @@
 			global $tmpl;
 			
 			// FIXME: FALLBACK FOR NOW
-			if (isset($_GET['add']) || isset($_GET['edit']) || isset($_GET['delete']))
+			if (/* isset($_GET['add']) || */ isset($_GET['edit']) || isset($_GET['delete']))
 			{
 				require_once dirname(dirname(dirname(__FILE__))) . '/siteinfo.php';
 				$site = new siteinfo();
@@ -45,9 +45,12 @@
 			if (isset($_GET['add']))
 			{
 				require_once dirname(__FILE__) . '/pmAdd.php';
+				die();
+/*
 			} elseif (isset($_GET['edit']))
 			{
 				require_once dirname(__FILE__) . '/pmEdit.php';
+*/
 			} elseif (isset($_GET['delete']))
 			{
 				require_once dirname(__FILE__) . '/pmDelete.php';
