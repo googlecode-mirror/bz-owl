@@ -6,7 +6,7 @@
 			global $tmpl;
 			
 			
-			$tmpl->assign('New PM');
+			$tmpl->assign('title', 'New PM');
 			$tmpl->display('PMAdd');
 		}
 	}
