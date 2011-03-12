@@ -59,6 +59,10 @@ No menu found.
 </tr>
 {/foreach}
 </table>
+{elseif ($offsetNext-200) > 0}
+No messages on this page in {$curFolder|escape}.
+{else}
+No messages in {$curFolder|escape}.
 {/if}
 
 <br />

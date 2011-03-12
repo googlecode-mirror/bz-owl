@@ -61,21 +61,18 @@ No menu found.
 
 {if isset($teamID)}
 <form class="msg_buttons" action="?add&amp;reply=team&amp;id={$msgID}&amp;teamid={$teamID}" method="post">
-<p><input type="submit" value="Reply to team" />
-</p>
+<p><input type="submit" value="Reply to team" /></p>
 </form>
 {/if}
 
 {if isset($authorLink)}
 <form class="msg_buttons" action="?add&amp;reply=players&amp;id={$msgID}" method="post">
-<p><input type="submit" value="Reply to player{if count($recipients) > 1}s{/if}" />
-</p>
+<p><input type="submit" value="Reply to player{if count($recipients) > 1}s{/if}" /></p>
 </form>
 {/if}
 
 <form class="msg_buttons" action="?delete={$msgID}&amp;folder={$curFolder}" method="post">
-<p><input type="submit" value="Delete this message" />
-</p>
+<p><input type="submit" value="Delete this message" /></p>
 </form>
 </div>
 
