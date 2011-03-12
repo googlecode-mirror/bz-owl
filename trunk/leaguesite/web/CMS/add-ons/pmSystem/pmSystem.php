@@ -34,6 +34,9 @@
 				die();
 			}
 			
+			include(dirname(__FILE__) . '/classes/pm.php');
+			
+			
 			// show messages in current mail folder
 			// inbox is default
 			$folder = 'inbox';
@@ -45,6 +48,7 @@
 			if (isset($_GET['add']))
 			{
 				require_once dirname(__FILE__) . '/pmAdd.php';
+				new pmSystemAddPM();
 				die();
 /*
 			} elseif (isset($_GET['edit']))

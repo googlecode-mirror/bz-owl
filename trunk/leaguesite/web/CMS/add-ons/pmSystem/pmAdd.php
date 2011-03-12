@@ -1,5 +1,13 @@
 <?php
-	
-	$tmpl->assign('New PM');
-	$tmpl->display('PMAdd');
+	class pmSystemAddPM extends pmSystemPM
+	{
+		function __construct()
+		{
+			global $tmpl;
+			
+			
+			$tmpl->assign('New PM');
+			$tmpl->display('PMAdd');
+		}
+	}
 ?>
