@@ -1,5 +1,5 @@
 <?php
-	class pmDisplay
+	class pmDisplay extends pmSystemPM
 	{
 		function sanityCheck(&$confirmed)
 		{
@@ -21,47 +21,6 @@
 			}
 			
 			return true;
-		}
-		
-		function displayRecipient(&$recipient, $key, array &$values)
-		{
-			global $config;
-			global $tmpl;
-			global $db;
-			
-			
-			// $values: array($fromTeam, $queryTeamName, $queryPlayerName, $n)
-			$recipientID = intval($recipient);
-			$recipient = array();
-			if ($values[0])
-			{
-				$db->execute($values[1], $recipientID);
-				$recipientName = $db->fetchAll($values[1]);
-				$db->free($values[1]);
-				
-				if (count($recipientName) < 1)
-				{
-					$recipientName['0']['name'] = 'ERROR: Could not find out team name';
-				}
-				$recipient['link'] = ($config->value('baseaddress') . 'Teams/?profile='
-									  . htmlent($recipientID));
-			} else
-			{
-				$db->execute($values[2], $recipientID);
-				$recipientName = $db->fetchAll($values[2]);
-				$db->free($values[2]);
-				
-				if (count($recipientName) < 1)
-				{
-					$recipientName['0']['name'] = 'ERROR: Could not find out player name';
-				}
-				
-				$recipient['link'] = ($config->value('baseaddress') . 'Players/?profile='
-									  . htmlent($recipientID));
-			}
-			
-			$recipient['name'] = $recipientName['0']['name'];
-			$recipient['seperator'] = $values[3] > $key ? true : false;
 		}
 		
 		function folderNav($folder)
@@ -248,8 +207,6 @@
 				$showNextMSGButton = true;
 			}
 			
-			if ($n > 0)
-			{
 				$messages = array();
 				for ($i = 0; $i < $n; $i++)
 				{
@@ -297,33 +254,7 @@
 						$tmpl->assign('offsetNext', strval($offset+200));
 					}
 				}
-			} elseif ($offset > 0)
-			{
-/* 				$tmpl->addMSG('No additional messages in ' . htmlent($folder) . 'found.'); */
-			} else
-			{
-/* 				$tmpl->addMSG('No messages in ' . htmlent($folder) . '.'); */
 			}
-		}
-		
-		function randomKeyMatch(&$confirmed)
-		{
-			global $site;
-			
-			$randomKeyValue = '';
-			$randomKeyName = '';
-			
-			if (isset($_POST['key_name']))
-			{
-				$randomKeyName = html_entity_decode($_POST['key_name']);
-				
-				if (isset($_POST[$randomKeyName]))
-				{
-					$randomKeyValue = html_entity_decode($_POST[$randomKeyName]);
-				}
-			}
-			
-			return $randomkeysmatch = $site->validateKey($randomKeyName, $randomKeyValue);
 		}
 	}
 ?>
