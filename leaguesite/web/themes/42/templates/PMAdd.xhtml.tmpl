@@ -24,9 +24,50 @@ No menu found.
 
 <div class="content">
 
+
+{if isset($content)}
+<div class="msg_area"><div class="msg_view_full">
+	<div class="msg_header_full">
+		<span class="msg_subject">{$subject}</span>
+		<span class="msg_author"> by {if isset($authorLink)}<a href="{$authorLink}">{$authorName}</a>{else}{$authorName}{/if}</span>
+		<span class="msg_overview_recipients">to 
+		{foreach item="curRecipients" from=$recipients}
+			<a href="{$curRecipients.link}">{$curRecipients.name}</a>{if $curRecipients.seperator},{/if}
+		{/foreach}
+		</span>
+		<span class="msg_timestamp"> at {$time}</span>
+	</div>
+	<div class="msg_contents">
+		{$content}
+	</div>
+</div>
+{/if}
+
+
 <div class="static_page_box">
-<form class="msg_buttons" action="?add" method="post">
-<p><input type="submit" value="Preview" /></p>
+
+{if isset($MSG)}<div>{$MSG}</div>{/if}
+<form action="?add" enctype="application/x-www-form-urlencoded" method="post" accept-charset="utf-8">
+<div><input type="hidden" name="key_name" value="{$keyName}" /></div>
+<div><input type="hidden" name="{$keyName}" value="{$keyValue}" /></div>
+
+{if isset($notes)}<div>{$notes}</div>{/if}
+
+{if isset($confirmationStep) && $confirmationStep < 2}
+<div><input type="text" name="subject" value="{$subject}" /></div>
+<div>{foreach item=button from=$buttonsToFormat}{$button}
+{/foreach}</div>
+<div><textarea cols="75" rows="20" name="content">{$rawContent}</textarea></div>
+{/if}
+
+{if isset($confirmationStep) && $confirmationStep > 1}
+<div><input type="hidden" name="subject" value="{$subject}" /></div>
+<div><input type="hidden" name="content" value="{$rawContent}" /></div>
+{/if}
+
+<div><input type="hidden" name="confirmationStep" value="{$confirmationStep}" /></div>
+<p><input type="submit" name="submit" value="{$submitText}" />
+{if isset($editAgainText)}<input type="submit" name="editPageAgain" value="{$editAgainText}" />{/if}</p>
 </form>
 </div>
 
