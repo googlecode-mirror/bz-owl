@@ -207,52 +207,51 @@
 				$showNextMSGButton = true;
 			}
 			
-				$messages = array();
-				for ($i = 0; $i < $n; $i++)
+			$messages = array();
+			for ($i = 0; $i < $n; $i++)
+			{
+				$messages[$i]['userProfile'] = ($config->value('baseaddress')
+												. 'Players/?profile=' . $rows[$i]['author_id']);
+				$messages[$i]['userName'] = $rows[$i]['author'];
+				
+				if (strcmp($rows[$i]['msg_status'], 'new') === 0)
 				{
-					$messages[$i]['userProfile'] = ($config->value('baseaddress')
-													. 'Players/?profile=' . $rows[$i]['author_id']);
-					$messages[$i]['userName'] = $rows[$i]['author'];
-					
-					if (strcmp($rows[$i]['msg_status'], 'new') === 0)
-					{
-						$messages[$i]['unread'] = true;
-					}
-					if (strcmp($folder, 'inbox') !== 0)
-					{
-						$messages[$i]['link'] = '?view=' . $rows[$i]['id'] . '&amp;folder=' . $folder;
-					} else
-					{
-						$messages[$i]['link'] = '?view=' . $rows[$i]['id'];
-					}
-					$messages[$i]['subject'] = $rows[$i]['subject'];
-					$messages[$i]['time'] = $rows[$i]['timestamp'];
-					
-					// collect recipient list
-					$recipients = explode(' ', $rows[$i]['recipients']);
-					$fromTeam = strcmp($rows[$i]['from_team'], '0') !== 0;
-					$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
-					$queryPlayerName = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
-					$countRecipients = count($recipients) -1;
-					array_walk($recipients, 'self::displayRecipient'
-							   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
-					$messages[$i]['recipients'] = $recipients;
-
+					$messages[$i]['unread'] = true;
 				}
-				$tmpl->assign('messages', $messages);
-								
-				if ($offset > 0 || $showNextMSGButton)
+				if (strcmp($folder, 'inbox') !== 0)
 				{
-					if ($offset > 0)
-					{
-						// show previous messages
-						$tmpl->assign('offsetPrev', intval($offset-200));
-					}
-					if ($showNextMSGButton)
-					{
-						// show next messages
-						$tmpl->assign('offsetNext', strval($offset+200));
-					}
+					$messages[$i]['link'] = '?view=' . $rows[$i]['id'] . '&amp;folder=' . $folder;
+				} else
+				{
+					$messages[$i]['link'] = '?view=' . $rows[$i]['id'];
+				}
+				$messages[$i]['subject'] = $rows[$i]['subject'];
+				$messages[$i]['time'] = $rows[$i]['timestamp'];
+				
+				// collect recipient list
+				$recipients = explode(' ', $rows[$i]['recipients']);
+				$fromTeam = strcmp($rows[$i]['from_team'], '0') !== 0;
+				$queryTeamName = $db->prepare('SELECT `name` FROM `teams` WHERE `id`=?');
+				$queryPlayerName = $db->prepare('SELECT `name` FROM `players` WHERE `id`=?');
+				$countRecipients = count($recipients) -1;
+				array_walk($recipients, 'self::displayRecipient'
+						   , array($fromTeam, $queryTeamName, $queryPlayerName, $countRecipients));
+				$messages[$i]['recipients'] = $recipients;
+				
+			}
+			$tmpl->assign('messages', $messages);
+			
+			if ($offset > 0 || $showNextMSGButton)
+			{
+				if ($offset > 0)
+				{
+					// show previous messages
+					$tmpl->assign('offsetPrev', intval($offset-200));
+				}
+				if ($showNextMSGButton)
+				{
+					// show next messages
+					$tmpl->assign('offsetNext', strval($offset+200));
 				}
 			}
 		}

@@ -121,7 +121,6 @@
 				}
 				
 				// increase confirmation step by one so we get to the next level
-/* 				$tmpl->setCurrentBlock('PREVIEW_VALUE'); */
 				if ($confirmed > 1)
 				{
 					$tmpl->assign('confirmationStep', 1);
@@ -129,7 +128,6 @@
 				{
 					$tmpl->assign('confirmationStep', $confirmed+1);
 				}
-/* 				$tmpl->parseCurrentBlock(); */
 				
 				switch ($confirmed)
 				{
@@ -149,7 +147,6 @@
 						if ($config->value('bbcodeLibAvailable'))
 						{
 							$tmpl->assign('notes', 'Keep in mind to use BBCode instead of HTML or XHTML.');
-/* 							$tmpl->parseCurrentBlock(); */
 						} else
 						{
 							if ($config->value('useXhtml'))
@@ -168,10 +165,8 @@
 				// convert some special chars to underscores
 				$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
 				$randomkeyValue = $site->setKey($randomKeyName);
-/* 				$tmpl->setCurrentBlock('KEY'); */
 				$tmpl->assign('keyName', $randomKeyName);
 				$tmpl->assign('keyValue', urlencode($_SESSION[$randomKeyName]));
-/* 				$tmpl->parseCurrentBlock(); */
 			}
 		}
 	}
