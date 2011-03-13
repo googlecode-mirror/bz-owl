@@ -113,9 +113,11 @@
 		
 		function sanityCheck(&$confirmed)
 		{
+			global $entry_edit_permission;
+			global $user;
 			global $tmpl;
 			
-			if (!$this->hasEditPermission())
+			if (!$user->getPermission($entry_edit_permission))
 			{			
 				// editing cancelled due to missing user permission
 				$confirmed = 0;
@@ -192,19 +194,6 @@
 			}
 		}
 		
-		
-		function hasEditPermission()
-		{
-			global $entry_edit_permission;
-			
-			if ((isset($_SESSION[$entry_edit_permission])) && ($_SESSION[$entry_edit_permission]))
-			{
-				return true;
-			} else
-			{
-				return false;
-			}
-		}
 		
 		function randomKeyMatch(&$confirmed)
 		{
