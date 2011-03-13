@@ -22,6 +22,9 @@
 			include dirname(__FILE__) . '/classes/config.php';
 			$config = new config();
 			
+			// set the date and time
+			date_default_timezone_set($config->value('timezone'));
+			
 			// database connectivity
 			include dirname(__FILE__) . '/classes/db.php';
 			$db = new database();
@@ -129,8 +132,6 @@
 				return;
 			}
 			
-			// set the date and time
-			date_default_timezone_set($config->value('timezone'));
 			include($menuFile);
 			$menu = new menu();
 			parent::assign('menu', $menu->createMenu());

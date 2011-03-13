@@ -60,115 +60,109 @@
 			global $user;
 			
 			
-			if ($user->getPermission($entry_edit_permission))
+			// initialise variables
+			$confirmed = 0;
+			$content = '';
+			
+			// set their values in case the POST variables are set
+			if (isset($_POST['confirmationStep']))
 			{
-				// initialise variables
+				$confirmed = intval($_POST['confirmationStep']);
+			}
+			if (isset($_POST['editPageAgain']) && strlen($_POST['editPageAgain']) > 0)
+			{
+				// user looked at preview but chose to edit the message again
 				$confirmed = 0;
-				$content = '';
+			}
+			if (isset($_POST['staticContent']))
+			{
+				$content = htmlspecialchars_decode($_POST['staticContent'], ENT_COMPAT);
+			}
+			
+			// sanity check variabless
+			$test = $this->caller->sanityCheck($confirmed);
+			switch ($test)
+			{
+				// use bbcode if available
+				case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
+					$this->caller->insertEditText(true);
+					break;
+					
+				// else raw output
+				case (true && $confirmed === 1 && !$config->value('bbcodeLibAvailable')):
+					$this->caller->insertEditText(true);
+					break;
 				
-				// set their values in case the POST variables are set
-				if (isset($_POST['confirmationStep']))
-				{
-					$confirmed = intval($_POST['confirmationStep']);
-				}
-				if (isset($_POST['editPageAgain']) && strlen($_POST['editPageAgain']) > 0)
-				{
-					// user looked at preview but chose to edit the message again
-					$confirmed = 0;
-				}
-				if (isset($_POST['staticContent']))
-				{
-					$content = htmlspecialchars_decode($_POST['staticContent'], ENT_COMPAT);
-				}
-				
-				// sanity check variabless
-				$test = $this->caller->sanityCheck($confirmed);
-				switch ($test)
-				{
-						// use bbcode if available
-					case (true && $confirmed === 1 && $config->value('bbcodeLibAvailable')):
-						$this->caller->insertEditText(true);
-/* 						$tmpl->addMSG($tmpl->encodeBBCode($content)); */
-						break;
-						
-						// else raw output
-					case (true && $confirmed === 1 && !$config->value('bbcodeLibAvailable')):
-						$this->caller->insertEditText(true);
-/* 						$tmpl->addMSG($content); */
-						break;
-						
-						// use this as guard to prevent selection of noperm or nokeymatch cases
-					case (strlen($test) < 2):
-						$this->caller->insertEditText(false);
-						break;
-						
-					case 'noperm':
-						$tmpl->assign('MSG', 'You need write permission to edit the content.');
-						break;
-						
-					case 'nokeymatch':
-						$this->caller->insertEditText(false);
-						$tmpl->assign('MSG', 'The magic key does not match, it looks like you came from somewhere else or your session expired.');
-						break;			
-				}
+				// use this as guard to prevent selection of noperm or nokeymatch cases
+				case (strlen($test) < 2):
+					$this->caller->insertEditText(false);
+					break;
+					
+				case 'noperm':
+					$tmpl->assign('MSG', 'You need write permission to edit the content.');
+					break;
+					
+				case 'nokeymatch':
+					$this->caller->insertEditText(false);
+					$tmpl->assign('MSG', 'The magic key does not match, it looks like you came from somewhere else or your session expired.');
+					break;			
 				unset($test);
-				
-				
-				// there is no step lower than 0
-				if ($confirmed < 0)
-				{
-					$confirmed = 0;
-				}
-				
-				// increase confirmation step by one so we get to the next level
-				if ($confirmed > 1)
-				{
-					$tmpl->assign('confirmationStep', 1);
-				} else
-				{
-					$tmpl->assign('confirmationStep', $confirmed+1);
-				}
-				
-				switch ($confirmed)
-				{
-					case 1:
-						$tmpl->assign('submitText', 'Write changes');
-						// user may decide not to submit after seeing preview
-						$tmpl->assign('editAgainText', 'Edit again');
-						break;
-						
-					case 2:
-						$this->caller->writeContent($content, $page_title);
-						$tmpl->addMSG('Changes written successfully.' . $tmpl->linebreaks("\n\n"));
-						
-					default:
-						$tmpl->assign('USER_NOTE');
-						
-						if ($config->value('bbcodeLibAvailable'))
+			}
+			
+			
+			// there is no step lower than 0
+			if ($confirmed < 0)
+			{
+				$confirmed = 0;
+			}
+			
+			// increase confirmation step by one so we get to the next level
+			if ($confirmed > 1)
+			{
+				$tmpl->assign('confirmationStep', 1);
+			} else
+			{
+				$tmpl->assign('confirmationStep', $confirmed+1);
+			}
+			
+			switch ($confirmed)
+			{
+				case 1:
+					$tmpl->assign('submitText', 'Write changes');
+					// user may decide not to submit after seeing preview
+					$tmpl->assign('editAgainText', 'Edit again');
+					break;
+					
+				case 2:
+					$this->caller->writeContent($content, $page_title);
+					$tmpl->addMSG('Changes written successfully.' . $tmpl->linebreaks("\n\n"));
+					
+				default:
+					$tmpl->assign('USER_NOTE');
+					
+					if ($config->value('bbcodeLibAvailable'))
+					{
+						$tmpl->assign('notes', 'Keep in mind to use BBCode instead of HTML or XHTML.');
+					} else
+					{
+						if ($config->value('useXhtml'))
 						{
-							$tmpl->assign('notes', 'Keep in mind to use BBCode instead of HTML or XHTML.');
+							$tmpl->assign('notes', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
 						} else
 						{
-							if ($config->value('useXhtml'))
-							{
-								$tmpl->assign('notes', 'Keep in mind the home page currently uses XHTML, not HTML or BBCode.');
-							} else
-							{
-								$tmpl->assign('notes', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
-							}
+							$tmpl->assign('notes', 'Keep in mind the home page currently uses HTML, not XHTML or BBCode.');
 						}
-						$tmpl->assign('submitText', 'Preview');
-				}
-				
-				
-				$randomKeyName = $randomKeyName . microtime();
-				// convert some special chars to underscores
-				$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
-				$randomkeyValue = $site->setKey($randomKeyName);
-				$tmpl->assign('keyName', $randomKeyName);
-				$tmpl->assign('keyValue', urlencode($_SESSION[$randomKeyName]));
+					}
+					$tmpl->assign('submitText', 'Preview');
 			}
+			
+			
+			$randomKeyName = $randomKeyName . microtime();
+			// convert some special chars to underscores
+			$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
+			$randomkeyValue = $site->setKey($randomKeyName);
+			$tmpl->assign('keyName', $randomKeyName);
+			$tmpl->assign('keyValue', urlencode($_SESSION[$randomKeyName]));
 		}
 	}
-	
 ?>
