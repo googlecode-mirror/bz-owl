@@ -67,7 +67,7 @@
 				{
 					stripslashes($_POST);
 				}
-				if (!$tmpl->setTemplate($templateToUse . '?edit'))
+				if (!$tmpl->setTemplate($templateToUse . '.edit'))
 				{
 					$tmpl->noTemplateFound();
 				}
@@ -83,7 +83,7 @@
 			if ($user->getPermission($entry_add_permission) && isset($_GET['add']))
 			{
 				// user has permission to add news to the page and requests it
-				$tmpl->setTemplate($templateToUse . '?edit');
+				$tmpl->setTemplate($templateToUse . '.edit');
 				$this->add();
 				$tmpl->render();
 				die();

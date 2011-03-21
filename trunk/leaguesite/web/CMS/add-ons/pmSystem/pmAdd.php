@@ -75,8 +75,6 @@
 				default:
 					$tmpl->assign('rawContent', htmlspecialchars($content['raw_msg']
 																 , ENT_COMPAT, 'UTF-8'));
-					$tmpl->assign('timestamp', htmlspecialchars($content['time']
-																, ENT_COMPAT, 'UTF-8'));
 					$tmpl->assign('subject', htmlspecialchars($content['subject']
 															   , ENT_COMPAT, 'UTF-8'));
 					// display the formatting buttons addded by addFormatButtons
