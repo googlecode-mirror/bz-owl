@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.1.56)
 # Database: testdb
-# Generation Time: 2011-03-10 17:27:23 +0100
+# Generation Time: 2011-03-23 20:31:48 +0100
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -214,6 +214,7 @@ DROP TABLE IF EXISTS `news`;
 
 CREATE TABLE `news` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(256) NOT NULL DEFAULT 'News',
   `timestamp` varchar(20) NOT NULL DEFAULT '0000-00-00 00:00:00',
   `author` varchar(255) DEFAULT NULL,
   `msg` text,
