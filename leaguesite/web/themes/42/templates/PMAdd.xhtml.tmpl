@@ -51,6 +51,16 @@ No menu found.
 <div><input type="hidden" name="key_name" value="{$keyName}" /></div>
 <div><input type="hidden" name="{$keyName}" value="{$keyValue}" /></div>
 
+<div><label for="recipientPlayer">Player recipients:</label> <input type="text" /> <input type="submit" name="addPlayerRecipient" type="button" value="+"  /></div>
+
+{foreach key="id"  item="recipientPlayer" from=$recipientPlayers}
+<div>
+	<input type="text" readonly="readonly" value="{$recipientPlayer}" />
+	<input type="submit" name="removeRecipientPlayer{$id}" type="button" value="-" />
+</div>
+{/foreach}
+
+
 {if isset($notes)}<div>{$notes}</div>{/if}
 
 {if isset($confirmationStep) && $confirmationStep < 2}

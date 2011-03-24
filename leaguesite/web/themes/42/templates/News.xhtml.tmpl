@@ -27,7 +27,7 @@ No menu found.
 <a class="button" href="?add">Add news</a>
 {/if}
 
-{foreach key=id item=value from=$entries}
+{foreach item=value from=$entries}
 	{if (isset($showEditButton) && $showEditButton) || (isset($showDeleteButton) && $showDeleteButton)}
 		<div class="newsButtonsGroup">
 			{if isset($showEditButton) && $showEditButton}
