@@ -225,7 +225,7 @@
 			
 			
 			// initialise return variable so any returned value will be always in a defined state
-			$content = '';
+			$content = array();
 			$offset = 0;
 			if (!$edit)
 			{

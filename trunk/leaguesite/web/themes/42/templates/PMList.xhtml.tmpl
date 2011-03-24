@@ -59,10 +59,10 @@ No menu found.
 </tr>
 {/foreach}
 </table>
-{elseif ($offsetNext-200) > 0}
-No messages on this page in {$curFolder|escape}.
+{elseif isset($offsetNext) && ($offsetNext-200) > 0}
+<div class="static_page_box">No messages on this page in {$curFolder|escape}.</div>
 {else}
-No messages in {$curFolder|escape}.
+<div class="static_page_box">No messages in {$curFolder|escape}.</div>
 {/if}
 
 <br />
