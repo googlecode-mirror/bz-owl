@@ -20,7 +20,7 @@
 			
 			include(dirname(dirname(dirname(__FILE__))) . '/classes/editor.php');
 			$this->editor = new editor($this);
-			$this->editor->addFormatButtons('staticContent');
+			$this->editor->addFormatButtons('content');
 			$this->editor->edit();
 			
 			$tmpl->assign('title', 'New PM');
@@ -40,6 +40,9 @@
 			
 			if ($readonly || isset($_POST['confirmationStep']))
 			{
+				// data passed to form -> use it
+				
+				// FIXME: check if POST variables are set
 				$content = array();
 				$content['raw_msg'] = $_POST['content'];
 				
@@ -52,7 +55,10 @@
 				$content['timestamp'] = date('Y-m-d H:i:s');
 			} else
 			{
-				$content = $this->readContent(true);
+				// new message -> no content yet
+				$content['recipientPlayers'] = array();
+				$content['subject'] = '';
+				$content['raw_msg'] = '';
 			}
 			
 			
@@ -73,6 +79,7 @@
 					break;
 				
 				default:
+					$tmpl->assign('recipientPlayers', $content['recipientPlayers']);
 					$tmpl->assign('rawContent', htmlspecialchars($content['raw_msg']
 																 , ENT_COMPAT, 'UTF-8'));
 					$tmpl->assign('subject', htmlspecialchars($content['subject']
