@@ -51,7 +51,11 @@ No menu found.
 <div><input type="hidden" name="key_name" value="{$keyName}" /></div>
 <div><input type="hidden" name="{$keyName}" value="{$keyValue}" /></div>
 
-<div><label for="recipientPlayer">Player recipients:</label> <input type="text" /> <input type="submit" name="addPlayerRecipient" type="button" value="+"  /></div>
+<div>
+	<label for="recipientPlayer">Player recipients:</label>
+	<input type="text" value="Enter one callsign here" onfocus="if(this.value=='Enter one callsign here') this.value=''" onblur="if(this.value=='') this.value='Enter one callsign here'" />
+	<input type="submit" name="addPlayerRecipient" type="button" value="+"  />
+</div>
 
 {foreach key="id"  item="recipientPlayer" from=$recipientPlayers}
 <div>
@@ -64,9 +68,13 @@ No menu found.
 {if isset($notes)}<div>{$notes}</div>{/if}
 
 {if isset($confirmationStep) && $confirmationStep < 2}
-<div><input type="text" name="subject" value="{$subject}" /></div>
-<div>{foreach item=button from=$buttonsToFormat}{$button}
-{/foreach}</div>
+<div>
+	<input type="text" name="subject" value="{$subject}" onfocus="if(this.value=='Enter subject here') this.value=''" onblur="if(this.value=='') this.value='Enter subject here'" /></div>
+<div>
+{foreach item=button from=$buttonsToFormat}
+	{$button}
+{/foreach}
+</div>
 <div><textarea cols="75" rows="20" name="content">{$rawContent}</textarea></div>
 {/if}
 

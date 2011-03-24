@@ -57,7 +57,7 @@
 			{
 				// new message -> no content yet
 				$content['recipientPlayers'] = array();
-				$content['subject'] = '';
+				$content['subject'] = 'Enter subject here';
 				$content['raw_msg'] = '';
 			}
 			
