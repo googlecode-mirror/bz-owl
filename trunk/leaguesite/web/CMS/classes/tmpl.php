@@ -1,153 +1,24 @@
 <?php
+	include('smarty/Smarty.class.php');
 	
-	class template
+	class tmpl extends Smarty
 	{
-		private $tpl;
-		private $title = '';
-		private $msg = array();
+		private $templateFile='';
+		private $theme;
 		
-		function __construct($template='', $customTheme='')
-		{
-			global $db;
-			global $config;
-			
-			require_once dirname(dirname(__FILE__)) . '/TemplateSystem/HTML/Template/IT.php';
-			
-			if ((strcmp($template, '') !== 0) || (strcmp($customTheme, '') !== 0))
-			{
-				$this->setTemplate($template, $customTheme);
-			}
-		}
-		
-		function addMSG($messageToAdd)
-		{
-			$this->msg[] = $messageToAdd;
-		}
-		
-		function existsTemplate($theme, $template)
-		{
-			return file_exists(dirname(dirname(dirname(__FILE__))) . '/themes/'
-							   . $theme . '/' . $template . '.tmpl.html');
-		}
-		
-		function findTemplate(&$template, &$path)
-		{
-			// split the path in $template into an array
-			// overwrite $template with the last part of the array
-			// forget the last part of the array
-			// append the pieces of the array to $path
-			$pathinfo = explode('/', $template);
-			
-			if (count($pathinfo) > 0)
-			{
-				$template = $pathinfo[count($pathinfo) -1];
-				unset($pathinfo[count($pathinfo) -1]);
-				
-				$path .= '/' . htmlspecialchars(implode('/', $pathinfo));
-			}
-		}
-		
-		function noTemplateFound()
-		{
-			global $db;
-			
-			$db->logError('FATAL ERROR: Template not found, request URI: ' . $_SERVER['REQUEST_URI']);
-			$this->setTemplate('NoPerm');
-			$this->done('Template file not found. This is an installation problem.');
-			die();
-		}
-		
-		function setTitle($title)
-		{
-			// set the title of the page
-			if (is_string($title))
-			{
-				$this->title = $title;
-			}
-		}
-		
-		function setTemplate($template, $customTheme='')
+		function __construct()
 		{
 			global $config;
-			global $user;
-			global $db;
 			
-			if (strcmp($customTheme, '') === 0)
-			{
-				$customTheme = $user->getStyle();
-			}
+			$this->debugging = false;
+			$this->caching = true;
+			$this->cache_lifetime = 120;
 			
-			// extract possible file paths out of $template and append it to $themeFolder
-			$themeFolder = dirname(dirname(dirname(__FILE__))) .'/themes/' . htmlspecialchars($customTheme);
-			$this->findTemplate($template, $themeFolder);
-			
-			// init template system
-			$this->tpl = new HTML_Template_IT($themeFolder);
-			
-			// fallback if template specified is empty
-			if (strcmp($template, '') === 0)
-			{
-				$template = 'NoPerm';
-			}
-			
-			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
-			
-			if (!file_exists($themeFolder . $template . '.tmpl.html'))
-			{
-				if ($config->value('debugSQL'))
-				{
-					echo 'Tried to use template: ' . $themeFolder . $template . '.tmpl.html but failed: file does not exist.';
-				}
-				return false;
-			} elseif ($config->value('debugSQL'))
-			{
-				// debug output used template
-				$this->addMSG('Used template: ' . $themeFolder
-							  . $template . '.tmpl.html' . $this->return_self_closing_tag('br'));
-			}
-			
-			// use favicon, if available
-			if (!(strcmp($config->value('favicon'), '') === 0))
-			{
-				$this->tpl->setCurrentBlock('FAVICON');
-				$this->tpl->setVariable('FAVICONURL', $config->value('favicon'));
-				$this->parseCurrentBlock();
-			}
-			
-			
-			
-			$this->tpl->setCurrentBlock('MAIN');
-			
-			// links should point to current locations
-			$this->tpl->setVariable('BASEURL', $config->value('baseaddress'));
-			
-			// point to currently used theme
-			if (strcmp($customTheme, '') === 0)
-			{
-				$this->tpl->setVariable('CUR_THEME', str_replace(' ', '%20', htmlspecialchars($user->getStyle())));
-			} else
-			{
-				$this->tpl->setVariable('CUR_THEME', $customTheme);
-			}
-			
-			return true;
+			parent::__construct();
+			parent::assign('faviconURL', $config->value('favicon'));
+			parent::assign('baseURL', $config->value('baseaddress'));
 		}
 		
-		function setCurrentBlock($block)
-		{
-			// Assign data to the inner block
-			return $this->tpl->setCurrentBlock($block);
-		}
-		
-		function setVariable($data, $cell)
-		{
-			$this->tpl->setVariable($data, $cell);
-		}
-		
-		function parseCurrentBlock()
-		{
-			$this->tpl->parseCurrentBlock();
-		}
 		
 		private function buildMenu()
 		{
@@ -155,50 +26,61 @@
 			global $user;
 			global $db;
 			
-			// set the date and time
-			$this->tpl->setCurrentBlock('MAIN');
-			date_default_timezone_set($config->value('timezone'));
-			$this->tpl->setVariable('DATE', date('Y-m-d H:i:s T'));
 			
-			$this->tpl->setCurrentBlock('MENU');
-			include dirname(dirname(dirname(__FILE__))) .'/themes/' . $user->getStyle() . '/menu.php';
-			if ($config->value('debugSQL'))
+			$menuFile = $this->theme . 'templates/menu.php';
+			
+			if (!file_exists($menuFile))
 			{
-				$this->addMSG('Used menu: ' . dirname(dirname(dirname(__FILE__))) .'/themes/' . $user->getStyle()
-							  . '/menu.php' . $this->return_self_closing_tag('br'));
+				parent::assign('menu', 'No menu file found.');
+				return;
 			}
 			
-			$menuClass = new menu();
-			$menu = $menuClass->createMenu();
+			include($menuFile);
+			$menu = new menu();
+			parent::assign('menu', $menu->createMenu());
+			unset($menu);
 			
-			foreach ($menu as $oneMenuEntry)
-			{
-				$this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
-				$this->parseCurrentBlock();
-			}
-			unset($oneMenuEntry);
+			parent::assign('date', date('Y-m-d H:i:s T'));
+			/*
+			 if ($config->value('debugSQL'))
+			 {
+			 $this->addMSG('Used menu: ' . $menuFile);
+			 }
+			 */
+			
+			/*
+			 $menuClass = new menu();
+			 $menu = $menuClass->createMenu();
+			 
+			 foreach ($menu as $oneMenuEntry)
+			 {
+			 $this->tpl->setVariable('MENU_STRUCTURE', $oneMenuEntry);
+			 $this->parseCurrentBlock();
+			 }
+			 unset($oneMenuEntry);
+			 */
 			
 			// count online players on match servers
-			$this->tpl->setCurrentBlock('MAIN');
 			
 			// run the update script:
 			// >/dev/null pipes output to nowhere
 			// & lets the script run in the background
-			exec('php ' . dirname(dirname(__FILE__)) . '/cli/servertracker_query_backend.php >/dev/null &');
+			exec('php ' . dirname(__FILE__) . '/cli/servertracker_query_backend.php >/dev/null &');
 			
 			// build sum from list of servers
 			$query = ('SELECT SUM(`cur_players_total`) AS `cur_players_total`'
 					  . ' FROM `servertracker`'
 					  . ' ORDER BY `id`');
 			$result = $db->SQL($query, __FILE__);
+			
 			while ($row = $db->fetchRow($result))
 			{
 				if (intval($row['cur_players_total']) === 1)
 				{
-					$this->tpl->setVariable('ONLINE_PLAYERS', '1 player');
+					parent::assign('onlinePlayers', '1 player');
 				} else
 				{
-					$this->tpl->setVariable('ONLINE_PLAYERS', (strval($row['cur_players_total']) . ' players'));
+					parent::assign('onlinePlayers', (strval($row['cur_players_total']) . ' players'));
 				}
 			}
 			
@@ -232,95 +114,36 @@
 			$n_users = ($db->fetchRow($result));
 			if (intval($n_users['num_players']) === 1)
 			{
-				$this->tpl->setVariable('ONLINE_USERS', '1 user');
+				parent::assign('onlineUsers', '1 user');
 			} else
 			{
-				$this->tpl->setVariable('ONLINE_USERS', ($n_users['num_players'] . ' users'));
+				parent::assign('onlineUsers', ($n_users['num_players'] . ' users'));
 			}
 			
 			// user is logged in -> show logout option
 			if ($user->loggedIn())
 			{
-				$this->tpl->setCurrentBlock('LOGOUT');
-				$this->tpl->setVariable('LOGOUTURL', ($config->value('baseaddress') . 'Logout/'));
-				$this->parseCurrentBlock();
+				/* 				parent::assign('LOGOUT'); */
+				parent::assign('logoutURL', ($config->value('baseaddress') . 'Logout/'));
 			}
 		}
 		
-		
-		private function buildTitle()
-		{
-			// set a custom title, if title set
-			if (strlen($this->title) > 0)
-			{
-				if ($this->tpl->setCurrentBlock('TITLE_AREA') === true)
-				{
-					$this->tpl->setVariable('TITLE', $this->title);
-					$this->parseCurrentBlock();
-				}
-			}
-		}
-		
-		function touchBlock($block)
-		{
-			return $this->tpl->touchBlock($block);
-		}
-		
-		function render()
-		{
-			// build title
-			$this->buildTitle();
-			
-			// build menu at last to prevent undesired side effects when logging in or out
-			$this->buildMenu();
-			
-			// include status message at the end
-			// so we do not forget to display any message
-			$this->tpl->setCurrentBlock('MISC');
-			
-			if (count($this->msg) > 0)
-			{
-				foreach ($this->msg as $curMSG)
-				{
-					$this->tpl->setVariable('MSG', $curMSG);
-					$this->parseCurrentBlock();
-				}
-			}
-			
-			
-			// show all
-			$this->tpl->show();
-		}
-		
-		// quick way to stop script and to output a message
-		function done($msg)
-		{
-			$this->addMSG($msg);
-			$this->render();
-			die();
-		}
-		
-		function write_self_closing_tag($tag)
-		{
-			echo $this->return_self_closing_tag($tag);
-		}
-		
-		function return_self_closing_tag($tag)
+		function existsTemplate($template, $theme='')
 		{
 			global $config;
+			global $user;
 			
-			$result = '<';
-			$result .= $tag;
-			// do we use xhtml (->true) or html (->false)
-			if ($config->value('useXhtml'))
+			
+			if (strlen($theme) === 0)
 			{
-				$result .= ' /';
+				$theme = $user->getTheme();
 			}
-			$result .= '>';
-			$result .= "\n";
 			
-			return $result;
+			return file_exists(dirname(dirname(dirname(__FILE__))) . '/themes/'
+							   . $theme . '/templates/' . $template
+							   . ($config->value('useXhtml') ? '.xhtml.tmpl' : '.html.tmpl'));
 		}
+		
 		
 		// process bbcode
 		function encodeBBCode($bbcode)
@@ -387,6 +210,118 @@
 				return nl2br($text);
 			}
 		}
+		
+		
+		function findTemplate(&$template, &$path)
+		{
+			// split the path in $template into an array
+			// overwrite $template with the last part of the array
+			// forget the last part of the array
+			// append the pieces of the array to $path
+			$pathinfo = explode('/', $template);
+			
+			if (count($pathinfo) > 0)
+			{
+				$template = $pathinfo[count($pathinfo) -1];
+				unset($pathinfo[count($pathinfo) -1]);
+				
+				$path .= '/' . htmlspecialchars(implode('/', $pathinfo));
+			}
+		}
+		
+		function noTemplateFound()
+		{
+			global $db;
+			
+			$db->logError('FATAL ERROR: Template not found, request URI: ' . $_SERVER['REQUEST_URI']);
+			$this->setTemplate('404');
+			$this->assign('errorMsg', 'Template file not found. This is an installation problem.');
+			$this->display();
+			die();
+		}
+		
+		public function display($file='')
+		{
+			if (strlen($file) > 0)
+			{
+				$this->setTemplate($file);
+			}
+			
+			// build menu
+			$this->buildMenu();
+			
+			// certain templates need special headers
+			switch ($file)
+			{
+				case '404': header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found"); break;
+			}
+			
+			parent::display($this->templateFile);
+		}
+		
+		function setTemplate($template, $customTheme='')
+		{
+			global $config;
+			global $user;
+			global $tmpl;
+			global $db;
+			
+			if (strcmp($customTheme, '') === 0)
+			{
+				$customTheme = $user->getTheme();
+			}
+			
+			// extract possible file paths out of $template and append it to $themeFolder
+			$themeFolder = dirname(dirname(dirname(__FILE__))) .'/themes/' . htmlspecialchars($customTheme);
+			$this->findTemplate($template, $themeFolder);
+			
+			// init template system
+			parent::setTemplateDir($themeFolder . 'templates');
+			parent::setCompileDir($themeFolder . 'templates_c');
+			parent::setCacheDir($themeFolder . 'cache');
+			parent::setConfigDir($themeFolder . 'config');
+			
+			$this->theme = $themeFolder;
+			
+			//			$this->tpl = new HTML_Template_IT($themeFolder);
+			
+			// fallback if template specified is empty
+			if (strcmp($template, '') === 0)
+			{
+				$template = 'NoPerm';
+			}
+			
+			//			$this->tpl->loadTemplatefile($template . '.tmpl.html', true, true);
+			
+			$template .= (($config->value('useXhtml')) ? '.xhtml' : '.html') . '.tmpl';
+			
+			if (!file_exists($themeFolder . 'templates/' . $template))
+			{
+				if ($config->value('debugSQL'))
+				{
+					echo 'Tried to use template: ' . $themeFolder . 'templates/' . $template
+					. ' but failed: file does not exist.';
+				}
+				
+				return false;
+			} elseif ($config->value('debugSQL'))
+			{
+				// debug output used template
+				//				$this->addMSG('Used template: ' . $themeFolder
+				//							  . $template . '.tmpl.html' . $this->return_self_closing_tag('br'));
+			}
+			
+			$this->templateFile = $template;
+			
+			// point to currently used theme
+			if (strcmp($customTheme, '') === 0)
+			{
+				parent::assign('curTheme', str_replace(' ', '%20', htmlspecialchars($user->getStyle())));
+			} else
+			{
+				parent::assign('curTheme', $customTheme);
+			}
+			return true;
+		}
 	}
-	
 ?>

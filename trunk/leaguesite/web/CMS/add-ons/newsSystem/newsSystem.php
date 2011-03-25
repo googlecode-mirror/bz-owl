@@ -18,20 +18,14 @@
 			}
 			
 			$tmpl->setTemplate('News');
-/* 			$smarty = $tmpl->getEngine(); */
-/* 			$tmpl->testInstall(); */
 			
 			$tmpl->assign('name', 'Ned');
 			$tmpl->assign('title', $title);
-/* 			die(); */
 			
 			// FIXME: fallback to default permission name until add-on system is completly implemented
 			$entry_add_permission = 'allow_add_news';
 			$entry_edit_permission = 'allow_edit_news';
 			$entry_delete_permission = 'allow_delete_news';
-			
-			
-/* 			$tmpl->setTitle($title); */
 			
 			// find out which template should be used
 			// fallback template is static
