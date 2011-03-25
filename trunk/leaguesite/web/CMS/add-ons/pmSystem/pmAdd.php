@@ -58,8 +58,6 @@
 				$db->free($query);
 				
 				$content['recipientPlayers'] = $this->PMComposer->getRecipientNames();
-				print_r($_POST);
-				print_r($this->PMComposer->getRecipientNames());
 				$content['subject'] = $_POST['subject'];
 				$content['timestamp'] = date('Y-m-d H:i:s');
 			} else
