@@ -2,11 +2,14 @@
 	class pmSystemAddPM extends pmSystemPM
 	{
 		private $editor;
+		private $PMComposer;
 		
 		function __construct()
 		{
 			global $user;
 			global $tmpl;
+			
+			$this->PMComposer = new PMComposer();
 			
 			// FIXME: fallback to default permission name until add-on system is completly implemented
 			$entry_add_permission = 'allow_add_news';
@@ -51,6 +54,8 @@
 				$content['author'] = $db->fetchRow($query);
 				$db->free($query);
 				
+				$content['recipientPlayers'] = $this->PMComposer->getRecipientNames();
+				print_r($this->PMComposer->getRecipientNames());
 				$content['subject'] = $_POST['subject'];
 				$content['timestamp'] = date('Y-m-d H:i:s');
 			} else
@@ -134,14 +139,13 @@
 					$content[$i]['id'] = $rows[$i]['id'];
 					$content[$i]['title'] = (strcmp($rows[$i]['title'], '') === 0)?
 									   'News' : $rows[$i]['title'];
-
+					
 					$content[$i]['author'] = $rows[$i]['author'];
 					$content[$i]['time'] = $rows[$i]['timestamp'];
 					
 					$edit ? $content[$i]['content'] = $rows[$i]['raw_msg']
 						  : $content[$i]['content'] = $rows[$i]['msg'];
 					$author = $rows[$i]['author'];
-
 				}
 			}
 			
@@ -181,7 +185,30 @@
 				return 'nokeymatch';
 			}
 			
+			// do not send message if recipient add or remove was requested
+			if (($confirmed > 0) && isset($_POST['recipientPlayer']))
+			{
+				$this->PMComposer->addRecipientName($_POST['recipientPlayer']);
+				$confirmed = 0;
+			}
+			
 			return true;
+		}
+	}
+	
+	class PMComposer
+	{
+		private $recipients = array();
+		
+		function getRecipientNames()
+		{
+			return $this->recipients;
+		}
+		
+		function addRecipientName($recipientName)
+		{
+			// FIXME: Sanity checks go here
+			$this->recipients[] = $recipientName;
 		}
 	}
 ?>
