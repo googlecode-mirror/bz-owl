@@ -45,7 +45,7 @@
 				}
 			}
 			
-			if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/styles/' . $theme . '/' . $theme . '.css')))
+			if (!(file_exists(dirname(dirname(dirname(__FILE__))) . '/themes/' . $theme . '/' . $theme . '.css')))
 			{
 				// stylesheet in question does not exist, go back to default
 				$theme = $default_style;

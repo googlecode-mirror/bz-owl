@@ -53,7 +53,6 @@
 		function edit()
 		{
 			global $entry_edit_permission;
-			global $randomKeyName;
 			global $config;
 			global $site;
 			global $tmpl;
@@ -157,12 +156,12 @@
 			}
 			
 			
-			$randomKeyName = $randomKeyName . microtime();
+			$randomKeyName = $this->caller->randomKeyName . microtime();
 			// convert some special chars to underscores
 			$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
 			$randomkeyValue = $site->setKey($randomKeyName);
 			$tmpl->assign('keyName', $randomKeyName);
-			$tmpl->assign('keyValue', urlencode($_SESSION[$randomKeyName]));
+			$tmpl->assign('keyValue', htmlent($randomkeyValue));
 		}
 	}
 ?>
