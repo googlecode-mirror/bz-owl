@@ -65,8 +65,8 @@
 			$logfile = strval($config->value('errorLogFile'));
 			if (strlen($logfile) > 0 && file_exists($logfile) && is_writable($logfile))
 			{
-				$handle = fopen($logfile, 'a');
-				if (!fwrite($handle, $error))
+				$handle = @fopen($logfile, 'a');
+				if (!@fwrite($handle, $error))
 				{
 					die('ERROR: Writing into log failed');
 				}
