@@ -73,14 +73,10 @@
 	unset($curFile);
 	
 	
-	if (isset($theme))
+	if (!$tmpl->setTemplate('Config', $theme))
 	{
-		$tmpl->setTemplate('Config', $theme);
-	} else
-	{
-		$tmpl->setTemplate('Config', '');
+		$tmpl->noTemplateFound();
 	}
-	
 	
 	if (strlen($theme) > 0)
 	{
