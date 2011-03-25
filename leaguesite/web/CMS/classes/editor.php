@@ -161,6 +161,7 @@
 			$randomKeyName = strtr($randomKeyName, array(' ' => '_', '.' => '_'));
 			$randomkeyValue = $site->setKey($randomKeyName);
 			$tmpl->assign('keyName', $randomKeyName);
+			echo('keyName: ' . $randomKeyName);
 			$tmpl->assign('keyValue', htmlent($randomkeyValue));
 		}
 	}
