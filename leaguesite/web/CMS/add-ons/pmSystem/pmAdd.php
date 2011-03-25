@@ -3,11 +3,13 @@
 	{
 		private $editor;
 		private $PMComposer;
+		public $randomKeyName = 'pmSystemAddPM';
 		
 		function __construct()
 		{
 			global $user;
 			global $tmpl;
+			
 			
 			$this->PMComposer = new PMComposer();
 			
@@ -20,6 +22,7 @@
 				$tmpl->display('NoPerm');
 				die();
 			}
+			
 			
 			include(dirname(dirname(dirname(__FILE__))) . '/classes/editor.php');
 			$this->editor = new editor($this);
@@ -55,6 +58,7 @@
 				$db->free($query);
 				
 				$content['recipientPlayers'] = $this->PMComposer->getRecipientNames();
+				print_r($_POST);
 				print_r($this->PMComposer->getRecipientNames());
 				$content['subject'] = $_POST['subject'];
 				$content['timestamp'] = date('Y-m-d H:i:s');
@@ -156,16 +160,17 @@
 		{
 			global $site;
 			
+			
 			$randomKeyValue = '';
 			$randomKeyName = '';
 			
 			if (isset($_POST['key_name']))
 			{
-				$randomKeyName = html_entity_decode($_POST['key_name']);
+				$randomKeyName = htmlent_decode($_POST['key_name']);
 				
 				if (isset($_POST[$randomKeyName]))
 				{
-					$randomKeyValue = html_entity_decode($_POST[$randomKeyName]);
+					$randomKeyValue = htmlent_decode($_POST[$randomKeyName]);
 				}
 			}
 			
@@ -177,6 +182,7 @@
 			global $user;
 			global $tmpl;
 			
+			
 			// no need to check for a key match if no content was supplied
 			if (($confirmed > 0) && !$this->randomKeyMatch($confirmed))
 			{
@@ -186,7 +192,7 @@
 			}
 			
 			// do not send message if recipient add or remove was requested
-			if (($confirmed > 0) && isset($_POST['recipientPlayer']))
+			if (($confirmed > 0) && isset($_POST['recipientPlayer']) && isset($_POST['addPlayerRecipient']))
 			{
 				$this->PMComposer->addRecipientName($_POST['recipientPlayer']);
 				$confirmed = 0;

@@ -54,13 +54,13 @@
 		}
 		
 		function setKey($randomkey_name)
-		{
+		{echo('<br /><br />setkey: ' . $randomkey_name . '<br /><br />');
 			// this should be good enough as all we need is something that can not be guessed without many tries
 			return $_SESSION[$randomkey_name] = rand(0, getrandmax());
 		}
 		
 		function validateKey($key, $value)
-		{
+		{echo('<br /><br />key needed: ' . $key . '<br /><pre>'); print_r($_SESSION); echo('</pre><br />');
 			if (isset($_SESSION[$key]))
 			{
 				$randomkeysmatch = (strcmp(html_entity_decode(urldecode($_SESSION[$key])), $value) === 0);
