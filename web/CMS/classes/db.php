@@ -15,11 +15,31 @@
 			global $site;
 			global $config;
 			
-			return $this->pdo = new PDO(
-								  'mysql:host='. $config->value('dbHost') . ';dbname=' . $config->value('dbName'),
-								  $config->value('dbUser'),
-								  $config->value('dbPw'),
-								  array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+			try
+			{
+				$this->pdo = new PDO(
+									 'mysql:host='. strval($config->value('dbHost'))
+									 . ';dbname=' . strval($config->value('dbName')),
+									 strval($config->value('dbUser')),
+									 strval($config->value('dbPw')),
+									 array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+			}
+			catch (PDOException $e)
+			{
+				if ($config->value('debugSQL'))
+				{
+					echo 'Connection failed: ' . $e->getMessage();
+				} else
+				{
+					echo 'DB connection failure, see log.';
+				}
+				
+				$this->logError($e->getMessage());
+				
+			    die();
+			}
+			
+			return $this->pdo;
 		}
 		
 		function logError($error)
