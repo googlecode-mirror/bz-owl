@@ -180,20 +180,44 @@
 			global $user;
 			global $tmpl;
 			
-			
-			// no need to check for a key match if no content was supplied
-			if (($confirmed > 0) && !$this->randomKeyMatch($confirmed))
+			print_r($_POST);
+			if ($confirmed > 0)
 			{
-				// editing cancelled due to random key mismatch
-				$confirmed = 0;
-				return 'nokeymatch';
-			}
-			
-			// do not send message if recipient add or remove was requested
-			if (($confirmed > 0) && isset($_POST['recipientPlayer']) && isset($_POST['addPlayerRecipient']))
-			{
-				$this->PMComposer->addRecipientName($_POST['recipientPlayer']);
-				$confirmed = 0;
+				// no need to check for a key match if no content was supplied
+				if (!$this->randomKeyMatch($confirmed))
+				{
+					// editing cancelled due to random key mismatch
+					$confirmed = 0;
+					return 'nokeymatch';
+				}
+				
+				
+				// add all set player recipients
+				$i = 0;
+				while (isset($_POST['recipientPlayer' . $i]))
+				{
+					$this->PMComposer->addRecipientName($_POST['recipientPlayer' . $i]);
+					$i++;
+				}
+				
+				// remove requested player recipients and do not send the message
+				$n = $this->PMComposer->count();
+				for ($i = 0; $i < $n; $i++)
+				{
+echo('<br />removeRecipientPlayer' . $i . ':' . ((isset($_POST['removeRecipientPlayer' . $i])) ? 'yes':'no') . '<br /><br />');
+					if (isset($_POST['removeRecipientPlayer' . $i]))
+					{
+						$this->PMComposer->removeRecipientID($i);
+						$confirmed = 0;
+					}
+				}
+				
+				// add new player recipient if requested and do not send the message
+				if (isset($_POST['recipientPlayer']) && isset($_POST['addPlayerRecipient']))
+				{
+					$this->PMComposer->addRecipientName($_POST['recipientPlayer']);
+					$confirmed = 0;
+				}
 			}
 			
 			return true;
@@ -204,15 +228,25 @@
 	{
 		private $recipients = array();
 		
+		function addRecipientName($recipientName)
+		{
+			// FIXME: Sanity checks go here
+			$this->recipients[] = $recipientName;
+		}
+		
+		function count()
+		{
+			return count($this->recipients);
+		}
+		
 		function getRecipientNames()
 		{
 			return $this->recipients;
 		}
 		
-		function addRecipientName($recipientName)
+		function removeRecipientID($recipientID)
 		{
-			// FIXME: Sanity checks go here
-			$this->recipients[] = $recipientName;
+			unset($this->recipients[$recipientID]);
 		}
 	}
 ?>
