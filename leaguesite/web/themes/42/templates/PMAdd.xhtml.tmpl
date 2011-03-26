@@ -57,9 +57,9 @@ No menu found.
 	<input type="submit" name="addPlayerRecipient" type="button" value="+"  />
 </div>
 
-{foreach key="id"  item="recipientPlayer" from=$recipientPlayers}
+{foreach key="id" item="recipientPlayer" from=$recipientPlayers}
 <div>
-	<input type="text" readonly="readonly" value="{$recipientPlayer}" />
+	<input type="text" name="recipientPlayer{$id}" readonly="readonly" value="{$recipientPlayer}" />
 	<input type="submit" name="removeRecipientPlayer{$id}" type="button" value="-" />
 </div>
 {/foreach}
