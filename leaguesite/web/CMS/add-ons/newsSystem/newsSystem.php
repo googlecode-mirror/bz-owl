@@ -79,7 +79,7 @@
 				// user has permission to add news to the page and requests it
 				$tmpl->setTemplate($templateToUse . '.edit');
 				$this->add();
-				$tmpl->render();
+				$tmpl->display();
 				die();
 			}
 			
@@ -92,7 +92,7 @@
 			}
 			$this->readContent($path, $author, $last_modified, false);
 			
-			// done, render page
+			// done, display page
 			$tmpl->display();
 		}
 		
@@ -326,7 +326,7 @@
 					$args[] = $tmpl->encodeBBCode($content);
 				} else
 				{
-					$args[] .= $db->quote($content);
+					$args[] = $content;
 				}
 				$args[] = $date_format;
 				
@@ -335,8 +335,8 @@
 			} else
 			{
 				// either 1 or more entries found, just assume there is only one
-				$query = $db->prepare('UPDATE `?` SET `author`?=' . $db->quote($user->getID())
-									  . ', `raw_content`=?' . $db->quote($content)
+				$query = $db->prepare('UPDATE `?` SET `author`?='
+									  . ', `raw_content`=?'
 									  . ', `content`=?'
 									  . ', `last_modified`=?'
 									  . ' WHERE `page_name`=?'
@@ -347,7 +347,7 @@
 					$args[] = $tmpl->encodeBBCode($content);
 				} else
 				{
-					$args[] = $db->quote($content);
+					$args[] = $content;
 				}
 				$ags[] = $date_format;
 				$args[] = $page_title;

@@ -53,7 +53,7 @@
 				{
 					stripslashes($_POST);
 				}
-				$tmpl->setTemplate($templateToUse . '?edit');
+				$tmpl->setTemplate($templateToUse . '.edit');
 			} else
 			{
 				$tmpl->setTemplate($templateToUse);
