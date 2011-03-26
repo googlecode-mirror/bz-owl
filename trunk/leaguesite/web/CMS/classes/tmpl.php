@@ -242,6 +242,9 @@
 		
 		public function display($file='')
 		{
+			global $user;
+			
+			
 			if (strlen($file) > 0)
 			{
 				$this->setTemplate($file);
@@ -256,7 +259,8 @@
 				case '404': header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found"); break;
 			}
 			
-			parent::display($this->templateFile);
+			// add userid to prevent cached output being served to other users
+			parent::display($this->templateFile, $user->getID());
 		}
 		
 		function setTemplate($template, $customTheme='')
@@ -265,6 +269,7 @@
 			global $user;
 			global $tmpl;
 			global $db;
+			
 			
 			if (strcmp($customTheme, '') === 0)
 			{
