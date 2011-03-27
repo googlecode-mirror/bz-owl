@@ -44,13 +44,15 @@
 			global $db;
 			
 			
+			$content = array();
+			$content['raw_msg'] = isset($_POST['content']) && (strlen($_POST['content']) > 0)
+								  ?  strval($_POST['content']) : 'Enter message here';
+			$content['subject'] = isset($_POST['subject']) && (strlen($_POST['subject']) > 0)
+								  ? strval($_POST['subject']) : 'Enter subject here';
+			
 			if ($readonly || isset($_POST['confirmationStep']))
 			{
 				// data passed to form -> use it
-				
-				// FIXME: check if POST variables are set
-				$content = array();
-				$content['raw_msg'] = $_POST['content'];
 				
 				$query = $db->prepare('SELECT `name` FROM `players` WHERE `id`=? LIMIT 1');
 				$db->execute($query, $user->getID());
@@ -58,14 +60,11 @@
 				$db->free($query);
 				
 				$content['recipientPlayers'] = $this->PMComposer->getRecipientNames();
-				$content['subject'] = $_POST['subject'];
 				$content['timestamp'] = date('Y-m-d H:i:s');
 			} else
 			{
-				// new message -> no content yet
+				// new message -> recipient players yet
 				$content['recipientPlayers'] = array();
-				$content['subject'] = 'Enter subject here';
-				$content['raw_msg'] = '';
 			}
 			
 			
@@ -97,63 +96,6 @@
 			}
 		}
 		
-		function readContent($edit=false)
-		{
-			global $tmpl;
-			global $user;
-			global $db;
-			
-			
-			// initialise return variable so any returned value will be always in a defined state
-			$content = '';
-			$offset = 0;
-			
-			if (!$edit)
-			{
-				// TODO: id only needed if user can edit or delete
-				// TODO: meaning room for optimisation
-				$query = $db->SQL('SELECT `id`,`title`,`timestamp`,`author`,`msg`'
-								  . ' FROM `news` ORDER BY `timestamp` DESC'
-								  . ' LIMIT ' . intval($offset) .', 21');
-			} else
-			{
-				$query = $db->SQL('SELECT `title`,`timestamp`,`author`,`raw_msg`'
-								  . ' FROM `news` ORDER BY `timestamp` DESC'
-								  . ' LIMIT ' . intval($offset) .', 1');
-			}
-			$db->execute($query, $offset);
-			$rows = $db->fetchAll($query);
-			$db->free($query);
-			
-			if ($edit)
-			{
-				// let the edit insertion function pass it to the editor class
-				return $rows[0];
-			}
-			
-			// process query result array
-			$n = count($rows);
-			if ($n > 0)
-			{
-				// article box
-				for($i = 1; $i < $n; $i++)
-				{
-					$content[$i]['id'] = $rows[$i]['id'];
-					$content[$i]['title'] = (strcmp($rows[$i]['title'], '') === 0)?
-									   'News' : $rows[$i]['title'];
-					
-					$content[$i]['author'] = $rows[$i]['author'];
-					$content[$i]['time'] = $rows[$i]['timestamp'];
-					
-					$edit ? $content[$i]['content'] = $rows[$i]['raw_msg']
-						  : $content[$i]['content'] = $rows[$i]['msg'];
-					$author = $rows[$i]['author'];
-				}
-			}
-			
-			$tmpl->assign('entries', $content);
-		}
-		
 		function randomKeyMatch(&$confirmed)
 		{
 			global $site;
@@ -180,7 +122,7 @@
 			global $user;
 			global $tmpl;
 			
-			print_r($_POST);
+			
 			if ($confirmed > 0)
 			{
 				// no need to check for a key match if no content was supplied
