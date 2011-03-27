@@ -196,20 +196,18 @@
 				$i = 0;
 				while (isset($_POST['recipientPlayer' . $i]))
 				{
-					$this->PMComposer->addRecipientName($_POST['recipientPlayer' . $i]);
-					$i++;
-				}
-				
-				// remove requested player recipients and do not send the message
-				$n = $this->PMComposer->count();
-				for ($i = 0; $i < $n; $i++)
-				{
-echo('<br />removeRecipientPlayer' . $i . ':' . ((isset($_POST['removeRecipientPlayer' . $i])) ? 'yes':'no') . '<br /><br />');
+					// exclude recipients that are requested to be removed
+					if (isset($_POST['recipientPlayer' . $i]) && !(isset($_POST['removeRecipientPlayer' . $i])))
+					{
+						$this->PMComposer->addRecipientName($_POST['recipientPlayer' . $i]);
+					}
+					
+					// user requested removal of a recipient -> do not send now
 					if (isset($_POST['removeRecipientPlayer' . $i]))
 					{
-						$this->PMComposer->removeRecipientID($i);
 						$confirmed = 0;
 					}
+					$i++;
 				}
 				
 				// add new player recipient if requested and do not send the message
@@ -234,19 +232,9 @@ echo('<br />removeRecipientPlayer' . $i . ':' . ((isset($_POST['removeRecipientP
 			$this->recipients[] = $recipientName;
 		}
 		
-		function count()
-		{
-			return count($this->recipients);
-		}
-		
 		function getRecipientNames()
 		{
 			return $this->recipients;
-		}
-		
-		function removeRecipientID($recipientID)
-		{
-			unset($this->recipients[$recipientID]);
 		}
 	}
 ?>
