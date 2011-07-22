@@ -1,0 +1,75 @@
+/* remove underline from links */
+a
+{
+	color: #005981;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color: #4e405a;
+}
+
+a:visited
+{
+	color : #005981;
+}
+
+a:visited:hover
+{
+	color: #4e405a;
+}
+
+a:active
+{
+	color : #005981;
+}
+
+/* some links should be displayed as butttons */
+a.button
+{
+	white-space: nowrap;
+	display: inline-block;
+	margin-bottom: 1px;
+	color: #ddd;
+	padding-right: 0.5em;
+	padding-left: 0.5em;
+	background-attachment: scroll;
+	display: inline-block;
+	border-top: 2px solid #c84015;
+	border-right: 2px solid #74250c;
+	border-bottom: 2px solid #74250c;
+	border-left: 2px solid #c84015;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+a.button:hover
+{
+	color: #ddd;
+	border-bottom: 2px solid #c84015;
+	border-right: 2px solid #c84015;
+	border-top: 2px solid #74250c;
+	border-left: 2px solid #74250c;
+}
+
+table a, td > a.button
+{
+	color: #005981;
+}
+
+table a:hover, td > a.button:hover
+{
+	color: #4e405a;
+}
+
+td > a.button, td > a.button:hover
+{
+	border-style: none;
+	border-color: none;
+	background-color: transparent;
+	box-shadow:inset 10px 10px 1em 15px transparent;
+	-moz-box-shadow:inset 10px 10px 1em 15px transparent;
+	-webkit-box-shadow:inset 10px 10px 1em 15px transparent;
+}
