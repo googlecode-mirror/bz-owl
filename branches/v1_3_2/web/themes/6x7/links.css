@@ -1,0 +1,54 @@
+/* remove underline from links */
+a
+{
+	color: #ff5b60;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color: #4e405a;
+}
+
+a:visited
+{
+	color : #005981;
+}
+
+a:visited:hover
+{
+	color: #4e405a;
+}
+
+a:active
+{
+	color : #005981;
+}
+
+/* some links should be displayed as butttons */
+a.button
+{
+	padding-bottom: 0.25em;
+	padding-top: 0.25em;
+	border-width: 2px;
+	border-style: solid;
+	font-size: 0.9em;
+	color: white !important;
+	-webkit-border-radius: 0.42em;
+	-moz-border-radius: 0.42em;
+	border-radius: 0.42em;
+	padding-right: 0.5em;
+	padding-left: 0.5em;
+	display: inline-block;
+	background-color: #000;
+	background: -moz-linear-gradient(transparent, #6e4e4e 50%, transparent);
+/*background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000));*/
+}
+
+a.button:hover
+{
+	border-bottom: 2px solid #c84015;
+	border-right: 2px solid #c84015;
+	border-top: 2px solid #74250c;
+	border-left: 2px solid #74250c;
+}
