@@ -1,0 +1,20 @@
+# option needed, if indexes used, you also need to enable indexes
+Options +FollowSymlinks
+
+# turn on rewrite engine
+RewriteEngine On
+
+# path to the web dir in your installation
+RewriteBase /
+
+
+# rewrite links to CMS dir to use the script in web/
+# these rules get overwritten by .htaccess in CMS dir
+RewriteCond %{SCRIPT_FILENAME} ^.*CMS.*$
+RewriteRule ^(.*)$ ?path=$1 [QSA,L]
+
+# if file does not exist and is no directory then rewrite link
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteRule ^(.*)$ ?path=$1 [QSA,L]
+

@@ -1,0 +1,107 @@
+/* @override http://192.168.1.10/~spiele/league_svn/ts/trunk/leaguesite/web/styles/Dark_misc/rankings.css */
+span.score700
+{
+	background-image: url(700.png);
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+
+span.score800
+{
+	background: url(800.png) no-repeat;
+	margin-left: 0.5em;
+	padding-right: 19px;
+	padding-bottom: 19px;
+}
+
+
+span.score900
+{
+	background: url(900.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+
+}
+
+span.score1000
+{
+	background: url(1000.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1100
+{
+	background: url(1100.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1200
+{
+	background: url(1200.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1300
+{
+	background: url(1300.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1400
+{
+	background: url(1400.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1500
+{
+	background: url(1500.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1600
+{
+	background: url(1600.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1700
+{
+	background: url(1700.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1800
+{
+	background: url(1800.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}
+
+span.score1900
+{
+	background: url(1900.png) no-repeat;
+	padding-right: 19px;
+	padding-bottom: 19px;
+	margin-left: 0.5em;
+}

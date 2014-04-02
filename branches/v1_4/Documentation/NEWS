@@ -1,0 +1,79 @@
+
+bz-owl release notes
+====================
+
+1.4 (2014-04-02)
+--
+* /web/index.php now calls a new add-on called pathLoaderSystem
+* pathLoaderSystem add-on uses modules that can flag a user as banned
+* improved loginSystem logic and its local login module now logs invalid attempts (5 invalid attempts within 1 day disable login ability for 1 day, beginning with oldest invalid attempt during the day)
+* local login module of loginSystem can now set special permissions
+* logout now works with new logoutSystem add-on
+* match rss now built by matchServicesRSSSystem
+* renamed players* classes to users*
+* updated smarty engine
+* team page is now handled by new teamSystem add-on
+* classes have been enhanced to follow the MVC scheme
+
+1.3.2 (2011-07-25)
+--
+* loginSystem add-on sets user join date properly now
+
+1.3.1 (2011-07-23)
+--
+* fixed account activation query
+* pageSystem add-on can now add new pages
+
+1.3 (2011-07-22)
+--
+* Replaced login add-on with a entirely new loginSystem that provides a better framework
+* fixed a bug that did not reset a user's teamid upon deletion of a team
+* New pageSystem add-on to control which page is shown without directly editing db
+
+1.2.1 (2011-06-23)
+--
+* Minor theme changes
+* show unfinished themes by config option
+* updated db structure to avoid periods in table names
+* Partial reimplementation of Teams page by a new teamSystem add-on
+
+1.2 (2011-05-13)
+---
+* overall code re-organisation, concentrating on readability
+* several database structure changes to fit new add-on system
+* rename player to user at new code
+* new login add-on (in progress)
+* new maintenance add-on (partially done)
+* fix some markup problems
+* serve xhtml using MIME type application/xhtml+xml on production environment
+* implement database update script
+* db class error reporting with fallback to text file
+* add example teamStats add-on
+* downgrade web/CMS/announcements to keep compatibility with ducati code
+* implement new pm system as add-on
+* implement new static page editor as add-on
+* implement new news system as add-on
+* drop Login, News, Rules, FAQ, Links, Contact and Bans folders
+* add 6x7 prototype theme (partially done)
+* add example .htaccess file to use with new add-on loader
+* implement add-on loader script, using new lookup table in db
+* switch to smarty template engine
+* rename web/styles to web/themes
+
+1.1 (2011-02-25)
+--
+* display of private messages using new code, otherwise use old code
+* drop web/CMS/navi.inc and replace it by the new Layout.php and the templates
+* add php.template in styles dir and per theme for old world pages
+* new code does no longer use web/CMS/siteinfo.hp
+* add web/CMS/classes to be used by new web/CMS/site.php
+* new site config settings using settings.php
+* new code uses integrated template library
+* new code uses PDO
+
+1.0 (2010-10-06)
+--
+* initial stable release
+
+
+

@@ -1,0 +1,44 @@
+/* @override http://192.168.1.10/~spiele/bz-owl/trunk/leaguesite/web/themes/Simple%20orange/Simple%20orange.css */
+
+div.navigationBox
+{
+	text-align: center;
+
+	margin-top: -0.4em;
+	margin-bottom: 1.2em;
+}
+
+ul.navigation
+{
+	display: inline;
+	background-color: #e79920;
+	border-radius: 0em 0em 1em 1em;
+	border-style: none;
+	clear: both;
+	padding: 3em 1em 0.5em;
+}
+
+ul.navigation li
+{
+	list-style: none;
+	display: inline;
+}
+
+ul.navigation li span.MenuIcon
+{
+	position: relative;
+	left: 0.5em;
+}
+
+ul.navigation li span.MenuIconText
+{
+	position: relative;
+	left: 2em;
+	top: 0.5em;
+}
+
+ul.navigation li span.MenuIcon img
+{
+	position: relative;
+	right: 2em;
+}
